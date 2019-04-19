@@ -33,9 +33,7 @@ export default function exampleReducer(state = initialState, action) {
       });
     case LOAD_IMAGE_SUCCESS:
       try {
-        return state.update('images', images =>
-          images.push(fromJS(action.payload))
-        );
+        return state.update('images', images => images.push(fromJS(action.payload)));
       } catch (e) {
         console.error(e);
       }

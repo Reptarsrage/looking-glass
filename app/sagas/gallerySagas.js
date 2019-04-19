@@ -14,9 +14,7 @@ import AsyncImageLoader from '../asyncImageLoader';
 const replaceUrlWithRandomSizes = url => {
   const myRegexp = /(https?:\/\/via\.placeholder\.com)\/(\d+)\/(\w+)/g;
   const match = myRegexp.exec(url);
-  return `${match[1]}/${Math.floor(Math.random() * 2000) + 200}x${Math.floor(
-    Math.random() * 2000
-  ) + 200}/${match[3]}`;
+  return `${match[1]}/${Math.floor(Math.random() * 2000) + 200}x${Math.floor(Math.random() * 2000) + 200}/${match[3]}`;
 };
 
 function* handleFetchImage(item) {
@@ -38,10 +36,7 @@ function* handleFetchImage(item) {
 function* handlefetchImages() {
   try {
     // Get photos
-    let { data } = yield call(
-      axios.get,
-      'https://jsonplaceholder.typicode.com/photos?_limit=100'
-    );
+    let { data } = yield call(axios.get, 'https://jsonplaceholder.typicode.com/photos?_limit=100');
 
     // Replace ids, randomize dimensions
     data = data.map(item => ({

@@ -17,7 +17,4 @@ test('should open window', async t => {
   await t.expect(getPageTitle()).eql('The Looking-Glass');
 });
 
-test(
-  "should haven't any logs in console of main window",
-  assertNoConsoleErrors
-);
+test("should haven't any logs in console of main window", assertNoConsoleErrors);

@@ -97,11 +97,7 @@ export default class asyncImageLoader {
       // This works better for smaller images
       image.onload = e => {
         const { target } = e;
-        const {
-          naturalWidth: width,
-          naturalHeight: height,
-          src: source
-        } = target;
+        const { naturalWidth: width, naturalHeight: height, src: source } = target;
         const index = this.pendingImages.findIndex(img => img.src === source);
         this.log('loaded', { width, height, index });
 
