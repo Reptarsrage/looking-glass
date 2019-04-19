@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  InfiniteLoader,
-  WindowScroller,
-  List,
-  AutoSizer
-} from 'react-virtualized';
+import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
@@ -13,6 +8,7 @@ import { withRouter } from 'react-router-dom';
 import NoResults from './NoResults';
 import AnErrorOccurred from './AnErrorOccurred';
 import LoadingIndicator from './LoadingIndicator';
+import WindowScroller from './WindowScroller';
 
 const styles = theme => ({
   container: {
@@ -49,13 +45,11 @@ class ListView extends Component {
     this.columnHeight = 0;
     this.columnWidth = 0; // keeps track of the column width calculated by the AutoSizer
     this.columnRefs = []; // holds references to the react-virtualized List in each column
-    this.scrollIndex = 0;
 
     this.state = {
       gutterSize: 8, // size of margins/padding
       columnCount: 3, // total number of columns
       mainColumnIndex: 0, // this is the index of the column we use for infinite load
-      scrollToIndex: undefined,
       fitToWindow: true
     };
 
@@ -66,27 +60,6 @@ class ListView extends Component {
     this.getRowHeight = this.getRowHeight.bind(this);
     this.onResize = this.onResize.bind(this);
     this.setColumnListRef = this.setColumnListRef.bind(this);
-    this.onRowsRendered = this.onRowsRendered.bind(this);
-  }
-
-  componentWillMount() {
-    const { location } = this.props;
-    const val = sessionStorage.getItem(location.key);
-    if (val) {
-      const scrollToIndex = parseInt(val, 10);
-      this.setState({ scrollToIndex });
-    }
-  }
-
-  componentWillUnmount() {
-    const { location } = this.props;
-    sessionStorage.setItem(location.key, this.scrollIndex);
-  }
-
-  onRowsRendered({ callback, ...props }) {
-    callback(props);
-    const { startIndex } = props;
-    this.scrollIndex = startIndex;
   }
 
   isRowLoaded = ({ index }) => {
@@ -132,9 +105,7 @@ class ListView extends Component {
     const { fitToWindow } = this.state;
     const item = items.get(originalIndex);
     const calculatedWidth = Math.min(item.get('width'), this.columnWidth);
-    const calculatedHeight = Math.floor(
-      (item.get('height') / item.get('width')) * calculatedWidth
-    );
+    const calculatedHeight = Math.floor((item.get('height') / item.get('width')) * calculatedWidth);
     if (fitToWindow && window && window.innerHeight) {
       return Math.min(calculatedHeight, window.innerHeight);
     }
@@ -157,56 +128,27 @@ class ListView extends Component {
     const item = items.get(originalIndex);
     return (
       <div className={classes.imageContainer} key={key} style={{ ...style }}>
-        <img
-          className={classes.image}
-          src={item.get('url')}
-          alt={item.get('title')}
-        />
+        <img className={classes.image} src={item.get('url')} alt={item.get('title')} />
       </div>
     );
   }
 
-  renderColumn({
-    width,
-    isScrolling,
-    scrollTop,
-    height,
-    columnNumber,
-    registerChild,
-    onRowsRendered
-  }) {
+  renderColumn({ width, isScrolling, scrollTop, height, columnNumber, registerChild, onRowsRendered }) {
     const { items } = this.props;
-    const {
-      gutterSize,
-      columnCount,
-      mainColumnIndex,
-      scrollToIndex
-    } = this.state;
+    const { gutterSize, columnCount, mainColumnIndex } = this.state;
 
     this.columnWidth = Math.floor(width / columnCount - gutterSize);
-    const columnItems = items.filter(
-      (_, index) => index % columnCount === columnNumber
-    );
+    const columnItems = items.filter((_, index) => index % columnCount === columnNumber);
 
     return (
       <List
         autoHeight
         ref={ref =>
-          this.setColumnListRef(
-            ref,
-            columnNumber,
-            columnNumber === mainColumnIndex ? registerChild : () => {}
-          )
+          this.setColumnListRef(ref, columnNumber, columnNumber === mainColumnIndex ? registerChild : () => {})
         }
-        onRowsRendered={
-          columnNumber === mainColumnIndex
-            ? props =>
-                this.onRowsRendered({ ...props, callback: onRowsRendered })
-            : () => {}
-        }
+        onRowsRendered={onRowsRendered}
         isScrolling={isScrolling}
         scrollTop={scrollTop}
-        scrollToIndex={scrollToIndex}
         height={height}
         width={this.columnWidth}
         rowCount={columnItems.size}
@@ -233,12 +175,7 @@ class ListView extends Component {
     }
 
     return (
-      <InfiniteLoader
-        isRowLoaded={this.isRowLoaded}
-        loadMoreRows={this.loadMoreRows}
-        rowCount={1000}
-        threshold={20}
-      >
+      <InfiniteLoader isRowLoaded={this.isRowLoaded} loadMoreRows={this.loadMoreRows} rowCount={1000} threshold={20}>
         {({ onRowsRendered, registerChild }) => (
           <WindowScroller>
             {({ height, isScrolling, scrollTop }) => (
