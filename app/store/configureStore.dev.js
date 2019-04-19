@@ -1,10 +1,13 @@
+import { fromJS } from 'immutable';
 import { createStore, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
+import createSagaMiddleware, { END } from 'redux-saga';
 import { createHashHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import { createLogger } from 'redux-logger';
 
 import createRootReducer from '../reducers';
+
+const sagaMiddleware = createSagaMiddleware();
 
 const history = createHashHistory();
 
@@ -15,8 +18,8 @@ const configureStore = initialState => {
   const middleware = [];
   const enhancers = [];
 
-  // Thunk Middleware
-  middleware.push(thunk);
+  // Saga Middleware
+  middleware.push(sagaMiddleware);
 
   // Logging Middleware
   const logger = createLogger({
@@ -45,14 +48,24 @@ const configureStore = initialState => {
   const enhancer = composeEnhancers(...enhancers);
 
   // Create Store
-  const store = createStore(rootReducer, initialState, enhancer);
+  const store = createStore(rootReducer, fromJS(initialState), enhancer);
+
+  store.runSaga = sagaMiddleware.run;
+  store.asyncReducers = {};
+  store.close = () => store.dispatch(END);
 
   if (module.hot) {
-    module.hot.accept(
-      '../reducers',
-      // eslint-disable-next-line global-require
-      () => store.replaceReducer(require('../reducers').default)
-    );
+    // Enable webpack hot module replacement for reducers
+    module.hot.accept('../reducers', () => {
+      import('../reducers')
+        /* eslint-disable-next-line promise/always-return */
+        .then(reducerModule => {
+          const createReducers = reducerModule.default;
+          const nextReducers = createReducers(history, store.asyncReducers);
+          store.replaceReducer(nextReducers);
+        })
+        .catch(console.error);
+    });
   }
 
   return store;

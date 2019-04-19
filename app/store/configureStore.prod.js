@@ -1,17 +1,23 @@
+import { fromJS } from 'immutable';
 import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import createSagaMiddleware, { END } from 'redux-saga';
 import { createHashHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 
 import createRootReducer from '../reducers';
 
+const sagaMiddleware = createSagaMiddleware();
 const history = createHashHistory();
 const rootReducer = createRootReducer(history);
 const router = routerMiddleware(history);
-const enhancer = applyMiddleware(thunk, router);
+const enhancer = applyMiddleware(sagaMiddleware, router);
 
 function configureStore(initialState) {
-  return createStore(rootReducer, initialState, enhancer);
+  const store = createStore(rootReducer, fromJS(initialState), enhancer);
+  store.runSaga = sagaMiddleware.run;
+  store.asyncReducers = {};
+  store.close = () => store.dispatch(END);
+  return store;
 }
 
 export default { configureStore, history };

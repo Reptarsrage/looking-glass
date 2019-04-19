@@ -1,8 +1,13 @@
-import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router';
+import { combineReducers } from 'redux-immutable';
+import { connectRouter } from 'connected-react-router/immutable';
 
-export default function createRootReducer(history) {
-  return combineReducers({
-    router: connectRouter(history)
+import galleryReducer from './galleryReducer';
+
+const rootReducer = (history, asyncReducers) =>
+  combineReducers({
+    router: connectRouter(history),
+    gallery: galleryReducer,
+    ...asyncReducers
   });
-}
+
+export default rootReducer;
