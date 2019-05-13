@@ -14,10 +14,10 @@ cache:
     - $HOME/.cache/electron
     - $HOME/.cache/electron-builder
 install:
-  - yarn
   - yarn global add codecov
+  - yarn install
 script:
-  - yarn package-ci
+  - yarn build
   - yarn lint
   - yarn test-cov
   - yarn build-e2e
