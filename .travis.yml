@@ -52,6 +52,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX="g++-8"; fi
 
 install:
+  - yarn global add codecov
   - yarn --ignore-engines
   # On Linux, initialize "virtual display". See before_script
   - |
@@ -81,3 +82,5 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then yarn test; fi
   - yarn build-e2e
   - yarn test-e2e
+after_success:
+  - codecov
