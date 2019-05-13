@@ -6,7 +6,7 @@ import Adapter from 'enzyme-adapter-react-16';
 
 import About from '../../app/containers/About';
 
-describe('About container', () => {
+describe('<About />', () => {
   let mount;
 
   beforeAll(() => {
