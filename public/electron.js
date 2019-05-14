@@ -12,9 +12,29 @@ class AppUpdater {
   }
 }
 
+const installExtensions = async () => {
+  // see https://github.com/MarshallOfSound/electron-devtools-installer
+  const installer = require('electron-devtools-installer');
+  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
+
+  return Promise.all(
+    extensions.map(name => installer.default(installer[name], forceDownload))
+  ).catch(console.log);
+};
+
 let mainWindow;
 
-function createWindow() {
+if (isDev) {
+  // additional options: https://github.com/sindresorhus/electron-debug
+  require('electron-debug')({ devToolsMode: 'right' });
+}
+
+async function createWindow() {
+  if (isDev) {
+    await installExtensions();
+  }
+  
   mainWindow = new BrowserWindow({width: 900, height: 680});
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
@@ -32,9 +52,9 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
+app.on('activate', async () => {
   if (mainWindow === null) {
-    createWindow();
+    await createWindow();
   }
 });
 
