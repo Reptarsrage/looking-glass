@@ -53,7 +53,7 @@ before_install:
 
 install:
   - yarn global add codecov
-  - yarn install --ignore-engines --registry https://registry.npmjs.org
+  - yarn install --ignore-engines --prefer-offline --frozen-lockfile --non-interactive
   # On Linux, initialize "virtual display". See before_script
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
