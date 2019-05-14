@@ -30,6 +30,7 @@ matrix:
 
     - os: windows
       language: node_js
+      filter_secrets: false
       node_js:
         - node
       env:
