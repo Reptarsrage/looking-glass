@@ -1,52 +1,31 @@
-import { put, call, takeLatest, all } from 'redux-saga/effects';
+import { put, call, takeLatest, all, select } from 'redux-saga/effects';
 import axios from 'axios';
-import uuid from 'uuid';
+import { stringify } from 'qs';
 
-import {
-  LOAD_IMAGE_SUCCESS,
-  LOAD_IMAGE_ERROR,
-  FETCH_IMAGES,
-  FETCH_IMAGES_SUCCESS,
-  FETCH_IMAGES_FAILURE
-} from '../actions/types';
-import AsyncImageLoader from '../asyncImageLoader';
-
-const replaceUrlWithRandomSizes = url => {
-  const myRegexp = /(https?:\/\/via\.placeholder\.com)\/(\d+)\/(\w+)/g;
-  const match = myRegexp.exec(url);
-  return `${match[1]}/${Math.floor(Math.random() * 2000) + 200}x${Math.floor(Math.random() * 2000) + 200}/${match[3]}`;
-};
-
-function* handleFetchImage(item) {
-  try {
-    // Load item
-    const loader = new AsyncImageLoader();
-    const { width, height } = yield call(loader.loadImageAsync, item.url);
-
-    // Finish
-    yield put({
-      type: LOAD_IMAGE_SUCCESS,
-      payload: { ...item, width, height }
-    });
-  } catch (error) {
-    yield put({ type: LOAD_IMAGE_ERROR, payload: error });
-  }
-}
+import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_FAILURE } from '../actions/types';
+import { accessTokenSelector } from '../selectors/authSelectors';
+import { offsetSelector } from '../selectors/gallerySelectors';
 
 function* handlefetchImages() {
   try {
+    // TODO: refresh token if necessary
+    const accessToken = yield select(accessTokenSelector());
+    const offset = yield select(offsetSelector());
+    const url = `http://localhost:3000/images?${stringify({ offset })}`;
+    const config = {
+      headers: { 'access-token': accessToken }
+    };
+
     // Get photos
-    let { data } = yield call(axios.get, 'https://jsonplaceholder.typicode.com/photos?_limit=100');
+    const { data } = yield call(axios.get, url, config);
 
-    // Replace ids, randomize dimensions
-    data = data.map(item => ({
-      ...item,
-      id: uuid.v4(),
-      url: replaceUrlWithRandomSizes(item.url)
+    data.images = data.images.map(image => ({
+      width: image.width,
+      height: image.height,
+      title: image.title,
+      id: image.id,
+      url: `http://localhost:3000/proxy?${stringify({ uri: image.imageURL })}`
     }));
-
-    // Load all
-    yield all(data.map(item => call(handleFetchImage, { ...item })));
 
     // Finish
     yield put({ type: FETCH_IMAGES_SUCCESS, payload: data });

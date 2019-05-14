@@ -20,4 +20,22 @@ const successSelector = () =>
     state => state.get('success')
   );
 
-export { successSelector, fetchingSelector, errorSelector };
+const accessTokenSelector = () =>
+  createSelector(
+    authState,
+    state => state.get('accessToken')
+  );
+
+const refreshTokenSelector = () =>
+  createSelector(
+    authState,
+    state => state.get('refreshToken')
+  );
+
+const expiresSelector = () =>
+  createSelector(
+    authState,
+    state => state.get('expires')
+  );
+
+export { successSelector, fetchingSelector, errorSelector, accessTokenSelector, refreshTokenSelector, expiresSelector };

@@ -20,4 +20,16 @@ const errorSelector = () =>
     state => state.get('error')
   );
 
-export { imagesSelector, fetchingSelector, errorSelector };
+const offsetSelector = () =>
+  createSelector(
+    galleryState,
+    state => state.get('offset')
+  );
+
+const hasNextSelector = () =>
+  createSelector(
+    galleryState,
+    state => state.get('hasNext')
+  );
+
+export { imagesSelector, fetchingSelector, errorSelector, offsetSelector, hasNextSelector };
