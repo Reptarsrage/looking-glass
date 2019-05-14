@@ -1,6 +1,4 @@
 matrix:
-  allow_failures:
-    - os: windows
   include:
     - os: osx
       language: node_js
@@ -28,15 +26,6 @@ matrix:
             - xorriso
             - rpm
 
-    - os: windows
-      language: node_js
-      filter_secrets: false
-      node_js:
-        - node
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
 
@@ -53,7 +42,7 @@ before_install:
 
 install:
   - yarn global add codecov
-  - yarn install --ignore-engines --prefer-offline --frozen-lockfile --non-interactive --network-timeout 100000
+  - yarn
   # On Linux, initialize "virtual display". See before_script
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
@@ -82,4 +71,4 @@ script:
   - yarn build-e2e
   - yarn test-e2e
 after_success:
-  - codecov
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then codecov; fi
