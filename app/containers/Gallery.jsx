@@ -9,11 +9,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-import {
-  imagesSelector,
-  fetchingSelector,
-  errorSelector
-} from '../selectors/gallerySelectors';
+import { imagesSelector, fetchingSelector, errorSelector } from '../selectors/gallerySelectors';
 import * as galleryActions from '../actions/galleryActions';
 import WithErrors from '../hocs/WithErrors';
 import Masonry from '../components/Masonry';
@@ -53,30 +49,24 @@ class Gallery extends Component {
         <Typography variant="h1">Images</Typography>
 
         <div className={classes.floated}>
-          <Button
-            variant="contained"
-            color="primary"
-            component={Link}
-            to="/about"
-          >
+          <Button variant="contained" color="primary" component={Link} to="/about">
             About
           </Button>
         </div>
 
-        <Masonry
-          items={images}
-          loading={fetching}
-          error={error !== null}
-          loadMore={fetchImages}
-        />
+        <Masonry items={images} loading={fetching} error={error !== null} loadMore={fetchImages} />
       </React.Fragment>
     );
   }
 }
 
+Gallery.defaultProps = {
+  error: null
+};
+
 Gallery.propTypes = {
   classes: PropTypes.shape({}).isRequired,
-  error: PropTypes.shape({}).isRequired
+  error: PropTypes.shape({})
 };
 
 const mapStateToProps = createStructuredSelector({
