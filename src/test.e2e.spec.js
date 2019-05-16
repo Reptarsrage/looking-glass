@@ -9,7 +9,7 @@ describe('Application', () => {
     if (os.type() === 'Linux') {
       path = './dist/linux-unpacked/electron-react-test';
     } else if (os.type() === 'Darwin') {
-      path = './dist/mac/electron-react-test.app';
+      path = './dist/mac/electron-react-test.app/Contents/MacOS/electron-react-test';
     } else if (os.type() === 'Windows_NT') {
       path = './dist/win-unpacked/electron-react-test.exe';
     } else {
