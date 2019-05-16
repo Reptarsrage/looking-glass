@@ -1,12 +1,12 @@
 const { app, BrowserWindow } = require('electron');
-const path = require('path');;
+const path = require('path');
 const isDev = require('electron-is-dev');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
 class AppUpdater {
   constructor() {
-    log.transports.file.level = "debug";
+    log.transports.file.level = 'debug';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
   }
@@ -18,9 +18,7 @@ const installExtensions = async () => {
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
   const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
 
-  return Promise.all(
-    extensions.map(name => installer.default(installer[name], forceDownload))
-  ).catch(console.log);
+  return Promise.all(extensions.map(name => installer.default(installer[name], forceDownload))).catch(console.log);
 };
 
 let mainWindow;
@@ -34,10 +32,17 @@ async function createWindow() {
   if (isDev) {
     await installExtensions();
   }
-  
-  mainWindow = new BrowserWindow({width: 900, height: 680});
+
+  mainWindow = new BrowserWindow({
+    width: 1600,
+    height: 900,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    show: false,
+  });
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
-  mainWindow.on('closed', () => mainWindow = null);
+  mainWindow.on('closed', () => (mainWindow = null));
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
     new AppUpdater();
