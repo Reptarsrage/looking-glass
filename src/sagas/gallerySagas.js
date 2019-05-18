@@ -1,7 +1,6 @@
 import { put, call, takeLatest, all, select } from 'redux-saga/effects';
-import axios from 'axios';
-import { stringify } from 'qs';
 
+import LookingGlassService from '../services/lookingGlassService';
 import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_FAILURE } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { offsetSelector } from '../selectors/gallerySelectors';
@@ -11,20 +10,18 @@ function* handlefetchImages() {
     // TODO: refresh token if necessary
     const accessToken = yield select(accessTokenSelector());
     const offset = yield select(offsetSelector());
-    const url = `http://localhost:3000/images?${stringify({ offset })}`;
-    const config = {
-      headers: { 'access-token': accessToken },
-    };
 
     // Get photos
-    const { data } = yield call(axios.get, url, config);
+    const lookingGlassService = new LookingGlassService();
+    const { data } = yield call(lookingGlassService.fetchImages, offset, accessToken);
 
+    // Parse results
     data.images = data.images.map(image => ({
       width: image.width,
       height: image.height,
       title: image.title,
       id: image.id,
-      url: `http://localhost:3000/proxy?${stringify({ uri: image.imageURL })}`,
+      url: image.imageURL,
     }));
 
     // Finish

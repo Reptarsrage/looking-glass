@@ -1,6 +1,5 @@
 import { put, call, takeLatest, all } from 'redux-saga/effects';
-import { stringify } from 'qs';
-import axios from 'axios';
+import LookingGlassService from '../services/lookingGlassService';
 
 import { LOGIN_SUCCESS, LOGIN_ERROR, LOGIN } from '../actions/types';
 
@@ -8,7 +7,8 @@ function* handleLogin(action) {
   try {
     // Get images
     const { payload } = action;
-    const { data } = yield call(axios.get, `http://localhost:3000/login?${stringify(payload)}`);
+    const lookingGlassService = new LookingGlassService();
+    const { data } = yield call(lookingGlassService.login, payload);
 
     // Finish
     yield put({ type: LOGIN_SUCCESS, payload: data });
