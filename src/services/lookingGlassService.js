@@ -2,8 +2,6 @@ import axios from 'axios';
 import { stringify } from 'qs';
 
 export default class LookingGlassService {
-  instance;
-
   constructor() {
     const port = process.env.SERVICE_PORT || 3001;
     const host = process.env.SERVICE_HOST || 'localhost';
@@ -14,16 +12,21 @@ export default class LookingGlassService {
     });
   }
 
-  async login(params) {
-    return await this.instance.get(`/login?${stringify(params)}`);
-  }
+  fetchModules = async () => {
+    console.log(this);
+    return await this.instance.get('http://localhost:3001/');
+  };
 
-  async fetchImages(offset, accessToken) {
+  login = async params => {
+    return await this.instance.get(`/login?${stringify(params)}`);
+  };
+
+  fetchImages = async (offset, accessToken) => {
     const url = `/images?${stringify({ offset })}`;
     const config = {
       headers: { 'access-token': accessToken },
     };
 
     return await this.instance.get(url, config);
-  }
+  };
 }

@@ -11,7 +11,7 @@ const initialState = fromJS({
   error: null,
 });
 
-export default function exampleReducer(state = initialState, action) {
+export default function galleryReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_IMAGES:
       return state.merge({ fetching: true, success: false, error: null });

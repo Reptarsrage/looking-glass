@@ -9,7 +9,12 @@ import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import axios from 'axios';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
+
+import * as moduleActions from '../actions/moduleActions';
+import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 
 const styles = theme => ({
   main: {
@@ -32,29 +37,15 @@ const styles = theme => ({
 });
 
 class Home extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      fetching: false,
-      error: null,
-      modules: [],
-    };
-  }
-
-  componentWillMount() {
-    this.setState({ fetching: true });
-    axios
-      .get('http://localhost:3001/')
-      .then(({ data }) => {
-        this.setState({ modules: data, fetching: false });
-      })
-      .catch(error => this.setState({ error }));
+  componentDidMount() {
+    const { fetching, success, fetchModules } = this.props;
+    if (!fetching && !success) {
+      fetchModules();
+    }
   }
 
   render() {
-    const { classes } = this.props;
-    const { fetching, error, modules } = this.state;
+    const { classes, fetching, error, modules } = this.props;
 
     return (
       <main className={classes.main}>
@@ -63,11 +54,11 @@ class Home extends React.Component {
           {error && <Typography color="error">An Error occurred</Typography>}
           <List>
             {modules.map(m => (
-              <ListItem key={m.id} button>
+              <ListItem key={m.get('id')} button>
                 <ListItemAvatar>
-                  <Avatar alt={m.title} src={m.icon} />
+                  <Avatar alt={m.get('title')} src={m.get('icon')} />
                 </ListItemAvatar>
-                <ListItemText primary={m.title} secondary={m.description} />
+                <ListItemText primary={m.get('title')} secondary={m.get('description')} />
               </ListItem>
             ))}
           </List>
@@ -77,8 +68,31 @@ class Home extends React.Component {
   }
 }
 
-Home.propTypes = {
-  classes: PropTypes.object.isRequired,
+Home.defaultProps = {
+  error: null,
 };
 
-export default withStyles(styles)(Home);
+Home.propTypes = {
+  classes: PropTypes.object.isRequired,
+  fetchModules: PropTypes.func.isRequired,
+  modules: PropTypes.instanceOf(Immutable.List).isRequired,
+  success: PropTypes.bool.isRequired,
+  fetching: PropTypes.bool.isRequired,
+  error: PropTypes.object,
+};
+
+const mapStateToProps = createStructuredSelector({
+  modules: modulesSelector(),
+  success: successSelector(),
+  fetching: fetchingSelector(),
+  error: errorSelector(),
+});
+
+const mapDispatchToProps = {
+  fetchModules: moduleActions.fetchModules,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(Home));

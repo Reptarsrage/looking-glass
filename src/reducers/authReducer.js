@@ -11,7 +11,7 @@ const initialState = fromJS({
   error: null,
 });
 
-export default function exampleReducer(state = initialState, action) {
+export default function authReducer(state = initialState, action) {
   switch (action.type) {
     case LOGIN_SUCCESS: {
       const { accessToken, refreshToken, expires } = action.payload;
