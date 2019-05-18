@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
@@ -24,7 +23,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
 import * as authActions from '../actions/authActions';
-import WithErrors from '../hocs/WithErrors';
 
 const styles = theme => ({
   main: {
@@ -218,10 +216,7 @@ const mapDispatchToProps = {
   login: authActions.login,
 };
 
-export default compose(
-  WithErrors,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
 )(withStyles(styles)(Login));

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -11,7 +10,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { imagesSelector, fetchingSelector, errorSelector } from '../selectors/gallerySelectors';
 import * as galleryActions from '../actions/galleryActions';
-import WithErrors from '../hocs/WithErrors';
 import Masonry from '../components/Masonry';
 
 const styles = () => ({
@@ -79,10 +77,7 @@ const mapDispatchToProps = {
   fetchImages: galleryActions.fetchImages,
 };
 
-export default compose(
-  WithErrors,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
 )(withStyles(styles)(Gallery));
