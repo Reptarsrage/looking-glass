@@ -18,7 +18,7 @@ function* handlefetchImages(action) {
 
   try {
     // TODO: refresh token if necessary
-    const accessToken = yield select(accessTokenSelector(moduleId));
+    let accessToken = yield select(accessTokenSelector(moduleId));
     const refreshToken = yield select(refreshTokenSelector(moduleId));
     const offset = yield select(offsetSelector(moduleId));
     const before = yield select(beforeSelector(moduleId));
@@ -34,9 +34,11 @@ function* handlefetchImages(action) {
       if (currentDate.isSameOrAfter(expireDate)) {
         try {
           const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
+          ({ accessToken } = data);
           yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
         } catch (error) {
           yield put({ type: REFRESH_ERROR, payload: { ...error }, meta: { moduleId } });
+          return;
         }
       }
     }
