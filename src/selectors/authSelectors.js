@@ -26,10 +26,30 @@ const accessTokenSelector = moduleId =>
     state => state.getIn([moduleId, 'accessToken'])
   );
 
+const refreshTokenSelector = moduleId =>
+  createSelector(
+    authState,
+    state => state.getIn([moduleId, 'refreshToken'])
+  );
+
 const oauthURLSelector = moduleId =>
   createSelector(
     authState,
     state => state.getIn([moduleId, 'oauthURL'])
   );
 
-export { successSelector, fetchingSelector, errorSelector, accessTokenSelector, oauthURLSelector };
+const expiresSelector = moduleId =>
+  createSelector(
+    authState,
+    state => state.getIn([moduleId, 'expires'])
+  );
+
+export {
+  successSelector,
+  fetchingSelector,
+  errorSelector,
+  accessTokenSelector,
+  oauthURLSelector,
+  expiresSelector,
+  refreshTokenSelector,
+};

@@ -2,6 +2,9 @@ export const FETCH_IMAGES = 'FETCH_IMAGES';
 export const FETCH_IMAGES_SUCCESS = 'FETCH_IMAGES_SUCCESS';
 export const FETCH_IMAGES_ERROR = 'FETCH_IMAGES_ERROR';
 
+export const REFRESH_SUCCESS = 'REFRESH_SUCCESS';
+export const REFRESH_ERROR = 'REFRESH_ERROR';
+
 export const LOGIN = 'LOGIN';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_ERROR = 'LOGIN_ERROR';

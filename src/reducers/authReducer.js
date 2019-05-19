@@ -1,4 +1,6 @@
 import { fromJS, Map } from 'immutable';
+import moment from 'moment';
+import Store from 'electron-store';
 
 import {
   FETCH_MODULES_SUCCESS,
@@ -11,17 +13,21 @@ import {
   AUTHORIZE,
   AUTHORIZE_SUCCESS,
   AUTHORIZE_ERROR,
+  REFRESH_SUCCESS,
+  REFRESH_ERROR,
 } from '../actions/types';
 
-export const initialState = fromJS({
+const store = new Store();
+
+const initialModuleState = {
   accessToken: '',
   oauthURL: '',
   refreshToken: '',
-  expiresIn: 0,
+  expires: 0,
   fetching: false,
   success: false,
   error: null,
-});
+};
 
 export default function authReducer(state = new Map(), action) {
   const { type, payload, meta } = action || {};
@@ -31,7 +37,7 @@ export default function authReducer(state = new Map(), action) {
     case FETCH_MODULES_SUCCESS: {
       let nState = state;
       for (const module of payload) {
-        nState = nState.set(module.id, initialState);
+        nState = nState.set(module.id, fromJS(store.get(module.id, initialModuleState)));
       }
       return nState;
     }
@@ -44,11 +50,19 @@ export default function authReducer(state = new Map(), action) {
     case FETCH_OATH_URL_ERROR: {
       return state.mergeIn([moduleId], { error: payload, fetching: false });
     }
+    case REFRESH_SUCCESS:
     case AUTHORIZE_SUCCESS:
     case LOGIN_SUCCESS: {
       const { accessToken, refreshToken, expiresIn } = payload;
-      return state.mergeIn([moduleId], { accessToken, refreshToken, expiresIn, fetching: false, success: true });
+      var date = moment();
+      date.add(expiresIn, 'seconds');
+
+      const mergeState = { ...payload, expires: date.valueOf(), fetching: false, success: true, error: null };
+
+      store.set(moduleId, mergeState);
+      return state.mergeIn([moduleId], mergeState);
     }
+    case REFRESH_ERROR:
     case AUTHORIZE_ERROR:
     case LOGIN_ERROR: {
       return state.mergeIn([moduleId], {
