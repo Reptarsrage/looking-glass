@@ -24,8 +24,8 @@ export default class LookingGlassService {
     return await this.instance.get(`/${moduleId}/login?${stringify(params)}`);
   };
 
-  refresh = async (moduleId, params) => {
-    return await this.instance.get(`/${moduleId}/refresh?${stringify(params)}`);
+  refresh = async (moduleId, refreshToken) => {
+    return await this.instance.get(`/${moduleId}/refresh?${stringify({ refreshToken })}`);
   };
 
   authorize = async (moduleId, code) => {

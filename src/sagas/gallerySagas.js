@@ -31,7 +31,7 @@ function* handlefetchImages(action) {
       const expireDate = moment(expires);
       const currentDate = moment();
 
-      if (currentDate.isSameOrAfter(expireDate) || currentDate.diff(expireDate, 'seconds') < 60) {
+      if (currentDate.isSameOrAfter(expireDate)) {
         try {
           const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
           yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
@@ -42,7 +42,7 @@ function* handlefetchImages(action) {
     }
 
     // Get photos
-
+    console.log(moduleId, accessToken, offset, before, after);
     const { data } = yield call(lookingGlassService.fetchImages, moduleId, accessToken, offset, before, after);
 
     // Finish

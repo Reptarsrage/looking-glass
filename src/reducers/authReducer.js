@@ -53,7 +53,7 @@ export default function authReducer(state = new Map(), action) {
     case REFRESH_SUCCESS:
     case AUTHORIZE_SUCCESS:
     case LOGIN_SUCCESS: {
-      const { accessToken, refreshToken, expiresIn } = payload;
+      const { expiresIn } = payload;
       var date = moment();
       date.add(expiresIn, 'seconds');
 
