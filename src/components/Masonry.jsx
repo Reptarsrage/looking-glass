@@ -4,10 +4,9 @@ import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
-import unescape from 'unescape';
+import { extname } from 'path';
 
 import NoResults from './NoResults';
-import AnErrorOccurred from './AnErrorOccurred';
 import LoadingIndicator from './LoadingIndicator';
 import WindowScroller from './WindowScroller';
 
@@ -130,8 +129,10 @@ class ListView extends Component {
     const item = items.get(originalIndex);
     return (
       <div className={classes.imageContainer} key={key} style={{ ...style }}>
-        {item.has('embed') ? (
-          <div className={classes.image} dangerouslySetInnerHTML={{ __html: unescape(item.get('embed')) }} />
+        {item.get('isVideo') ? (
+          <video className={classes.image} width={item.get('width')} height={item.get('height')} muted autoPlay>
+            <source src={item.get('videoURL')} type={`video/${extname(item.get('videoURL')).slice(1)}`} />
+          </video>
         ) : (
           <img className={classes.image} src={item.get('imageURL')} alt={item.get('title')} />
         )}
@@ -153,6 +154,7 @@ class ListView extends Component {
           this.setColumnListRef(ref, columnNumber, columnNumber === mainColumnIndex ? registerChild : () => {})
         }
         onRowsRendered={onRowsRendered}
+        overscanRowCount={1}
         isScrolling={isScrolling}
         scrollTop={scrollTop}
         height={height}
@@ -165,12 +167,13 @@ class ListView extends Component {
   }
 
   render() {
-    const { items, error, loading, classes } = this.props;
+    const { items, loading, classes } = this.props;
     const { columnCount } = this.state;
 
-    if (error) {
-      return <AnErrorOccurred />;
-    }
+    // TODO: allow transient errors
+    //if (error) {
+    //  return <AnErrorOccurred />;
+    //}
 
     if (items.size === 0 && !loading) {
       return <NoResults />;
