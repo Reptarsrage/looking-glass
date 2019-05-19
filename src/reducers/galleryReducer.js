@@ -5,6 +5,8 @@ import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_ERROR, FETCH_MODULES_S
 export const initialState = fromJS({
   images: new List([]),
   offset: 0,
+  before: null,
+  after: null,
   hasNext: true,
   fetching: false,
   success: false,
@@ -26,12 +28,14 @@ export default function galleryReducer(state = new Map(), action) {
     case FETCH_IMAGES:
       return state.mergeIn([moduleId], { fetching: true, success: false, error: null });
     case FETCH_IMAGES_SUCCESS: {
-      const { offset, images, hasNext, count } = payload;
+      const { offset, images, hasNext, count, after, before } = payload;
 
       const newState = state.updateIn([moduleId, 'images'], prevImages => prevImages.concat(fromJS(images)));
       return newState.mergeIn([moduleId], {
         offset: offset + count,
         hasNext,
+        after,
+        before,
         fetching: false,
         success: true,
         error: null,

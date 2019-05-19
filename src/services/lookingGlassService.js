@@ -28,8 +28,8 @@ export default class LookingGlassService {
     return await this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`);
   };
 
-  fetchImages = async (moduleId, offset, accessToken) => {
-    const url = `/${moduleId}?${stringify({ offset })}`;
+  fetchImages = async (moduleId, accessToken, offset, before, after) => {
+    const url = `/${moduleId}?${stringify({ offset, before, after })}`;
     const config = {
       headers: { 'access-token': accessToken },
     };

@@ -33,6 +33,7 @@
     "redux-logger": "^3.0.6",
     "redux-saga": "^1.0.2",
     "reselect": "^4.0.0",
+    "unescape": "^1.0.1",
     "uuid": "^3.3.2",
     "with-immutable-props-to-js": "^1.2.0"
   },

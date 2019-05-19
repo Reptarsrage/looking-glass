@@ -4,6 +4,7 @@ import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
+import unescape from 'unescape';
 
 import NoResults from './NoResults';
 import AnErrorOccurred from './AnErrorOccurred';
@@ -34,6 +35,7 @@ const styles = theme => ({
     height: 'auto',
     maxWidth: '100%',
     maxHeight: '100%',
+    overflow: 'hidden',
   },
 });
 
@@ -128,7 +130,11 @@ class ListView extends Component {
     const item = items.get(originalIndex);
     return (
       <div className={classes.imageContainer} key={key} style={{ ...style }}>
-        <img className={classes.image} src={item.get('url')} alt={item.get('title')} />
+        {item.has('embed') ? (
+          <div className={classes.image} dangerouslySetInnerHTML={{ __html: unescape(item.get('embed')) }} />
+        ) : (
+          <img className={classes.image} src={item.get('imageURL')} alt={item.get('title')} />
+        )}
       </div>
     );
   }

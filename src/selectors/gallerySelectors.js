@@ -26,10 +26,30 @@ const offsetSelector = moduleId =>
     state => state.getIn([moduleId, 'offset'])
   );
 
+const beforeSelector = moduleId =>
+  createSelector(
+    galleryState,
+    state => state.getIn([moduleId, 'before'])
+  );
+
+const afterSelector = moduleId =>
+  createSelector(
+    galleryState,
+    state => state.getIn([moduleId, 'after'])
+  );
+
 const hasNextSelector = moduleId =>
   createSelector(
     galleryState,
     state => state.getIn([moduleId, 'hasNext'])
   );
 
-export { imagesSelector, fetchingSelector, errorSelector, offsetSelector, hasNextSelector };
+export {
+  imagesSelector,
+  fetchingSelector,
+  errorSelector,
+  offsetSelector,
+  hasNextSelector,
+  beforeSelector,
+  afterSelector,
+};
