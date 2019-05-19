@@ -47,7 +47,7 @@ class WindowScroller extends React.PureComponent {
 
   componentWillMount() {
     const { location, scrollElement } = this.props;
-    const value = sessionStorage.getItem(location.key);
+    const value = sessionStorage.getItem(location.pathname);
     if (value != null) {
       const { _positionFromTop, _positionFromLeft, ...obj } = JSON.parse(value);
       this.setState({ ...obj });
@@ -95,7 +95,7 @@ class WindowScroller extends React.PureComponent {
       _positionFromTop: this._positionFromTop,
       _positionFromLeft: this._positionFromLeft,
     });
-    sessionStorage.setItem(location.key, value);
+    sessionStorage.setItem(location.pathname, value);
 
     if (scrollElement) {
       unregisterScrollListener(this, scrollElement);
