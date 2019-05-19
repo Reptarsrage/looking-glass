@@ -13,9 +13,9 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { parse } from 'url';
 import { remote } from 'electron';
 import qs from 'qs';
-import uuid from 'uuid';
 
 import * as authActions from '../actions/authActions';
+import { successSelector, fetchingSelector, errorSelector, oauthURLSelector } from '../selectors/authSelectors';
 
 const styles = theme => ({
   main: {
@@ -57,26 +57,19 @@ const styles = theme => ({
 });
 
 class OAuth extends React.Component {
-  static showOauthModal() {
+  static showOauthModal(authUrl) {
     return new Promise((resolve, reject) => {
       // TODO: load these values from service
-      const expectedState = uuid.v4();
-      const urlParams = {
-        client_id: 'W04e7edrJhsUTA',
-        redirect_uri: 'http://localhost',
-        response_type: 'code',
-        state: expectedState,
-        duration: 'permanent',
-        scope: 'identity read mysubreddits',
-      };
-
-      const authUrl = `https://www.reddit.com/api/v1/authorize.compact?${qs.stringify(urlParams)}`;
+      const { state: expectedState } = qs.parse(authUrl);
       const authWindow = new remote.BrowserWindow({
         parent: remote.getCurrentWindow(),
         modal: true,
         show: false,
         alwaysOnTop: true,
         autoHideMenuBar: true,
+        webPreferences: {
+          devTools: false,
+        },
       });
 
       const handleRedirect = url => {
@@ -95,8 +88,8 @@ class OAuth extends React.Component {
       };
 
       authWindow.on('closed', () => reject(new Error('Auth window was closed by user')));
-      authWindow.webContents.on('will-redirect', (event, newUrl) => handleRedirect(newUrl));
-      authWindow.webContents.on('will-navigate', (event, newUrl) => handleRedirect(newUrl));
+      authWindow.webContents.on('will-redirect', (_, newUrl) => handleRedirect(newUrl));
+      authWindow.webContents.on('will-navigate', (_, newUrl) => handleRedirect(newUrl));
 
       authWindow.loadURL(authUrl);
       authWindow.show();
@@ -106,35 +99,38 @@ class OAuth extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      fetching: false,
-      error: null,
-      success: false,
-    };
-
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentWillMount() {
+    const { fetching, success, match, fetchOAuthURL } = this.props;
+    const { moduleId } = match.params;
+    if (!fetching && !success) {
+      fetchOAuthURL(moduleId);
+    }
+  }
+
   async handleSubmit() {
+    const { authorize, match, oauthURL } = this.props;
+    const { moduleId } = match.params;
+
     this.setState({ fetching: true });
 
     try {
-      // TODO: do something with token
-      console.log('open');
-      await this.constructor.showOauthModal();
+      const accessToken = await this.constructor.showOauthModal(oauthURL);
+      authorize(moduleId, accessToken);
       this.setState({ fetching: false, success: true });
     } catch (error) {
-      console.error(error);
       this.setState({ error, fetching: false });
     }
   }
 
   render() {
-    const { classes } = this.props;
-    const { fetching, error, success } = this.state;
+    const { classes, match, fetching, error, success } = this.props;
+    const { moduleId } = match.params;
 
     if (success) {
-      return <Redirect to="/gallery" />;
+      return <Redirect to={`/gallery/${moduleId}`} />;
     }
 
     return (
@@ -168,19 +164,32 @@ class OAuth extends React.Component {
 }
 
 OAuth.defaultProps = {
-  classes: {},
+  error: null,
+  oauthURL: null,
 };
 
 OAuth.propTypes = {
-  classes: PropTypes.shape({}),
+  match: PropTypes.shape({ params: PropTypes.shape({ moduleId: PropTypes.string.isRequired }).isRequired }).isRequired,
+  classes: PropTypes.object.isRequired,
+  success: PropTypes.bool.isRequired,
+  fetching: PropTypes.bool.isRequired,
+  error: PropTypes.object,
+  oauthURL: PropTypes.string,
 };
 
-const mapStateToProps = createStructuredSelector({
-  // TODO
-});
+const mapStateToProps = (_, ownProps) => {
+  const { moduleId } = ownProps.match.params;
+  return createStructuredSelector({
+    oauthURL: oauthURLSelector(moduleId),
+    success: successSelector(moduleId),
+    fetching: fetchingSelector(moduleId),
+    error: errorSelector(moduleId),
+  });
+};
 
 const mapDispatchToProps = {
-  login: authActions.login,
+  authorize: authActions.authorize,
+  fetchOAuthURL: authActions.fetchOAuthURL,
 };
 
 export default connect(

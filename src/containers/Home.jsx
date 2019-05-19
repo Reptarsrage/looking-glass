@@ -12,6 +12,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
+import { Link } from 'react-router-dom';
 
 import * as moduleActions from '../actions/moduleActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
@@ -37,7 +38,7 @@ const styles = theme => ({
 });
 
 class Home extends React.Component {
-  componentDidMount() {
+  componentWillMount() {
     const { fetching, success, fetchModules } = this.props;
     if (!fetching && !success) {
       fetchModules();
@@ -54,7 +55,12 @@ class Home extends React.Component {
           {error && <Typography color="error">An Error occurred</Typography>}
           <List>
             {modules.map(m => (
-              <ListItem key={m.get('id')} button>
+              <ListItem
+                key={m.get('id')}
+                button
+                component={Link}
+                to={`/${m.get('authType') || 'gallery'}/${m.get('id')}`}
+              >
                 <ListItemAvatar>
                   <Avatar alt={m.get('title')} src={m.get('icon')} />
                 </ListItemAvatar>

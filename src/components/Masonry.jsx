@@ -69,9 +69,9 @@ class ListView extends Component {
   };
 
   loadMoreRows() {
-    const { loadMore, loading } = this.props;
+    const { loadMore, loading, moduleId } = this.props;
     if (!loading) {
-      loadMore();
+      loadMore(moduleId);
     }
     return new Promise(resolve => resolve());
   }
@@ -211,6 +211,7 @@ ListView.propTypes = {
   location: PropTypes.shape({}).isRequired,
   items: PropTypes.instanceOf(Immutable.List).isRequired,
   loading: PropTypes.bool.isRequired,
+  moduleId: PropTypes.string.isRequired,
   error: PropTypes.bool.isRequired,
   loadMore: PropTypes.func.isRequired,
 };

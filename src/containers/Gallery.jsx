@@ -33,26 +33,27 @@ class Gallery extends Component {
   };
 
   componentDidMount() {
-    const { fetchImages, images, fetching } = this.props;
+    const { fetchImages, images, fetching, match } = this.props;
+    const { moduleId } = match.params;
     if (images.size === 0 && !fetching) {
-      fetchImages();
+      fetchImages(moduleId);
     }
   }
 
   render() {
-    const { images, fetching, fetchImages, error, classes } = this.props;
-
+    const { images, fetching, fetchImages, error, classes, match } = this.props;
+    const { moduleId } = match.params;
     return (
       <React.Fragment>
         <Typography variant="h1">Images</Typography>
 
         <div className={classes.floated}>
-          <Button variant="contained" color="primary" component={Link} to="/about">
-            About
+          <Button variant="contained" color="primary" component={Link} to="/">
+            Home
           </Button>
         </div>
 
-        <Masonry items={images} loading={fetching} error={error !== null} loadMore={fetchImages} />
+        <Masonry moduleId={moduleId} items={images} loading={fetching} error={error !== null} loadMore={fetchImages} />
       </React.Fragment>
     );
   }
@@ -63,15 +64,19 @@ Gallery.defaultProps = {
 };
 
 Gallery.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
-  error: PropTypes.shape({}),
+  classes: PropTypes.object.isRequired,
+  match: PropTypes.shape({ params: PropTypes.shape({ moduleId: PropTypes.string.isRequired }).isRequired }).isRequired,
+  error: PropTypes.object,
 };
 
-const mapStateToProps = createStructuredSelector({
-  images: imagesSelector(),
-  fetching: fetchingSelector(),
-  error: errorSelector(),
-});
+const mapStateToProps = (_, ownProps) => {
+  const { moduleId } = ownProps.match.params;
+  return createStructuredSelector({
+    images: imagesSelector(moduleId),
+    fetching: fetchingSelector(moduleId),
+    error: errorSelector(moduleId),
+  });
+};
 
 const mapDispatchToProps = {
   fetchImages: galleryActions.fetchImages,

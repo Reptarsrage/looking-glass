@@ -95,7 +95,6 @@ class WindowScroller extends React.PureComponent {
       _positionFromTop: this._positionFromTop,
       _positionFromLeft: this._positionFromLeft,
     });
-    console.log('saved', this._positionFromTop, this.state.scrollTop);
     sessionStorage.setItem(location.key, value);
 
     if (scrollElement) {

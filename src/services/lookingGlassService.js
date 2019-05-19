@@ -13,16 +13,23 @@ export default class LookingGlassService {
   }
 
   fetchModules = async () => {
-    console.log(this);
     return await this.instance.get('http://localhost:3001/');
   };
 
-  login = async params => {
-    return await this.instance.get(`/login?${stringify(params)}`);
+  getOauthURL = async moduleId => {
+    return await this.instance.get(`/${moduleId}/oauth`);
   };
 
-  fetchImages = async (offset, accessToken) => {
-    const url = `/images?${stringify({ offset })}`;
+  login = async (moduleId, params) => {
+    return await this.instance.get(`/${moduleId}/login?${stringify(params)}`);
+  };
+
+  authorize = async (moduleId, code) => {
+    return await this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`);
+  };
+
+  fetchImages = async (moduleId, offset, accessToken) => {
+    const url = `/${moduleId}?${stringify({ offset })}`;
     const config = {
       headers: { 'access-token': accessToken },
     };

@@ -2,40 +2,34 @@ import { createSelector } from 'reselect';
 
 const authState = state => state.get('auth');
 
-const fetchingSelector = () =>
+const fetchingSelector = moduleId =>
   createSelector(
     authState,
-    state => state.get('fetching')
+    state => state.getIn([moduleId, 'fetching'])
   );
 
-const errorSelector = () =>
+const errorSelector = moduleId =>
   createSelector(
     authState,
-    state => state.get('error')
+    state => state.getIn([moduleId, 'error'])
   );
 
-const successSelector = () =>
+const successSelector = moduleId =>
   createSelector(
     authState,
-    state => state.get('success')
+    state => state.getIn([moduleId, 'success'])
   );
 
-const accessTokenSelector = () =>
+const accessTokenSelector = moduleId =>
   createSelector(
     authState,
-    state => state.get('accessToken')
+    state => state.getIn([moduleId, 'accessToken'])
   );
 
-const refreshTokenSelector = () =>
+const oauthURLSelector = moduleId =>
   createSelector(
     authState,
-    state => state.get('refreshToken')
+    state => state.getIn([moduleId, 'oauthURL'])
   );
 
-const expiresSelector = () =>
-  createSelector(
-    authState,
-    state => state.get('expires')
-  );
-
-export { successSelector, fetchingSelector, errorSelector, accessTokenSelector, refreshTokenSelector, expiresSelector };
+export { successSelector, fetchingSelector, errorSelector, accessTokenSelector, oauthURLSelector };

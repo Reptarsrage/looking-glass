@@ -1,19 +1,22 @@
 import { put, call, takeLatest, all, select } from 'redux-saga/effects';
 
 import LookingGlassService from '../services/lookingGlassService';
-import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_FAILURE } from '../actions/types';
+import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_ERROR } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { offsetSelector } from '../selectors/gallerySelectors';
 
-function* handlefetchImages() {
+function* handlefetchImages(action) {
+  const { meta } = action;
+  const { moduleId } = meta;
+
   try {
     // TODO: refresh token if necessary
-    const accessToken = yield select(accessTokenSelector());
-    const offset = yield select(offsetSelector());
+    const accessToken = yield select(accessTokenSelector(moduleId));
+    const offset = yield select(offsetSelector(moduleId));
 
     // Get photos
     const lookingGlassService = new LookingGlassService();
-    const { data } = yield call(lookingGlassService.fetchImages, offset, accessToken);
+    const { data } = yield call(lookingGlassService.fetchImages, moduleId, offset, accessToken);
 
     // Parse results
     data.images = data.images.map(image => ({
@@ -25,9 +28,10 @@ function* handlefetchImages() {
     }));
 
     // Finish
-    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data });
+    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
-    yield put({ type: FETCH_IMAGES_FAILURE, payload: { ...e } });
+    console.error(e);
+    yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId } });
   }
 }
 

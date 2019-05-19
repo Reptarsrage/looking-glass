@@ -1,34 +1,65 @@
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 
-import { LOGIN_SUCCESS, LOGIN_ERROR, LOGIN } from '../actions/types';
+import {
+  FETCH_MODULES_SUCCESS,
+  LOGIN_SUCCESS,
+  LOGIN_ERROR,
+  LOGIN,
+  FETCH_OATH_URL,
+  FETCH_OATH_URL_ERROR,
+  FETCH_OATH_URL_SUCCESS,
+  AUTHORIZE,
+  AUTHORIZE_SUCCESS,
+  AUTHORIZE_ERROR,
+} from '../actions/types';
 
-const initialState = fromJS({
+export const initialState = fromJS({
   accessToken: '',
+  oauthURL: '',
   refreshToken: '',
-  expires: 0,
+  expiresIn: 0,
   fetching: false,
   success: false,
   error: null,
 });
 
-export default function authReducer(state = initialState, action) {
-  switch (action.type) {
-    case LOGIN_SUCCESS: {
-      const { accessToken, refreshToken, expires } = action.payload;
-      return state.merge({ accessToken, refreshToken, expires, fetching: false, success: true });
+export default function authReducer(state = new Map(), action) {
+  const { type, payload, meta } = action || {};
+  const { moduleId } = meta || {};
+
+  switch (type) {
+    case FETCH_MODULES_SUCCESS: {
+      let nState = state;
+      for (const module of payload) {
+        nState = nState.set(module.id, initialState);
+      }
+      return nState;
     }
-    case LOGIN_ERROR:
-      return state.merge({
+    case FETCH_OATH_URL: {
+      return state.mergeIn([moduleId], { fetching: true });
+    }
+    case FETCH_OATH_URL_SUCCESS: {
+      return state.mergeIn([moduleId], { oauthURL: payload, fetching: false });
+    }
+    case FETCH_OATH_URL_ERROR: {
+      return state.mergeIn([moduleId], { error: payload, fetching: false });
+    }
+    case AUTHORIZE_SUCCESS:
+    case LOGIN_SUCCESS: {
+      const { accessToken, refreshToken, expiresIn } = payload;
+      return state.mergeIn([moduleId], { accessToken, refreshToken, expiresIn, fetching: false, success: true });
+    }
+    case AUTHORIZE_ERROR:
+    case LOGIN_ERROR: {
+      return state.mergeIn([moduleId], {
         fetching: false,
         success: false,
-        error: action.payload,
+        error: payload,
       });
+    }
+    case AUTHORIZE:
     case LOGIN:
-      return state.merge({
-        fetching: true,
-        success: false,
-        error: null,
-      });
+      return state.mergeIn([moduleId], { fetching: true });
     default:
       return state;
   }

@@ -13,9 +13,9 @@ export default () => (
   <App>
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route exact path="/login" component={Login} />
-      <Route exact path="/oauth" component={OAuth} />
-      <Route exact path="/gallery" component={Gallery} />
+      <Route exact path="/login/:moduleId" component={Login} />
+      <Route exact path="/oauth/:moduleId" component={OAuth} />
+      <Route exact path="/gallery/:moduleId" component={Gallery} />
       <Route path="/about" component={About} />
       <Route path="*" component={NotFound} />
     </Switch>
