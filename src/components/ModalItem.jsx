@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Close } from '@material-ui/icons';
+import { Fab } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import Image from './Image';
@@ -15,6 +17,12 @@ const styles = () => ({
     alignItems: 'center',
     width: '100%',
     height: 'calc(100vh - 4rem)',
+    position: 'relative',
+  },
+  fab: {
+    position: 'absolute',
+    top: '1rem',
+    right: '1rem',
   },
 });
 
@@ -41,6 +49,9 @@ class ModalItem extends React.PureComponent {
 
     return (
       <div onClick={clickHandler} className={classes.container}>
+        <Fab aria-label="Close" className={classes.fab} onClick={this.handleClick}>
+          <Close />
+        </Fab>
         <Elt src={src} title={title} width={width} height={height} />
       </div>
     );
