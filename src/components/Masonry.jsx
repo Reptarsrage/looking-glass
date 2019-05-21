@@ -4,12 +4,12 @@ import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
 import Immutable from 'immutable';
 import { Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
-import { extname } from 'path';
 
 import NoResults from './NoResults';
 import LoadingIndicator from './LoadingIndicator';
 import WindowScroller from './WindowScroller';
+import Image from './Image';
+import Video from './Video';
 
 const styles = theme => ({
   container: {
@@ -23,18 +23,16 @@ const styles = theme => ({
     display: 'flex',
     flex: '1 1 auto',
   },
-  imageContainer: {
+  masonryItemContainer: {
     padding: theme.spacing.unit,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
-  image: {
-    width: 'auto',
-    height: 'auto',
-    maxWidth: '100%',
-    maxHeight: '100%',
+  masonryItemSubContainer: {
+    padding: 0,
+    width: '100%',
     overflow: 'hidden',
   },
 });
@@ -117,33 +115,31 @@ class ListView extends Component {
 
   renderRow({ index, key, style, columnNumber }) {
     const { columnCount } = this.state;
+    const { classes } = this.props;
     const originalIndex = index * columnCount + columnNumber;
+
     if (!this.isLoaded(originalIndex)) {
       return (
-        <div key={key} style={style}>
-          Loading...
+        <div className={classes.masonryItemContainer} key={key} style={{ ...style }}>
+          <Paper className={classes.masonryItemSubContainer}>
+            <LoadingIndicator />;
+          </Paper>
         </div>
       );
     }
 
-    const { items, classes, moduleId } = this.props;
+    const { items, moduleId } = this.props;
     const item = items.get(originalIndex);
-    const Container = item.get('isGallery') ? Link : Paper;
+    const Elt = item.get('isVideo') ? Video : Image;
+    const src = item.get('isVideo') ? item.get('videoURL') : item.get('imageURL');
+    const to = item.get('isGallery') ? `/gallery/${moduleId}/${item.get('id')}` : null;
+
     return (
-      <Container
-        className={classes.imageContainer}
-        key={key}
-        style={{ ...style }}
-        to={item.get('isGallery') ? `/gallery/${moduleId}/${item.get('id')}` : null}
-      >
-        {item.get('isVideo') ? (
-          <video className={classes.image} width={item.get('width')} height={item.get('height')} muted autoPlay loop>
-            <source src={item.get('videoURL')} type={`video/${extname(item.get('videoURL')).slice(1)}`} />
-          </video>
-        ) : (
-          <img className={classes.image} src={item.get('imageURL')} alt={item.get('title')} />
-        )}
-      </Container>
+      <div className={classes.masonryItemContainer} key={key} style={{ ...style }}>
+        <Paper className={classes.masonryItemSubContainer}>
+          <Elt src={src} to={to} width={item.get('width')} height={item.get('height')} title={item.get('title')} />
+        </Paper>
+      </div>
     );
   }
 
