@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
+import { InfiniteLoader, List } from 'react-virtualized';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -55,6 +55,14 @@ class ListView extends Component {
     this.setColumnListRef = this.setColumnListRef.bind(this);
   }
 
+  componentDidMount() {
+    window.addEventListener('resize', this.onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
+  }
+
   isRowLoaded = ({ index }) => {
     const { columnCount, mainColumnIndex } = this.state;
     const originalIndex = index * columnCount + mainColumnIndex;
@@ -81,9 +89,9 @@ class ListView extends Component {
     }
   }
 
-  onResize({ width, height }) {
-    this.width = width;
-    this.columnHeight = height;
+  onResize() {
+    this.width = (window && window.innerWidth) || 0;
+    this.columnHeight = (window && window.innerHeight) || 0;
     this.columnRefs.forEach(ref => ref.recomputeRowHeights());
   }
 
@@ -164,7 +172,7 @@ class ListView extends Component {
 
   render() {
     const { items, loading, classes } = this.props;
-    const { columnCount } = this.state;
+    const { columnCount, gutterSize } = this.state;
 
     // TODO: allow transient errors
     //if (error) {
@@ -183,26 +191,22 @@ class ListView extends Component {
       <InfiniteLoader isRowLoaded={this.isRowLoaded} loadMoreRows={this.loadMoreRows} rowCount={1000} threshold={20}>
         {({ onRowsRendered, registerChild }) => (
           <WindowScroller>
-            {({ height, isScrolling, scrollTop }) => (
-              <AutoSizer disableHeight onResize={this.onResize}>
-                {({ width }) => (
-                  <div className={classes.container} style={{ width }}>
-                    {[...Array(columnCount).keys()].map(columnNumber => (
-                      <div key={columnNumber} className={classes.column}>
-                        {this.renderColumn({
-                          width,
-                          isScrolling,
-                          scrollTop,
-                          height,
-                          columnNumber,
-                          onRowsRendered,
-                          registerChild,
-                        })}
-                      </div>
-                    ))}
+            {({ height, isScrolling, scrollTop, width }) => (
+              <div className={classes.container} style={{ width: `${width - 2 * gutterSize - 1}px` }}>
+                {[...Array(columnCount).keys()].map(columnNumber => (
+                  <div key={columnNumber} className={classes.column}>
+                    {this.renderColumn({
+                      width,
+                      isScrolling,
+                      scrollTop,
+                      height,
+                      columnNumber,
+                      onRowsRendered,
+                      registerChild,
+                    })}
                   </div>
-                )}
-              </AutoSizer>
+                ))}
+              </div>
             )}
           </WindowScroller>
         )}

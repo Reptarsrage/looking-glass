@@ -21,7 +21,7 @@ export const IS_SCROLLING_TIMEOUT = 150;
 
 const getWindow = () => (typeof window !== 'undefined' ? window : undefined);
 
-class WindowScroller extends React.Component {
+class WindowScroller extends React.PureComponent {
   static defaultProps = {
     onResize: () => {},
     onScroll: () => {},
