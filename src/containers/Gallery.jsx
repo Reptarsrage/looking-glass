@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Typography, Modal, DialogContent } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
-import { imagesSelector, fetchingSelector, errorSelector } from '../selectors/gallerySelectors';
+import { imagesSelector, fetchingSelector, errorSelector, hasNextSelector } from '../selectors/gallerySelectors';
 import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as galleryActions from '../actions/galleryActions';
 import Masonry from '../components/Masonry';
@@ -44,6 +44,7 @@ class Gallery extends Component {
     this.fetchInitialImages = this.fetchInitialImages.bind(this);
     this.handleItemClick = this.handleItemClick.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
+    this.loadMoreImages = this.loadMoreImages.bind(this);
   }
 
   componentDidMount() {
@@ -58,8 +59,15 @@ class Gallery extends Component {
   }
 
   fetchInitialImages() {
-    const { fetchImages, images, fetching, moduleId, galleryId } = this.props;
-    if (images.size === 0 && !fetching) {
+    const { fetchImages, images, fetching, moduleId, galleryId, hasNext } = this.props;
+    if (hasNext && images.size === 0 && !fetching) {
+      fetchImages(moduleId, galleryId);
+    }
+  }
+
+  loadMoreImages() {
+    const { fetchImages, fetching, moduleId, galleryId, hasNext } = this.props;
+    if (hasNext && !fetching) {
       fetchImages(moduleId, galleryId);
     }
   }
@@ -73,7 +81,7 @@ class Gallery extends Component {
   }
 
   render() {
-    const { images, fetching, fetchImages, error, classes, moduleId, galleryId, location } = this.props;
+    const { images, fetching, error, classes, moduleId, galleryId, location } = this.props;
     const { modalOpen, modalItemId } = this.state;
 
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
@@ -109,7 +117,7 @@ class Gallery extends Component {
           items={images}
           loading={fetching}
           error={error !== null}
-          loadMore={fetchImages}
+          loadMore={this.loadMoreImages}
           onItemClick={this.handleItemClick}
         />
       </React.Fragment>
@@ -131,6 +139,7 @@ Gallery.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   images: imagesSelector(),
+  hasNext: hasNextSelector(),
   fetching: fetchingSelector(),
   error: errorSelector(),
   moduleId: moduleIdSelector(),
