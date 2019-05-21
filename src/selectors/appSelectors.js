@@ -14,4 +14,10 @@ const galleryIdSelector = () =>
     state => state.get('galleryId')
   );
 
-export { moduleIdSelector, galleryIdSelector };
+const darkThemeSelector = () =>
+  createSelector(
+    appState,
+    state => state.get('darkTheme')
+  );
+
+export { moduleIdSelector, galleryIdSelector, darkThemeSelector };

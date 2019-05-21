@@ -1,21 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { WbSunny, Brightness2 } from '@material-ui/icons';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { compose } from 'recompose';
+import {
+  ListItem,
+  Fab,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Typography,
+  Paper,
+  CircularProgress,
+} from '@material-ui/core';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 
 import * as moduleActions from '../actions/moduleActions';
+import * as appActions from '../actions/appActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
+import { darkThemeSelector } from '../selectors/appSelectors';
 
 const styles = theme => ({
   main: {
@@ -46,10 +53,13 @@ class Home extends React.Component {
   }
 
   render() {
-    const { classes, fetching, error, modules } = this.props;
+    const { classes, fetching, error, modules, toggleDarkTheme, darkTheme } = this.props;
 
     return (
       <main className={classes.main}>
+        <Fab color="secondary" aria-label="Toggle Theme" onClick={toggleDarkTheme}>
+          {darkTheme ? <Brightness2 /> : <WbSunny />}
+        </Fab>
         <Paper className={classes.paper}>
           {fetching && <CircularProgress />}
           {error && <Typography color="error">An Error occurred</Typography>}
@@ -92,13 +102,18 @@ const mapStateToProps = createStructuredSelector({
   success: successSelector(),
   fetching: fetchingSelector(),
   error: errorSelector(),
+  darkTheme: darkThemeSelector(),
 });
 
 const mapDispatchToProps = {
   fetchModules: moduleActions.fetchModules,
+  toggleDarkTheme: appActions.toggleDarkTheme,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(Home));
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withStyles(styles)
+)(Home);

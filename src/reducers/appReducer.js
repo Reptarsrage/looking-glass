@@ -1,10 +1,11 @@
 import { fromJS } from 'immutable';
 
-import { LOCATION_CHANGE } from '../actions/types';
+import { LOCATION_CHANGE, TOGGLE_DARK_THEME } from '../actions/types';
 
 const initialState = fromJS({
   moduleId: null,
   galleryId: null,
+  darkTheme: true,
 });
 
 export default function authReducer(state = initialState, action) {
@@ -25,6 +26,9 @@ export default function authReducer(state = initialState, action) {
       }
 
       return state;
+    }
+    case TOGGLE_DARK_THEME: {
+      return state.update('darkTheme', darkTheme => !darkTheme);
     }
     default:
       return state;
