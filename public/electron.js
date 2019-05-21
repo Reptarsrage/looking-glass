@@ -4,6 +4,8 @@ const isDev = require('electron-is-dev');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
+const MenuBuilder = require('./menu');
+
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'debug';
@@ -41,6 +43,10 @@ async function createWindow() {
     },
     show: false,
   });
+
+  const menuBuilder = new MenuBuilder(mainWindow);
+  menuBuilder.buildMenu();
+
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => (mainWindow = null));
   mainWindow.once('ready-to-show', () => {
