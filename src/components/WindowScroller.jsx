@@ -21,7 +21,7 @@ export const IS_SCROLLING_TIMEOUT = 150;
 
 const getWindow = () => (typeof window !== 'undefined' ? window : undefined);
 
-class WindowScroller extends React.PureComponent {
+class WindowScroller extends React.Component {
   static defaultProps = {
     onResize: () => {},
     onScroll: () => {},
@@ -45,14 +45,9 @@ class WindowScroller extends React.PureComponent {
     scrollTop: 0,
   };
 
-  constructor(props) {
-    super(props);
-
-    this.restoreScrollPosition = this.restoreScrollPosition.bind(this);
-  }
-
   componentWillMount() {
-    this.restoreScrollPosition();
+    const { scrollElement, location } = this.props;
+    this.restoreScrollPosition(location.pathname, scrollElement);
   }
 
   componentDidMount() {
@@ -70,9 +65,18 @@ class WindowScroller extends React.PureComponent {
     this._isMounted = true;
   }
 
+  componentWillUpdate(nextProps) {
+    const { location } = this.props;
+    const { location: nextLocation } = nextProps;
+
+    if (location.pathname !== nextLocation.pathname) {
+      this.saveScrollPosition(location.pathname, this.state, this._positionFromTop, this._positionFromLeft);
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const { scrollElement, location } = this.props;
-    const { scrollElement: prevScrollElement } = prevProps;
+    const { scrollElement: prevScrollElement, location: prevLocation } = prevProps;
 
     if (prevScrollElement !== scrollElement && prevScrollElement != null && scrollElement != null) {
       this.updatePosition(scrollElement);
@@ -84,21 +88,15 @@ class WindowScroller extends React.PureComponent {
       this._registerResizeListener(scrollElement);
     }
 
-    if (location.pathname !== prevProps.location.pathname) {
-      this.restoreScrollPosition();
+    if (location.pathname !== prevLocation.pathname) {
+      this.restoreScrollPosition(location.pathname, scrollElement);
     }
   }
 
   componentWillUnmount() {
     const { scrollElement, location } = this.props;
 
-    const value = JSON.stringify({
-      ...this.state,
-      _positionFromTop: this._positionFromTop,
-      _positionFromLeft: this._positionFromLeft,
-    });
-
-    sessionStorage.setItem(location.pathname, value);
+    this.saveScrollPosition(location.pathname, this.state, this._positionFromTop, this._positionFromLeft);
 
     if (scrollElement) {
       unregisterScrollListener(this, scrollElement);
@@ -108,9 +106,18 @@ class WindowScroller extends React.PureComponent {
     this._isMounted = false;
   }
 
-  restoreScrollPosition() {
-    const { location, scrollElement } = this.props;
-    const value = sessionStorage.getItem(location.pathname);
+  saveScrollPosition(pathname, state, _positionFromTop, _positionFromLeft) {
+    const value = JSON.stringify({
+      ...state,
+      _positionFromTop,
+      _positionFromLeft,
+    });
+
+    sessionStorage.setItem(pathname, value);
+  }
+
+  restoreScrollPosition(pathname, scrollElement) {
+    const value = sessionStorage.getItem(pathname);
     if (value !== null) {
       const { _positionFromTop, _positionFromLeft, ...obj } = JSON.parse(value);
       this.setState({ ...obj });
