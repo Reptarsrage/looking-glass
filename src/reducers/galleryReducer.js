@@ -48,11 +48,11 @@ export default function galleryReducer(state = new Map(), action) {
     case FETCH_IMAGES:
       return state.mergeIn([moduleId, galleryId], { fetching: true, success: false, error: null });
     case FETCH_IMAGES_SUCCESS: {
-      const { offset, images, hasNext, count, after, before } = payload;
+      const { offset, images, hasNext, after, before } = payload;
 
       const newState = state.updateIn([moduleId, galleryId, 'images'], prevImages => prevImages.concat(fromJS(images)));
       return newState.mergeIn([moduleId, galleryId], {
-        offset: offset + count,
+        offset,
         hasNext,
         after,
         before,
