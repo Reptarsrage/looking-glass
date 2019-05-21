@@ -3,8 +3,6 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -12,12 +10,13 @@ import { imagesSelector, fetchingSelector, errorSelector } from '../selectors/ga
 import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as galleryActions from '../actions/galleryActions';
 import Masonry from '../components/Masonry';
+import BackButton from '../components/BackButton';
 
 const styles = () => ({
   floated: {
     position: 'fixed',
     top: '10px',
-    right: '10px',
+    left: '10px',
     zIndex: 2,
   },
 });
@@ -64,9 +63,7 @@ class Gallery extends Component {
         <Typography variant="h1">Images</Typography>
 
         <div className={classes.floated}>
-          <Button variant="contained" color="primary" component={Link} to="/">
-            Home
-          </Button>
+          <BackButton />
         </div>
 
         <Masonry
