@@ -2,46 +2,55 @@ import { createSelector } from 'reselect';
 
 const galleryState = state => state.get('gallery');
 
-const imagesSelector = moduleId =>
+const appState = state => state.get('app');
+
+const imagesSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'images'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'images'])
   );
 
-const fetchingSelector = moduleId =>
+const fetchingSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'fetching'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'fetching'])
   );
 
-const errorSelector = moduleId =>
+const errorSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'error'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'error'])
   );
 
-const offsetSelector = moduleId =>
+const offsetSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'offset'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'offset'])
   );
 
-const beforeSelector = moduleId =>
+const beforeSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'before'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'before'])
   );
 
-const afterSelector = moduleId =>
+const afterSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'after'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'after'])
   );
 
-const hasNextSelector = moduleId =>
+const hasNextSelector = () =>
   createSelector(
     galleryState,
-    state => state.getIn([moduleId, 'hasNext'])
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'hasNext'])
   );
 
 export {

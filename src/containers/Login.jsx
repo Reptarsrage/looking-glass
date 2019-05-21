@@ -22,6 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
+import { moduleIdSelector } from '../selectors/appSelectors';
 import * as authActions from '../actions/authActions';
 
 const styles = theme => ({
@@ -102,21 +103,19 @@ class Login extends React.Component {
   }
 
   handleSubmit(event) {
-    const { login, match } = this.props;
+    const { login, moduleId } = this.props;
     const { username, password } = this.state;
-    const { moduleId } = match.params;
 
     login(moduleId, username, password);
     event.preventDefault();
   }
 
   render() {
-    const { fetching, error, success, classes, match } = this.props;
+    const { fetching, error, success, classes, moduleId } = this.props;
     const { username, password, rememberMe, showPassword } = this.state;
-    const { moduleId } = match.params;
 
     if (success) {
-      return <Redirect to={`/gallery/${moduleId}`} />;
+      return <Redirect to={`/gallery/${moduleId}/default`} />;
     }
 
     return (
@@ -202,7 +201,7 @@ Login.defaultProps = {
 };
 
 Login.propTypes = {
-  match: PropTypes.shape({ params: PropTypes.shape({ moduleId: PropTypes.string.isRequired }).isRequired }).isRequired,
+  moduleId: PropTypes.string.isRequired,
   login: PropTypes.func.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
@@ -210,14 +209,12 @@ Login.propTypes = {
   classes: PropTypes.shape({}),
 };
 
-const mapStateToProps = (_, ownProps) => {
-  const { moduleId } = ownProps.match.params;
-  return createStructuredSelector({
-    success: successSelector(moduleId),
-    fetching: fetchingSelector(moduleId),
-    error: errorSelector(moduleId),
-  });
-};
+const mapStateToProps = createStructuredSelector({
+  success: successSelector(),
+  fetching: fetchingSelector(),
+  error: errorSelector(),
+  moduleId: moduleIdSelector(),
+});
 
 const mapDispatchToProps = {
   login: authActions.login,

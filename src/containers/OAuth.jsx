@@ -16,6 +16,7 @@ import qs from 'qs';
 
 import * as authActions from '../actions/authActions';
 import { successSelector, fetchingSelector, errorSelector, oauthURLSelector } from '../selectors/authSelectors';
+import { moduleIdSelector } from '../selectors/appSelectors';
 
 const styles = theme => ({
   main: {
@@ -103,16 +104,14 @@ class OAuth extends React.Component {
   }
 
   componentWillMount() {
-    const { fetching, success, match, fetchOAuthURL } = this.props;
-    const { moduleId } = match.params;
+    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
     if (!fetching && !success) {
       fetchOAuthURL(moduleId);
     }
   }
 
   async handleSubmit() {
-    const { authorize, match, oauthURL } = this.props;
-    const { moduleId } = match.params;
+    const { authorize, moduleId, oauthURL } = this.props;
 
     this.setState({ fetching: true });
 
@@ -126,11 +125,10 @@ class OAuth extends React.Component {
   }
 
   render() {
-    const { classes, match, fetching, error, success } = this.props;
-    const { moduleId } = match.params;
+    const { classes, moduleId, fetching, error, success } = this.props;
 
     if (success) {
-      return <Redirect to={`/gallery/${moduleId}`} />;
+      return <Redirect to={`/gallery/${moduleId}/default`} />;
     }
 
     return (
@@ -169,7 +167,7 @@ OAuth.defaultProps = {
 };
 
 OAuth.propTypes = {
-  match: PropTypes.shape({ params: PropTypes.shape({ moduleId: PropTypes.string.isRequired }).isRequired }).isRequired,
+  moduleId: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
@@ -177,15 +175,13 @@ OAuth.propTypes = {
   oauthURL: PropTypes.string,
 };
 
-const mapStateToProps = (_, ownProps) => {
-  const { moduleId } = ownProps.match.params;
-  return createStructuredSelector({
-    oauthURL: oauthURLSelector(moduleId),
-    success: successSelector(moduleId),
-    fetching: fetchingSelector(moduleId),
-    error: errorSelector(moduleId),
-  });
-};
+const mapStateToProps = createStructuredSelector({
+  oauthURL: oauthURLSelector(),
+  success: successSelector(),
+  fetching: fetchingSelector(),
+  error: errorSelector(),
+  moduleId: moduleIdSelector(),
+});
 
 const mapDispatchToProps = {
   authorize: authActions.authorize,

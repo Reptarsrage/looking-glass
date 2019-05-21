@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
 import Immutable from 'immutable';
+import { Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { extname } from 'path';
 
 import NoResults from './NoResults';
@@ -70,9 +71,9 @@ class ListView extends Component {
   };
 
   loadMoreRows() {
-    const { loadMore, loading, moduleId } = this.props;
+    const { loadMore, loading, moduleId, galleryId } = this.props;
     if (!loading) {
-      loadMore(moduleId);
+      loadMore(moduleId, galleryId);
     }
     return new Promise(resolve => resolve());
   }
@@ -125,18 +126,24 @@ class ListView extends Component {
       );
     }
 
-    const { items, classes } = this.props;
+    const { items, classes, moduleId } = this.props;
     const item = items.get(originalIndex);
+    const Container = item.get('isGallery') ? Link : Paper;
     return (
-      <div className={classes.imageContainer} key={key} style={{ ...style }}>
+      <Container
+        className={classes.imageContainer}
+        key={key}
+        style={{ ...style }}
+        to={item.get('isGallery') ? `/gallery/${moduleId}/${item.get('id')}` : null}
+      >
         {item.get('isVideo') ? (
-          <video className={classes.image} width={item.get('width')} height={item.get('height')} muted autoPlay>
+          <video className={classes.image} width={item.get('width')} height={item.get('height')} muted autoPlay loop>
             <source src={item.get('videoURL')} type={`video/${extname(item.get('videoURL')).slice(1)}`} />
           </video>
         ) : (
           <img className={classes.image} src={item.get('imageURL')} alt={item.get('title')} />
         )}
-      </div>
+      </Container>
     );
   }
 
@@ -225,4 +232,4 @@ ListView.propTypes = {
   loadMore: PropTypes.func.isRequired,
 };
 
-export default withRouter(withStyles(styles)(ListView));
+export default withStyles(styles)(ListView);

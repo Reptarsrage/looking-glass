@@ -17,7 +17,6 @@ export default function moduleReducer(state = initialState, action) {
       return nState.set('modules', fromJS(modules));
     }
     case FETCH_MODULES_ERROR:
-      console.error(action.payload); // TODO: delete
       return state.merge({
         fetching: false,
         success: false,

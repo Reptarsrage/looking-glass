@@ -59,7 +59,7 @@ class Home extends React.Component {
                 key={m.get('id')}
                 button
                 component={Link}
-                to={`/${m.get('authType') || 'gallery'}/${m.get('id')}`}
+                to={`/${m.get('authType') || 'gallery'}/${m.get('id')}${!!m.get('authType') ? '' : '/default'}`}
               >
                 <ListItemAvatar>
                   <Avatar alt={m.get('title')} src={m.get('icon')} />

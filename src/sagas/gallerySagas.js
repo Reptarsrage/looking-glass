@@ -14,15 +14,14 @@ import { offsetSelector, beforeSelector, afterSelector } from '../selectors/gall
 
 function* handlefetchImages(action) {
   const { meta } = action;
-  const { moduleId } = meta;
+  const { moduleId, galleryId } = meta;
 
   try {
-    // TODO: refresh token if necessary
     let accessToken = yield select(accessTokenSelector(moduleId));
     const refreshToken = yield select(refreshTokenSelector(moduleId));
-    const offset = yield select(offsetSelector(moduleId));
-    const before = yield select(beforeSelector(moduleId));
-    const after = yield select(afterSelector(moduleId));
+    const offset = yield select(offsetSelector(moduleId, galleryId));
+    const before = yield select(beforeSelector(moduleId, galleryId));
+    const after = yield select(afterSelector(moduleId, galleryId));
     const expires = yield select(expiresSelector(moduleId));
 
     const lookingGlassService = new LookingGlassService();
@@ -43,15 +42,19 @@ function* handlefetchImages(action) {
       }
     }
 
-    // Get photos
-    console.log(moduleId, accessToken, offset, before, after);
-    const { data } = yield call(lookingGlassService.fetchImages, moduleId, accessToken, offset, before, after);
+    const { data } = yield call(
+      lookingGlassService.fetchImages,
+      moduleId,
+      galleryId,
+      accessToken,
+      offset,
+      before,
+      after
+    );
 
-    // Finish
-    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId } });
+    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId, galleryId } });
   } catch (e) {
-    console.error(e);
-    yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId } });
+    yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId, galleryId } });
   }
 }
 

@@ -1,47 +1,55 @@
 import { createSelector } from 'reselect';
 
 const authState = state => state.get('auth');
+const appState = state => state.get('app');
 
-const fetchingSelector = moduleId =>
+const fetchingSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'fetching'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'fetching'])
   );
 
-const errorSelector = moduleId =>
+const errorSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'error'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'error'])
   );
 
-const successSelector = moduleId =>
+const successSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'success'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'success'])
   );
 
-const accessTokenSelector = moduleId =>
+const accessTokenSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'accessToken'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'accessToken'])
   );
 
-const refreshTokenSelector = moduleId =>
+const refreshTokenSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'refreshToken'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'refreshToken'])
   );
 
-const oauthURLSelector = moduleId =>
+const oauthURLSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'oauthURL'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'oauthURL'])
   );
 
-const expiresSelector = moduleId =>
+const expiresSelector = () =>
   createSelector(
     authState,
-    state => state.getIn([moduleId, 'expires'])
+    appState,
+    (auth, app) => auth.getIn([app.get('moduleId'), 'expires'])
   );
 
 export {

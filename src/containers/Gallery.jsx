@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 import { imagesSelector, fetchingSelector, errorSelector } from '../selectors/gallerySelectors';
+import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as galleryActions from '../actions/galleryActions';
 import Masonry from '../components/Masonry';
 
@@ -32,17 +33,32 @@ class Gallery extends Component {
     fetching: false,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.fetchInitialImages = this.fetchInitialImages.bind(this);
+  }
+
   componentDidMount() {
-    const { fetchImages, images, fetching, match } = this.props;
-    const { moduleId } = match.params;
+    this.fetchInitialImages();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      this.fetchInitialImages();
+    }
+  }
+
+  fetchInitialImages() {
+    const { fetchImages, images, fetching, moduleId, galleryId } = this.props;
     if (images.size === 0 && !fetching) {
-      fetchImages(moduleId);
+      fetchImages(moduleId, galleryId);
     }
   }
 
   render() {
-    const { images, fetching, fetchImages, error, classes, match } = this.props;
-    const { moduleId } = match.params;
+    const { images, fetching, fetchImages, error, classes, moduleId, galleryId, location } = this.props;
+
     return (
       <React.Fragment>
         <Typography variant="h1">Images</Typography>
@@ -53,7 +69,16 @@ class Gallery extends Component {
           </Button>
         </div>
 
-        <Masonry moduleId={moduleId} items={images} loading={fetching} error={error !== null} loadMore={fetchImages} />
+        <Masonry
+          key={`${moduleId}_${galleryId}`}
+          location={location}
+          moduleId={moduleId}
+          galleryId={galleryId}
+          items={images}
+          loading={fetching}
+          error={error !== null}
+          loadMore={fetchImages}
+        />
       </React.Fragment>
     );
   }
@@ -65,18 +90,19 @@ Gallery.defaultProps = {
 
 Gallery.propTypes = {
   classes: PropTypes.object.isRequired,
-  match: PropTypes.shape({ params: PropTypes.shape({ moduleId: PropTypes.string.isRequired }).isRequired }).isRequired,
+  location: PropTypes.object.isRequired,
+  moduleId: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
   error: PropTypes.object,
 };
 
-const mapStateToProps = (_, ownProps) => {
-  const { moduleId } = ownProps.match.params;
-  return createStructuredSelector({
-    images: imagesSelector(moduleId),
-    fetching: fetchingSelector(moduleId),
-    error: errorSelector(moduleId),
-  });
-};
+const mapStateToProps = createStructuredSelector({
+  images: imagesSelector(),
+  fetching: fetchingSelector(),
+  error: errorSelector(),
+  moduleId: moduleIdSelector(),
+  galleryId: galleryIdSelector(),
+});
 
 const mapDispatchToProps = {
   fetchImages: galleryActions.fetchImages,

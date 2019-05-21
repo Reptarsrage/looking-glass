@@ -145,9 +145,6 @@ class WindowScroller extends React.PureComponent {
   }
 
   _registerChild = element => {
-    if (element && !(element instanceof Element)) {
-      console.warn('WindowScroller registerChild expects to be passed Element or null');
-    }
     this._child = element;
     this.updatePosition();
   };

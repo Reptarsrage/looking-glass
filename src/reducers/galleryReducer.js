@@ -1,6 +1,12 @@
 import { fromJS, List, Map } from 'immutable';
 
-import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_ERROR, FETCH_MODULES_SUCCESS } from '../actions/types';
+import {
+  FETCH_IMAGES,
+  FETCH_IMAGES_SUCCESS,
+  FETCH_IMAGES_ERROR,
+  FETCH_MODULES_SUCCESS,
+  LOCATION_CHANGE,
+} from '../actions/types';
 
 export const initialState = fromJS({
   images: new List([]),
@@ -15,23 +21,37 @@ export const initialState = fromJS({
 
 export default function galleryReducer(state = new Map(), action) {
   const { type, payload, meta } = action || {};
-  const { moduleId } = meta || {};
+  let { moduleId, galleryId = 'default' } = meta || {};
 
   switch (type) {
+    case LOCATION_CHANGE: {
+      const { location } = payload;
+      const { pathname } = location;
+      const parts = pathname.split('/');
+
+      if (parts[1] === 'gallery') {
+        [, , moduleId, galleryId] = parts;
+        if (!state.hasIn([moduleId, galleryId])) {
+          return state.setIn([moduleId, galleryId], initialState);
+        }
+      }
+
+      return state;
+    }
     case FETCH_MODULES_SUCCESS: {
       let nState = state;
       for (const module of payload) {
-        nState = nState.set(module.id, initialState);
+        nState = nState.setIn([module.id, galleryId], initialState);
       }
       return nState;
     }
     case FETCH_IMAGES:
-      return state.mergeIn([moduleId], { fetching: true, success: false, error: null });
+      return state.mergeIn([moduleId, galleryId], { fetching: true, success: false, error: null });
     case FETCH_IMAGES_SUCCESS: {
       const { offset, images, hasNext, count, after, before } = payload;
 
-      const newState = state.updateIn([moduleId, 'images'], prevImages => prevImages.concat(fromJS(images)));
-      return newState.mergeIn([moduleId], {
+      const newState = state.updateIn([moduleId, galleryId, 'images'], prevImages => prevImages.concat(fromJS(images)));
+      return newState.mergeIn([moduleId, galleryId], {
         offset: offset + count,
         hasNext,
         after,
@@ -42,7 +62,7 @@ export default function galleryReducer(state = new Map(), action) {
       });
     }
     case FETCH_IMAGES_ERROR:
-      return state.mergeIn([moduleId], {
+      return state.mergeIn([moduleId, galleryId], {
         fetching: false,
         success: false,
         error: payload,
