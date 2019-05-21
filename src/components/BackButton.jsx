@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Fab } from '@material-ui/core';
@@ -51,4 +52,7 @@ BackButton.propTypes = {
   color: PropTypes.string,
 };
 
-export default withRouter(withStyles(styles)(BackButton));
+export default compose(
+  withStyles(styles),
+  withRouter
+)(BackButton);

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { Typography, Modal, DialogContent } from '@material-ui/core';
@@ -150,7 +151,10 @@ const mapDispatchToProps = {
   fetchImages: galleryActions.fetchImages,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(Gallery));
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withStyles(styles)
+)(Gallery);
