@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import Typography from '@material-ui/core/Typography';
+import { Typography, Modal, DialogContent } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import { imagesSelector, fetchingSelector, errorSelector } from '../selectors/gallerySelectors';
@@ -11,6 +11,7 @@ import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as galleryActions from '../actions/galleryActions';
 import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
+import ModalItem from '../components/ModalItem';
 
 const styles = () => ({
   floated: {
@@ -35,7 +36,14 @@ class Gallery extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      modalOpen: false,
+      modalItemId: null,
+    };
+
     this.fetchInitialImages = this.fetchInitialImages.bind(this);
+    this.handleItemClick = this.handleItemClick.bind(this);
+    this.handleModalClose = this.handleModalClose.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +52,7 @@ class Gallery extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.location.pathname !== prevProps.location.pathname) {
+      this.setState({ modalOpen: false, modalItemId: null });
       this.fetchInitialImages();
     }
   }
@@ -55,8 +64,30 @@ class Gallery extends Component {
     }
   }
 
+  handleModalClose() {
+    this.setState({ modalOpen: false });
+  }
+
+  handleItemClick(id) {
+    this.setState({ modalOpen: true, modalItemId: id });
+  }
+
   render() {
     const { images, fetching, fetchImages, error, classes, moduleId, galleryId, location } = this.props;
+    const { modalOpen, modalItemId } = this.state;
+
+    const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
+    const modalContent = modalItem && (
+      <ModalItem
+        videoURL={modalItem.get('videoURL')}
+        imageURL={modalItem.get('imageURL')}
+        isVideo={modalItem.get('isVideo')}
+        title={modalItem.get('title')}
+        width={modalItem.get('width')}
+        height={modalItem.get('height')}
+        onClick={this.handleModalClose}
+      />
+    );
 
     return (
       <React.Fragment>
@@ -65,6 +96,10 @@ class Gallery extends Component {
         <div className={classes.floated}>
           <BackButton />
         </div>
+
+        <Modal open={modalOpen} onClose={this.handleModalClose}>
+          <DialogContent>{modalContent}</DialogContent>
+        </Modal>
 
         <Masonry
           key={`${moduleId}_${galleryId}`}
@@ -75,6 +110,7 @@ class Gallery extends Component {
           loading={fetching}
           error={error !== null}
           loadMore={fetchImages}
+          onItemClick={this.handleItemClick}
         />
       </React.Fragment>
     );

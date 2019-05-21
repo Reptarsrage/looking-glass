@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteLoader, List, AutoSizer } from 'react-virtualized';
 import Immutable from 'immutable';
-import { Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import NoResults from './NoResults';
 import LoadingIndicator from './LoadingIndicator';
 import WindowScroller from './WindowScroller';
-import Image from './Image';
-import Video from './Video';
+import MasonryItem from './MasonryItem';
 
 const styles = theme => ({
   container: {
@@ -29,11 +27,6 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-  },
-  masonryItemSubContainer: {
-    padding: 0,
-    width: '100%',
-    overflow: 'hidden',
   },
 });
 
@@ -119,26 +112,26 @@ class ListView extends Component {
     const originalIndex = index * columnCount + columnNumber;
 
     if (!this.isLoaded(originalIndex)) {
-      return (
-        <div className={classes.masonryItemContainer} key={key} style={{ ...style }}>
-          <Paper className={classes.masonryItemSubContainer}>
-            <LoadingIndicator />;
-          </Paper>
-        </div>
-      );
+      return <div className={classes.masonryItemContainer} key={key} style={{ ...style }} />;
     }
 
-    const { items, moduleId } = this.props;
+    const { items, moduleId, onItemClick } = this.props;
     const item = items.get(originalIndex);
-    const Elt = item.get('isVideo') ? Video : Image;
-    const src = item.get('isVideo') ? item.get('videoURL') : item.get('imageURL');
-    const to = item.get('isGallery') ? `/gallery/${moduleId}/${item.get('id')}` : null;
 
     return (
       <div className={classes.masonryItemContainer} key={key} style={{ ...style }}>
-        <Paper className={classes.masonryItemSubContainer}>
-          <Elt src={src} to={to} width={item.get('width')} height={item.get('height')} title={item.get('title')} />
-        </Paper>
+        <MasonryItem
+          videoURL={item.get('videoURL')}
+          imageURL={item.get('imageURL')}
+          isVideo={item.get('isVideo')}
+          isGallery={item.get('isGallery')}
+          title={item.get('title')}
+          id={item.get('id')}
+          width={item.get('width')}
+          height={item.get('height')}
+          moduleId={moduleId}
+          onClick={onItemClick}
+        />
       </div>
     );
   }
@@ -226,6 +219,7 @@ ListView.propTypes = {
   moduleId: PropTypes.string.isRequired,
   error: PropTypes.bool.isRequired,
   loadMore: PropTypes.func.isRequired,
+  onItemClick: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(ListView);

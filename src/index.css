@@ -3,3 +3,7 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 @import '~react-virtualized/styles.css';
+
+*:focus {
+  outline: none;
+}

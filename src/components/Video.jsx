@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
 import { extname } from 'path';
 
 const styles = () => ({
@@ -14,29 +13,26 @@ const styles = () => ({
   },
 });
 
-class Video extends React.PureComponent {
-  render() {
-    const { classes, src, title, to, width, height } = this.props;
+const Video = ({ classes, src, width, height, title, to }) => (
+  <video className={classes.video} width={width} height={height} title={title} muted autoPlay loop>
+    <source src={src} type={`video/${extname(src).slice(1)}`} />
+  </video>
+);
 
-    const Wrapper = to ? Link : React.Fragment;
-
-    return (
-      <Wrapper to={to}>
-        <video className={classes.video} width={width} height={height} title={title} muted autoPlay loop>
-          <source src={src} type={`video/${extname(src).slice(1)}`} />
-        </video>
-      </Wrapper>
-    );
-  }
-}
+Video.defaultProps = {
+  title: '',
+  to: null,
+};
 
 Video.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   title: PropTypes.string,
   to: PropTypes.string,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  onClick: PropTypes.func,
 };
 
 export default withStyles(styles)(Video);
