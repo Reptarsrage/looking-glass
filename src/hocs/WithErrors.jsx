@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Typography } from '@material-ui/core';
 
 const WithErrors = WrappedComponent =>
   class ErrorBoundary extends Component {
@@ -21,12 +22,12 @@ const WithErrors = WrappedComponent =>
         <Fragment>
           {error ? (
             <Fragment>
-              <h2>Something went wrong.</h2>
-              <details style={{ whiteSpace: 'pre-wrap' }}>
+              <Typography variant="h2">Something went wrong.</Typography>
+              <Typography style={{ whiteSpace: 'pre-wrap' }}>
                 {error.toString()}
                 <br />
                 {errorInfo.componentStack}
-              </details>
+              </Typography>
             </Fragment>
           ) : (
             <WrappedComponent {...this.props} />
