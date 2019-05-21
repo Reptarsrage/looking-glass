@@ -45,16 +45,14 @@ class WindowScroller extends React.PureComponent {
     scrollTop: 0,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.restoreScrollPosition = this.restoreScrollPosition.bind(this);
+  }
+
   componentWillMount() {
-    const { location, scrollElement } = this.props;
-    const value = sessionStorage.getItem(location.pathname);
-    if (value != null) {
-      const { _positionFromTop, _positionFromLeft, ...obj } = JSON.parse(value);
-      this.setState({ ...obj });
-      raf(() => {
-        scrollElement.scrollTo(obj.scrollLeft + _positionFromLeft, obj.scrollTop + _positionFromTop);
-      });
-    }
+    this.restoreScrollPosition();
   }
 
   componentDidMount() {
@@ -72,8 +70,8 @@ class WindowScroller extends React.PureComponent {
     this._isMounted = true;
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { scrollElement } = this.props;
+  componentDidUpdate(prevProps) {
+    const { scrollElement, location } = this.props;
     const { scrollElement: prevScrollElement } = prevProps;
 
     if (prevScrollElement !== scrollElement && prevScrollElement != null && scrollElement != null) {
@@ -85,6 +83,10 @@ class WindowScroller extends React.PureComponent {
       this._unregisterResizeListener(prevScrollElement);
       this._registerResizeListener(scrollElement);
     }
+
+    if (location.pathname !== prevProps.location.pathname) {
+      this.restoreScrollPosition();
+    }
   }
 
   componentWillUnmount() {
@@ -95,6 +97,7 @@ class WindowScroller extends React.PureComponent {
       _positionFromTop: this._positionFromTop,
       _positionFromLeft: this._positionFromLeft,
     });
+
     sessionStorage.setItem(location.pathname, value);
 
     if (scrollElement) {
@@ -103,6 +106,18 @@ class WindowScroller extends React.PureComponent {
     }
 
     this._isMounted = false;
+  }
+
+  restoreScrollPosition() {
+    const { location, scrollElement } = this.props;
+    const value = sessionStorage.getItem(location.pathname);
+    if (value !== null) {
+      const { _positionFromTop, _positionFromLeft, ...obj } = JSON.parse(value);
+      this.setState({ ...obj });
+      raf(() => {
+        scrollElement.scrollTo(obj.scrollLeft + _positionFromLeft, obj.scrollTop + _positionFromTop);
+      });
+    }
   }
 
   updatePosition(scrollElement = this.props.scrollElement) {
