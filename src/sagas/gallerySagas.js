@@ -37,6 +37,7 @@ function* handlefetchImages(action) {
           yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
         } catch (error) {
           yield put({ type: REFRESH_ERROR, payload: { ...error }, meta: { moduleId } });
+          yield put({ type: FETCH_IMAGES_ERROR, payload: { ...error }, meta: { moduleId, galleryId } });
           return;
         }
       }
