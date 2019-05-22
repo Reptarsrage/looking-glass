@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { Typography, Modal, DialogContent } from '@material-ui/core';
+import { Typography, Dialog, DialogContent, withMobileDialog } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import { imagesSelector, fetchingSelector, errorSelector, hasNextSelector } from '../selectors/gallerySelectors';
@@ -20,6 +20,10 @@ const styles = () => ({
     top: '10px',
     left: '10px',
     zIndex: 2,
+  },
+  dialog: {
+    maxHeight: '100vh',
+    overflow: 'auto',
   },
 });
 
@@ -82,7 +86,7 @@ class Gallery extends Component {
   }
 
   render() {
-    const { images, fetching, error, classes, moduleId, galleryId, location } = this.props;
+    const { images, fetching, error, classes, moduleId, galleryId, location, fullScreen } = this.props;
     const { modalOpen, modalItemId } = this.state;
 
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
@@ -106,9 +110,9 @@ class Gallery extends Component {
           <BackButton />
         </div>
 
-        <Modal open={modalOpen} onClose={this.handleModalClose}>
+        <Dialog className={classes.dialog} fullScreen={true} open={modalOpen} onClose={this.handleModalClose}>
           <DialogContent>{modalContent}</DialogContent>
-        </Modal>
+        </Dialog>
 
         <Masonry
           key={`${moduleId}_${galleryId}`}
@@ -136,6 +140,7 @@ Gallery.propTypes = {
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   error: PropTypes.object,
+  fullScreen: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -156,5 +161,6 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   ),
-  withStyles(styles)
+  withStyles(styles),
+  withMobileDialog()
 )(Gallery);

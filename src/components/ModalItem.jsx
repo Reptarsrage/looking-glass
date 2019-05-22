@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Close } from '@material-ui/icons';
-import { Fab } from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import Image from './Image';
@@ -9,20 +8,17 @@ import Video from './Video';
 
 const styles = () => ({
   container: {
-    marginTop: '2rem',
+    width: '100%',
+    height: '100%',
     padding: 0,
-    overflow: 'hidden',
+    margin: 0,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    height: 'calc(100vh - 4rem)',
-    position: 'relative',
   },
-  fab: {
-    position: 'absolute',
-    top: '1rem',
-    right: '1rem',
+  paper: {
+    width: 'fit-content',
+    height: 'fit-content',
   },
 });
 
@@ -48,11 +44,10 @@ class ModalItem extends React.PureComponent {
     const clickHandler = this.handleClick;
 
     return (
-      <div onClick={clickHandler} className={classes.container}>
-        <Fab aria-label="Close" className={classes.fab} onClick={this.handleClick}>
-          <Close />
-        </Fab>
-        <Elt src={src} title={title} width={width} height={height} />
+      <div className={classes.container} onClick={clickHandler}>
+        <Paper className={classes.paper} onClick={clickHandler}>
+          <Elt src={src} title={title} width={width} height={height} />
+        </Paper>
       </div>
     );
   }
