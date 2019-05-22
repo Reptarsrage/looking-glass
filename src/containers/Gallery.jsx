@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { Typography, Dialog, DialogContent, withMobileDialog } from '@material-ui/core';
+import DialogContent from '@material-ui/core/DialogContent';
+import Dialog from '@material-ui/core/Dialog';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 import { imagesSelector, fetchingSelector, errorSelector, hasNextSelector } from '../selectors/gallerySelectors';
@@ -86,7 +88,7 @@ class Gallery extends Component {
   }
 
   render() {
-    const { images, fetching, error, classes, moduleId, galleryId, location, fullScreen } = this.props;
+    const { images, fetching, error, classes, moduleId, galleryId, location } = this.props;
     const { modalOpen, modalItemId } = this.state;
 
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
@@ -140,7 +142,6 @@ Gallery.propTypes = {
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   error: PropTypes.object,
-  fullScreen: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -161,6 +162,5 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   ),
-  withStyles(styles),
-  withMobileDialog()
+  withStyles(styles)
 )(Gallery);
