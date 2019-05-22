@@ -8,11 +8,8 @@ class MenuBuilder {
   }
 
   buildMenu() {
-    if (isDev) {
-      this.setupDevelopmentEnvironment();
-    }
-
     const template = process.platform === 'darwin' ? this.buildDarwinTemplate() : this.buildDefaultTemplate();
+    this.buildContextMenu();
 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
@@ -20,10 +17,9 @@ class MenuBuilder {
     return menu;
   }
 
-  setupDevelopmentEnvironment() {
-    this.mainWindow.openDevTools();
-    this.mainWindow.webContents.on('context-menu', (e, props) => {
-      const { x, y, mediaType } = props;
+  buildContextMenu() {
+    this.mainWindow.webContents.on('context-menu', (_, props) => {
+      const { mediaType } = props;
       const win = this.mainWindow;
       let menuTpl = [];
 
@@ -54,14 +50,6 @@ class MenuBuilder {
           },
         ];
       }
-
-      menuTpl.push({
-        id: 'inspect',
-        label: 'Inspect element',
-        click: () => {
-          this.mainWindow.inspectElement(x, y);
-        },
-      });
 
       Menu.buildFromTemplate(menuTpl).popup(this.mainWindow);
     });
