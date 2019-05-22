@@ -46,7 +46,7 @@ class ModalItem extends React.PureComponent {
     return (
       <div className={classes.container} onClick={clickHandler}>
         <Paper className={classes.paper} onClick={clickHandler}>
-          <Elt src={src} title={title} width={width} height={height} />
+          <Elt src={src} title={title} width={width} height={height} autopilot={false} />
         </Paper>
       </div>
     );
