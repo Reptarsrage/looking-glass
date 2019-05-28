@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { extname } from 'path';
+import { InView } from 'react-intersection-observer';
 
 const styles = () => ({
   video: {
@@ -32,14 +33,8 @@ class Video extends React.PureComponent {
     }
   }
 
-  componentDidMount() {
-    const { volume } = this.state;
-    this.videoRef.current.volume = volume;
-  }
-
   componentWillUnmount() {
     const { volume } = this.state;
-
     sessionStorage.setItem('volume', volume);
   }
 
@@ -48,23 +43,28 @@ class Video extends React.PureComponent {
   }
 
   render() {
-    const { classes, src, width, height, title, autopilot } = this.props;
+    const { classes, src, thumb, width, height, title, autopilot } = this.props;
 
     return (
-      <video
-        ref={this.videoRef}
-        className={classes.video}
-        width={width}
-        height={height}
-        title={title}
-        muted={autopilot}
-        autoPlay
-        loop={autopilot}
-        controls={!autopilot}
-        onVolumeChange={this.handleVolumeChange}
-      >
-        <source src={src} type={`video/${extname(src).slice(1)}`} />
-      </video>
+      <InView>
+        {({ inView, ref }) => (
+          <video
+            ref={ref}
+            className={classes.video}
+            width={width}
+            height={height}
+            title={title}
+            muted={autopilot}
+            autoPlay
+            loop={autopilot}
+            poster={thumb}
+            controls={!autopilot}
+            onVolumeChange={this.handleVolumeChange}
+          >
+            {inView ? <source src={src} type={`video/${extname(src).slice(1)}`} /> : null}
+          </video>
+        )}
+      </InView>
     );
   }
 }
@@ -78,6 +78,7 @@ Video.defaultProps = {
 Video.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
+  thumb: PropTypes.string.isRequired,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   title: PropTypes.string,
   width: PropTypes.number.isRequired,

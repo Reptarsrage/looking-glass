@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { InView } from 'react-intersection-observer';
 
 const styles = () => ({
   image: {
@@ -8,12 +9,28 @@ const styles = () => ({
     height: 'auto',
     maxWidth: '100%',
     maxHeight: '100%',
-    marginBottom: '-4px',
+  },
+  thumb: {
+    filter: 'blur(8px)',
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
 });
 
-const Image = ({ classes, src, width, height, title }) => (
-  <img className={classes.image} src={src} alt={title} width={width} height={height} title={title} />
+const Image = ({ classes, src, thumb, width, height, title }) => (
+  <InView>
+    {({ inView, ref }) => (
+      <img
+        ref={ref}
+        className={inView ? classes.image : classes.thumb}
+        src={inView ? src : thumb}
+        alt={title}
+        width={width}
+        height={height}
+        title={title}
+      />
+    )}
+  </InView>
 );
 
 Image.defaultProps = {
@@ -24,6 +41,7 @@ Image.defaultProps = {
 Image.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
+  thumb: PropTypes.string.isRequired,
   title: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,

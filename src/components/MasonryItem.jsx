@@ -31,7 +31,19 @@ class MasonryItem extends React.PureComponent {
   }
 
   render() {
-    const { classes, width, height, title, videoURL, imageURL, isVideo, isGallery, id, moduleId } = this.props;
+    const {
+      classes,
+      width,
+      height,
+      title,
+      videoURL,
+      imageURL,
+      isVideo,
+      isGallery,
+      id,
+      moduleId,
+      thumbURL,
+    } = this.props;
 
     const Elt = isVideo ? Video : Image;
     const src = isVideo ? videoURL : imageURL;
@@ -44,7 +56,7 @@ class MasonryItem extends React.PureComponent {
     return (
       <Paper onClick={clickHandler} className={classes.paper}>
         <Wrapper {...wrapperProps}>
-          <Elt src={src} title={title} width={width} height={height} />
+          <Elt src={src} thumb={thumbURL} title={title} width={width} height={height} />
         </Wrapper>
       </Paper>
     );
@@ -54,6 +66,7 @@ class MasonryItem extends React.PureComponent {
 MasonryItem.defaultProps = {
   videoURL: '',
   imageURL: '',
+  thumbURL: '',
   title: '',
   onClick: null,
 };
@@ -62,6 +75,7 @@ MasonryItem.propTypes = {
   classes: PropTypes.object.isRequired,
   videoURL: PropTypes.string,
   imageURL: PropTypes.string,
+  thumbURL: PropTypes.string,
   isVideo: PropTypes.bool.isRequired,
   isGallery: PropTypes.bool.isRequired,
   title: PropTypes.string,

@@ -131,6 +131,7 @@ class ListView extends Component {
         <MasonryItem
           videoURL={item.get('videoURL')}
           imageURL={item.get('imageURL')}
+          thumbURL={item.get('thumbURL')}
           isVideo={item.get('isVideo')}
           isGallery={item.get('isGallery')}
           title={item.get('title')}
