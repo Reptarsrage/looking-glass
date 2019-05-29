@@ -49,6 +49,32 @@ class MenuBuilder {
             type: 'separator',
           },
         ];
+      } else if (mediaType === 'video') {
+        menuTpl = [
+          {
+            type: 'separator',
+          },
+          {
+            id: 'save',
+            label: 'Save Video',
+            click() {
+              download(win, props.srcURL);
+            },
+          },
+          {
+            type: 'separator',
+          },
+          {
+            id: 'saveAs',
+            label: 'Save Video As',
+            click() {
+              download(win, props.srcURL, { saveAs: true });
+            },
+          },
+          {
+            type: 'separator',
+          },
+        ];
       }
 
       Menu.buildFromTemplate(menuTpl).popup(this.mainWindow);
