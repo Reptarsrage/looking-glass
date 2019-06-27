@@ -59,7 +59,6 @@ const configureStore = initialState => {
     module.hot.accept('../reducers', () => {
       // eslint-disable-next-line global-require
       require('../reducers')
-        /* eslint-disable-next-line promise/always-return */
         .then(reducerModule => {
           const createReducers = reducerModule.default;
           const nextReducers = createReducers(history, store.asyncReducers);
