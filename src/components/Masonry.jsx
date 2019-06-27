@@ -136,6 +136,7 @@ class ListView extends Component {
           isGallery={item.get('isGallery')}
           title={item.get('title')}
           id={item.get('id')}
+          galleryId={item.get('galleryId')}
           width={item.get('width')}
           height={item.get('height')}
           moduleId={moduleId}
