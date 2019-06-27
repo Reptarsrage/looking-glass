@@ -1,5 +1,11 @@
-import { ClientFunction } from 'testcafe';
+import { ClientFunction, RequestMock } from 'testcafe';
 
+// Mock http
+var mock = RequestMock()
+  .onRequestTo(new RegExp('http://localhost:3001*'))
+  .respond([], 200, { 'access-control-allow-origin': '*' });
+
+// Helper functions
 const getPageTitle = ClientFunction(() => document.title);
 
 const assertNoConsoleErrors = async t => {
@@ -7,8 +13,13 @@ const assertNoConsoleErrors = async t => {
   await t.expect(error).eql([]);
 };
 
-fixture`Home Page`.page('../../app/app.html').afterEach(assertNoConsoleErrors);
+// Create fixture
+fixture`Home Page`
+  .page('../../app/app.html')
+  .requestHooks(mock)
+  .afterEach(assertNoConsoleErrors);
 
+// Tests
 test('e2e', async t => {
   await t.expect(getPageTitle()).eql('The Looking-Glass');
 });

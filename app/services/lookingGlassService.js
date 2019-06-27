@@ -13,7 +13,7 @@ export default class LookingGlassService {
   }
 
   fetchModules = async () => {
-    return await this.instance.get('http://localhost:3001/');
+    return await this.instance.get('/');
   };
 
   getOauthURL = async moduleId => {
