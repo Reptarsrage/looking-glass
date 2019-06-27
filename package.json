@@ -242,7 +242,7 @@
     "webpack": "4.31.0",
     "webpack-bundle-analyzer": "3.3.2",
     "webpack-cli": "3.3.2",
-    "webpack-dev-server": "3.3.1",
+    "webpack-dev-server": "3.7.2",
     "webpack-merge": "4.2.1",
     "with-immutable-props-to-js": "1.2.0",
     "yarn": "1.16.0"
