@@ -15,14 +15,14 @@ const styles = theme => ({
     flexWrap: 'nowrap',
     justifyContent: 'space-evenly',
     alignItems: 'stretch',
-    padding: theme.spacing.unit,
+    padding: theme.spacing(1),
   },
   column: {
     display: 'flex',
     flex: '1 1 auto',
   },
   masonryItemContainer: {
-    padding: theme.spacing.unit,
+    padding: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
