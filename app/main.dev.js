@@ -1,17 +1,36 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const isDev = require('electron-is-dev');
-const { autoUpdater } = require('electron-updater');
-const log = require('electron-log');
+/* eslint global-require: off */
 
-const MenuBuilder = require('./menu');
+/**
+ * This module executes inside of electron's main process. You can start
+ * electron renderer process from here and communicate with the other processes
+ * through IPC.
+ *
+ * When running `yarn build` or `yarn build-main`, this file is compiled to
+ * `./app/main.prod.js` using webpack. This gives us some performance wins.
+ *
+ */
+import { app, BrowserWindow } from 'electron';
+import { autoUpdater } from 'electron-updater';
+import log from 'electron-log';
+import MenuBuilder from './menu';
 
-class AppUpdater {
+export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'debug';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
   }
+}
+
+let mainWindow = null;
+
+if (process.env.NODE_ENV === 'production') {
+  const sourceMapSupport = require('source-map-support');
+  sourceMapSupport.install();
+}
+
+if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+  require('electron-debug')({ devToolsMode: 'right' });
 }
 
 const installExtensions = async () => {
@@ -23,39 +42,9 @@ const installExtensions = async () => {
   return Promise.all(extensions.map(name => installer.default(installer[name], forceDownload))).catch(console.log);
 };
 
-let mainWindow;
-
-if (isDev) {
-  // additional options: https://github.com/sindresorhus/electron-debug
-  require('electron-debug')({ devToolsMode: 'right' });
-}
-
-async function createWindow() {
-  if (isDev) {
-    await installExtensions();
-  }
-
-  mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 900,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-    show: false,
-  });
-
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
-
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
-  mainWindow.on('closed', () => (mainWindow = null));
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-    new AppUpdater();
-  });
-}
-
-app.on('ready', createWindow);
+/**
+ * Add event listeners...
+ */
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -69,4 +58,39 @@ app.on('activate', async () => {
   }
 });
 
-module.exports = AppUpdater;
+app.on('ready', async () => {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+    await installExtensions();
+  }
+
+  mainWindow = new BrowserWindow({
+    width: 1600,
+    height: 900,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    show: false,
+  });
+
+  mainWindow.loadURL(`file://${__dirname}/app.html`);
+
+  mainWindow.once('ready-to-show', () => {
+    if (process.env.START_MINIMIZED) {
+      mainWindow.minimize();
+    } else {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  const menuBuilder = new MenuBuilder(mainWindow);
+  menuBuilder.buildMenu();
+
+  // Remove this if your app does not use auto updates
+  // eslint-disable-next-line
+  new AppUpdater();
+});
