@@ -6,8 +6,8 @@ import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   link: {
-    margin: theme.spacing()
-  }
+    margin: theme.spacing.unit,
+  },
 });
 
 const NotFound = ({ classes }) => (
@@ -23,7 +23,7 @@ const NotFound = ({ classes }) => (
 );
 
 NotFound.propTypes = {
-  classes: PropTypes.shape({}).isRequired
+  classes: PropTypes.shape({}).isRequired,
 };
 
 export default withStyles(styles)(NotFound);

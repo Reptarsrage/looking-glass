@@ -11,8 +11,8 @@ const styles = () => ({
     justifyContent: 'center',
     width: '100px',
     height: '100px',
-    position: 'relative'
-  }
+    position: 'relative',
+  },
 });
 
 const LoadingIndicator = ({ classes }) => (
@@ -22,7 +22,7 @@ const LoadingIndicator = ({ classes }) => (
 );
 
 LoadingIndicator.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.shape({}).isRequired,
 };
 
 export default withStyles(styles)(LoadingIndicator);

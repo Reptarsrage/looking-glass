@@ -1,39 +1,21 @@
-/* eslint global-require: off */
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const isDev = require('electron-is-dev');
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `yarn build` or `yarn build-main`, this file is compiled to
- * `./app/main.prod.js` using webpack. This gives us some performance wins.
- *
- */
-import { app, BrowserWindow } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
-import MenuBuilder from './menu';
+const MenuBuilder = require('./menu');
 
-export default class AppUpdater {
+class AppUpdater {
   constructor() {
-    log.transports.file.level = 'info';
+    log.transports.file.level = 'debug';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
 
-let mainWindow = null;
-
-if (process.env.NODE_ENV === 'production') {
-  const sourceMapSupport = require('source-map-support');
-  sourceMapSupport.install();
-}
-
-if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
-  require('electron-debug')();
-}
-
 const installExtensions = async () => {
+  // see https://github.com/MarshallOfSound/electron-devtools-installer
   const installer = require('electron-devtools-installer');
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
   const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
@@ -41,56 +23,50 @@ const installExtensions = async () => {
   return Promise.all(extensions.map(name => installer.default(installer[name], forceDownload))).catch(console.log);
 };
 
-/**
- * Add event listeners...
- */
+let mainWindow;
 
-app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+if (isDev) {
+  // additional options: https://github.com/sindresorhus/electron-debug
+  require('electron-debug')({ devToolsMode: 'right' });
+}
 
-app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+async function createWindow() {
+  if (isDev) {
     await installExtensions();
   }
 
   mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
+    width: 1600,
+    height: 900,
     webPreferences: {
-      nodeIntegration: true
-    }
-  });
-
-  mainWindow.loadURL(`file://${__dirname}/app.html`);
-
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-  mainWindow.webContents.on('did-finish-load', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
-    } else {
-      mainWindow.show();
-      mainWindow.focus();
-    }
-  });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+      nodeIntegration: true,
+    },
+    show: false,
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
+  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
+  mainWindow.on('closed', () => (mainWindow = null));
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    new AppUpdater();
+  });
+}
+
+app.on('ready', createWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
+
+app.on('activate', async () => {
+  if (mainWindow === null) {
+    await createWindow();
+  }
+});
+
+module.exports = AppUpdater;

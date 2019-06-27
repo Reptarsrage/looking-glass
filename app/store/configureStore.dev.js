@@ -24,7 +24,7 @@ const configureStore = initialState => {
   // Logging Middleware
   const logger = createLogger({
     level: 'info',
-    collapsed: true
+    collapsed: true,
   });
 
   // Skip redux logs in console during the tests
@@ -57,7 +57,6 @@ const configureStore = initialState => {
   if (module.hot) {
     // Enable webpack hot module replacement for reducers
     module.hot.accept('../reducers', () => {
-      // eslint-disable-next-line global-require
       require('../reducers')
         .then(reducerModule => {
           const createReducers = reducerModule.default;

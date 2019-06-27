@@ -18,14 +18,14 @@ module.exports = api => {
         {
           targets: { electron: require('electron/package.json').version },
           corejs: '3',
-          useBuiltIns: 'usage'
-        }
+          useBuiltIns: 'usage',
+        },
       ],
-      [require('@babel/preset-react'), { development }]
+      [require('@babel/preset-react'), { development }],
     ],
     plugins: [
       [require('@babel/plugin-proposal-class-properties'), { loose: true }],
-      ...(development ? developmentPlugins : productionPlugins)
-    ]
+      ...(development ? developmentPlugins : productionPlugins),
+    ],
   };
 };

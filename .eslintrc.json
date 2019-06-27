@@ -27,7 +27,7 @@
     "no-console": "off",
     "no-use-before-define": "off",
     "no-multi-assign": "off",
-    "prettier/prettier": ["error", { "singleQuote": true, "printWidth": 120 }],
+    "prettier/prettier": ["error", { "singleQuote": true, "printWidth": 120, "trailingComma": "es5" }],
     "react/sort-comp": [
       "error",
       {

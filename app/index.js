@@ -1,33 +1,31 @@
-import React, { Fragment } from 'react';
-import { render } from 'react-dom';
-import { AppContainer as ReactHotAppContainer } from 'react-hot-loader';
+import React from 'react';
+import ReactDom from 'react-dom';
+import { Provider } from 'react-redux';
+import { ConnectedRouter } from 'connected-react-router/immutable';
 
-import Root from './containers/Root';
+import Routes from './Routes';
 import { configureStore, history } from './store/configureStore';
 import rootSaga from './sagas';
-import './app.global.css';
+import './index.css';
 
 const store = configureStore();
 store.runSaga(rootSaga);
 
-const AppContainer = process.env.PLAIN_HMR ? Fragment : ReactHotAppContainer;
+const render = Component =>
+  ReactDom.render(
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <Component />
+      </ConnectedRouter>
+    </Provider>,
+    document.getElementById('root')
+  );
 
-render(
-  <AppContainer>
-    <Root store={store} history={history} />
-  </AppContainer>,
-  document.getElementById('root')
-);
+render(Routes);
 
 if (module.hot) {
-  module.hot.accept('./containers/Root', () => {
-    // eslint-disable-next-line global-require
-    const NextRoot = require('./containers/Root').default;
-    render(
-      <AppContainer>
-        <NextRoot store={store} history={history} />
-      </AppContainer>,
-      document.getElementById('root')
-    );
+  module.hot.accept('./Routes', () => {
+    const NextApp = require('./Routes').default;
+    render(NextApp);
   });
 }
