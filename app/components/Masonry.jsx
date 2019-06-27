@@ -16,14 +16,14 @@ const styles = theme => ({
     flexWrap: 'nowrap',
     justifyContent: 'space-evenly',
     alignItems: 'stretch',
-    padding: theme.spacing.unit
+    padding: theme.spacing()
   },
   column: {
     display: 'flex',
     flex: '1 1 auto'
   },
   imageContainer: {
-    padding: theme.spacing.unit,
+    padding: theme.spacing(),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
