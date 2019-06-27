@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: off */
 /**
  * Build config for electron renderer process
  */

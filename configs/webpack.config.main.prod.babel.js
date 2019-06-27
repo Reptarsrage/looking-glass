@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: off */
 /**
  * Webpack config for production electron main process
  */

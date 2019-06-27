@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: off */
 /**
  * Base webpack config used across other specific configs
  */

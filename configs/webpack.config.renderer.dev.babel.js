@@ -1,4 +1,4 @@
-/* eslint global-require: off, import/no-dynamic-require: off */
+/* eslint global-require: off, import/no-dynamic-require: off, import/no-extraneous-dependencies: off */
 
 /**
  * Build config for development electron renderer process that uses
