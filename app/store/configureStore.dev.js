@@ -57,7 +57,8 @@ const configureStore = initialState => {
   if (module.hot) {
     // Enable webpack hot module replacement for reducers
     module.hot.accept('../reducers', () => {
-      import('../reducers')
+      // eslint-disable-next-line global-require
+      require('../reducers')
         /* eslint-disable-next-line promise/always-return */
         .then(reducerModule => {
           const createReducers = reducerModule.default;
