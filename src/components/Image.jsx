@@ -6,12 +6,14 @@ import { InView } from 'react-intersection-observer';
 const styles = () => ({
   image: {
     width: 'auto',
-    height: 'auto',
+    height: '100%',
     maxWidth: '100%',
     maxHeight: '100%',
   },
   thumb: {
     filter: 'blur(8px)',
+    width: 'auto',
+    height: '100%',
     maxWidth: '100%',
     maxHeight: '100%',
   },
