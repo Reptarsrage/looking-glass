@@ -18,7 +18,7 @@ const styles = () => ({
 });
 
 const Image = ({ classes, src, thumb, width, height, title }) => (
-  <InView>
+  <InView threshold={0.1}>
     {({ inView, ref }) => (
       <img
         ref={ref}
