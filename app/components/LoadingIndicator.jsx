@@ -1,25 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { BounceLoader } from 'halogenium';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = () => ({
   wrapper: {
     margin: '2em auto',
-    width: '40px',
-    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100px',
+    height: '100px',
     position: 'relative'
   }
 });
 
 const LoadingIndicator = ({ classes }) => (
   <div className={classes.wrapper}>
-    <BounceLoader color="#2196f3" size="100px" margin="2rem" />
+    <CircularProgress size={100} />
   </div>
 );
 
 LoadingIndicator.propTypes = {
-  classes: PropTypes.shape({}).isRequired
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(LoadingIndicator);
