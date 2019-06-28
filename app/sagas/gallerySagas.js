@@ -1,57 +1,61 @@
-import { put, call, takeLatest, all } from 'redux-saga/effects';
-import axios from 'axios';
-import uuid from 'uuid';
+import { put, call, takeLatest, all, select } from 'redux-saga/effects';
+import moment from 'moment';
 
+import LookingGlassService from '../services/lookingGlassService';
 import {
-  LOAD_IMAGE_SUCCESS,
-  LOAD_IMAGE_ERROR,
   FETCH_IMAGES,
   FETCH_IMAGES_SUCCESS,
-  FETCH_IMAGES_FAILURE
+  FETCH_IMAGES_ERROR,
+  REFRESH_SUCCESS,
+  REFRESH_ERROR,
 } from '../actions/types';
-import AsyncImageLoader from '../asyncImageLoader';
+import { accessTokenSelector, expiresSelector, refreshTokenSelector } from '../selectors/authSelectors';
+import { offsetSelector, beforeSelector, afterSelector } from '../selectors/gallerySelectors';
 
-const replaceUrlWithRandomSizes = url => {
-  const myRegexp = /(https?:\/\/via\.placeholder\.com)\/(\d+)\/(\w+)/g;
-  const match = myRegexp.exec(url);
-  return `${match[1]}/${Math.floor(Math.random() * 2000) + 200}x${Math.floor(Math.random() * 2000) + 200}/${match[3]}`;
-};
+function* handlefetchImages(action) {
+  const { meta } = action;
+  const { moduleId, galleryId } = meta;
 
-function* handleFetchImage(item) {
   try {
-    // Load item
-    const loader = new AsyncImageLoader();
-    const { width, height } = yield call(loader.loadImageAsync, item.url);
+    let accessToken = yield select(accessTokenSelector(moduleId));
+    const refreshToken = yield select(refreshTokenSelector(moduleId));
+    const offset = yield select(offsetSelector(moduleId, galleryId));
+    const before = yield select(beforeSelector(moduleId, galleryId));
+    const after = yield select(afterSelector(moduleId, galleryId));
+    const expires = yield select(expiresSelector(moduleId));
 
-    // Finish
-    yield put({
-      type: LOAD_IMAGE_SUCCESS,
-      payload: { ...item, width, height }
-    });
-  } catch (error) {
-    yield put({ type: LOAD_IMAGE_ERROR, payload: error });
-  }
-}
+    const lookingGlassService = new LookingGlassService();
 
-function* handlefetchImages() {
-  try {
-    // Get photos
-    let { data } = yield call(axios.get, 'https://jsonplaceholder.typicode.com/photos?_limit=100');
+    if (expires > 0) {
+      const expireDate = moment(expires);
+      const currentDate = moment();
 
-    // Replace ids, randomize dimensions
-    data = data.map(item => ({
-      ...item,
-      id: uuid.v4(),
-      url: replaceUrlWithRandomSizes(item.url)
-    }));
+      if (currentDate.isSameOrAfter(expireDate)) {
+        try {
+          const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
+          ({ accessToken } = data);
+          yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
+        } catch (error) {
+          yield put({ type: REFRESH_ERROR, payload: { ...error }, meta: { moduleId } });
+          yield put({ type: FETCH_IMAGES_ERROR, payload: { ...error }, meta: { moduleId, galleryId } });
+          return;
+        }
+      }
+    }
 
-    // Load all
-    yield all(data.map(item => call(handleFetchImage, { ...item })));
+    const { data } = yield call(
+      lookingGlassService.fetchImages,
+      moduleId,
+      galleryId,
+      accessToken,
+      offset,
+      before,
+      after
+    );
 
-    // Finish
-    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data });
+    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId, galleryId } });
   } catch (e) {
-    yield put({ type: FETCH_IMAGES_FAILURE, payload: { ...e } });
+    yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId, galleryId } });
   }
 }
 

@@ -1,24 +1,65 @@
 import { put, call, takeLatest, all } from 'redux-saga/effects';
-import { stringify } from 'qs';
-import axios from 'axios';
+import LookingGlassService from '../services/lookingGlassService';
 
-import { LOGIN_SUCCESS, LOGIN_ERROR, LOGIN } from '../actions/types';
+import {
+  LOGIN_SUCCESS,
+  LOGIN_ERROR,
+  LOGIN,
+  FETCH_OATH_URL,
+  FETCH_OATH_URL_ERROR,
+  FETCH_OATH_URL_SUCCESS,
+  AUTHORIZE,
+  AUTHORIZE_SUCCESS,
+  AUTHORIZE_ERROR,
+} from '../actions/types';
+
+const lookingGlassService = new LookingGlassService();
+
+function* handleAuthorize(action) {
+  const { payload, meta } = action;
+  const { moduleId } = meta;
+
+  try {
+    const { data } = yield call(lookingGlassService.authorize, moduleId, payload);
+
+    yield put({ type: AUTHORIZE_SUCCESS, payload: data, meta: { moduleId } });
+  } catch (e) {
+    yield put({ type: AUTHORIZE_ERROR, payload: { ...e }, meta: { moduleId } });
+  }
+}
+
+function* handleFetchOauthURL(action) {
+  const { meta } = action;
+  const { moduleId } = meta;
+
+  try {
+    const { data } = yield call(lookingGlassService.getOauthURL, moduleId);
+
+    yield put({ type: FETCH_OATH_URL_SUCCESS, payload: data, meta: { moduleId } });
+  } catch (e) {
+    yield put({ type: FETCH_OATH_URL_ERROR, payload: { ...e }, meta: { moduleId } });
+  }
+}
 
 function* handleLogin(action) {
-  try {
-    // Get images
-    const { payload } = action;
-    const { data } = yield call(axios.get, `http://localhost:3000/login?${stringify(payload)}`);
+  const { payload, meta } = action;
+  const { moduleId } = meta;
 
-    // Finish
-    yield put({ type: LOGIN_SUCCESS, payload: data });
+  try {
+    const { data } = yield call(lookingGlassService.login, moduleId, payload);
+
+    yield put({ type: LOGIN_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
-    yield put({ type: LOGIN_ERROR, payload: { ...e } });
+    yield put({ type: LOGIN_ERROR, payload: { ...e }, meta: { moduleId } });
   }
 }
 
 function* watchAuthSagas() {
-  yield all([takeLatest(LOGIN, handleLogin)]);
+  yield all([
+    takeLatest(LOGIN, handleLogin),
+    takeLatest(FETCH_OATH_URL, handleFetchOauthURL),
+    takeLatest(AUTHORIZE, handleAuthorize),
+  ]);
 }
 
 export default watchAuthSagas;

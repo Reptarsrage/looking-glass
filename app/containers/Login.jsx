@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
+import { compose } from 'recompose';
 import Avatar from '@material-ui/core/Avatar';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -23,50 +23,50 @@ import IconButton from '@material-ui/core/IconButton';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
+import { moduleIdSelector } from '../selectors/appSelectors';
 import * as authActions from '../actions/authActions';
-import WithErrors from '../hocs/WithErrors';
 
 const styles = theme => ({
   main: {
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
       width: 400,
       marginLeft: 'auto',
-      marginRight: 'auto'
-    }
+      marginRight: 'auto',
+    },
   },
   paper: {
-    marginTop: theme.spacing.unit * 8,
+    marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`,
   },
   avatar: {
-    margin: theme.spacing.unit,
-    backgroundColor: theme.palette.secondary.main
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing(1),
   },
   submit: {
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing(3),
   },
   wrapper: {
-    margin: theme.spacing.unit,
-    position: 'relative'
+    margin: theme.spacing(1),
+    position: 'relative',
   },
   progress: {
     top: '50%',
     left: '50%',
     color: 'white',
     position: 'absolute',
-    marginLeft: '-12px'
-  }
+    marginLeft: '-12px',
+  },
 });
 
 class Login extends React.Component {
@@ -77,7 +77,7 @@ class Login extends React.Component {
       username: '',
       password: '',
       rememberMe: false,
-      showPassword: false
+      showPassword: false,
     };
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -104,18 +104,19 @@ class Login extends React.Component {
   }
 
   handleSubmit(event) {
-    const { login } = this.props;
+    const { login, moduleId } = this.props;
     const { username, password } = this.state;
-    login(username, password);
+
+    login(moduleId, username, password);
     event.preventDefault();
   }
 
   render() {
-    const { fetching, error, success, classes } = this.props;
+    const { fetching, error, success, classes, moduleId } = this.props;
     const { username, password, rememberMe, showPassword } = this.state;
 
     if (success) {
-      return <Redirect to="/gallery" />;
+      return <Redirect to={`/gallery/${moduleId}/default`} />;
     }
 
     return (
@@ -197,31 +198,33 @@ class Login extends React.Component {
 
 Login.defaultProps = {
   error: null,
-  classes: {}
+  classes: {},
 };
 
 Login.propTypes = {
+  moduleId: PropTypes.string.isRequired,
   login: PropTypes.func.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.shape({}),
-  classes: PropTypes.shape({})
+  classes: PropTypes.shape({}),
 };
 
 const mapStateToProps = createStructuredSelector({
   success: successSelector(),
   fetching: fetchingSelector(),
-  error: errorSelector()
+  error: errorSelector(),
+  moduleId: moduleIdSelector(),
 });
 
 const mapDispatchToProps = {
-  login: authActions.login
+  login: authActions.login,
 };
 
 export default compose(
-  WithErrors,
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )
-)(withStyles(styles)(Login));
+  ),
+  withStyles(styles)
+)(Login);

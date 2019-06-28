@@ -1,45 +1,72 @@
-import { fromJS, List } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
 
 import {
-  LOAD_IMAGE_SUCCESS,
-  LOAD_IMAGE_ERROR,
   FETCH_IMAGES,
   FETCH_IMAGES_SUCCESS,
-  FETCH_IMAGES_FAILURE
+  FETCH_IMAGES_ERROR,
+  FETCH_MODULES_SUCCESS,
+  LOCATION_CHANGE,
 } from '../actions/types';
 
-const initialState = fromJS({
+export const initialState = fromJS({
   images: new List([]),
+  offset: 0,
+  before: null,
+  after: null,
+  hasNext: true,
   fetching: false,
   success: false,
-  error: null
+  error: null,
 });
 
-export default function exampleReducer(state = initialState, action) {
-  switch (action.type) {
-    case FETCH_IMAGES:
-      return state.merge({ fetching: true, success: false, error: null });
-    case FETCH_IMAGES_SUCCESS:
-      return state.merge({
-        fetching: false,
-        success: true,
-        error: null
-      });
-    case FETCH_IMAGES_FAILURE:
-      return state.merge({
-        fetching: false,
-        success: false,
-        error: action.payload
-      });
-    case LOAD_IMAGE_SUCCESS:
-      try {
-        return state.update('images', images => images.push(fromJS(action.payload)));
-      } catch (e) {
-        console.error(e);
+export default function galleryReducer(state = new Map(), action) {
+  const { type, payload, meta } = action || {};
+  let { moduleId, galleryId = 'default' } = meta || {};
+
+  switch (type) {
+    case LOCATION_CHANGE: {
+      const { location } = payload;
+      const { pathname } = location;
+      const parts = pathname.split('/');
+
+      if (parts[1] === 'gallery') {
+        [, , moduleId, galleryId] = parts;
+        if (!state.hasIn([moduleId, galleryId])) {
+          return state.setIn([moduleId, galleryId], initialState);
+        }
       }
 
       return state;
-    case LOAD_IMAGE_ERROR:
+    }
+    case FETCH_MODULES_SUCCESS: {
+      let nState = state;
+      for (const module of payload) {
+        nState = nState.setIn([module.id, galleryId], initialState);
+      }
+      return nState;
+    }
+    case FETCH_IMAGES:
+      return state.mergeIn([moduleId, galleryId], { fetching: true, success: false, error: null });
+    case FETCH_IMAGES_SUCCESS: {
+      const { offset, images, hasNext, after, before } = payload;
+
+      const newState = state.updateIn([moduleId, galleryId, 'images'], prevImages => prevImages.concat(fromJS(images)));
+      return newState.mergeIn([moduleId, galleryId], {
+        offset,
+        hasNext,
+        after,
+        before,
+        fetching: false,
+        success: true,
+        error: null,
+      });
+    }
+    case FETCH_IMAGES_ERROR:
+      return state.mergeIn([moduleId, galleryId], {
+        fetching: false,
+        success: false,
+        error: payload,
+      });
     default:
       return state;
   }

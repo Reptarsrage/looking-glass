@@ -29,8 +29,8 @@ class About extends React.PureComponent {
 
 About.propTypes = {
   history: PropTypes.shape({
-    goBack: PropTypes.func.isRequired
-  }).isRequired
+    goBack: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default About;

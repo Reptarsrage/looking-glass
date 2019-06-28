@@ -1,10 +1,17 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { withRouter } from 'react-router-dom';
-import { registerScrollListener, unregisterScrollListener } from 'react-virtualized/dist/es/WindowScroller/utils/onScroll'
-import { getDimensions, getPositionOffset, getScrollOffset } from 'react-virtualized/dist/es/WindowScroller/utils/dimensions'
-import { raf } from 'react-virtualized/dist/es/utils/animationFrame'
-import createDetectElementResize from 'react-virtualized/dist/es/vendor/detectElementResize'
+import {
+  registerScrollListener,
+  unregisterScrollListener,
+} from 'react-virtualized/dist/es/WindowScroller/utils/onScroll';
+import {
+  getDimensions,
+  getPositionOffset,
+  getScrollOffset,
+} from 'react-virtualized/dist/es/WindowScroller/utils/dimensions';
+import { raf } from 'react-virtualized/dist/es/utils/animationFrame';
+import createDetectElementResize from 'react-virtualized/dist/es/vendor/detectElementResize';
 
 /**
  * Specifies the number of miliseconds during which to disable pointer events while a scroll is in progress.
@@ -21,33 +28,19 @@ class WindowScroller extends React.PureComponent {
     scrollingResetTimeInterval: IS_SCROLLING_TIMEOUT,
     scrollElement: getWindow(),
     serverHeight: 0,
-    serverWidth: 0
+    serverWidth: 0,
   };
-
-  _window = getWindow();
-  _isMounted = false;
-  _positionFromTop = 0;
-  _positionFromLeft = 0;
-  _detectElementResize;
-  _child;
 
   state = {
     ...getDimensions(this.props.scrollElement, this.props),
     isScrolling: false,
     scrollLeft: 0,
-    scrollTop: 0
+    scrollTop: 0,
   };
 
   componentWillMount() {
-    const { location, scrollElement } = this.props;
-    const value = sessionStorage.getItem(location.key);
-    if (value != null) {
-      const { _positionFromTop, _positionFromLeft,...obj} = JSON.parse(value);
-      this.setState({ ...obj });
-      raf(() => {
-        scrollElement.scrollTo(obj.scrollLeft + _positionFromLeft, obj.scrollTop + _positionFromTop);
-      });
-    }
+    const { scrollElement, location } = this.props;
+    this.restoreScrollPosition(location.pathname, scrollElement);
   }
 
   componentDidMount() {
@@ -65,9 +58,18 @@ class WindowScroller extends React.PureComponent {
     this._isMounted = true;
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { scrollElement } = this.props;
-    const { scrollElement: prevScrollElement } = prevProps;
+  componentWillUpdate(nextProps) {
+    const { location } = this.props;
+    const { location: nextLocation } = nextProps;
+
+    if (location.pathname !== nextLocation.pathname) {
+      this.saveScrollPosition(location.pathname, this.state, this._positionFromTop, this._positionFromLeft);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { scrollElement, location } = this.props;
+    const { scrollElement: prevScrollElement, location: prevLocation } = prevProps;
 
     if (prevScrollElement !== scrollElement && prevScrollElement != null && scrollElement != null) {
       this.updatePosition(scrollElement);
@@ -78,14 +80,16 @@ class WindowScroller extends React.PureComponent {
       this._unregisterResizeListener(prevScrollElement);
       this._registerResizeListener(scrollElement);
     }
+
+    if (location.pathname !== prevLocation.pathname) {
+      this.restoreScrollPosition(location.pathname, scrollElement);
+    }
   }
 
   componentWillUnmount() {
     const { scrollElement, location } = this.props;
 
-    const value = JSON.stringify({ ...this.state, _positionFromTop: this._positionFromTop, _positionFromLeft: this._positionFromLeft });
-    console.log('saved', this._positionFromTop, this.state.scrollTop)
-    sessionStorage.setItem(location.key, value);
+    this.saveScrollPosition(location.pathname, this.state, this._positionFromTop, this._positionFromLeft);
 
     if (scrollElement) {
       unregisterScrollListener(this, scrollElement);
@@ -93,6 +97,34 @@ class WindowScroller extends React.PureComponent {
     }
 
     this._isMounted = false;
+  }
+
+  _window = getWindow();
+  _isMounted = false;
+  _positionFromTop = 0;
+  _positionFromLeft = 0;
+  _detectElementResize;
+  _child;
+
+  saveScrollPosition(pathname, state, _positionFromTop, _positionFromLeft) {
+    const value = JSON.stringify({
+      ...state,
+      _positionFromTop,
+      _positionFromLeft,
+    });
+
+    sessionStorage.setItem(pathname, value);
+  }
+
+  restoreScrollPosition(pathname, scrollElement) {
+    const value = sessionStorage.getItem(pathname);
+    if (value !== null) {
+      const { _positionFromTop, _positionFromLeft, ...obj } = JSON.parse(value);
+      this.setState({ ...obj });
+      raf(() => {
+        scrollElement.scrollTo(obj.scrollLeft + _positionFromLeft, obj.scrollTop + _positionFromTop);
+      });
+    }
   }
 
   updatePosition(scrollElement = this.props.scrollElement) {
@@ -110,34 +142,16 @@ class WindowScroller extends React.PureComponent {
     if (height !== dimensions.height || width !== dimensions.width) {
       this.setState({
         height: dimensions.height,
-        width: dimensions.width
+        width: dimensions.width,
       });
       onResize({
         height: dimensions.height,
-        width: dimensions.width
+        width: dimensions.width,
       });
     }
   }
 
-  render() {
-    const { children } = this.props;
-    const { isScrolling, scrollTop, scrollLeft, height, width } = this.state;
-
-    return children({
-      onChildScroll: this._onChildScroll,
-      registerChild: this._registerChild,
-      height,
-      isScrolling,
-      scrollLeft,
-      scrollTop,
-      width
-    });
-  }
-
   _registerChild = element => {
-    if (element && !(element instanceof Element)) {
-      console.warn('WindowScroller registerChild expects to be passed Element or null');
-    }
     this._child = element;
     this.updatePosition();
   };
@@ -194,12 +208,12 @@ class WindowScroller extends React.PureComponent {
       this.setState({
         isScrolling: true,
         scrollLeft,
-        scrollTop
+        scrollTop,
       });
 
       onScroll({
         scrollLeft,
-        scrollTop
+        scrollTop,
       });
     }
   };
@@ -207,9 +221,24 @@ class WindowScroller extends React.PureComponent {
   // Referenced by utils/onScroll
   __resetIsScrolling = () => {
     this.setState({
-      isScrolling: false
+      isScrolling: false,
     });
   };
+
+  render() {
+    const { children } = this.props;
+    const { isScrolling, scrollTop, scrollLeft, height, width } = this.state;
+
+    return children({
+      onChildScroll: this._onChildScroll,
+      registerChild: this._registerChild,
+      height,
+      isScrolling,
+      scrollLeft,
+      scrollTop,
+      width,
+    });
+  }
 }
 
 export default withRouter(WindowScroller);

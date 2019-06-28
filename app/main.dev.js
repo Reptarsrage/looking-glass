@@ -16,7 +16,7 @@ import MenuBuilder from './menu';
 
 export default class AppUpdater {
   constructor() {
-    log.transports.file.level = 'info';
+    log.transports.file.level = 'debug';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
   }
@@ -30,10 +30,11 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
-  require('electron-debug')();
+  require('electron-debug')({ devToolsMode: 'right' });
 }
 
 const installExtensions = async () => {
+  // see https://github.com/MarshallOfSound/electron-devtools-installer
   const installer = require('electron-devtools-installer');
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
   const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
@@ -46,10 +47,14 @@ const installExtensions = async () => {
  */
 
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+app.on('activate', async () => {
+  if (mainWindow === null) {
+    await createWindow();
   }
 });
 
@@ -59,19 +64,17 @@ app.on('ready', async () => {
   }
 
   mainWindow = new BrowserWindow({
+    width: 1600,
+    height: 900,
+    webPreferences: {
+      nodeIntegration: true,
+    },
     show: false,
-    width: 1024,
-    height: 728
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-  mainWindow.webContents.on('did-finish-load', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
+  mainWindow.once('ready-to-show', () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {

@@ -12,22 +12,20 @@ const styles = () => ({
     flexDirection: 'column',
     height: '100%',
     justifyContent: 'center',
-    width: '100%'
+    width: '100%',
   },
   row: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 });
 
 const AnErrorOccurred = ({ classes }) => (
   <div className={classes.wrapper}>
     <div className={classes.row}>
       <Typography align="center" color="error" noWrap>
-        <SentimentVeryDissatisfiedIcon
-          style={{ width: '100px', height: '100px' }}
-        />
+        <SentimentVeryDissatisfiedIcon style={{ width: '100px', height: '100px' }} />
       </Typography>
     </div>
     <div className={classes.row}>
@@ -39,7 +37,7 @@ const AnErrorOccurred = ({ classes }) => (
 );
 
 AnErrorOccurred.propTypes = {
-  classes: PropTypes.shape({}).isRequired
+  classes: PropTypes.shape({}).isRequired,
 };
 
 export default withStyles(styles)(AnErrorOccurred);
