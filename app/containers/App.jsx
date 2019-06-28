@@ -12,10 +12,12 @@ import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SearchIcon from '@material-ui/icons/Search';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
+import { withRouter } from 'react-router';
+import ReactRouterPropTypes from 'react-router-prop-types';
 
 import WithErrors from '../hocs/WithErrors';
 import { darkThemeSelector } from '../selectors/appSelectors';
@@ -98,17 +100,12 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      showBackButton: false,
-      showSearch: false,
-    };
-
     this.renderBackButton = this.renderBackButton.bind(this);
   }
 
   renderSearch() {
-    const { classes } = this.props;
-    const { showSearch } = this.state;
+    const { classes, location } = this.props;
+    const showSearch = location.pathname.startsWith('/gallery');
 
     if (!showSearch) {
       // TODO: render only when on gallery
@@ -132,8 +129,8 @@ class App extends React.Component {
   }
 
   renderBackButton() {
-    const { classes } = this.props;
-    const { showBackButton } = this.state;
+    const { classes, location, history } = this.props;
+    const showBackButton = location.pathname.startsWith('/gallery');
 
     if (!showBackButton) {
       // TODO: render only when on gallery
@@ -141,8 +138,8 @@ class App extends React.Component {
     }
 
     return (
-      <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
-        <MenuIcon />
+      <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer" onClick={history.goBack}>
+        <ArrowBackIcon />
       </IconButton>
     );
   }
@@ -180,6 +177,8 @@ App.propTypes = {
   children: PropTypes.element.isRequired,
   darkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
+  location: ReactRouterPropTypes.location.isRequired,
+  history: ReactRouterPropTypes.history.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -191,6 +190,7 @@ const mapDispatchToProps = {
 };
 
 export default compose(
+  withRouter,
   WithErrors,
   connect(
     mapStateToProps,

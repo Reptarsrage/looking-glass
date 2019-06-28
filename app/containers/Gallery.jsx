@@ -8,6 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import ReactRouterPropTypes from 'react-router-prop-types';
 
 import { imagesSelector, fetchingSelector, errorSelector, hasNextSelector } from '../selectors/gallerySelectors';
 import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
@@ -46,22 +47,39 @@ class Gallery extends Component {
     this.state = {
       modalOpen: false,
       modalItemId: null,
+      showBackButton: false,
     };
 
     this.fetchInitialImages = this.fetchInitialImages.bind(this);
     this.handleItemClick = this.handleItemClick.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
     this.loadMoreImages = this.loadMoreImages.bind(this);
+    this.onScroll = this.onScroll.bind(this);
   }
 
   componentDidMount() {
     this.fetchInitialImages();
+    window.addEventListener('scroll', this.onScroll);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.location.pathname !== prevProps.location.pathname) {
       this.setState({ modalOpen: false, modalItemId: null });
       this.fetchInitialImages();
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+  }
+
+  onScroll() {
+    const { showBackButton } = this.state;
+
+    if (window.scrollY > 100 && !showBackButton) {
+      this.setState({ showBackButton: true });
+    } else if (window.scrollY <= 100 && showBackButton) {
+      this.setState({ showBackButton: false });
     }
   }
 
@@ -89,7 +107,7 @@ class Gallery extends Component {
 
   render() {
     const { images, fetching, error, classes, moduleId, galleryId, location } = this.props;
-    const { modalOpen, modalItemId } = this.state;
+    const { modalOpen, modalItemId, showBackButton } = this.state;
 
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
     const modalContent = modalItem && (
@@ -108,9 +126,7 @@ class Gallery extends Component {
       <React.Fragment>
         <Typography variant="h1">Images</Typography>
 
-        <div className={classes.floated}>
-          <BackButton />
-        </div>
+        <div className={classes.floated}>{showBackButton ? <BackButton /> : null}</div>
 
         <Dialog className={classes.dialog} fullScreen={true} open={modalOpen} onClose={this.handleModalClose}>
           <DialogContent>{modalContent}</DialogContent>
@@ -138,7 +154,7 @@ Gallery.defaultProps = {
 
 Gallery.propTypes = {
   classes: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
+  location: ReactRouterPropTypes.location.isRequired,
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   error: PropTypes.object,
