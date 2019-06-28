@@ -148,7 +148,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.4.5",
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "7.4.4",
     "@babel/preset-env": "7.4.5",
     "@babel/preset-react": "7.0.0",
     "@babel/register": "7.4.4",
@@ -191,7 +191,7 @@
     "node-sass": "4.12.0",
     "opencollective-postinstall": "2.0.2",
     "optimize-css-assets-webpack-plugin": "5.0.1",
-    "path": "^0.12.7",
+    "path": "0.12.7",
     "prettier": "1.18.2",
     "react-test-renderer": "16.8.6",
     "react-virtualized": "9.21.1",
