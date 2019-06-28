@@ -22,7 +22,7 @@ const LoadingIndicator = ({ classes }) => (
 );
 
 LoadingIndicator.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(LoadingIndicator);

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { InfiniteLoader, List } from 'react-virtualized';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
+import ReactRouterPropTypes from 'react-router-prop-types';
 
 import NoResults from './NoResults';
 import LoadingIndicator from './LoadingIndicator';
@@ -218,8 +219,8 @@ class ListView extends Component {
 }
 
 ListView.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
-  location: PropTypes.shape({}).isRequired,
+  classes: PropTypes.object.isRequired,
+  location: ReactRouterPropTypes.location.isRequired,
   items: PropTypes.instanceOf(Immutable.List).isRequired,
   loading: PropTypes.bool.isRequired,
   moduleId: PropTypes.string.isRequired,

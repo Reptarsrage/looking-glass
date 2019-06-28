@@ -206,8 +206,8 @@ Login.propTypes = {
   login: PropTypes.func.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
-  error: PropTypes.shape({}),
-  classes: PropTypes.shape({}),
+  error: PropTypes.object,
+  classes: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({

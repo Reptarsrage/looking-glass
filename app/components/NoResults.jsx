@@ -37,7 +37,7 @@ const NoResults = ({ classes }) => (
 );
 
 NoResults.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(NoResults);
