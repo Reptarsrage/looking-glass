@@ -15,10 +15,17 @@ import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as galleryActions from '../actions/galleryActions';
 import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 
 const styles = () => ({
-  floated: {
+  floatedBottomRight: {
+    position: 'fixed',
+    bottom: '10px',
+    right: '10px',
+    zIndex: 2,
+  },
+  floatedTopLeft: {
     position: 'fixed',
     top: '10px',
     left: '10px',
@@ -47,7 +54,7 @@ class Gallery extends Component {
     this.state = {
       modalOpen: false,
       modalItemId: null,
-      showBackButton: false,
+      showOverlayButtons: false,
     };
 
     this.fetchInitialImages = this.fetchInitialImages.bind(this);
@@ -74,12 +81,12 @@ class Gallery extends Component {
   }
 
   onScroll() {
-    const { showBackButton } = this.state;
+    const { showOverlayButtons } = this.state;
 
-    if (window.scrollY > 100 && !showBackButton) {
-      this.setState({ showBackButton: true });
-    } else if (window.scrollY <= 100 && showBackButton) {
-      this.setState({ showBackButton: false });
+    if (window.scrollY > 100 && !showOverlayButtons) {
+      this.setState({ showOverlayButtons: true });
+    } else if (window.scrollY <= 100 && showOverlayButtons) {
+      this.setState({ showOverlayButtons: false });
     }
   }
 
@@ -107,7 +114,7 @@ class Gallery extends Component {
 
   render() {
     const { images, fetching, error, classes, moduleId, galleryId, location } = this.props;
-    const { modalOpen, modalItemId, showBackButton } = this.state;
+    const { modalOpen, modalItemId, showOverlayButtons } = this.state;
 
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
     const modalContent = modalItem && (
@@ -126,7 +133,8 @@ class Gallery extends Component {
       <React.Fragment>
         <Typography variant="h1">Images</Typography>
 
-        <div className={classes.floated}>{showBackButton ? <BackButton /> : null}</div>
+        <div className={classes.floatedTopLeft}>{showOverlayButtons ? <BackButton /> : null}</div>
+        <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
         <Dialog className={classes.dialog} fullScreen={true} open={modalOpen} onClose={this.handleModalClose}>
           <DialogContent>{modalContent}</DialogContent>
