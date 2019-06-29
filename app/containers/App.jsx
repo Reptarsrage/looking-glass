@@ -20,7 +20,7 @@ import { withRouter } from 'react-router';
 import ReactRouterPropTypes from 'react-router-prop-types';
 
 import WithErrors from '../hocs/WithErrors';
-import { darkThemeSelector } from '../selectors/appSelectors';
+import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as appActions from '../actions/appActions';
 
 const darkTheme = createMuiTheme({
@@ -101,10 +101,17 @@ class App extends React.Component {
     super(props);
 
     this.renderBackButton = this.renderBackButton.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+  }
+
+  handleSearchChange(e) {
+    const { updateSearch, moduleId, galleryId } = this.props;
+
+    updateSearch(e.target.value, moduleId, galleryId);
   }
 
   renderSearch() {
-    const { classes, location } = this.props;
+    const { classes, location, updateSearch } = this.props;
     const showSearch = location.pathname.startsWith('/gallery');
 
     if (!showSearch) {
@@ -119,6 +126,7 @@ class App extends React.Component {
         </div>
         <InputBase
           placeholder="Search…"
+          onChange={this.handleSearchChange}
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,
@@ -179,14 +187,19 @@ App.propTypes = {
   classes: PropTypes.object.isRequired,
   location: ReactRouterPropTypes.location.isRequired,
   history: ReactRouterPropTypes.history.isRequired,
+  moduleId: PropTypes.string,
+  galleryId: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   darkTheme: darkThemeSelector(),
+  moduleId: moduleIdSelector(),
+  galleryId: galleryIdSelector(),
 });
 
 const mapDispatchToProps = {
   toggleDarkTheme: appActions.toggleDarkTheme,
+  updateSearch: appActions.updateSearch,
 };
 
 export default compose(

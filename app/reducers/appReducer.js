@@ -9,7 +9,7 @@ const initialState = fromJS({
 });
 
 export default function authReducer(state = initialState, action) {
-  const { type, payload } = action || {};
+  const { type, payload, meta } = action || {};
 
   switch (type) {
     case LOCATION_CHANGE: {

@@ -1,4 +1,5 @@
-import { put, call, takeLatest, all, select } from 'redux-saga/effects';
+import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga/effects';
+import axios, { CancelToken } from 'axios';
 import moment from 'moment';
 
 import LookingGlassService from '../services/lookingGlassService';
@@ -8,23 +9,41 @@ import {
   FETCH_IMAGES_ERROR,
   REFRESH_SUCCESS,
   REFRESH_ERROR,
+  UPDATE_SEARCH,
+  CLEAR_IMAGES,
 } from '../actions/types';
 import { accessTokenSelector, expiresSelector, refreshTokenSelector } from '../selectors/authSelectors';
-import { offsetSelector, beforeSelector, afterSelector } from '../selectors/gallerySelectors';
+import { offsetSelector, beforeSelector, afterSelector, searchQuerySelector } from '../selectors/gallerySelectors';
+
+function* handleUpdateSearch(action) {
+  const { meta, payload } = action;
+  const { moduleId, galleryId } = meta;
+
+  yield delay(500);
+  if (yield cancelled()) {
+    return;
+  }
+
+  yield put({ type: CLEAR_IMAGES, meta: { moduleId, galleryId } });
+  yield put({ type: FETCH_IMAGES, meta: { moduleId, galleryId } });
+}
 
 function* handlefetchImages(action) {
   const { meta } = action;
   const { moduleId, galleryId } = meta;
 
-  try {
-    let accessToken = yield select(accessTokenSelector(moduleId));
-    const refreshToken = yield select(refreshTokenSelector(moduleId));
-    const offset = yield select(offsetSelector(moduleId, galleryId));
-    const before = yield select(beforeSelector(moduleId, galleryId));
-    const after = yield select(afterSelector(moduleId, galleryId));
-    const expires = yield select(expiresSelector(moduleId));
+  let accessToken = yield select(accessTokenSelector());
+  const refreshToken = yield select(refreshTokenSelector());
+  const offset = yield select(offsetSelector());
+  const before = yield select(beforeSelector());
+  const after = yield select(afterSelector());
+  const expires = yield select(expiresSelector());
+  const searchQuery = yield select(searchQuerySelector());
 
-    const lookingGlassService = new LookingGlassService();
+  const source = CancelToken.source();
+
+  try {
+    const lookingGlassService = new LookingGlassService(source);
 
     if (expires > 0) {
       const expireDate = moment(expires);
@@ -50,17 +69,22 @@ function* handlefetchImages(action) {
       accessToken,
       offset,
       before,
-      after
+      after,
+      searchQuery
     );
 
     yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId, galleryId } });
   } catch (e) {
     yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId, galleryId } });
+  } finally {
+    if (yield cancelled()) {
+      yield call(source, source.cancel);
+    }
   }
 }
 
 function* watchGallerySagas() {
-  yield all([takeLatest(FETCH_IMAGES, handlefetchImages)]);
+  yield all([takeLatest(FETCH_IMAGES, handlefetchImages), takeLatest(UPDATE_SEARCH, handleUpdateSearch)]);
 }
 
 export default watchGallerySagas;

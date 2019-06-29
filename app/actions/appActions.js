@@ -1,6 +1,11 @@
-import { TOGGLE_DARK_THEME } from './types';
+import { TOGGLE_DARK_THEME, UPDATE_SEARCH } from './types';
 
-/* eslint-disable-next-line import/prefer-default-export */
 export const toggleDarkTheme = () => ({
   type: TOGGLE_DARK_THEME,
+});
+
+export const updateSearch = (query, moduleId, galleryId) => ({
+  type: UPDATE_SEARCH,
+  payload: query,
+  meta: { moduleId, galleryId },
 });
