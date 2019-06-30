@@ -5,12 +5,12 @@ export default class LookingGlassService {
   config;
   instance;
 
-  constructor(cancelTokenSource) {
+  constructor() {
     const port = process.env.SERVICE_PORT || 3001;
     const host = process.env.SERVICE_HOST || 'localhost';
 
     const baseURL = `http://${host}:${port}`;
-    this.config = { cancelToken: cancelTokenSource.token };
+    this.config = {};
     this.instance = axios.create({
       baseURL,
     });

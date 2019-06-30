@@ -1,5 +1,4 @@
 import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga/effects';
-import axios, { CancelToken } from 'axios';
 import moment from 'moment';
 
 import LookingGlassService from '../services/lookingGlassService';
@@ -16,7 +15,7 @@ import { accessTokenSelector, expiresSelector, refreshTokenSelector } from '../s
 import { offsetSelector, beforeSelector, afterSelector, searchQuerySelector } from '../selectors/gallerySelectors';
 
 function* handleUpdateSearch(action) {
-  const { meta, payload } = action;
+  const { meta } = action;
   const { moduleId, galleryId } = meta;
 
   yield delay(500);
@@ -40,10 +39,8 @@ function* handlefetchImages(action) {
   const expires = yield select(expiresSelector());
   const searchQuery = yield select(searchQuerySelector());
 
-  const source = CancelToken.source();
-
   try {
-    const lookingGlassService = new LookingGlassService(source);
+    const lookingGlassService = new LookingGlassService();
 
     if (expires > 0) {
       const expireDate = moment(expires);
@@ -76,10 +73,6 @@ function* handlefetchImages(action) {
     yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId, galleryId } });
   } catch (e) {
     yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId, galleryId } });
-  } finally {
-    if (yield cancelled()) {
-      yield call(source, source.cancel);
-    }
   }
 }
 
