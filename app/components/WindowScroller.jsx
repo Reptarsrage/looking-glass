@@ -120,10 +120,13 @@ class WindowScroller extends React.PureComponent {
     const value = sessionStorage.getItem(pathname);
     if (value !== null) {
       const { _positionFromTop, _positionFromLeft, ...obj } = JSON.parse(value);
-      this.setState({ ...obj });
-      raf(() => {
-        scrollElement.scrollTo(obj.scrollLeft + _positionFromLeft, obj.scrollTop + _positionFromTop);
-      });
+
+      if (obj.scrollTop > 0) {
+        this.setState({ ...obj });
+        raf(() => {
+          scrollElement.scrollTo(obj.scrollLeft + _positionFromLeft, obj.scrollTop + _positionFromTop);
+        });
+      }
     }
   }
 
