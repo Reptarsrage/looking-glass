@@ -1,7 +1,7 @@
-import axios, { CancelToken } from 'axios';
+import axios from 'axios';
 import { stringify } from 'qs';
 
-export default class LookingGlassService {
+export default class FileSystemService {
   config;
   instance;
 
