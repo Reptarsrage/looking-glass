@@ -21,6 +21,7 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 
 import WithErrors from '../hocs/WithErrors';
 import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
+import { searchQuerySelector } from '../selectors/gallerySelectors';
 import * as appActions from '../actions/appActions';
 
 const darkTheme = createMuiTheme({
@@ -111,7 +112,7 @@ class App extends React.Component {
   }
 
   renderSearch() {
-    const { classes, location, updateSearch } = this.props;
+    const { classes, location, searchQuery } = this.props;
     const showSearch = location.pathname.startsWith('/gallery');
 
     if (!showSearch) {
@@ -127,6 +128,7 @@ class App extends React.Component {
         <InputBase
           placeholder="Search…"
           onChange={this.handleSearchChange}
+          value={searchQuery || ''}
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,
@@ -189,12 +191,14 @@ App.propTypes = {
   history: ReactRouterPropTypes.history.isRequired,
   moduleId: PropTypes.string,
   galleryId: PropTypes.string,
+  searchQuery: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   darkTheme: darkThemeSelector(),
   moduleId: moduleIdSelector(),
   galleryId: galleryIdSelector(),
+  searchQuery: searchQuerySelector(),
 });
 
 const mapDispatchToProps = {
