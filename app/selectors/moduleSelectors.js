@@ -2,6 +2,8 @@ import { createSelector } from 'reselect';
 
 const moduleState = state => state.get('module');
 
+const appState = state => state.get('app');
+
 const fetchingSelector = () =>
   createSelector(
     moduleState,
@@ -26,4 +28,18 @@ const modulesSelector = () =>
     state => state.get('modules')
   );
 
-export { successSelector, fetchingSelector, errorSelector, modulesSelector };
+const moduleSelector = () =>
+  createSelector(
+    moduleState,
+    appState,
+    (module, app) => {
+      const modules = module.get('modules');
+      const moduleId = app.get('moduleId');
+      const idx = modules.findIndex(m => m.get('id') === moduleId);
+      const m = modules.get(idx);
+      console.log('hjgkgkj', { modules, idx, moduleId, m });
+      return m;
+    }
+  );
+
+export { successSelector, fetchingSelector, errorSelector, modulesSelector, moduleSelector };

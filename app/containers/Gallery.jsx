@@ -9,10 +9,22 @@ import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import ReactRouterPropTypes from 'react-router-prop-types';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Paper from '@material-ui/core/Paper';
+import Link from '@material-ui/core/Link';
+import { Link as RouterLink } from 'react-router-dom';
 
-import { imagesSelector, fetchingSelector, errorSelector, hasNextSelector } from '../selectors/gallerySelectors';
+import {
+  imagesSelector,
+  fetchingSelector,
+  errorSelector,
+  hasNextSelector,
+  searchQuerySelector,
+} from '../selectors/gallerySelectors';
 import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
+import { moduleSelector } from '../selectors/moduleSelectors';
 import * as galleryActions from '../actions/galleryActions';
+import * as appActions from '../actions/appActions';
 import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
 import ScrollToTopButton from '../components/ScrollToTopButton';
@@ -34,6 +46,9 @@ const styles = () => ({
   dialog: {
     maxHeight: '100vh',
     overflow: 'auto',
+  },
+  pointer: {
+    cursor: 'pointer',
   },
 });
 
@@ -62,6 +77,7 @@ class Gallery extends Component {
     this.handleModalClose = this.handleModalClose.bind(this);
     this.loadMoreImages = this.loadMoreImages.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    this.clearSearch = this.clearSearch.bind(this);
   }
 
   componentDidMount() {
@@ -78,6 +94,14 @@ class Gallery extends Component {
 
   componentWillUnmount() {
     window.removeEventListener('scroll', this.onScroll);
+  }
+
+  clearSearch() {
+    const { clearSearch, moduleId, galleryId, searchQuery, fetchImages } = this.props;
+    if (searchQuery !== null && searchQuery.length > 0) {
+      clearSearch(moduleId, galleryId);
+      fetchImages(moduleId, galleryId);
+    }
   }
 
   onScroll() {
@@ -113,7 +137,7 @@ class Gallery extends Component {
   }
 
   render() {
-    const { images, fetching, error, classes, moduleId, galleryId, location } = this.props;
+    const { images, fetching, error, classes, moduleId, galleryId, location, module, searchQuery } = this.props;
     const { modalOpen, modalItemId, showOverlayButtons } = this.state;
 
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
@@ -131,7 +155,38 @@ class Gallery extends Component {
 
     return (
       <React.Fragment>
-        <Typography variant="h1">Images</Typography>
+        <Paper elevation={0} className={classes.paper}>
+          <Breadcrumbs aria-label="Breadcrumb">
+            <Link className={classes.pointer} component={RouterLink} color="inherit" to="/">
+              Home
+            </Link>
+            <Link
+              className={classes.pointer}
+              component={RouterLink}
+              color="inherit"
+              to={`/gallery/${moduleId}/default`}
+              onClick={this.clearSearch}
+            >
+              {module.get('title')}
+            </Link>
+            {galleryId !== 'default' ? (
+              <Link
+                className={classes.pointer}
+                component={RouterLink}
+                color="inherit"
+                to={`/gallery/${moduleId}/${galleryId}`}
+                onClick={this.clearSearch}
+              >
+                {galleryId}
+              </Link>
+            ) : null}
+            {searchQuery !== null && searchQuery.length > 0 ? (
+              <Typography color="textPrimary">"{searchQuery}"</Typography>
+            ) : null}
+          </Breadcrumbs>
+        </Paper>
+
+        <br />
 
         <div className={classes.floatedTopLeft}>{showOverlayButtons ? <BackButton /> : null}</div>
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
@@ -163,9 +218,12 @@ Gallery.defaultProps = {
 Gallery.propTypes = {
   classes: PropTypes.object.isRequired,
   location: ReactRouterPropTypes.location.isRequired,
+  history: ReactRouterPropTypes.history.isRequired,
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   error: PropTypes.object,
+  searchQuery: PropTypes.string,
+  module: PropTypes.object, // immutable
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -175,10 +233,13 @@ const mapStateToProps = createStructuredSelector({
   error: errorSelector(),
   moduleId: moduleIdSelector(),
   galleryId: galleryIdSelector(),
+  module: moduleSelector(),
+  searchQuery: searchQuerySelector(),
 });
 
 const mapDispatchToProps = {
   fetchImages: galleryActions.fetchImages,
+  clearSearch: appActions.clearSearch,
 };
 
 export default compose(
