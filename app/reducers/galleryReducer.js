@@ -8,6 +8,7 @@ import {
   LOCATION_CHANGE,
   UPDATE_SEARCH,
   CLEAR_IMAGES,
+  CLEAR_SEARCH,
 } from '../actions/types';
 
 export const initialState = fromJS({
@@ -27,6 +28,19 @@ export default function galleryReducer(state = new Map(), action) {
   let { moduleId, galleryId = 'default' } = meta || {};
 
   switch (type) {
+    case CLEAR_SEARCH: {
+      return state.mergeIn([moduleId, galleryId], {
+        images: new List([]),
+        offset: 1,
+        before: null,
+        after: null,
+        hasNext: true,
+        fetching: true,
+        success: false,
+        searchQuery: null,
+        error: null,
+      });
+    }
     case CLEAR_IMAGES: {
       return state.mergeIn([moduleId, galleryId], {
         images: new List([]),

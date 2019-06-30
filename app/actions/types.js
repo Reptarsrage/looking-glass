@@ -25,3 +25,4 @@ export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
 export const TOGGLE_DARK_THEME = 'TOGGLE_DARK_THEME';
 export const UPDATE_SEARCH = 'UPDATE_SEARCH';
 export const CLEAR_IMAGES = 'CLEAR_IMAGES';
+export const CLEAR_SEARCH = 'CLEAR_SEARCH';
