@@ -37,7 +37,6 @@ const moduleSelector = () =>
       const moduleId = app.get('moduleId');
       const idx = modules.findIndex(m => m.get('id') === moduleId);
       const m = modules.get(idx);
-      console.log('hjgkgkj', { modules, idx, moduleId, m });
       return m;
     }
   );
