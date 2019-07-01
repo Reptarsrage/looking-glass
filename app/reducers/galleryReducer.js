@@ -65,6 +65,9 @@ export default function galleryReducer(state = new Map(), action) {
         [, , moduleId, galleryId] = parts;
         if (!state.hasIn([moduleId, galleryId])) {
           return state.setIn([moduleId, galleryId], initialState);
+        } else {
+          // reset so that we're in a good state even if FECH_IMAGES is cancelled
+          return state.mergeIn([moduleId, galleryId], { fetching: false, error: null, success: false });
         }
       }
 
