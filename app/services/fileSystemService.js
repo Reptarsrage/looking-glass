@@ -194,14 +194,12 @@ export default class FileSystemService {
       }
     }
 
-    const ret = {
+    return {
       images: results,
       hasNext: offset < dirItems.length,
       count: results.length,
       offset: offset + pageSize,
     };
-    console.log('>>>>>>>>>>>>>>>>>', ret);
-    return ret;
   };
 
   fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
