@@ -2,6 +2,7 @@ import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga
 import moment from 'moment';
 
 import LookingGlassService from '../services/lookingGlassService';
+import FileSystemService from '../services/fileSystemService';
 import {
   FETCH_IMAGES,
   FETCH_IMAGES_SUCCESS,
@@ -40,7 +41,12 @@ function* handlefetchImages(action) {
   const searchQuery = yield select(searchQuerySelector());
 
   try {
-    const lookingGlassService = new LookingGlassService();
+    let service;
+    if (moduleId === 'fs') {
+      service = new FileSystemService();
+    } else {
+      service = new LookingGlassService();
+    }
 
     if (expires > 0) {
       const expireDate = moment(expires);
@@ -48,7 +54,7 @@ function* handlefetchImages(action) {
 
       if (currentDate.isSameOrAfter(expireDate)) {
         try {
-          const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
+          const { data } = yield call(service.refresh, moduleId, refreshToken);
           ({ accessToken } = data);
           yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
         } catch (error) {
@@ -60,7 +66,7 @@ function* handlefetchImages(action) {
     }
 
     const { data } = yield call(
-      lookingGlassService.fetchImages,
+      service.fetchImages,
       moduleId,
       galleryId,
       accessToken,
@@ -72,6 +78,7 @@ function* handlefetchImages(action) {
 
     yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId, galleryId } });
   } catch (e) {
+    console.error(e, 'Error fetching images');
     yield put({ type: FETCH_IMAGES_ERROR, payload: { ...e }, meta: { moduleId, galleryId } });
   }
 }

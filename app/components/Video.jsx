@@ -78,7 +78,7 @@ Video.defaultProps = {
 Video.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
-  thumb: PropTypes.string.isRequired,
+  thumb: PropTypes.string,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   title: PropTypes.string,
   width: PropTypes.number.isRequired,

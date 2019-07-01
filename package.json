@@ -230,6 +230,7 @@
     "electron-store": "^4.0.0",
     "electron-updater": "^4.0.6",
     "history": "^4.9.0",
+    "image-size": "^0.7.4",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "qs": "^6.7.0",
