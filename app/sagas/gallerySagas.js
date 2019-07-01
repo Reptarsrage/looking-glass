@@ -15,6 +15,8 @@ import {
 import { accessTokenSelector, expiresSelector, refreshTokenSelector } from '../selectors/authSelectors';
 import { offsetSelector, beforeSelector, afterSelector, searchQuerySelector } from '../selectors/gallerySelectors';
 
+const fsService = new FileSystemService();
+
 function* handleUpdateSearch(action) {
   const { meta } = action;
   const { moduleId, galleryId } = meta;
@@ -43,7 +45,7 @@ function* handlefetchImages(action) {
   try {
     let service;
     if (moduleId === 'fs') {
-      service = new FileSystemService();
+      service = fsService;
     } else {
       service = new LookingGlassService();
     }

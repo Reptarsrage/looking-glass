@@ -1,12 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-const { promisify } = require('util'); // eslint-disable-line import/no-extraneous-dependencies
-const { stringify } = require('qs');
-const { exec } = require('child_process');
-const imageSizeOf = promisify(require('image-size'));
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto'; // eslint-disable-line import/no-extraneous-dependencies
+import { promisify } from 'util'; // eslint-disable-line import/no-extraneous-dependencies
+import { stringify } from 'qs';
+import { exec } from 'child_process';
+import imageSizeOfSync from 'image-size';
+
+const imageSizeOf = promisify(imageSizeOfSync);
 
 export default class FileSystemService {
   port = process.env.SERVICE_PORT || 3001;
+  salt = null;
   host = process.env.SERVICE_HOST || 'localhost';
   images = ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'];
   videos = [
@@ -45,13 +49,29 @@ export default class FileSystemService {
     '.yuv',
   ];
 
+  constructor() {
+    this.salt = this.genRandomString(6);
+  }
+
+  genRandomString = length =>
+    crypto
+      .randomBytes(Math.ceil(length / 2))
+      .toString('hex')
+      .slice(0, length);
+
+  sha512 = s =>
+    crypto
+      .createHmac('sha1', this.salt)
+      .update(s)
+      .digest('base64');
+
   videoSizeOf = async file => {
     return new Promise((resolve, reject) =>
       exec(
         `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 \"${file}\"`,
         (err, stdout) => {
           if (err) {
-            console.error(err, 'ffprobe error:');
+            console.warn(err, 'ffprobe error:');
             reject(err);
           }
 
@@ -67,29 +87,32 @@ export default class FileSystemService {
   };
 
   getThumbForFile = async file => {
-    if (this.images.some(ext => ext === path.extname(file).toLowerCase())) {
-      var dimensions = await imageSizeOf(file);
-      return {
-        imageURL: file,
-        thumbURL: file,
-        isVideo: false,
-        width: dimensions.width,
-        height: dimensions.height,
-      };
+    try {
+      if (this.images.some(ext => ext === path.extname(file).toLowerCase())) {
+        var dimensions = await imageSizeOf(file);
+        return {
+          imageURL: file,
+          thumbURL: file,
+          isVideo: false,
+          width: dimensions.width,
+          height: dimensions.height,
+        };
+      }
+
+      if (this.videos.some(ext => ext === path.extname(file).toLowerCase())) {
+        var dimensions = await this.videoSizeOf(file);
+        return {
+          videoURL: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
+          thumbURL: null,
+          isVideo: true,
+          width: dimensions.width,
+          height: dimensions.height,
+        };
+      }
+    } catch (err) {
+      console.warn(err, `Error determine image for file: ${file}`);
     }
 
-    if (this.videos.some(ext => ext === path.extname(file).toLowerCase())) {
-      var dimensions = await this.videoSizeOf(file);
-      return {
-        videoURL: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
-        thumbURL: null,
-        isVideo: true,
-        width: dimensions.width,
-        height: dimensions.height,
-      };
-    }
-
-    console.warn('Unable to determine image for file: ', file);
     return null;
   };
 
@@ -109,17 +132,30 @@ export default class FileSystemService {
         }
       }
     } catch (err) {
-      /* intentionally blank */
-      console.error(err, 'Error reading file');
+      console.warn(err, 'Error reading file');
     }
 
     console.warn('Unable to determine image for dir: ', dir);
     return retItem;
   };
 
-  walk = async (dir, offset = 0, pageSize = 20) => {
+  walk = async (dir, offset = 0, pageSize = 20, random = true) => {
     const results = [];
     const dirItems = fs.readdirSync(dir);
+    if (random) {
+      dirItems.sort((a, b) => {
+        const aHash = this.sha512(a);
+        const bHash = this.sha512(b);
+        if (aHash == bHash) {
+          return 0;
+        } else if (aHash > bHash) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+    }
+
     for (const item of dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length))) {
       const itemPath = `${dir}${path.sep}${item}`;
       const title = path.basename(itemPath, path.extname(itemPath));
@@ -158,12 +194,14 @@ export default class FileSystemService {
       }
     }
 
-    return {
+    const ret = {
       images: results,
-      hasNext: offset + pageSize < dirItems.length,
+      hasNext: offset < dirItems.length,
       count: results.length,
-      offset: offset + pageSize + 1,
+      offset: offset + pageSize,
     };
+    console.log('>>>>>>>>>>>>>>>>>', ret);
+    return ret;
   };
 
   fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
@@ -174,7 +212,7 @@ export default class FileSystemService {
       return { data: await this.walk(location, offset - 1, pageSize) };
     } catch (err) {
       // Deal with the fact the chain failed
-      console.error(err, 'Error crawling');
+      console.warn(err, 'Error crawling');
       throw err;
     }
   };
