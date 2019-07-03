@@ -61,7 +61,16 @@ class Video extends React.PureComponent {
             controls={!autopilot}
             onVolumeChange={this.handleVolumeChange}
           >
-            {inView ? <source src={src} type={`video/${extname(src).slice(1)}`} /> : null}
+            {inView ? (
+              <source
+                src={src}
+                type={`video/${
+                  extname(src)
+                    .slice(1)
+                    .split('?')[0]
+                }`}
+              />
+            ) : null}
           </video>
         )}
       </InView>
