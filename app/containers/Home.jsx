@@ -126,7 +126,6 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = {
   fetchModules: moduleActions.fetchModules,
-  setFileExplorerLocation: galleryActions.setFileExplorerLocation,
 };
 
 export default compose(
