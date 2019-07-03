@@ -46,7 +46,7 @@ class Video extends React.PureComponent {
     const { classes, src, thumb, width, height, title, autopilot } = this.props;
 
     return (
-      <InView threshold={0.1}>
+      <InView threshold={0}>
         {({ inView, ref }) => (
           <video
             ref={ref}

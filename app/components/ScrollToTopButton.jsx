@@ -4,7 +4,6 @@ import { compose } from 'recompose';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import { Fab } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { raf } from 'react-virtualized/dist/es/utils/animationFrame';
 
 const styles = theme => ({
   fab: {
@@ -23,7 +22,7 @@ export class ScrollToTopButton extends React.PureComponent {
   }
 
   scrollToTop() {
-    raf(() => {
+    window.requestAnimationFrame(() => {
       window.scrollTo(0, 0);
     });
   }

@@ -10,9 +10,10 @@ import Video from './Video';
 const styles = () => ({
   paper: {
     padding: 0,
-    width: 'auto',
+    flex: '1',
     height: '100%',
     overflow: 'hidden',
+    position: 'relative',
   },
 });
 

@@ -35,13 +35,13 @@ const styles = () => ({
     position: 'fixed',
     bottom: '10px',
     right: '10px',
-    zIndex: 2,
+    zIndex: 3,
   },
   floatedTopLeft: {
     position: 'fixed',
     top: '10px',
     left: '10px',
-    zIndex: 2,
+    zIndex: 3,
   },
   dialog: {
     maxHeight: '100vh',

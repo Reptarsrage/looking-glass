@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { InfiniteLoader, List } from 'react-virtualized';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import ReactRouterPropTypes from 'react-router-prop-types';
 
 import NoResults from './NoResults';
 import LoadingIndicator from './LoadingIndicator';
-import WindowScroller from './WindowScroller';
+import VirtualizedMasonry from './VirtualizedMasonry';
 import MasonryItem from './MasonryItem';
 
 const styles = theme => ({
@@ -28,6 +27,7 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    height: '100%',
   },
 });
 
@@ -47,35 +47,17 @@ class ListView extends Component {
       fitToWindow: true,
     };
 
-    this.isRowLoaded = this.isRowLoaded.bind(this);
     this.loadMoreRows = this.loadMoreRows.bind(this);
-    this.isLoaded = this.isLoaded.bind(this);
     this.renderRow = this.renderRow.bind(this);
-    this.getRowHeight = this.getRowHeight.bind(this);
-    this.onResize = this.onResize.bind(this);
-    this.setColumnListRef = this.setColumnListRef.bind(this);
+    this.getItemHeight = this.getItemHeight.bind(this);
+    this.getItemWidth = this.getItemWidth.bind(this);
   }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.onResize);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.onResize);
-  }
-
-  isRowLoaded = ({ index }) => {
-    const { columnCount, mainColumnIndex } = this.state;
-    const originalIndex = index * columnCount + mainColumnIndex;
-    return this.isLoaded(originalIndex);
-  };
 
   loadMoreRows() {
     const { loadMore, loading, moduleId, galleryId } = this.props;
     if (!loading) {
       loadMore(moduleId, galleryId);
     }
-    return new Promise(resolve => resolve());
   }
 
   isLoaded(index) {
@@ -83,52 +65,36 @@ class ListView extends Component {
     return index < items.size;
   }
 
-  setColumnListRef(ref, columnNumber, callback) {
-    this.columnRefs[columnNumber] = ref;
-    if (callback) {
-      callback(ref);
-    }
-  }
-
-  onResize() {
-    this.width = (window && window.innerWidth) || 0;
-    this.columnHeight = (window && window.innerHeight) || 0;
-    this.columnRefs.forEach(ref => ref.recomputeRowHeights());
-  }
-
-  getRowHeight({ index, columnNumber }) {
-    const { columnCount } = this.state;
-    const originalIndex = index * columnCount + columnNumber;
-    if (!this.isLoaded(originalIndex)) {
+  getItemWidth(index) {
+    const { items } = this.props;
+    if (!this.isLoaded(index)) {
       return 0;
     }
 
-    const { items } = this.props;
-    const { fitToWindow } = this.state;
-    const item = items.get(originalIndex);
-    const calculatedWidth = Math.min(item.get('width'), this.columnWidth);
-    const calculatedHeight = Math.floor((item.get('height') / item.get('width')) * calculatedWidth);
-    if (fitToWindow && window && window.innerHeight) {
-      return Math.min(calculatedHeight, window.innerHeight);
-    }
-
-    return calculatedHeight;
+    return items.get(index).get('width');
   }
 
-  renderRow({ index, key, style, columnNumber }) {
-    const { columnCount } = this.state;
-    const { classes } = this.props;
-    const originalIndex = index * columnCount + columnNumber;
+  getItemHeight(index) {
+    const { items } = this.props;
+    if (!this.isLoaded(index)) {
+      return 0;
+    }
 
-    if (!this.isLoaded(originalIndex)) {
-      return <div className={classes.masonryItemContainer} key={key} style={{ ...style }} />;
+    return items.get(index).get('height');
+  }
+
+  renderRow(index) {
+    const { classes } = this.props;
+
+    if (!this.isLoaded(index)) {
+      return null;
     }
 
     const { items, moduleId, onItemClick } = this.props;
-    const item = items.get(originalIndex);
+    const item = items.get(index);
 
     return (
-      <div className={classes.masonryItemContainer} key={key} style={{ ...style }}>
+      <div className={classes.masonryItemContainer}>
         <MasonryItem
           videoURL={item.get('videoURL')}
           imageURL={item.get('imageURL')}
@@ -147,35 +113,9 @@ class ListView extends Component {
     );
   }
 
-  renderColumn({ width, isScrolling, scrollTop, height, columnNumber, registerChild, onRowsRendered }) {
-    const { items } = this.props;
-    const { gutterSize, columnCount, mainColumnIndex } = this.state;
-
-    this.columnWidth = Math.floor(width / columnCount - gutterSize);
-    const columnItems = items.filter((_, index) => index % columnCount === columnNumber);
-
-    return (
-      <List
-        autoHeight
-        ref={ref =>
-          this.setColumnListRef(ref, columnNumber, columnNumber === mainColumnIndex ? registerChild : () => {})
-        }
-        onRowsRendered={onRowsRendered}
-        overscanRowCount={1}
-        isScrolling={isScrolling}
-        scrollTop={scrollTop}
-        height={height}
-        width={this.columnWidth}
-        rowCount={columnItems.size}
-        rowHeight={props => this.getRowHeight({ ...props, columnNumber })}
-        rowRenderer={props => this.renderRow({ ...props, columnNumber })}
-      />
-    );
-  }
-
   render() {
-    const { items, loading, classes } = this.props;
-    const { columnCount, gutterSize } = this.state;
+    const { items, loading } = this.props;
+    const { columnCount } = this.state;
 
     // TODO: allow transient errors
     //if (error) {
@@ -191,29 +131,17 @@ class ListView extends Component {
     }
 
     return (
-      <InfiniteLoader isRowLoaded={this.isRowLoaded} loadMoreRows={this.loadMoreRows} rowCount={1000} threshold={20}>
-        {({ onRowsRendered, registerChild }) => (
-          <WindowScroller>
-            {({ height, isScrolling, scrollTop, width }) => (
-              <div className={classes.container} style={{ width: `${width - 2 * gutterSize - 1}px` }}>
-                {[...Array(columnCount).keys()].map(columnNumber => (
-                  <div key={columnNumber} className={classes.column}>
-                    {this.renderColumn({
-                      width,
-                      isScrolling,
-                      scrollTop,
-                      height,
-                      columnNumber,
-                      onRowsRendered,
-                      registerChild,
-                    })}
-                  </div>
-                ))}
-              </div>
-            )}
-          </WindowScroller>
-        )}
-      </InfiniteLoader>
+      <VirtualizedMasonry
+        renderItem={this.renderRow}
+        getHeightForItem={this.getItemHeight}
+        getWidthForItem={this.getItemWidth}
+        loadMore={this.loadMoreRows}
+        isLoading={loading}
+        length={items.size}
+        overscan={500}
+        loadMoreThreshhold={5000}
+        columnCount={columnCount}
+      />
     );
   }
 }

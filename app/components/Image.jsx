@@ -6,31 +6,40 @@ import { InView } from 'react-intersection-observer';
 const styles = () => ({
   image: {
     width: 'auto',
-    height: '100%',
+    height: 'auto',
     maxWidth: '100%',
     maxHeight: '100%',
+    position: 'relative',
+    zIndex: 2,
   },
   thumb: {
     filter: 'blur(8px)',
-    width: 'auto',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'contain',
+    width: '100%',
     height: '100%',
-    maxWidth: '100%',
-    maxHeight: '100%',
+    top: 0,
+    left: 0,
+    zIndex: 1,
+    position: 'absolute',
   },
 });
 
 const Image = ({ classes, src, thumb, width, height, title }) => (
-  <InView threshold={0.1}>
+  <InView threshold={0}>
     {({ inView, ref }) => (
-      <img
-        ref={ref}
-        className={inView ? classes.image : classes.thumb}
-        src={inView ? src : thumb}
-        alt={title}
-        width={width}
-        height={height}
-        title={title}
-      />
+      <React.Fragment>
+        <div ref={ref} className={classes.thumb} style={{ backgroundImage: `url("${thumb}")` }} />
+        <img
+          className={classes.image}
+          src={inView ? src : null}
+          alt={title}
+          width={`${width}px`}
+          height={`${height}px`}
+          title={title}
+          style={{ display: inView ? 'inline-block' : 'none' }}
+        />
+      </React.Fragment>
     )}
   </InView>
 );
