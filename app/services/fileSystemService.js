@@ -65,6 +65,20 @@ export default class FileSystemService {
       .update(s)
       .digest('base64');
 
+  fileCount = dir =>
+    fs
+      .readdirSync(dir)
+      .map(item => `${dir}${path.sep}${item}`)
+      .map(file => fs.statSync(file))
+      .filter(stat => stat && stat.isFile).length;
+
+  dirCount = dir =>
+    fs
+      .readdirSync(dir)
+      .map(item => `${dir}${path.sep}${item}`)
+      .map(file => fs.statSync(file))
+      .filter(stat => stat && !stat.isFile).length;
+
   videoSizeOf = async file => {
     return new Promise((resolve, reject) =>
       exec(
@@ -139,10 +153,14 @@ export default class FileSystemService {
     return retItem;
   };
 
-  walk = async (dir, offset = 0, pageSize = 20, random = true) => {
+  walk = async (dir, offset = 0, pageSize = 20) => {
     const results = [];
+
+    const dirCount = this.dirCount(dir);
     const dirItems = fs.readdirSync(dir);
-    if (random) {
+
+    // shuffle if contains directories
+    if (dirCount > 0) {
       dirItems.sort((a, b) => {
         const aHash = this.sha512(a);
         const bHash = this.sha512(b);
@@ -163,6 +181,9 @@ export default class FileSystemService {
       let result = null;
       if (stat && stat.isDirectory()) {
         const details = await this.getThumbForDir(itemPath);
+        const itemDirCount = this.dirCount(itemPath);
+        const itemFileCount = this.fileCount(itemPath);
+
         result =
           details === null
             ? null
@@ -171,7 +192,7 @@ export default class FileSystemService {
                 id: itemPath,
                 title,
                 description: '',
-                isGallery: true,
+                isGallery: itemFileCount > 1 || itemDirCount > 0,
                 galleryId: Buffer.from(itemPath, 'utf8').toString('base64'),
               };
       } else {
