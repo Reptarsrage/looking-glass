@@ -6,7 +6,7 @@ import { InView } from 'react-intersection-observer';
 const styles = () => ({
   image: {
     width: 'auto',
-    height: 'auto',
+    height: '100%',
     maxWidth: '100%',
     maxHeight: '100%',
     position: 'relative',
@@ -15,7 +15,7 @@ const styles = () => ({
   thumb: {
     filter: 'blur(8px)',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
+    backgroundSize: 'cover',
     width: '100%',
     height: '100%',
     top: 0,

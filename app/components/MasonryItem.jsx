@@ -11,7 +11,6 @@ import Video from './Video';
 const styles = theme => ({
   paper: {
     padding: 0,
-    flex: '1',
     height: '100%',
     overflow: 'hidden',
     position: 'relative',
