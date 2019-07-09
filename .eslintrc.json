@@ -14,6 +14,9 @@
       "webpack": {
         "config": "configs/webpack.config.eslint.js"
       }
+    },
+    "react": {
+      "version": "detect"
     }
   },
   "rules": {
