@@ -128,6 +128,43 @@ class Gallery extends Component {
     }
   }
 
+  modalHasNext = () => {
+    const { images } = this.props;
+    const { modalItemId } = this.state;
+    const idx = images.findIndex(i => i.get('id') === modalItemId);
+    return idx < images.size - 1;
+  };
+
+  modalHasPrev = () => {
+    const { images } = this.props;
+    const { modalItemId } = this.state;
+    const idx = images.findIndex(i => i.get('id') === modalItemId);
+    return idx > 0;
+  };
+
+  handleModalNextImage = () => {
+    const { images } = this.props;
+    const { modalItemId } = this.state;
+    const idx = images.findIndex(i => i.get('id') === modalItemId);
+
+    if (idx < images.size - 1) {
+      console.log('>>>>', { idx, size: images.size, id: images.get(idx + 1).get('id') });
+      const modalItemId = images.get(idx + 1).get('id');
+      this.setState({ modalItemId });
+    }
+  };
+
+  handleModalPrevImage = () => {
+    const { images } = this.props;
+    const { modalItemId } = this.state;
+    const idx = images.findIndex(i => i.get('id') === modalItemId);
+
+    if (idx > 0) {
+      const modalItemId = images.get(idx - 1).get('id');
+      this.setState({ modalItemId });
+    }
+  };
+
   handleModalClose() {
     this.setState({ modalOpen: false });
   }
@@ -150,6 +187,10 @@ class Gallery extends Component {
         width={modalItem.get('width')}
         height={modalItem.get('height')}
         onClick={this.handleModalClose}
+        nextImage={this.handleModalNextImage}
+        prevImage={this.handleModalPrevImage}
+        hasPrev={this.modalHasPrev}
+        hasNext={this.modalHasNext}
       />
     );
 
