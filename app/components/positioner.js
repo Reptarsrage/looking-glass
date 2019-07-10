@@ -4,7 +4,7 @@ export default class Positioner {
 
   updatePositions = (items, offset = 0) => {
     this.totalHeight = offset;
-    for (const { id, height } of items) {
+    for (const { id, height = 0 } of items) {
       this.positions[id] = this.totalHeight;
       this.totalHeight += height;
     }
