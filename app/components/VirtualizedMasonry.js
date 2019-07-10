@@ -170,7 +170,7 @@ class VirtualizedMasonry extends React.PureComponent {
     const columnItems = [...Array(length).keys()].filter(i => i % columnCount === columnNumber);
 
     return (
-      <div ref={this.containerRef} className={classes.columnContainer} key={columnNumber}>
+      <div className={classes.columnContainer} key={columnNumber}>
         <Virtualized
           items={columnItems}
           length={length}
