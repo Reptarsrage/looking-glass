@@ -4,14 +4,18 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import DialogContent from '@material-ui/core/DialogContent';
-import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { Fab } from '@material-ui/core';
+import Fade from '@material-ui/core/Fade';
+import Zoom from '@material-ui/core/Zoom';
+import clsx from 'clsx';
 import { Link as RouterLink } from 'react-router-dom';
 
 import {
@@ -29,6 +33,8 @@ import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
+import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
+import rootStyles from '../index.css';
 
 const styles = () => ({
   floatedBottomRight: {
@@ -43,12 +49,39 @@ const styles = () => ({
     left: '10px',
     zIndex: 3,
   },
-  dialog: {
-    maxHeight: '100vh',
-    overflow: 'auto',
-  },
   pointer: {
     cursor: 'pointer',
+  },
+  animationElement: {
+    position: 'fixed',
+    zIndex: 5,
+  },
+  full: {
+    width: '100%',
+    margin: 0,
+    padding: 0,
+    height: '100%',
+  },
+  backdrop: {
+    position: 'fixed',
+    height: '100%',
+    width: '100%',
+    top: 0,
+    left: 0,
+    zIndex: 4,
+    background: 'rgba(0,0,0,1)',
+  },
+  button: {
+    top: '50%',
+    position: 'fixed',
+    transform: 'translate(0, -50%)',
+    zIndex: 6,
+  },
+  prev: {
+    left: '0.5rem',
+  },
+  next: {
+    right: '0.5rem',
   },
 });
 
@@ -67,22 +100,18 @@ class Gallery extends Component {
     super(props);
 
     this.state = {
-      modalOpen: false,
+      mountModal: false,
+      modalIn: true,
       modalItemId: null,
+      modalInitialBounds: null,
       showOverlayButtons: false,
     };
-
-    this.fetchInitialImages = this.fetchInitialImages.bind(this);
-    this.handleItemClick = this.handleItemClick.bind(this);
-    this.handleModalClose = this.handleModalClose.bind(this);
-    this.loadMoreImages = this.loadMoreImages.bind(this);
-    this.onScroll = this.onScroll.bind(this);
-    this.clearSearch = this.clearSearch.bind(this);
   }
 
   componentDidMount() {
     this.fetchInitialImages();
-    window.addEventListener('scroll', this.onScroll);
+    window.addEventListener('scroll', this.handleScroll);
+    document.addEventListener('keydown', this.handleKeyPress, false);
   }
 
   componentDidUpdate(prevProps) {
@@ -93,18 +122,25 @@ class Gallery extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('scroll', this.handleScroll);
+    document.removeEventListener('keydown', this.handleKeyPress, false);
   }
 
-  clearSearch() {
+  handleKeyPress = event => {
+    if (event.key === 'Escape') {
+      this.handleModalClose();
+    }
+  };
+
+  clearSearch = () => {
     const { clearSearch, moduleId, galleryId, searchQuery, fetchImages } = this.props;
     if (searchQuery !== null && searchQuery.length > 0) {
       clearSearch(moduleId, galleryId);
       fetchImages(moduleId, galleryId);
     }
-  }
+  };
 
-  onScroll() {
+  handleScroll = () => {
     const { showOverlayButtons } = this.state;
 
     if (window.scrollY > 100 && !showOverlayButtons) {
@@ -112,21 +148,21 @@ class Gallery extends Component {
     } else if (window.scrollY <= 100 && showOverlayButtons) {
       this.setState({ showOverlayButtons: false });
     }
-  }
+  };
 
-  fetchInitialImages() {
+  fetchInitialImages = () => {
     const { fetchImages, images, fetching, moduleId, galleryId, hasNext } = this.props;
     if (hasNext && images.size === 0 && !fetching) {
       fetchImages(moduleId, galleryId);
     }
-  }
+  };
 
-  loadMoreImages() {
+  loadMoreImages = () => {
     const { fetchImages, fetching, moduleId, galleryId, hasNext } = this.props;
     if (hasNext && !fetching) {
       fetchImages(moduleId, galleryId);
     }
-  }
+  };
 
   modalHasNext = () => {
     const { images } = this.props;
@@ -142,6 +178,8 @@ class Gallery extends Component {
     return idx > 0;
   };
 
+  getlInitialBoundsForTarget = ({ target }) => target && target.getBoundingClientRect();
+
   handleModalNextImage = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
@@ -149,6 +187,8 @@ class Gallery extends Component {
 
     if (idx < images.size - 1) {
       const modalItemId = images.get(idx + 1).get('id');
+
+      // TODO: Update modalInitialBounds
       this.setState({ modalItemId });
     }
   };
@@ -160,23 +200,36 @@ class Gallery extends Component {
 
     if (idx > 0) {
       const modalItemId = images.get(idx - 1).get('id');
+
+      // TODO: Update modalInitialBounds
       this.setState({ modalItemId });
     }
   };
 
-  handleModalClose() {
-    this.setState({ modalOpen: false });
-  }
+  handleModalClose = () => {
+    this.setState({ modalIn: false });
+  };
 
-  handleItemClick(id) {
-    this.setState({ modalOpen: true, modalItemId: id });
-  }
+  handleItemClick = (event, modalItemId) => {
+    const modalInitialBounds = this.getlInitialBoundsForTarget(event);
+    document.body.classList.add(rootStyles.stopScroll);
+    this.setState({ mountModal: true, modalIn: true, modalItemId, modalInitialBounds });
+  };
 
-  render() {
-    const { images, fetching, error, classes, moduleId, galleryId, location, module, searchQuery } = this.props;
-    const { modalOpen, modalItemId, showOverlayButtons } = this.state;
+  handleModalExited = () => {
+    document.body.classList.remove(rootStyles.stopScroll);
+    this.setState({ mountModal: false, modalItemId: null });
+  };
 
+  renderModal = () => {
+    const { classes, images } = this.props;
+    const { mountModal, modalIn, modalItemId, modalInitialBounds } = this.state;
     const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
+
+    if (!mountModal) {
+      return null;
+    }
+
     const modalContent = modalItem && (
       <ModalItem
         videoURL={modalItem.get('videoURL')}
@@ -186,15 +239,52 @@ class Gallery extends Component {
         width={modalItem.get('width')}
         height={modalItem.get('height')}
         onClick={this.handleModalClose}
-        nextImage={this.handleModalNextImage}
-        prevImage={this.handleModalPrevImage}
-        hasPrev={this.modalHasPrev}
-        hasNext={this.modalHasNext}
       />
     );
 
     return (
       <React.Fragment>
+        <Fade in={modalIn}>
+          <div className={classes.backdrop}></div>
+        </Fade>
+        <Zoom in={modalIn}>
+          <Fab
+            color="default"
+            aria-label="Previous"
+            className={clsx(classes.prev, classes.button)}
+            onClick={this.handleModalPrevImage}
+            style={{ display: this.modalHasPrev() ? 'inline-flex' : 'none' }}
+          >
+            <ChevronLeftIcon />
+          </Fab>
+        </Zoom>
+        <Zoom in={modalIn}>
+          <Fab
+            color="default"
+            aria-label="Next"
+            className={clsx(classes.next, classes.button)}
+            onClick={this.handleModalNextImage}
+            style={{ display: this.modalHasNext() ? 'inline-flex' : 'none' }}
+          >
+            <ChevronRightIcon />
+          </Fab>
+        </Zoom>
+        <ImageFullscreenTransition in={modalIn} initialBounds={modalInitialBounds} onExited={this.handleModalExited}>
+          <div className={classes.animationElement} onClick={this.handleModalClose}>
+            {modalContent}
+          </div>
+        </ImageFullscreenTransition>
+      </React.Fragment>
+    );
+  };
+
+  render() {
+    const { images, fetching, error, classes, moduleId, galleryId, location, module, searchQuery } = this.props;
+    const { showOverlayButtons } = this.state;
+
+    return (
+      <React.Fragment>
+        {this.renderModal()}
         <Paper elevation={0} className={classes.paper}>
           <Breadcrumbs aria-label="Breadcrumb">
             <Link className={classes.pointer} component={RouterLink} color="inherit" to="/">
@@ -231,10 +321,6 @@ class Gallery extends Component {
         <div className={classes.floatedTopLeft}>{showOverlayButtons ? <BackButton /> : null}</div>
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
-        <Dialog className={classes.dialog} fullScreen={true} open={modalOpen} onClose={this.handleModalClose}>
-          <DialogContent>{modalContent}</DialogContent>
-        </Dialog>
-
         <Masonry
           key={`${moduleId}_${galleryId}`}
           location={location}
@@ -253,6 +339,7 @@ class Gallery extends Component {
 
 Gallery.defaultProps = {
   error: null,
+  searchQuery: null,
 };
 
 Gallery.propTypes = {
@@ -263,7 +350,8 @@ Gallery.propTypes = {
   galleryId: PropTypes.string.isRequired,
   error: PropTypes.object,
   searchQuery: PropTypes.string,
-  module: PropTypes.object, // immutable
+  module: PropTypes.instanceOf(Immutable.Map).isRequired,
+  images: PropTypes.instanceOf(Immutable.List).isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({

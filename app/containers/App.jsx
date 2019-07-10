@@ -18,6 +18,7 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { withRouter } from 'react-router';
 import ReactRouterPropTypes from 'react-router-prop-types';
+import Container from '@material-ui/core/Container';
 
 import WithErrors from '../hocs/WithErrors';
 import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
@@ -98,20 +99,13 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.renderBackButton = this.renderBackButton.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-  }
-
-  handleSearchChange(e) {
+  handleSearchChange = e => {
     const { updateSearch, moduleId, galleryId } = this.props;
 
     updateSearch(e.target.value, moduleId, galleryId);
-  }
+  };
 
-  renderSearch() {
+  renderSearch = () => {
     const { classes, location, searchQuery } = this.props;
     const showSearch = location.pathname.startsWith('/gallery');
 
@@ -136,9 +130,9 @@ class App extends React.Component {
         />
       </div>
     );
-  }
+  };
 
-  renderBackButton() {
+  renderBackButton = () => {
     const { classes, location, history } = this.props;
     const showBackButton = location.pathname.startsWith('/gallery');
 
@@ -152,7 +146,7 @@ class App extends React.Component {
         <ArrowBackIcon />
       </IconButton>
     );
-  }
+  };
 
   render() {
     const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme } = this.props;
@@ -160,24 +154,22 @@ class App extends React.Component {
     return (
       <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
         <CssBaseline />
-        <div className={classes.root}>
-          <AppBar position="static" color="default">
-            <Toolbar>
-              {this.renderBackButton()}
-              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-                Looking Glass
-              </Typography>
-              {this.renderSearch()}
-              <div className={classes.grow} />
-              <div>
-                <IconButton color="inherit" onClick={toggleDarkTheme}>
-                  {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
-                </IconButton>
-              </div>
-            </Toolbar>
-          </AppBar>
-          {children}
-        </div>
+        <AppBar position="static" color="default" className={classes.appBar}>
+          <Toolbar>
+            {this.renderBackButton()}
+            <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+              Looking Glass
+            </Typography>
+            {this.renderSearch()}
+            <div className={classes.grow} />
+            <div>
+              <IconButton color="inherit" onClick={toggleDarkTheme}>
+                {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
+              </IconButton>
+            </div>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth={false}>{children}</Container>
       </MuiThemeProvider>
     );
   }

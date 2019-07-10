@@ -32,10 +32,10 @@ class MasonryItem extends React.PureComponent {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
+  handleClick(event) {
     const { onClick, id } = this.props;
     if (onClick) {
-      onClick(id);
+      onClick(event, id);
     }
   }
 
