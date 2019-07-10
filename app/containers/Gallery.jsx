@@ -148,7 +148,6 @@ class Gallery extends Component {
     const idx = images.findIndex(i => i.get('id') === modalItemId);
 
     if (idx < images.size - 1) {
-      console.log('>>>>', { idx, size: images.size, id: images.get(idx + 1).get('id') });
       const modalItemId = images.get(idx + 1).get('id');
       this.setState({ modalItemId });
     }
