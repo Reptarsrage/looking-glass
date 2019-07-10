@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router/immutable';
-import { AppContainer as ReactHotAppContainer } from 'react-hot-loader';
 
 import Routes from './Routes';
 import { configureStore, history } from './store/configureStore';
@@ -11,8 +10,6 @@ import './index.css';
 
 const store = configureStore();
 store.runSaga(rootSaga);
-
-const AppContainer = process.env.PLAIN_HMR ? Fragment : ReactHotAppContainer;
 
 const render = Component =>
   ReactDom.render(
