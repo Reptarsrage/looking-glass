@@ -25,7 +25,7 @@ const styles = () => ({
   },
 });
 
-const Image = ({ classes, src, thumb, width, height, title }) => (
+const Image = ({ classes, src, thumb, width, height, title, autopilot, ...other }) => (
   <InView threshold={0}>
     {({ inView, ref }) => (
       <React.Fragment>
@@ -38,6 +38,7 @@ const Image = ({ classes, src, thumb, width, height, title }) => (
           height={`${height}px`}
           title={title}
           style={{ display: inView ? 'inline-block' : 'none' }}
+          {...other}
         />
       </React.Fragment>
     )}

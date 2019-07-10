@@ -43,7 +43,7 @@ class Video extends React.PureComponent {
   }
 
   render() {
-    const { classes, src, thumb, width, height, title, autopilot } = this.props;
+    const { classes, src, thumb, width, height, title, autopilot, ...other } = this.props;
 
     return (
       <InView threshold={0}>
@@ -60,6 +60,7 @@ class Video extends React.PureComponent {
             poster={thumb}
             controls={!autopilot}
             onVolumeChange={this.handleVolumeChange}
+            {...other}
           >
             {inView ? (
               <source
