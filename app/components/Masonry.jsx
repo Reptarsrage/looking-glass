@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import ReactRouterPropTypes from 'react-router-prop-types';
 
 import NoResults from './NoResults';
@@ -94,7 +95,7 @@ class ListView extends Component {
     const item = items.get(index);
 
     return (
-      <div className={classes.masonryItemContainer}>
+      <Box className={classes.masonryItemContainer}>
         <MasonryItem
           videoURL={item.get('videoURL')}
           imageURL={item.get('imageURL')}
@@ -109,7 +110,7 @@ class ListView extends Component {
           moduleId={moduleId}
           onClick={onItemClick}
         />
-      </div>
+      </Box>
     );
   }
 

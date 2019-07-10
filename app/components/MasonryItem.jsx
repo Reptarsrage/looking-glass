@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Paper } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
@@ -12,6 +12,7 @@ const styles = theme => ({
   paper: {
     padding: 0,
     height: '100%',
+    width: '100%',
     overflow: 'hidden',
     position: 'relative',
     textAlign: 'center',
