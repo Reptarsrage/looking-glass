@@ -69,15 +69,15 @@ export default class FileSystemService {
     fs
       .readdirSync(dir)
       .map(item => `${dir}${path.sep}${item}`)
-      .map(file => fs.statSync(file))
-      .filter(stat => stat && stat.isFile).length;
+      .map(file => fs.lstatSync(file))
+      .filter(stat => stat.isFile()).length;
 
   dirCount = dir =>
     fs
       .readdirSync(dir)
       .map(item => `${dir}${path.sep}${item}`)
-      .map(file => fs.statSync(file))
-      .filter(stat => stat && !stat.isFile).length;
+      .map(file => fs.lstatSync(file))
+      .filter(stat => stat.isDirectory()).length;
 
   videoSizeOf = async file => {
     return new Promise((resolve, reject) =>
@@ -157,11 +157,11 @@ export default class FileSystemService {
     const results = [];
 
     const dirCount = this.dirCount(dir);
-    const dirItems = fs.readdirSync(dir);
+    let dirItems = fs.readdirSync(dir).map(item => `${dir}${path.sep}${item}`);
 
     // shuffle if contains directories
     if (dirCount > 0) {
-      dirItems.sort((a, b) => {
+      dirItems = dirItems.sort((a, b) => {
         const aHash = this.sha512(a);
         const bHash = this.sha512(b);
         if (aHash == bHash) {
@@ -174,8 +174,7 @@ export default class FileSystemService {
       });
     }
 
-    for (const item of dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length))) {
-      const itemPath = `${dir}${path.sep}${item}`;
+    for (const itemPath of dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length))) {
       const title = path.basename(itemPath, path.extname(itemPath));
       const stat = fs.statSync(itemPath);
       let result = null;
@@ -189,7 +188,7 @@ export default class FileSystemService {
             ? null
             : {
                 ...details,
-                id: itemPath,
+                id: this.sha512(itemPath),
                 title,
                 description: '',
                 isGallery: itemFileCount > 1 || itemDirCount > 0,
@@ -202,7 +201,7 @@ export default class FileSystemService {
             ? null
             : {
                 ...details,
-                id: itemPath,
+                id: this.sha512(itemPath),
                 title,
                 description: '',
                 isGallery: false,
