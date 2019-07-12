@@ -61,7 +61,7 @@ class Home extends React.Component {
     const result = remote.dialog.showOpenDialog({ properties: ['openDirectory'] });
 
     if (result && result.length === 1) {
-      const galleryId = Buffer.from(result[0], 'utf8').toString('base64');
+      const galleryId = encodeURIComponent(result[0]);
       history.push(`/gallery/fs/${galleryId}`);
     }
   }

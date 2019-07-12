@@ -106,7 +106,7 @@ export default class FileSystemService {
         var dimensions = await imageSizeOf(file);
         return {
           imageURL: file,
-          thumbURL: file,
+          thumbURL: null,
           isVideo: false,
           width: dimensions.width,
           height: dimensions.height,
@@ -192,7 +192,7 @@ export default class FileSystemService {
                 title,
                 description: '',
                 isGallery: itemFileCount > 1 || itemDirCount > 0,
-                galleryId: Buffer.from(itemPath, 'utf8').toString('base64'),
+                galleryId: encodeURIComponent(itemPath),
               };
       } else {
         const details = await this.getThumbForFile(itemPath);
@@ -225,7 +225,7 @@ export default class FileSystemService {
   fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
     try {
       // NOTE: our location is the base64 encoded galleryId
-      const location = Buffer.from(galleryId, 'base64').toString('utf8');
+      const location = decodeURIComponent(galleryId);
       const pageSize = 20;
       return { data: await this.walk(location, offset - 1, pageSize) };
     } catch (err) {
