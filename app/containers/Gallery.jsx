@@ -143,9 +143,9 @@ class Gallery extends Component {
   handleScroll = () => {
     const { showOverlayButtons } = this.state;
 
-    if (window.scrollY > 100 && !showOverlayButtons) {
+    if (window.scrollY > 25 && !showOverlayButtons) {
       this.setState({ showOverlayButtons: true });
-    } else if (window.scrollY <= 100 && showOverlayButtons) {
+    } else if (window.scrollY <= 25 && showOverlayButtons) {
       this.setState({ showOverlayButtons: false });
     }
   };
