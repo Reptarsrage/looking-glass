@@ -105,12 +105,12 @@ class VirtualizedMasonry extends React.PureComponent {
   getDimensionsForItem = i => {
     const { getWidthForItem, getHeightForItem } = this.props;
 
-    this.timesAskedForDims++;
+    this.timesAskedForDims += 1;
     return { width: getWidthForItem(i), height: getHeightForItem(i) };
   };
 
   getAdjustedHeightForItem = i => {
-    this.calculations++;
+    this.calculations += 1;
     const { columnCount, fitToWindow } = this.props;
     const { width, innerHeight } = this.state;
 
@@ -158,7 +158,7 @@ class VirtualizedMasonry extends React.PureComponent {
 
     const width = current.clientWidth;
     const height = current.clientHeight;
-    const innerHeight = window.innerHeight;
+    const { innerHeight } = window;
 
     this.handleScroll();
     this.setState({ width, height, innerHeight });

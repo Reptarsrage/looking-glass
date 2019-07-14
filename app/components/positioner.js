@@ -1,5 +1,6 @@
 export default class Positioner {
   positions = [];
+
   totalHeight = 0;
 
   updatePositions = (items, offset = 0) => {

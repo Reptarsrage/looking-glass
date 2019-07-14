@@ -9,7 +9,7 @@ const initialState = fromJS({
 });
 
 export default function authReducer(state = initialState, action) {
-  const { type, payload, meta } = action || {};
+  const { type, payload } = action || {};
 
   switch (type) {
     case LOCATION_CHANGE: {
@@ -20,7 +20,8 @@ export default function authReducer(state = initialState, action) {
       if (parts[1] === 'gallery') {
         const [, , moduleId, galleryId] = parts;
         return state.merge({ moduleId, galleryId });
-      } else if (parts[1] === 'login' || parts[1] === 'oauth') {
+      }
+      if (parts[1] === 'login' || parts[1] === 'oauth') {
         const [, , moduleId] = parts;
         return state.merge({ moduleId, galleryId: 'default' });
       }

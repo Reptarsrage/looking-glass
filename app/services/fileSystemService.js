@@ -10,9 +10,13 @@ const imageSizeOf = promisify(imageSizeOfSync);
 
 export default class FileSystemService {
   port = process.env.SERVICE_PORT || 3001;
+
   salt = null;
+
   host = process.env.SERVICE_HOST || 'localhost';
+
   images = ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'];
+
   videos = [
     '.3g2',
     '.3gp',
@@ -82,18 +86,18 @@ export default class FileSystemService {
   videoSizeOf = async file => {
     return new Promise((resolve, reject) =>
       exec(
-        `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 \"${file}\"`,
+        `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 "${file}"`,
         (err, stdout) => {
           if (err) {
             console.warn(err, 'ffprobe error:');
             reject(err);
           }
 
-          var width = /width=(\d+)/.exec(stdout);
-          var height = /height=(\d+)/.exec(stdout);
+          const width = /width=(\d+)/.exec(stdout);
+          const height = /height=(\d+)/.exec(stdout);
           resolve({
-            width: parseInt(width[1]),
-            height: parseInt(height[1]),
+            width: parseInt(width[1], 10),
+            height: parseInt(height[1], 10),
           });
         }
       )
@@ -103,7 +107,7 @@ export default class FileSystemService {
   getThumbForFile = async file => {
     try {
       if (this.images.some(ext => ext === path.extname(file).toLowerCase())) {
-        var dimensions = await imageSizeOf(file);
+        const dimensions = await imageSizeOf(file);
         return {
           imageURL: file,
           thumbURL: null,
@@ -114,7 +118,7 @@ export default class FileSystemService {
       }
 
       if (this.videos.some(ext => ext === path.extname(file).toLowerCase())) {
-        var dimensions = await this.videoSizeOf(file);
+        const dimensions = await this.videoSizeOf(file);
         return {
           videoURL: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
           thumbURL: null,
@@ -164,13 +168,13 @@ export default class FileSystemService {
       dirItems = dirItems.sort((a, b) => {
         const aHash = this.sha512(a);
         const bHash = this.sha512(b);
-        if (aHash == bHash) {
+        if (aHash === bHash) {
           return 0;
-        } else if (aHash > bHash) {
-          return -1;
-        } else {
-          return 1;
         }
+        if (aHash > bHash) {
+          return -1;
+        }
+        return 1;
       });
     }
 
@@ -222,7 +226,7 @@ export default class FileSystemService {
     };
   };
 
-  fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
+  fetchImages = async (moduleId, galleryId, accessToken, offset) => {
     try {
       // NOTE: our location is the base64 encoded galleryId
       const location = decodeURIComponent(galleryId);

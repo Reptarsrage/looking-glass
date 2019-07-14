@@ -3,6 +3,7 @@ import { stringify } from 'qs';
 
 export default class FileSystemService {
   config;
+
   instance;
 
   constructor() {
@@ -17,23 +18,23 @@ export default class FileSystemService {
   }
 
   fetchModules = async () => {
-    return await this.instance.get('/', this.config);
+    return this.instance.get('/', this.config);
   };
 
   getOauthURL = async moduleId => {
-    return await this.instance.get(`/${moduleId}/oauth`, this.config);
+    return this.instance.get(`/${moduleId}/oauth`, this.config);
   };
 
   login = async (moduleId, params) => {
-    return await this.instance.get(`/${moduleId}/login?${stringify(params)}`, this.config);
+    return this.instance.get(`/${moduleId}/login?${stringify(params)}`, this.config);
   };
 
   refresh = async (moduleId, refreshToken) => {
-    return await this.instance.get(`/${moduleId}/refresh?${stringify({ refreshToken })}`, this.config);
+    return this.instance.get(`/${moduleId}/refresh?${stringify({ refreshToken })}`, this.config);
   };
 
   authorize = async (moduleId, code) => {
-    return await this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`, this.config);
+    return this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`, this.config);
   };
 
   fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
@@ -49,6 +50,6 @@ export default class FileSystemService {
       headers: { 'access-token': accessToken },
     };
 
-    return await this.instance.get(url, config);
+    return this.instance.get(url, config);
   };
 }

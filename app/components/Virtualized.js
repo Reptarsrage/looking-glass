@@ -87,7 +87,6 @@ class Virtualized extends React.PureComponent {
 Virtualized.defaultProps = {
   overscan: 0,
   width: 0,
-  height: 0,
   scrollPosition: 0,
   scrollTop: 0,
   innerHeight: 0,
@@ -100,7 +99,6 @@ Virtualized.propTypes = {
   length: PropTypes.number.isRequired,
   overscan: PropTypes.number,
   width: PropTypes.number,
-  height: PropTypes.number,
   scrollPosition: PropTypes.number,
   scrollTop: PropTypes.number,
   innerHeight: PropTypes.number,

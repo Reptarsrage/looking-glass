@@ -1,7 +1,7 @@
 import { ClientFunction, RequestMock } from 'testcafe';
 
 // Mock http
-var mock = RequestMock()
+const mock = RequestMock()
   .onRequestTo(new RegExp('http://localhost:3001*'))
   .respond([], 200, { 'access-control-allow-origin': '*' });
 
