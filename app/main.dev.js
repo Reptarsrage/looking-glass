@@ -52,12 +52,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', async () => {
-  if (mainWindow === null) {
-    await createWindow();
-  }
-});
-
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();

@@ -2,8 +2,25 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
-@import '~react-virtualized/styles.css';
 
+/* Disables annoying outlining of containers on focus */
 *:focus {
   outline: none;
+}
+
+/* Disables scrolling on page */
+.stopScroll {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Hide the scrollbar as it shifts things unnecessarily */
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }

@@ -1,6 +1,5 @@
 const { app, Menu, shell } = require('electron');
 const { download } = require('electron-dl');
-const isDev = require('electron-is-dev');
 
 class MenuBuilder {
   constructor(mainWindow) {

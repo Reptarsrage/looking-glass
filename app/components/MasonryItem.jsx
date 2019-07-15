@@ -1,18 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Paper } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 
 import Image from './Image';
 import Video from './Video';
 
-const styles = () => ({
+const styles = theme => ({
   paper: {
     padding: 0,
-    width: 'auto',
     height: '100%',
+    width: '100%',
     overflow: 'hidden',
+    position: 'relative',
+    textAlign: 'center',
+  },
+  icon: {
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    zIndex: 3,
   },
 });
 
@@ -23,10 +32,10 @@ class MasonryItem extends React.PureComponent {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
+  handleClick(event) {
     const { onClick, id } = this.props;
     if (onClick) {
-      onClick(id);
+      onClick(event, id);
     }
   }
 
@@ -57,6 +66,7 @@ class MasonryItem extends React.PureComponent {
     return (
       <Paper key={id} onClick={clickHandler} className={classes.paper}>
         <Wrapper {...wrapperProps}>
+          {isGallery ? <PhotoLibraryIcon color="primary" className={classes.icon} /> : null}
           <Elt src={src} thumb={thumbURL} title={title} width={width} height={height} />
         </Wrapper>
       </Paper>

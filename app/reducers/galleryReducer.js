@@ -6,17 +6,21 @@ import {
   FETCH_IMAGES_ERROR,
   FETCH_MODULES_SUCCESS,
   LOCATION_CHANGE,
+  UPDATE_SEARCH,
+  CLEAR_IMAGES,
+  CLEAR_SEARCH,
 } from '../actions/types';
 
 export const initialState = fromJS({
   images: new List([]),
-  offset: 0,
+  offset: 1,
   before: null,
   after: null,
   hasNext: true,
   fetching: false,
   success: false,
   error: null,
+  searchQuery: null,
 });
 
 export default function galleryReducer(state = new Map(), action) {
@@ -24,6 +28,34 @@ export default function galleryReducer(state = new Map(), action) {
   let { moduleId, galleryId = 'default' } = meta || {};
 
   switch (type) {
+    case CLEAR_SEARCH: {
+      return state.mergeIn([moduleId, galleryId], {
+        images: new List([]),
+        offset: 1,
+        before: null,
+        after: null,
+        hasNext: true,
+        fetching: true,
+        success: false,
+        searchQuery: null,
+        error: null,
+      });
+    }
+    case CLEAR_IMAGES: {
+      return state.mergeIn([moduleId, galleryId], {
+        images: new List([]),
+        offset: 1,
+        before: null,
+        after: null,
+        hasNext: true,
+        fetching: true,
+        success: false,
+        error: null,
+      });
+    }
+    case UPDATE_SEARCH: {
+      return state.mergeIn([moduleId, galleryId], { searchQuery: payload });
+    }
     case LOCATION_CHANGE: {
       const { location } = payload;
       const { pathname } = location;
@@ -34,6 +66,8 @@ export default function galleryReducer(state = new Map(), action) {
         if (!state.hasIn([moduleId, galleryId])) {
           return state.setIn([moduleId, galleryId], initialState);
         }
+        // reset so that we're in a good state even if FECH_IMAGES is cancelled
+        return state.mergeIn([moduleId, galleryId], { fetching: false, error: null, success: false });
       }
 
       return state;

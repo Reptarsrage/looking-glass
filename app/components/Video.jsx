@@ -43,10 +43,10 @@ class Video extends React.PureComponent {
   }
 
   render() {
-    const { classes, src, thumb, width, height, title, autopilot } = this.props;
+    const { classes, src, thumb, width, height, title, autopilot, ...other } = this.props;
 
     return (
-      <InView threshold={0.1}>
+      <InView threshold={0}>
         {({ inView, ref }) => (
           <video
             ref={ref}
@@ -60,8 +60,18 @@ class Video extends React.PureComponent {
             poster={thumb}
             controls={!autopilot}
             onVolumeChange={this.handleVolumeChange}
+            {...other}
           >
-            {inView ? <source src={src} type={`video/${extname(src).slice(1)}`} /> : null}
+            {inView ? (
+              <source
+                src={src}
+                type={`video/${
+                  extname(src)
+                    .slice(1)
+                    .split('?')[0]
+                }`}
+              />
+            ) : null}
           </video>
         )}
       </InView>
@@ -78,7 +88,7 @@ Video.defaultProps = {
 Video.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
-  thumb: PropTypes.string.isRequired,
+  thumb: PropTypes.string,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   title: PropTypes.string,
   width: PropTypes.number.isRequired,

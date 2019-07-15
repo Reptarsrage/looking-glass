@@ -54,7 +54,7 @@ export default function authReducer(state = new Map(), action) {
     case AUTHORIZE_SUCCESS:
     case LOGIN_SUCCESS: {
       const { expiresIn } = payload;
-      var date = moment();
+      const date = moment();
       date.add(expiresIn, 'seconds');
 
       const mergeState = { ...payload, expires: date.valueOf(), fetching: false, success: true, error: null };

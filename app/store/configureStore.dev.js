@@ -55,9 +55,10 @@ const configureStore = initialState => {
   store.close = () => store.dispatch(END);
 
   if (module.hot) {
-    // Enable webpack hot module replacement for reducers
     module.hot.accept('../reducers', () => {
+      // eslint-disable-next-line global-require
       require('../reducers')
+        // eslint-disable-next-line promise/always-return
         .then(reducerModule => {
           const createReducers = reducerModule.default;
           const nextReducers = createReducers(history, store.asyncReducers);

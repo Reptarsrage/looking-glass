@@ -1,4 +1,5 @@
 import { put, call, takeLatest, all } from 'redux-saga/effects';
+
 import LookingGlassService from '../services/lookingGlassService';
 
 import {
@@ -13,13 +14,12 @@ import {
   AUTHORIZE_ERROR,
 } from '../actions/types';
 
-const lookingGlassService = new LookingGlassService();
-
 function* handleAuthorize(action) {
   const { payload, meta } = action;
   const { moduleId } = meta;
 
   try {
+    const lookingGlassService = new LookingGlassService();
     const { data } = yield call(lookingGlassService.authorize, moduleId, payload);
 
     yield put({ type: AUTHORIZE_SUCCESS, payload: data, meta: { moduleId } });
@@ -33,6 +33,7 @@ function* handleFetchOauthURL(action) {
   const { moduleId } = meta;
 
   try {
+    const lookingGlassService = new LookingGlassService();
     const { data } = yield call(lookingGlassService.getOauthURL, moduleId);
 
     yield put({ type: FETCH_OATH_URL_SUCCESS, payload: data, meta: { moduleId } });
@@ -46,6 +47,7 @@ function* handleLogin(action) {
   const { moduleId } = meta;
 
   try {
+    const lookingGlassService = new LookingGlassService();
     const { data } = yield call(lookingGlassService.login, moduleId, payload);
 
     yield put({ type: LOGIN_SUCCESS, payload: data, meta: { moduleId } });

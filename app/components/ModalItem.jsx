@@ -15,36 +15,32 @@ const styles = () => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   paper: {
     width: 'fit-content',
     height: 'fit-content',
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
 });
 
 class ModalItem extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick() {
+  handleClick = () => {
     const { onClick } = this.props;
     if (onClick) {
       onClick();
     }
-  }
+  };
 
   render() {
     const { classes, width, height, title, videoURL, imageURL, isVideo } = this.props;
-
     const Elt = isVideo ? Video : Image;
     const src = isVideo ? videoURL : imageURL;
     const clickHandler = this.handleClick;
 
     return (
-      <div className={classes.container} onClick={clickHandler}>
+      <div className={classes.container}>
         <Paper className={classes.paper} onClick={clickHandler}>
           <Elt src={src} title={title} width={width} height={height} autopilot={false} />
         </Paper>
@@ -58,6 +54,10 @@ ModalItem.defaultProps = {
   imageURL: '',
   title: '',
   onClick: null,
+  prevImage: null,
+  nextImage: null,
+  hasPev: () => false,
+  hasNext: () => false,
 };
 
 ModalItem.propTypes = {

@@ -12,13 +12,17 @@ import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SearchIcon from '@material-ui/icons/Search';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
+import { withRouter } from 'react-router';
+import ReactRouterPropTypes from 'react-router-prop-types';
+import Container from '@material-ui/core/Container';
 
 import WithErrors from '../hocs/WithErrors';
-import { darkThemeSelector } from '../selectors/appSelectors';
+import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
+import { searchQuerySelector } from '../selectors/gallerySelectors';
 import * as appActions from '../actions/appActions';
 
 const darkTheme = createMuiTheme({
@@ -95,20 +99,15 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
+  handleSearchChange = e => {
+    const { updateSearch, moduleId, galleryId } = this.props;
 
-    this.state = {
-      showBackButton: false,
-      showSearch: false,
-    };
+    updateSearch(e.target.value, moduleId, galleryId);
+  };
 
-    this.renderBackButton = this.renderBackButton.bind(this);
-  }
-
-  renderSearch() {
-    const { classes } = this.props;
-    const { showSearch } = this.state;
+  renderSearch = () => {
+    const { classes, location, searchQuery } = this.props;
+    const showSearch = location.pathname.startsWith('/gallery');
 
     if (!showSearch) {
       // TODO: render only when on gallery
@@ -122,6 +121,8 @@ class App extends React.Component {
         </div>
         <InputBase
           placeholder="Search…"
+          onChange={this.handleSearchChange}
+          value={searchQuery || ''}
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,
@@ -129,11 +130,11 @@ class App extends React.Component {
         />
       </div>
     );
-  }
+  };
 
-  renderBackButton() {
-    const { classes } = this.props;
-    const { showBackButton } = this.state;
+  renderBackButton = () => {
+    const { classes, location, history } = this.props;
+    const showBackButton = location.pathname.startsWith('/gallery');
 
     if (!showBackButton) {
       // TODO: render only when on gallery
@@ -141,11 +142,11 @@ class App extends React.Component {
     }
 
     return (
-      <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
-        <MenuIcon />
+      <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer" onClick={history.goBack}>
+        <ArrowBackIcon />
       </IconButton>
     );
-  }
+  };
 
   render() {
     const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme } = this.props;
@@ -153,24 +154,22 @@ class App extends React.Component {
     return (
       <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
         <CssBaseline />
-        <div className={classes.root}>
-          <AppBar position="static" color="default">
-            <Toolbar>
-              {this.renderBackButton()}
-              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-                Looking Glass
-              </Typography>
-              {this.renderSearch()}
-              <div className={classes.grow} />
-              <div>
-                <IconButton color="inherit" onClick={toggleDarkTheme}>
-                  {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
-                </IconButton>
-              </div>
-            </Toolbar>
-          </AppBar>
-          {children}
-        </div>
+        <AppBar position="static" color="default" className={classes.appBar}>
+          <Toolbar>
+            {this.renderBackButton()}
+            <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+              Looking Glass
+            </Typography>
+            {this.renderSearch()}
+            <div className={classes.grow} />
+            <div>
+              <IconButton color="inherit" onClick={toggleDarkTheme}>
+                {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
+              </IconButton>
+            </div>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth={false}>{children}</Container>
       </MuiThemeProvider>
     );
   }
@@ -180,17 +179,27 @@ App.propTypes = {
   children: PropTypes.element.isRequired,
   darkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
+  location: ReactRouterPropTypes.location.isRequired,
+  history: ReactRouterPropTypes.history.isRequired,
+  moduleId: PropTypes.string,
+  galleryId: PropTypes.string,
+  searchQuery: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   darkTheme: darkThemeSelector(),
+  moduleId: moduleIdSelector(),
+  galleryId: galleryIdSelector(),
+  searchQuery: searchQuerySelector(),
 });
 
 const mapDispatchToProps = {
   toggleDarkTheme: appActions.toggleDarkTheme,
+  updateSearch: appActions.updateSearch,
 };
 
 export default compose(
+  withRouter,
   WithErrors,
   connect(
     mapStateToProps,

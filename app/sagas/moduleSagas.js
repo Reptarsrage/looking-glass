@@ -1,6 +1,6 @@
 import { put, call, takeLatest, all } from 'redux-saga/effects';
-import LookingGlassService from '../services/lookingGlassService';
 
+import LookingGlassService from '../services/lookingGlassService';
 import { FETCH_MODULES_SUCCESS, FETCH_MODULES_ERROR, FETCH_MODULES } from '../actions/types';
 
 function* handleFetchModules() {

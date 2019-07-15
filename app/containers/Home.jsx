@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactRouterPropTypes from 'react-router-prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import { compose } from 'recompose';
@@ -14,8 +15,11 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
+import FolderIcon from '@material-ui/icons/Folder';
+import { remote } from 'electron';
 
 import * as moduleActions from '../actions/moduleActions';
+import * as galleryActions from '../actions/galleryActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 
 const styles = theme => ({
@@ -39,10 +43,26 @@ const styles = theme => ({
 });
 
 class Home extends React.Component {
+  constructor() {
+    super();
+
+    this.chooseFolder = this.chooseFolder.bind(this);
+  }
+
   componentWillMount() {
     const { fetching, success, fetchModules } = this.props;
     if (!fetching && !success) {
       fetchModules();
+    }
+  }
+
+  chooseFolder() {
+    const { history } = this.props;
+    const result = remote.dialog.showOpenDialog({ properties: ['openDirectory'] });
+
+    if (result && result.length === 1) {
+      const galleryId = encodeURIComponent(result[0]);
+      history.push(`/gallery/fs/${galleryId}`);
     }
   }
 
@@ -68,6 +88,14 @@ class Home extends React.Component {
                 <ListItemText primary={m.get('title')} secondary={m.get('description')} />
               </ListItem>
             ))}
+            <ListItem key="fs" button onClick={this.chooseFolder}>
+              <ListItemAvatar>
+                <Avatar>
+                  <FolderIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary="Local files" secondary="Choose a directory" />
+            </ListItem>
           </List>
         </Paper>
       </main>
@@ -86,6 +114,7 @@ Home.propTypes = {
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
+  history: ReactRouterPropTypes.history.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({

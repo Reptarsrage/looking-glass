@@ -53,6 +53,13 @@ const hasNextSelector = () =>
     (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'hasNext'])
   );
 
+const searchQuerySelector = () =>
+  createSelector(
+    galleryState,
+    appState,
+    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'searchQuery'])
+  );
+
 export {
   imagesSelector,
   fetchingSelector,
@@ -61,4 +68,5 @@ export {
   hasNextSelector,
   beforeSelector,
   afterSelector,
+  searchQuerySelector,
 };
