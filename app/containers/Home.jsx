@@ -13,13 +13,11 @@ import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
 import { Link } from 'react-router-dom';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
 
 import * as moduleActions from '../actions/moduleActions';
-import * as galleryActions from '../actions/galleryActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 
 const styles = theme => ({
@@ -77,15 +75,15 @@ class Home extends React.Component {
           <List>
             {modules.map(m => (
               <ListItem
-                key={m.get('id')}
+                key={m.id}
                 button
                 component={Link}
-                to={`/${m.get('authType') || 'gallery'}/${m.get('id')}${!!m.get('authType') ? '' : '/default'}`}
+                to={`/${m.authType || 'gallery'}/${m.id}${m.authType ? '' : '/default'}`}
               >
                 <ListItemAvatar>
-                  <Avatar alt={m.get('title')} src={m.get('icon')} />
+                  <Avatar alt={m.title} src={m.icon} />
                 </ListItemAvatar>
-                <ListItemText primary={m.get('title')} secondary={m.get('description')} />
+                <ListItemText primary={m.title} secondary={m.description} />
               </ListItem>
             ))}
             <ListItem key="fs" button onClick={this.chooseFolder}>
@@ -110,7 +108,7 @@ Home.defaultProps = {
 Home.propTypes = {
   classes: PropTypes.object.isRequired,
   fetchModules: PropTypes.func.isRequired,
-  modules: PropTypes.instanceOf(Immutable.List).isRequired,
+  modules: PropTypes.arrayOf(PropTypes.object).isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
@@ -118,10 +116,10 @@ Home.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  modules: modulesSelector(),
-  success: successSelector(),
-  fetching: fetchingSelector(),
-  error: errorSelector(),
+  modules: modulesSelector,
+  success: successSelector,
+  fetching: fetchingSelector,
+  error: errorSelector,
 });
 
 const mapDispatchToProps = {

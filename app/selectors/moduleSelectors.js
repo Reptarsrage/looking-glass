@@ -1,44 +1,34 @@
 import { createSelector } from 'reselect';
 
-const moduleState = state => state.get('module');
+import { moduleIdSelector } from './appSelectors';
+import { initialState, initialModuleState } from '../reducers/moduleReducer';
 
-const appState = state => state.get('app');
+const moduleState = state => state.module || initialState;
 
-const fetchingSelector = () =>
-  createSelector(
-    moduleState,
-    state => state.get('fetching')
-  );
+const fetchingSelector = createSelector(
+  moduleState,
+  state => state.fetching
+);
 
-const errorSelector = () =>
-  createSelector(
-    moduleState,
-    state => state.get('error')
-  );
+const errorSelector = createSelector(
+  moduleState,
+  state => state.error
+);
 
-const successSelector = () =>
-  createSelector(
-    moduleState,
-    state => state.get('success')
-  );
+const successSelector = createSelector(
+  moduleState,
+  state => state.success
+);
 
-const modulesSelector = () =>
-  createSelector(
-    moduleState,
-    state => state.get('modules')
-  );
+const modulesSelector = createSelector(
+  moduleState,
+  state => state.modules
+);
 
-const moduleSelector = () =>
-  createSelector(
-    moduleState,
-    appState,
-    (module, app) => {
-      const modules = module.get('modules');
-      const moduleId = app.get('moduleId');
-      const idx = modules.findIndex(m => m.get('id') === moduleId);
-      const m = modules.get(idx);
-      return m;
-    }
-  );
+const moduleSelector = createSelector(
+  modulesSelector,
+  moduleIdSelector,
+  (state, moduleId) => state.find(m => m.id === moduleId) || initialModuleState
+);
 
 export { successSelector, fetchingSelector, errorSelector, modulesSelector, moduleSelector };

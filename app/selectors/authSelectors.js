@@ -1,56 +1,47 @@
 import { createSelector } from 'reselect';
 
-const authState = state => state.get('auth');
-const appState = state => state.get('app');
+import { moduleIdSelector } from './appSelectors';
+import { initialAuthState, initialState } from '../reducers/authReducer';
 
-const fetchingSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'fetching'])
-  );
+const authState = state => state.auth || initialState;
 
-const errorSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'error'])
-  );
+const getStateOrInitial = (state, moduleId) =>
+  moduleId && Object.prototype.hasOwnProperty.call(state, moduleId) ? state[moduleId] : initialAuthState;
 
-const successSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'success'])
-  );
+const fetchingSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).fetching
+);
 
-const accessTokenSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'accessToken'])
-  );
+const errorSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).error
+);
 
-const refreshTokenSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'refreshToken'])
-  );
+const successSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).success
+);
 
-const oauthURLSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'oauthURL'])
-  );
+const accessTokenSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).accessToken
+);
 
-const expiresSelector = () =>
-  createSelector(
-    authState,
-    appState,
-    (auth, app) => auth.getIn([app.get('moduleId'), 'expires'])
-  );
+const refreshTokenSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).refreshToken
+);
+
+const oauthURLSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).oauthURL
+);
+
+const expiresSelector = createSelector(
+  [authState, moduleIdSelector],
+  (state, moduleId) => getStateOrInitial(state, moduleId).expires
+);
 
 export {
   successSelector,

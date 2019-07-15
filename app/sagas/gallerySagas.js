@@ -34,13 +34,13 @@ function* handlefetchImages(action) {
   const { meta } = action;
   const { moduleId, galleryId } = meta;
 
-  let accessToken = yield select(accessTokenSelector());
-  const refreshToken = yield select(refreshTokenSelector());
-  const offset = yield select(offsetSelector());
-  const before = yield select(beforeSelector());
-  const after = yield select(afterSelector());
-  const expires = yield select(expiresSelector());
-  const searchQuery = yield select(searchQuerySelector());
+  let accessToken = yield select(accessTokenSelector);
+  const refreshToken = yield select(refreshTokenSelector);
+  const offset = yield select(offsetSelector);
+  const before = yield select(beforeSelector);
+  const after = yield select(afterSelector);
+  const expires = yield select(expiresSelector);
+  const searchQuery = yield select(searchQuerySelector);
 
   try {
     let service;

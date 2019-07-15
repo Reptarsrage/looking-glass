@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware, { END } from 'redux-saga';
 import { createHashHistory } from 'history';
@@ -13,7 +12,7 @@ const router = routerMiddleware(history);
 const enhancer = applyMiddleware(sagaMiddleware, router);
 
 function configureStore(initialState) {
-  const store = createStore(rootReducer, fromJS(initialState), enhancer);
+  const store = createStore(rootReducer, initialState, enhancer);
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {};
   store.close = () => store.dispatch(END);

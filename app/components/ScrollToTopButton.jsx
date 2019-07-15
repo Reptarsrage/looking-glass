@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
@@ -14,18 +14,12 @@ const styles = theme => ({
   },
 });
 
-export class ScrollToTopButton extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.scrollToTop = this.scrollToTop.bind(this);
-  }
-
-  scrollToTop() {
+class ScrollToTopButton extends PureComponent {
+  scrollToTop = () => {
     window.requestAnimationFrame(() => {
       window.scrollTo(0, 0);
     });
-  }
+  };
 
   render() {
     const { color, classes } = this.props;

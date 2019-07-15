@@ -1,64 +1,73 @@
 import { createSelector } from 'reselect';
 
-const galleryState = state => state.get('gallery');
+import { moduleIdSelector, galleryIdSelector } from './appSelectors';
+import { initialGalleryState, initialState } from '../reducers/galleryReducer';
 
-const appState = state => state.get('app');
+const galleryState = state => state.gallery || initialState;
 
-const imagesSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'images'])
-  );
+const getStateOrInitial = (state, moduleId, galleryId) =>
+  moduleId &&
+  galleryId &&
+  Object.prototype.hasOwnProperty.call(state, moduleId) &&
+  Object.prototype.hasOwnProperty.call(state[moduleId], galleryId)
+    ? state[moduleId][galleryId]
+    : initialGalleryState;
 
-const fetchingSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'fetching'])
-  );
+const imagesSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).images
+);
 
-const errorSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'error'])
-  );
+const fetchingSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).fetching
+);
 
-const offsetSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'offset'])
-  );
+const errorSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).error
+);
 
-const beforeSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'before'])
-  );
+const offsetSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).offset
+);
 
-const afterSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'after'])
-  );
+const beforeSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).before
+);
 
-const hasNextSelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'hasNext'])
-  );
+const afterSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).after
+);
 
-const searchQuerySelector = () =>
-  createSelector(
-    galleryState,
-    appState,
-    (gallery, app) => gallery.getIn([app.get('moduleId'), app.get('galleryId'), 'searchQuery'])
-  );
+const hasNextSelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).hasNext
+);
+
+const searchQuerySelector = createSelector(
+  galleryState,
+  moduleIdSelector,
+  galleryIdSelector,
+  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).searchQuery
+);
 
 export {
   imagesSelector,

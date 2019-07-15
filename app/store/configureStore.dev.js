@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware, { END } from 'redux-saga';
 import { createHashHistory } from 'history';
@@ -48,7 +47,7 @@ const configureStore = initialState => {
   const enhancer = composeEnhancers(...enhancers);
 
   // Create Store
-  const store = createStore(rootReducer, fromJS(initialState), enhancer);
+  const store = createStore(rootReducer, initialState, enhancer);
 
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {};

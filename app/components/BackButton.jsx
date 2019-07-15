@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import ReactRouterPropTypes from 'react-router-prop-types';
@@ -16,20 +16,14 @@ const styles = theme => ({
   },
 });
 
-export class BackButton extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.goBack = this.goBack.bind(this);
-  }
-
-  goBack() {
+class BackButton extends PureComponent {
+  goBack = () => {
     const { history } = this.props;
 
     if (history && history.goBack) {
       history.goBack();
     }
-  }
+  };
 
   render() {
     const { color, classes } = this.props;

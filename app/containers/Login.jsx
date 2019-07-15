@@ -211,10 +211,10 @@ Login.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  success: successSelector(),
-  fetching: fetchingSelector(),
-  error: errorSelector(),
-  moduleId: moduleIdSelector(),
+  success: successSelector,
+  fetching: fetchingSelector,
+  error: errorSelector,
+  moduleId: moduleIdSelector,
 });
 
 const mapDispatchToProps = {

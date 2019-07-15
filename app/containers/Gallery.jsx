@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
@@ -86,16 +85,6 @@ const styles = () => ({
 });
 
 class Gallery extends Component {
-  static propTypes = {
-    images: PropTypes.instanceOf(Immutable.List).isRequired,
-    fetching: PropTypes.bool,
-    fetchImages: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    fetching: false,
-  };
-
   constructor(props) {
     super(props);
 
@@ -115,8 +104,11 @@ class Gallery extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.location.pathname !== prevProps.location.pathname) {
-      this.setState({ modalOpen: false, modalItemId: null });
+    const { location } = this.props;
+    const { location: prevLocation } = prevProps;
+
+    if (location.pathname !== prevLocation.pathname) {
+      this.setState({ modalIn: false, modalItemId: null });
       this.fetchInitialImages();
     }
   }
@@ -152,7 +144,7 @@ class Gallery extends Component {
 
   fetchInitialImages = () => {
     const { fetchImages, images, fetching, moduleId, galleryId, hasNext } = this.props;
-    if (hasNext && images.size === 0 && !fetching) {
+    if (hasNext && images.length === 0 && !fetching) {
       fetchImages(moduleId, galleryId);
     }
   };
@@ -167,14 +159,14 @@ class Gallery extends Component {
   modalHasNext = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.get('id') === modalItemId);
-    return idx < images.size - 1;
+    const idx = images.findIndex(i => i.id === modalItemId);
+    return idx < images.length - 1;
   };
 
   modalHasPrev = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.get('id') === modalItemId);
+    const idx = images.findIndex(i => i.id === modalItemId);
     return idx > 0;
   };
 
@@ -183,26 +175,26 @@ class Gallery extends Component {
   handleModalNextImage = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.get('id') === modalItemId);
+    const idx = images.findIndex(i => i.id === modalItemId);
 
-    if (idx < images.size - 1) {
-      const modalItemId = images.get(idx + 1).get('id');
+    if (idx < images.length - 1) {
+      const newModalItemId = images[idx + 1].id;
 
       // TODO: Update modalInitialBounds
-      this.setState({ modalItemId });
+      this.setState({ modalItemId: newModalItemId });
     }
   };
 
   handleModalPrevImage = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.get('id') === modalItemId);
+    const idx = images.findIndex(i => i.id === modalItemId);
 
     if (idx > 0) {
-      const modalItemId = images.get(idx - 1).get('id');
+      const newModalItemId = images[idx - 1].id;
 
       // TODO: Update modalInitialBounds
-      this.setState({ modalItemId });
+      this.setState({ modalItemId: newModalItemId });
     }
   };
 
@@ -224,7 +216,9 @@ class Gallery extends Component {
   renderModal = () => {
     const { classes, images } = this.props;
     const { mountModal, modalIn, modalItemId, modalInitialBounds } = this.state;
-    const modalItem = modalItemId && images.find(i => i.get('id') === modalItemId);
+    const modalItem = modalItemId && images.find(i => i.id === modalItemId);
+    const hasPrev = this.modalHasPrev();
+    const hasNext = this.modalHasNext();
 
     if (!mountModal) {
       return null;
@@ -232,12 +226,12 @@ class Gallery extends Component {
 
     const modalContent = modalItem && (
       <ModalItem
-        videoURL={modalItem.get('videoURL')}
-        imageURL={modalItem.get('imageURL')}
-        isVideo={modalItem.get('isVideo')}
-        title={modalItem.get('title')}
-        width={modalItem.get('width')}
-        height={modalItem.get('height')}
+        videoURL={modalItem.videoURL}
+        imageURL={modalItem.imageURL}
+        isVideo={modalItem.isVideo}
+        title={modalItem.title}
+        width={modalItem.width}
+        height={modalItem.height}
         onClick={this.handleModalClose}
       />
     );
@@ -245,7 +239,7 @@ class Gallery extends Component {
     return (
       <React.Fragment>
         <Fade in={modalIn}>
-          <div className={classes.backdrop}></div>
+          <div className={classes.backdrop} />
         </Fade>
         <Zoom in={modalIn}>
           <Fab
@@ -253,7 +247,7 @@ class Gallery extends Component {
             aria-label="Previous"
             className={clsx(classes.prev, classes.button)}
             onClick={this.handleModalPrevImage}
-            style={{ display: this.modalHasPrev() ? 'inline-flex' : 'none' }}
+            style={{ display: hasPrev ? 'inline-flex' : 'none' }}
           >
             <ChevronLeftIcon />
           </Fab>
@@ -264,13 +258,20 @@ class Gallery extends Component {
             aria-label="Next"
             className={clsx(classes.next, classes.button)}
             onClick={this.handleModalNextImage}
-            style={{ display: this.modalHasNext() ? 'inline-flex' : 'none' }}
+            style={{ display: hasNext ? 'inline-flex' : 'none' }}
           >
             <ChevronRightIcon />
           </Fab>
         </Zoom>
         <ImageFullscreenTransition in={modalIn} initialBounds={modalInitialBounds} onExited={this.handleModalExited}>
-          <div className={classes.animationElement} onClick={this.handleModalClose}>
+          <div
+            className={classes.animationElement}
+            onClick={this.handleModalClose}
+            tabIndex="0"
+            role="button"
+            aria-pressed="false"
+            onKeyDown={this.handleKeyPress}
+          >
             {modalContent}
           </div>
         </ImageFullscreenTransition>
@@ -281,6 +282,11 @@ class Gallery extends Component {
   render() {
     const { images, fetching, error, classes, moduleId, galleryId, location, module, searchQuery } = this.props;
     const { showOverlayButtons } = this.state;
+
+    // Sometimes react router renders things that aren't supposed to be
+    if (!moduleId || !galleryId) {
+      return null;
+    }
 
     return (
       <React.Fragment>
@@ -297,7 +303,7 @@ class Gallery extends Component {
               to={`/gallery/${moduleId}/default`}
               onClick={this.clearSearch}
             >
-              {module.get('title')}
+              {module.title}
             </Link>
             {galleryId !== 'default' ? (
               <Link
@@ -311,7 +317,7 @@ class Gallery extends Component {
               </Link>
             ) : null}
             {searchQuery !== null && searchQuery.length > 0 ? (
-              <Typography color="textPrimary">"{searchQuery}"</Typography>
+              <Typography color="textPrimary">&quot;{searchQuery}&quot;</Typography>
             ) : null}
           </Breadcrumbs>
         </Paper>
@@ -340,29 +346,34 @@ class Gallery extends Component {
 Gallery.defaultProps = {
   error: null,
   searchQuery: null,
+  moduleId: null,
+  galleryId: null,
 };
 
 Gallery.propTypes = {
   classes: PropTypes.object.isRequired,
   location: ReactRouterPropTypes.location.isRequired,
-  history: ReactRouterPropTypes.history.isRequired,
-  moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
+  moduleId: PropTypes.string,
+  galleryId: PropTypes.string,
   error: PropTypes.object,
   searchQuery: PropTypes.string,
-  module: PropTypes.instanceOf(Immutable.Map).isRequired,
-  images: PropTypes.instanceOf(Immutable.List).isRequired,
+  module: PropTypes.object.isRequired,
+  fetching: PropTypes.bool.isRequired,
+  hasNext: PropTypes.bool.isRequired,
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
+  fetchImages: PropTypes.func.isRequired,
+  clearSearch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  images: imagesSelector(),
-  hasNext: hasNextSelector(),
-  fetching: fetchingSelector(),
-  error: errorSelector(),
-  moduleId: moduleIdSelector(),
-  galleryId: galleryIdSelector(),
-  module: moduleSelector(),
-  searchQuery: searchQuerySelector(),
+  images: imagesSelector,
+  hasNext: hasNextSelector,
+  fetching: fetchingSelector,
+  error: errorSelector,
+  moduleId: moduleIdSelector,
+  galleryId: galleryIdSelector,
+  module: moduleSelector,
+  searchQuery: searchQuerySelector,
 });
 
 const mapDispatchToProps = {
