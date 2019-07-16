@@ -43,22 +43,20 @@ class Video extends React.PureComponent {
   }
 
   render() {
-    const { classes, src, thumb, width, height, title, autopilot, ...other } = this.props;
+    const { classes, src, thumb, width, height, title, ...other } = this.props;
 
     return (
       <InView threshold={0}>
         {({ inView, ref }) => (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
           <video
             ref={ref}
             className={classes.video}
             width={width}
             height={height}
             title={title}
-            muted={autopilot}
             autoPlay
-            loop={autopilot}
             poster={thumb}
-            controls={!autopilot}
             onVolumeChange={this.handleVolumeChange}
             {...other}
           >
@@ -81,20 +79,16 @@ class Video extends React.PureComponent {
 
 Video.defaultProps = {
   title: '',
-  to: null,
-  autopilot: true,
+  thumb: null,
 };
 
 Video.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
   thumb: PropTypes.string,
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   title: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  onClick: PropTypes.func,
-  autopilot: PropTypes.bool,
 };
 
 export default withStyles(styles)(Video);

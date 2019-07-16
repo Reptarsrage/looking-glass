@@ -25,11 +25,11 @@ const styles = () => ({
   },
 });
 
-const Image = ({ classes, src, thumb, width, height, title, autopilot, ...other }) => (
+const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
   <InView threshold={0}>
     {({ inView, ref }) => (
       <React.Fragment>
-        <div ref={ref} className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}")` : undefined }} />
+        <div ref={ref} className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}") ` : undefined }} />
         <img
           className={classes.image}
           src={inView ? src : null}
@@ -47,7 +47,7 @@ const Image = ({ classes, src, thumb, width, height, title, autopilot, ...other 
 
 Image.defaultProps = {
   title: '',
-  to: null,
+  thumb: null,
 };
 
 Image.propTypes = {

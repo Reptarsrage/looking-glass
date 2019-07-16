@@ -39,27 +39,23 @@ class MasonryItem extends React.PureComponent {
     }
   }
 
+  renderImage = () => {
+    const { width, height, title, imageURL, thumbURL } = this.props;
+
+    return <Image src={imageURL} thumb={thumbURL} title={title} width={width} height={height} />;
+  };
+
+  renderVideo = () => {
+    const { width, height, title, videoURL, thumbURL } = this.props;
+
+    return <Video src={videoURL} thumb={thumbURL} title={title} width={width} height={height} muted autoplay loop />;
+  };
+
   render() {
-    const {
-      classes,
-      width,
-      height,
-      title,
-      videoURL,
-      imageURL,
-      isVideo,
-      isGallery,
-      id,
-      galleryId,
-      moduleId,
-      thumbURL,
-    } = this.props;
+    const { classes, isVideo, isGallery, id, galleryId, moduleId } = this.props;
 
-    const Elt = isVideo ? Video : Image;
-    const src = isVideo ? videoURL : imageURL;
     const to = isGallery ? `/gallery/${moduleId}/${galleryId}` : null;
-
-    const Wrapper = to ? Link : React.Fragment;
+    const Wrapper = isGallery ? Link : React.Fragment;
     const wrapperProps = to ? { to } : {};
     const clickHandler = to ? null : this.handleClick;
 
@@ -67,7 +63,7 @@ class MasonryItem extends React.PureComponent {
       <Paper key={id} onClick={clickHandler} className={classes.paper}>
         <Wrapper {...wrapperProps}>
           {isGallery ? <PhotoLibraryIcon color="primary" className={classes.icon} /> : null}
-          <Elt src={src} thumb={thumbURL} title={title} width={width} height={height} />
+          {isVideo ? this.renderVideo() : this.renderImage()}
         </Wrapper>
       </Paper>
     );
@@ -90,11 +86,11 @@ MasonryItem.propTypes = {
   isVideo: PropTypes.bool.isRequired,
   isGallery: PropTypes.bool.isRequired,
   title: PropTypes.string,
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  moduleId: PropTypes.string.isRequired,
   onClick: PropTypes.func,
 };
 
