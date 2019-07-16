@@ -46,9 +46,9 @@ class MasonryItem extends React.PureComponent {
   };
 
   renderVideo = () => {
-    const { width, height, title, videoURL, thumbURL } = this.props;
+    const { width, height, title, thumbURL, videoURL } = this.props;
 
-    return <Video src={videoURL} thumb={thumbURL} title={title} width={width} height={height} muted autoplay loop />;
+    return <Video src={videoURL} thumb={thumbURL} title={title} width={width} height={height} muted autoPlay loop />;
   };
 
   render() {
@@ -71,24 +71,24 @@ class MasonryItem extends React.PureComponent {
 }
 
 MasonryItem.defaultProps = {
-  videoURL: '',
-  imageURL: '',
-  thumbURL: '',
-  title: '',
+  thumbURL: null,
   onClick: null,
+  galleryId: null,
+  imageURL: null,
+  videoURL: null,
 };
 
 MasonryItem.propTypes = {
   classes: PropTypes.object.isRequired,
-  videoURL: PropTypes.string,
   imageURL: PropTypes.string,
+  videoURL: PropTypes.string,
   thumbURL: PropTypes.string,
   isVideo: PropTypes.bool.isRequired,
   isGallery: PropTypes.bool.isRequired,
-  title: PropTypes.string,
+  title: PropTypes.string.isRequired,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   onClick: PropTypes.func,

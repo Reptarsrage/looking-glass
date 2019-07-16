@@ -99,10 +99,10 @@ class Masonry extends Component {
           isGallery={item.isGallery}
           title={item.title}
           id={item.id}
-          galleryId={item.galleryId}
           width={item.width}
           height={item.height}
           moduleId={moduleId}
+          galleryId={item.galleryId}
           onClick={onItemClick}
         />
       </Box>
