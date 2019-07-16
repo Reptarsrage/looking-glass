@@ -1,28 +1,33 @@
-export const FETCH_IMAGES = 'FETCH_IMAGES';
-export const FETCH_IMAGES_SUCCESS = 'FETCH_IMAGES_SUCCESS';
-export const FETCH_IMAGES_ERROR = 'FETCH_IMAGES_ERROR';
+const actionTyper = (prefix = '', separator = '/') => {
+  return new Proxy(
+    {},
+    {
+      get(target, name) {
+        return `${prefix}${separator}${name}`;
+      },
+    }
+  );
+};
 
-export const REFRESH_SUCCESS = 'REFRESH_SUCCESS';
-export const REFRESH_ERROR = 'REFRESH_ERROR';
+export const { LOCATION_CHANGE } = actionTyper('@@router');
 
-export const LOGIN = 'LOGIN';
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-export const LOGIN_ERROR = 'LOGIN_ERROR';
+export const { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_ERROR, CLEAR_IMAGES } = actionTyper('gallery');
 
-export const FETCH_OATH_URL = 'FETCH_OATH_URL';
-export const FETCH_OATH_URL_SUCCESS = 'FETCH_OATH_URL_SUCCESS';
-export const FETCH_OATH_URL_ERROR = 'FETCH_OATH_URL_ERROR';
+export const { TOGGLE_DARK_THEME, UPDATE_SEARCH, CLEAR_SEARCH } = actionTyper('app');
 
-export const AUTHORIZE = 'AUTHORIZE';
-export const AUTHORIZE_SUCCESS = 'AUTHORIZE_SUCCESS';
-export const AUTHORIZE_ERROR = 'AUTHORIZE_ERROR';
+export const { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_ERROR } = actionTyper('module');
 
-export const FETCH_MODULES = 'FETCH_MODULES';
-export const FETCH_MODULES_SUCCESS = 'FETCH_MODULES_SUCCESS';
-export const FETCH_MODULES_ERROR = 'FETCH_MODULES_ERROR';
-
-export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
-export const TOGGLE_DARK_THEME = 'TOGGLE_DARK_THEME';
-export const UPDATE_SEARCH = 'UPDATE_SEARCH';
-export const CLEAR_IMAGES = 'CLEAR_IMAGES';
-export const CLEAR_SEARCH = 'CLEAR_SEARCH';
+export const {
+  LOGIN,
+  LOGIN_SUCCESS,
+  LOGIN_ERROR,
+  FETCH_OATH_URL,
+  FETCH_OATH_URL_SUCCESS,
+  FETCH_OATH_URL_ERROR,
+  REFRESH,
+  REFRESH_SUCCESS,
+  REFRESH_ERROR,
+  AUTHORIZE,
+  AUTHORIZE_SUCCESS,
+  AUTHORIZE_ERROR,
+} = actionTyper('auth');
