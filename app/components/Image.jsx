@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { InView } from 'react-intersection-observer';
@@ -28,7 +28,7 @@ const styles = () => ({
 const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
   <InView threshold={0}>
     {({ inView, ref }) => (
-      <React.Fragment>
+      <Fragment>
         <div ref={ref} className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}") ` : undefined }} />
         <img
           className={classes.image}
@@ -40,7 +40,7 @@ const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
           style={{ display: inView ? 'inline-block' : 'none' }}
           {...other}
         />
-      </React.Fragment>
+      </Fragment>
     )}
   </InView>
 );

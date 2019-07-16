@@ -13,8 +13,6 @@ const WithErrors = WrappedComponent =>
         error: null,
         errorInfo: null,
       };
-
-      this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidCatch(error, errorInfo) {
@@ -24,9 +22,9 @@ const WithErrors = WrappedComponent =>
       });
     }
 
-    handleClick() {
+    handleClick = () => {
       this.setState({ error: null, errorInfo: null });
-    }
+    };
 
     render() {
       const { error, errorInfo } = this.state;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
@@ -25,19 +25,13 @@ const styles = theme => ({
   },
 });
 
-class MasonryItem extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
+class MasonryItem extends PureComponent {
+  handleClick = event => {
     const { onClick, id } = this.props;
     if (onClick) {
       onClick(event, id);
     }
-  }
+  };
 
   renderImage = () => {
     const { width, height, title, imageURL, thumbURL } = this.props;
@@ -55,7 +49,7 @@ class MasonryItem extends React.PureComponent {
     const { classes, isVideo, isGallery, id, galleryId, moduleId } = this.props;
 
     const to = isGallery ? `/gallery/${moduleId}/${galleryId}` : null;
-    const Wrapper = isGallery ? Link : React.Fragment;
+    const Wrapper = isGallery ? Link : Fragment;
     const wrapperProps = to ? { to } : {};
     const clickHandler = to ? null : this.handleClick;
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { Fab } from '@material-ui/core';
+import Fab from '@material-ui/core/fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
@@ -33,7 +33,7 @@ import BackButton from '../components/BackButton';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
-import rootStyles from '../index.css';
+import globalStyles from '../index.css';
 
 const styles = () => ({
   floatedBottomRight: {
@@ -204,12 +204,12 @@ class Gallery extends Component {
 
   handleItemClick = (event, modalItemId) => {
     const modalInitialBounds = this.getlInitialBoundsForTarget(event);
-    document.body.classList.add(rootStyles.stopScroll);
+    document.body.classList.add(globalStyles.stopScroll);
     this.setState({ mountModal: true, modalIn: true, modalItemId, modalInitialBounds });
   };
 
   handleModalExited = () => {
-    document.body.classList.remove(rootStyles.stopScroll);
+    document.body.classList.remove(globalStyles.stopScroll);
     this.setState({ mountModal: false, modalItemId: null });
   };
 
@@ -237,7 +237,7 @@ class Gallery extends Component {
     );
 
     return (
-      <React.Fragment>
+      <Fragment>
         <Fade in={modalIn}>
           <div className={classes.backdrop} />
         </Fade>
@@ -275,7 +275,7 @@ class Gallery extends Component {
             {modalContent}
           </div>
         </ImageFullscreenTransition>
-      </React.Fragment>
+      </Fragment>
     );
   };
 
@@ -289,7 +289,7 @@ class Gallery extends Component {
     }
 
     return (
-      <React.Fragment>
+      <Fragment>
         {this.renderModal()}
         <Paper elevation={0} className={classes.paper}>
           <Breadcrumbs aria-label="Breadcrumb">
@@ -338,7 +338,7 @@ class Gallery extends Component {
           loadMore={this.loadMoreImages}
           onItemClick={this.handleItemClick}
         />
-      </React.Fragment>
+      </Fragment>
     );
   }
 }

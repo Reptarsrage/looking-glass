@@ -42,44 +42,39 @@ class Masonry extends Component {
     this.state = {
       columnCount: 3, // total number of columns
     };
-
-    this.loadMoreRows = this.loadMoreRows.bind(this);
-    this.renderRow = this.renderRow.bind(this);
-    this.getItemHeight = this.getItemHeight.bind(this);
-    this.getItemWidth = this.getItemWidth.bind(this);
   }
 
-  loadMoreRows() {
+  loadMoreRows = () => {
     const { loadMore, loading, moduleId, galleryId } = this.props;
     if (!loading) {
       loadMore(moduleId, galleryId);
     }
-  }
+  };
 
-  isLoaded(index) {
+  isLoaded = index => {
     const { items } = this.props;
     return index < items.length;
-  }
+  };
 
-  getItemWidth(index) {
+  getItemWidth = index => {
     const { items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
     return items[index].width;
-  }
+  };
 
-  getItemHeight(index) {
+  getItemHeight = index => {
     const { items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
     return items[index].height;
-  }
+  };
 
-  renderRow(index) {
+  renderRow = index => {
     const { classes } = this.props;
 
     if (!this.isLoaded(index)) {
@@ -107,7 +102,7 @@ class Masonry extends Component {
         />
       </Box>
     );
-  }
+  };
 
   render() {
     const { items, loading, error } = this.props;

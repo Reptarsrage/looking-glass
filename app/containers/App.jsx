@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -97,7 +97,7 @@ const styles = theme => ({
   },
 });
 
-class App extends React.Component {
+class App extends Component {
   handleSearchChange = e => {
     const { updateSearch, moduleId, galleryId } = this.props;
 

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import { Fab } from '@material-ui/core';
+import Fab from '@material-ui/core/Fab';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({

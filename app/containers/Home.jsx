@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -40,13 +40,7 @@ const styles = theme => ({
   },
 });
 
-class Home extends React.Component {
-  constructor() {
-    super();
-
-    this.chooseFolder = this.chooseFolder.bind(this);
-  }
-
+class Home extends Component {
   componentWillMount() {
     const { fetching, success, fetchModules } = this.props;
     if (!fetching && !success) {
@@ -54,7 +48,7 @@ class Home extends React.Component {
     }
   }
 
-  chooseFolder() {
+  chooseFolder = () => {
     const { history } = this.props;
     const result = remote.dialog.showOpenDialog({ properties: ['openDirectory'] });
 
@@ -62,7 +56,7 @@ class Home extends React.Component {
       const galleryId = encodeURIComponent(result[0]);
       history.push(`/gallery/fs/${galleryId}`);
     }
-  }
+  };
 
   render() {
     const { classes, fetching, error, modules } = this.props;

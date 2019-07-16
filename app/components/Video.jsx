@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { extname } from 'path';
@@ -14,7 +14,7 @@ const styles = () => ({
   },
 });
 
-class Video extends React.PureComponent {
+class Video extends PureComponent {
   constructor(props) {
     super(props);
 
