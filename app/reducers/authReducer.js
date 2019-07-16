@@ -1,4 +1,4 @@
-import { fromJS, Map } from 'immutable';
+import produce from 'immer';
 import moment from 'moment';
 import Store from 'electron-store';
 
@@ -19,7 +19,9 @@ import {
 
 const store = new Store();
 
-const initialModuleState = {
+export const initialState = {};
+
+export const initialAuthState = {
   accessToken: '',
   oauthURL: '',
   refreshToken: '',
@@ -29,52 +31,75 @@ const initialModuleState = {
   error: null,
 };
 
-export default function authReducer(state = new Map(), action) {
-  const { type, payload, meta } = action || {};
-  const { moduleId } = meta || {};
+const authReducer = (state = initialState, action) =>
+  produce(state, draft => {
+    const { type, payload, meta } = action || {};
+    const { moduleId } = meta || {};
 
-  switch (type) {
-    case FETCH_MODULES_SUCCESS: {
-      let nState = state;
-      for (const module of payload) {
-        nState = nState.set(module.id, fromJS(store.get(module.id, initialModuleState)));
+    switch (type) {
+      case FETCH_MODULES_SUCCESS: {
+        for (const { id } of payload) {
+          // Load module authentication from persistent electron store
+          draft[id] = { ...initialAuthState, ...store.get(id, {}) };
+        }
+
+        break;
       }
-      return nState;
-    }
-    case FETCH_OATH_URL: {
-      return state.mergeIn([moduleId], { fetching: true });
-    }
-    case FETCH_OATH_URL_SUCCESS: {
-      return state.mergeIn([moduleId], { oauthURL: payload, fetching: false });
-    }
-    case FETCH_OATH_URL_ERROR: {
-      return state.mergeIn([moduleId], { error: payload, fetching: false });
-    }
-    case REFRESH_SUCCESS:
-    case AUTHORIZE_SUCCESS:
-    case LOGIN_SUCCESS: {
-      const { expiresIn } = payload;
-      const date = moment();
-      date.add(expiresIn, 'seconds');
+      case FETCH_OATH_URL: {
+        draft[moduleId].fetching = true;
 
-      const mergeState = { ...payload, expires: date.valueOf(), fetching: false, success: true, error: null };
+        break;
+      }
+      case FETCH_OATH_URL_SUCCESS: {
+        draft[moduleId].fetching = false;
+        draft[moduleId].oauthURL = payload;
 
-      store.set(moduleId, mergeState);
-      return state.mergeIn([moduleId], mergeState);
+        break;
+      }
+      case FETCH_OATH_URL_ERROR: {
+        draft[moduleId].fetching = false;
+        draft[moduleId].error = payload;
+
+        break;
+      }
+      case REFRESH_SUCCESS:
+      case AUTHORIZE_SUCCESS:
+      case LOGIN_SUCCESS: {
+        const { expiresIn } = payload;
+        const date = moment();
+        date.add(expiresIn, 'seconds');
+
+        const mergeState = { ...payload, expires: date.valueOf(), fetching: false, success: true, error: null };
+
+        // Save module authentication from persistent electron store
+        store.set(moduleId, mergeState);
+
+        draft[moduleId] = {
+          ...state[moduleId],
+          ...mergeState,
+        };
+
+        break;
+      }
+      case REFRESH_ERROR:
+      case AUTHORIZE_ERROR:
+      case LOGIN_ERROR: {
+        draft[moduleId].fetching = false;
+        draft[moduleId].success = false;
+        draft[moduleId].error = payload;
+
+        break;
+      }
+      case AUTHORIZE:
+      case LOGIN: {
+        draft[moduleId].fetching = true;
+
+        break;
+      }
+      default:
+        // Nothing to do
+        break;
     }
-    case REFRESH_ERROR:
-    case AUTHORIZE_ERROR:
-    case LOGIN_ERROR: {
-      return state.mergeIn([moduleId], {
-        fetching: false,
-        success: false,
-        error: payload,
-      });
-    }
-    case AUTHORIZE:
-    case LOGIN:
-      return state.mergeIn([moduleId], { fetching: true });
-    default:
-      return state;
-  }
-}
+  });
+
+export default authReducer;

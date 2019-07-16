@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { extname } from 'path';
@@ -14,7 +14,7 @@ const styles = () => ({
   },
 });
 
-class Video extends React.PureComponent {
+class Video extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -22,8 +22,7 @@ class Video extends React.PureComponent {
       volume: 0.5,
     };
 
-    this.videoRef = React.createRef();
-    this.handleVolumeChange = this.handleVolumeChange.bind(this);
+    this.videoRef = null;
   }
 
   componentWillMount() {
@@ -33,33 +32,44 @@ class Video extends React.PureComponent {
     }
   }
 
+  componentDidMount() {
+    if (this.videoRef) {
+      const { volume } = this.state;
+      this.videoRef.volume = volume;
+    }
+  }
+
   componentWillUnmount() {
     const { volume } = this.state;
     sessionStorage.setItem('volume', volume);
   }
 
-  handleVolumeChange(event) {
+  handleVolumeChange = event => {
     this.setState({ volume: event.target.volume });
-  }
+  };
+
+  handleSetRef = (ref, refCallback) => {
+    refCallback(ref);
+    this.videoRef = ref;
+  };
 
   render() {
-    const { classes, src, thumb, width, height, title, autopilot, ...other } = this.props;
+    const { volume } = this.state;
+    const { classes, src, thumb, width, height, title, ...other } = this.props;
 
     return (
       <InView threshold={0}>
-        {({ inView, ref }) => (
+        {({ inView, ref: refCallback }) => (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
           <video
-            ref={ref}
+            ref={ref => this.handleSetRef(ref, refCallback)}
             className={classes.video}
             width={width}
             height={height}
             title={title}
-            muted={autopilot}
-            autoPlay
-            loop={autopilot}
             poster={thumb}
-            controls={!autopilot}
             onVolumeChange={this.handleVolumeChange}
+            volume={volume}
             {...other}
           >
             {inView ? (
@@ -81,20 +91,16 @@ class Video extends React.PureComponent {
 
 Video.defaultProps = {
   title: '',
-  to: null,
-  autopilot: true,
+  thumb: null,
 };
 
 Video.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
   thumb: PropTypes.string,
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   title: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  onClick: PropTypes.func,
-  autopilot: PropTypes.bool,
 };
 
 export default withStyles(styles)(Video);

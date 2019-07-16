@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
@@ -11,7 +11,7 @@ const styles = theme => ({
 });
 
 const NotFound = ({ classes }) => (
-  <React.Fragment>
+  <Fragment>
     <Typography variant="h1">Not Found</Typography>
 
     <Typography>
@@ -19,7 +19,7 @@ const NotFound = ({ classes }) => (
         Back
       </Link>
     </Typography>
-  </React.Fragment>
+  </Fragment>
 );
 
 NotFound.propTypes = {

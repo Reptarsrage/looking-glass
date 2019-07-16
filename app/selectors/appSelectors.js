@@ -1,23 +1,22 @@
 import { createSelector } from 'reselect';
 
-const appState = state => state.get('app');
+import { initialState } from '../reducers/appReducer';
 
-const moduleIdSelector = () =>
-  createSelector(
-    appState,
-    state => state.get('moduleId')
-  );
+const appState = state => state.app || initialState;
 
-const galleryIdSelector = () =>
-  createSelector(
-    appState,
-    state => state.get('galleryId')
-  );
+const moduleIdSelector = createSelector(
+  appState,
+  state => state.moduleId
+);
 
-const darkThemeSelector = () =>
-  createSelector(
-    appState,
-    state => state.get('darkTheme')
-  );
+const galleryIdSelector = createSelector(
+  appState,
+  state => state.galleryId
+);
+
+const darkThemeSelector = createSelector(
+  appState,
+  state => state.darkTheme
+);
 
 export { moduleIdSelector, galleryIdSelector, darkThemeSelector };

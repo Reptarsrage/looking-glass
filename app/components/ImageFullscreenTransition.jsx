@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { forwardRef, cloneElement } from 'react';
 import PropTypes from 'prop-types';
 import { Transition } from 'react-transition-group';
 import { duration } from '@material-ui/core/styles/transitions';
@@ -11,13 +11,20 @@ const defaultTimeout = {
   exit: duration.leavingScreen,
 };
 
+const defaultInitialBounds = {
+  width: 0,
+  height: 0,
+  top: 0,
+  left: 0,
+};
+
 /**
  * The ImageFullscreenTransition transition.
  * Based on material-ui Zoom transition here:
  * https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/Zoom/Zoom.js
  */
-const ImageFullscreenTransition = React.forwardRef(function ImageFullscreenTransition(props, ref) {
-  const { children, initialBounds, in: inProp, onExited, style, timeout = defaultTimeout, ...other } = props;
+const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(props, ref) {
+  const { children, initialBounds, in: inProp, onExited, style, timeout, ...other } = props;
 
   const theme = useTheme();
   const handleRef = useForkRef(children.ref, ref);
@@ -31,6 +38,7 @@ const ImageFullscreenTransition = React.forwardRef(function ImageFullscreenTrans
         mode: 'enter',
       }
     );
+
     node.style.webkitTransition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
     node.style.transition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
   };
@@ -48,6 +56,7 @@ const ImageFullscreenTransition = React.forwardRef(function ImageFullscreenTrans
         mode: 'exit',
       }
     );
+
     node.style.webkitTransition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
     node.style.transition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
   };
@@ -80,7 +89,7 @@ const ImageFullscreenTransition = React.forwardRef(function ImageFullscreenTrans
       {...other}
     >
       {(state, childProps) => {
-        return React.cloneElement(children, {
+        return cloneElement(children, {
           style: {
             visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
             ...initialStyles,
@@ -96,8 +105,16 @@ const ImageFullscreenTransition = React.forwardRef(function ImageFullscreenTrans
   );
 });
 
+ImageFullscreenTransition.defaultProps = {
+  in: true,
+  onExited: null,
+  style: {},
+  timeout: defaultTimeout,
+  initialBounds: defaultInitialBounds,
+};
+
 ImageFullscreenTransition.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.element.isRequired,
   initialBounds: PropTypes.shape({
     width: PropTypes.number,
     height: PropTypes.number,

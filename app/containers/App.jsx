@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,7 +11,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { withStyles } from '@material-ui/core/styles';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SearchIcon from '@material-ui/icons/Search';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
@@ -20,10 +19,10 @@ import { withRouter } from 'react-router';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import Container from '@material-ui/core/Container';
 
-import WithErrors from '../hocs/WithErrors';
 import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import { searchQuerySelector } from '../selectors/gallerySelectors';
 import * as appActions from '../actions/appActions';
+import WithErrors from '../hocs/WithErrors';
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -98,7 +97,7 @@ const styles = theme => ({
   },
 });
 
-class App extends React.Component {
+class App extends Component {
   handleSearchChange = e => {
     const { updateSearch, moduleId, galleryId } = this.props;
 
@@ -175,7 +174,15 @@ class App extends React.Component {
   }
 }
 
+App.defaultProps = {
+  moduleId: null,
+  galleryId: null,
+  searchQuery: null,
+};
+
 App.propTypes = {
+  updateSearch: PropTypes.func.isRequired,
+  toggleDarkTheme: PropTypes.func.isRequired,
   children: PropTypes.element.isRequired,
   darkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
@@ -187,10 +194,10 @@ App.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  darkTheme: darkThemeSelector(),
-  moduleId: moduleIdSelector(),
-  galleryId: galleryIdSelector(),
-  searchQuery: searchQuerySelector(),
+  darkTheme: darkThemeSelector,
+  moduleId: moduleIdSelector,
+  galleryId: galleryIdSelector,
+  searchQuery: searchQuerySelector,
 });
 
 const mapDispatchToProps = {

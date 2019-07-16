@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Paper } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 
 import Image from './Image';
@@ -25,7 +25,7 @@ const styles = () => ({
   },
 });
 
-class ModalItem extends React.PureComponent {
+class ModalItem extends PureComponent {
   handleClick = () => {
     const { onClick } = this.props;
     if (onClick) {
@@ -33,16 +33,25 @@ class ModalItem extends React.PureComponent {
     }
   };
 
+  renderImage = () => {
+    const { width, height, title, imageURL } = this.props;
+
+    return <Image src={imageURL} title={title} width={width} height={height} />;
+  };
+
+  renderVideo = () => {
+    const { width, height, title, videoURL } = this.props;
+
+    return <Video src={videoURL} title={title} width={width} height={height} autoPlay controls />;
+  };
+
   render() {
-    const { classes, width, height, title, videoURL, imageURL, isVideo } = this.props;
-    const Elt = isVideo ? Video : Image;
-    const src = isVideo ? videoURL : imageURL;
-    const clickHandler = this.handleClick;
+    const { classes, isVideo } = this.props;
 
     return (
       <div className={classes.container}>
-        <Paper className={classes.paper} onClick={clickHandler}>
-          <Elt src={src} title={title} width={width} height={height} autopilot={false} />
+        <Paper className={classes.paper} onClick={this.handleClick}>
+          {isVideo ? this.renderVideo() : this.renderImage()}
         </Paper>
       </div>
     );
@@ -54,10 +63,6 @@ ModalItem.defaultProps = {
   imageURL: '',
   title: '',
   onClick: null,
-  prevImage: null,
-  nextImage: null,
-  hasPev: () => false,
-  hasNext: () => false,
 };
 
 ModalItem.propTypes = {

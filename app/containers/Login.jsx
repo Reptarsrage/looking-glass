@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -69,7 +69,7 @@ const styles = theme => ({
   },
 });
 
-class Login extends React.Component {
+class Login extends Component {
   constructor(props) {
     super(props);
 
@@ -79,37 +79,31 @@ class Login extends React.Component {
       rememberMe: false,
       showPassword: false,
     };
-
-    this.handleUsernameChange = this.handleUsernameChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleClickShowPassword = this.handleClickShowPassword.bind(this);
-    this.handleRememberMeChange = this.handleRememberMeChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleClickShowPassword() {
+  handleClickShowPassword = () => {
     this.setState(prevState => ({ showPassword: !prevState.showPassword }));
-  }
+  };
 
-  handleRememberMeChange(event) {
+  handleRememberMeChange = event => {
     this.setState({ rememberMe: event.target.checked });
-  }
+  };
 
-  handleUsernameChange(event) {
+  handleUsernameChange = event => {
     this.setState({ username: event.target.value });
-  }
+  };
 
-  handlePasswordChange(event) {
+  handlePasswordChange = event => {
     this.setState({ password: event.target.value });
-  }
+  };
 
-  handleSubmit(event) {
+  handleSubmit = event => {
     const { login, moduleId } = this.props;
     const { username, password } = this.state;
 
     login(moduleId, username, password);
     event.preventDefault();
-  }
+  };
 
   render() {
     const { fetching, error, success, classes, moduleId } = this.props;
@@ -211,10 +205,10 @@ Login.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  success: successSelector(),
-  fetching: fetchingSelector(),
-  error: errorSelector(),
-  moduleId: moduleIdSelector(),
+  success: successSelector,
+  fetching: fetchingSelector,
+  error: errorSelector,
+  moduleId: moduleIdSelector,
 });
 
 const mapDispatchToProps = {

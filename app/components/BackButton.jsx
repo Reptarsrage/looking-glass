@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { Fab } from '@material-ui/core';
+import Fab from '@material-ui/core/Fab';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -16,20 +16,20 @@ const styles = theme => ({
   },
 });
 
-export class BackButton extends React.PureComponent {
-  constructor(props) {
-    super(props);
+class BackButton extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { color } = this.props;
 
-    this.goBack = this.goBack.bind(this);
+    return nextProps.color !== color;
   }
 
-  goBack() {
+  goBack = () => {
     const { history } = this.props;
 
     if (history && history.goBack) {
       history.goBack();
     }
-  }
+  };
 
   render() {
     const { color, classes } = this.props;

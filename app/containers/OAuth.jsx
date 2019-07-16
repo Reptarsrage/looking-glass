@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -58,8 +58,23 @@ const styles = theme => ({
   },
 });
 
-class OAuth extends React.Component {
-  static showOauthModal(authUrl) {
+class OAuth extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      modalFetching: false,
+    };
+  }
+
+  componentWillMount() {
+    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
+    if (!fetching && !success) {
+      fetchOAuthURL(moduleId);
+    }
+  }
+
+  showOauthModal = authUrl => {
     return new Promise((resolve, reject) => {
       // TODO: load these values from service
       const { state: expectedState } = qs.parse(authUrl);
@@ -96,41 +111,32 @@ class OAuth extends React.Component {
       authWindow.loadURL(authUrl);
       authWindow.show();
     });
-  }
+  };
 
-  constructor(props) {
-    super(props);
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentWillMount() {
-    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
-    if (!fetching && !success) {
-      fetchOAuthURL(moduleId);
-    }
-  }
-
-  async handleSubmit() {
+  handleSubmit = async () => {
     const { authorize, moduleId, oauthURL } = this.props;
 
-    this.setState({ fetching: true });
+    this.setState({ modalFetching: true });
 
     try {
-      const accessToken = await this.constructor.showOauthModal(oauthURL);
+      const accessToken = await this.showOauthModal(oauthURL);
       authorize(moduleId, accessToken);
-      this.setState({ fetching: false, success: true });
+      this.setState({ modalFetching: false });
     } catch (error) {
-      this.setState({ error, fetching: false });
+      this.setState({ modalFetching: false });
     }
-  }
+  };
 
   render() {
     const { classes, moduleId, fetching, error, success } = this.props;
+    const { modalFetching } = this.state;
 
     if (success) {
       return <Redirect to={`/gallery/${moduleId}/default`} />;
     }
+
+    const isFetching = modalFetching || fetching;
+    const isError = error !== null; // TODO: get message out of error object
 
     return (
       <main className={classes.main}>
@@ -141,7 +147,11 @@ class OAuth extends React.Component {
           <Typography component="h1" variant="h5">
             Authorize using OAuth2
           </Typography>
-          {error && <Typography align="center" color="error" />}
+          {isError && (
+            <Typography align="center" color="error">
+              {JSON.stringify(error)}
+            </Typography>
+          )}
           <div className={classes.wrapper}>
             <Button
               type="button"
@@ -154,7 +164,7 @@ class OAuth extends React.Component {
             >
               Authorize
             </Button>
-            {fetching && <CircularProgress size={24} className={classes.progress} />}
+            {isFetching && <CircularProgress size={24} className={classes.progress} />}
           </div>
         </Paper>
       </main>
@@ -168,6 +178,8 @@ OAuth.defaultProps = {
 };
 
 OAuth.propTypes = {
+  authorize: PropTypes.func.isRequired,
+  fetchOAuthURL: PropTypes.func.isRequired,
   moduleId: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
   success: PropTypes.bool.isRequired,
@@ -177,11 +189,11 @@ OAuth.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  oauthURL: oauthURLSelector(),
-  success: successSelector(),
-  fetching: fetchingSelector(),
-  error: errorSelector(),
-  moduleId: moduleIdSelector(),
+  oauthURL: oauthURLSelector,
+  success: successSelector,
+  fetching: fetchingSelector,
+  error: errorSelector,
+  moduleId: moduleIdSelector,
 });
 
 const mapDispatchToProps = {

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Immutable from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import ReactRouterPropTypes from 'react-router-prop-types';
 
 import NoResults from './NoResults';
 import LoadingIndicator from './LoadingIndicator';
@@ -32,7 +30,7 @@ const styles = theme => ({
   },
 });
 
-class ListView extends Component {
+class Masonry extends Component {
   constructor(props) {
     super(props);
 
@@ -42,49 +40,41 @@ class ListView extends Component {
     this.columnRefs = []; // holds references to the react-virtualized List in each column
 
     this.state = {
-      gutterSize: 8, // size of margins/padding
       columnCount: 3, // total number of columns
-      mainColumnIndex: 0, // this is the index of the column we use for infinite load
-      fitToWindow: true,
     };
-
-    this.loadMoreRows = this.loadMoreRows.bind(this);
-    this.renderRow = this.renderRow.bind(this);
-    this.getItemHeight = this.getItemHeight.bind(this);
-    this.getItemWidth = this.getItemWidth.bind(this);
   }
 
-  loadMoreRows() {
+  loadMoreRows = () => {
     const { loadMore, loading, moduleId, galleryId } = this.props;
     if (!loading) {
       loadMore(moduleId, galleryId);
     }
-  }
+  };
 
-  isLoaded(index) {
+  isLoaded = index => {
     const { items } = this.props;
-    return index < items.size;
-  }
+    return index < items.length;
+  };
 
-  getItemWidth(index) {
-    const { items } = this.props;
-    if (!this.isLoaded(index)) {
-      return 0;
-    }
-
-    return items.get(index).get('width');
-  }
-
-  getItemHeight(index) {
+  getItemWidth = index => {
     const { items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
-    return items.get(index).get('height');
-  }
+    return items[index].width;
+  };
 
-  renderRow(index) {
+  getItemHeight = index => {
+    const { items } = this.props;
+    if (!this.isLoaded(index)) {
+      return 0;
+    }
+
+    return items[index].height;
+  };
+
+  renderRow = index => {
     const { classes } = this.props;
 
     if (!this.isLoaded(index)) {
@@ -92,42 +82,42 @@ class ListView extends Component {
     }
 
     const { items, moduleId, onItemClick } = this.props;
-    const item = items.get(index);
+    const item = items[index];
 
     return (
       <Box className={classes.masonryItemContainer}>
         <MasonryItem
-          videoURL={item.get('videoURL')}
-          imageURL={item.get('imageURL')}
-          thumbURL={item.get('thumbURL')}
-          isVideo={item.get('isVideo')}
-          isGallery={item.get('isGallery')}
-          title={item.get('title')}
-          id={item.get('id')}
-          galleryId={item.get('galleryId')}
-          width={item.get('width')}
-          height={item.get('height')}
+          videoURL={item.videoURL}
+          imageURL={item.imageURL}
+          thumbURL={item.thumbURL}
+          isVideo={item.isVideo}
+          isGallery={item.isGallery}
+          title={item.title}
+          id={item.id}
+          width={item.width}
+          height={item.height}
           moduleId={moduleId}
+          galleryId={item.galleryId}
           onClick={onItemClick}
         />
       </Box>
     );
-  }
+  };
 
   render() {
-    const { items, loading } = this.props;
+    const { items, loading, error } = this.props;
     const { columnCount } = this.state;
 
     // TODO: allow transient errors
-    //if (error) {
-    //  return <AnErrorOccurred />;
-    //}
+    if (error) {
+      console.warn('Encountered an error');
+    }
 
-    if (items.size === 0 && !loading) {
+    if (items.length === 0 && !loading) {
       return <NoResults />;
     }
 
-    if (items.size === 0) {
+    if (items.length === 0) {
       return <LoadingIndicator />;
     }
 
@@ -138,7 +128,7 @@ class ListView extends Component {
         getWidthForItem={this.getItemWidth}
         loadMore={this.loadMoreRows}
         isLoading={loading}
-        length={items.size}
+        length={items.length}
         overscan={500}
         loadMoreThreshhold={5000}
         columnCount={columnCount}
@@ -147,15 +137,15 @@ class ListView extends Component {
   }
 }
 
-ListView.propTypes = {
+Masonry.propTypes = {
   classes: PropTypes.object.isRequired,
-  location: ReactRouterPropTypes.location.isRequired,
-  items: PropTypes.instanceOf(Immutable.List).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,
-  moduleId: PropTypes.string.isRequired,
+  moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   error: PropTypes.bool.isRequired,
   loadMore: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(ListView);
+export default withStyles(styles)(Masonry);

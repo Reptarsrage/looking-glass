@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent, createRef } from 'react';
 import PropTypes from 'prop-types';
 import ReactResizeDetector from 'react-resize-detector';
 import _ from 'lodash';
@@ -24,11 +24,11 @@ const styles = () => ({
   },
 });
 
-class VirtualizedMasonry extends React.PureComponent {
+class VirtualizedMasonry extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.containerRef = React.createRef();
+    this.containerRef = createRef();
     this.state = {
       width: 0,
       height: 0,

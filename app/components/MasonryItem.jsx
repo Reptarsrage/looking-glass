@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
@@ -25,41 +25,31 @@ const styles = theme => ({
   },
 });
 
-class MasonryItem extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
+class MasonryItem extends PureComponent {
+  handleClick = event => {
     const { onClick, id } = this.props;
     if (onClick) {
       onClick(event, id);
     }
-  }
+  };
+
+  renderImage = () => {
+    const { width, height, title, imageURL, thumbURL } = this.props;
+
+    return <Image src={imageURL} thumb={thumbURL} title={title} width={width} height={height} />;
+  };
+
+  renderVideo = () => {
+    const { width, height, title, thumbURL, videoURL } = this.props;
+
+    return <Video src={videoURL} thumb={thumbURL} title={title} width={width} height={height} muted autoPlay loop />;
+  };
 
   render() {
-    const {
-      classes,
-      width,
-      height,
-      title,
-      videoURL,
-      imageURL,
-      isVideo,
-      isGallery,
-      id,
-      galleryId,
-      moduleId,
-      thumbURL,
-    } = this.props;
+    const { classes, isVideo, isGallery, id, galleryId, moduleId } = this.props;
 
-    const Elt = isVideo ? Video : Image;
-    const src = isVideo ? videoURL : imageURL;
     const to = isGallery ? `/gallery/${moduleId}/${galleryId}` : null;
-
-    const Wrapper = to ? Link : React.Fragment;
+    const Wrapper = isGallery ? Link : Fragment;
     const wrapperProps = to ? { to } : {};
     const clickHandler = to ? null : this.handleClick;
 
@@ -67,7 +57,7 @@ class MasonryItem extends React.PureComponent {
       <Paper key={id} onClick={clickHandler} className={classes.paper}>
         <Wrapper {...wrapperProps}>
           {isGallery ? <PhotoLibraryIcon color="primary" className={classes.icon} /> : null}
-          <Elt src={src} thumb={thumbURL} title={title} width={width} height={height} />
+          {isVideo ? this.renderVideo() : this.renderImage()}
         </Wrapper>
       </Paper>
     );
@@ -75,26 +65,26 @@ class MasonryItem extends React.PureComponent {
 }
 
 MasonryItem.defaultProps = {
-  videoURL: '',
-  imageURL: '',
-  thumbURL: '',
-  title: '',
+  thumbURL: null,
   onClick: null,
+  galleryId: null,
+  imageURL: null,
+  videoURL: null,
 };
 
 MasonryItem.propTypes = {
   classes: PropTypes.object.isRequired,
-  videoURL: PropTypes.string,
   imageURL: PropTypes.string,
+  videoURL: PropTypes.string,
   thumbURL: PropTypes.string,
   isVideo: PropTypes.bool.isRequired,
   isGallery: PropTypes.bool.isRequired,
-  title: PropTypes.string,
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  title: PropTypes.string.isRequired,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  moduleId: PropTypes.string.isRequired,
   onClick: PropTypes.func,
 };
 

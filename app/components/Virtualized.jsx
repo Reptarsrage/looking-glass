@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
@@ -24,7 +24,7 @@ const styles = () => ({
   },
 });
 
-class Virtualized extends React.PureComponent {
+class Virtualized extends PureComponent {
   constructor(props) {
     super(props);
 

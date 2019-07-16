@@ -1,34 +1,47 @@
-import { fromJS } from 'immutable';
+import produce from 'immer';
 
 import { FETCH_MODULES_SUCCESS, FETCH_MODULES_ERROR, FETCH_MODULES } from '../actions/types';
 
-const initialState = fromJS({
+export const initialState = {
   modules: [],
   fetching: false,
   success: false,
   error: null,
-});
+};
 
-export default function moduleReducer(state = initialState, action) {
-  switch (action.type) {
-    case FETCH_MODULES_SUCCESS: {
-      const modules = action.payload;
-      const nState = state.merge({ fetching: false, success: true });
-      return nState.set('modules', fromJS(modules));
+export const initialModuleState = {
+  id: 'default',
+  title: null,
+  description: null,
+  authType: null,
+  icon: null,
+};
+
+const moduleReducer = (state = initialState, action) =>
+  produce(state, draft => {
+    const { type, payload } = action || {};
+    switch (type) {
+      case FETCH_MODULES_SUCCESS: {
+        draft.fetching = false;
+        draft.success = true;
+        draft.modules = payload;
+        break;
+      }
+      case FETCH_MODULES_ERROR:
+        draft.fetching = false;
+        draft.success = false;
+        draft.error = payload;
+        break;
+      case FETCH_MODULES: {
+        draft.fetching = true;
+        draft.success = false;
+        draft.error = null;
+        break;
+      }
+      default:
+        // Nothing to do
+        break;
     }
-    case FETCH_MODULES_ERROR:
-      return state.merge({
-        fetching: false,
-        success: false,
-        error: action.payload,
-      });
-    case FETCH_MODULES:
-      return state.merge({
-        fetching: true,
-        success: false,
-        error: null,
-      });
-    default:
-      return state;
-  }
-}
+  });
+
+export default moduleReducer;

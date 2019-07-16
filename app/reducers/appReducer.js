@@ -1,37 +1,45 @@
-import { fromJS } from 'immutable';
+import produce from 'immer';
 
 import { LOCATION_CHANGE, TOGGLE_DARK_THEME } from '../actions/types';
 
-const initialState = fromJS({
+export const initialState = {
   moduleId: null,
   galleryId: null,
   darkTheme: true,
-});
+};
 
-export default function authReducer(state = initialState, action) {
-  const { type, payload } = action || {};
+const authReducer = (state = initialState, action) =>
+  produce(state, draft => {
+    const { type, payload } = action || {};
+    switch (type) {
+      case LOCATION_CHANGE: {
+        const { location } = payload;
+        const { pathname } = location;
+        const parts = pathname.split('/');
+        let moduleId;
+        let galleryId;
 
-  switch (type) {
-    case LOCATION_CHANGE: {
-      const { location } = payload;
-      const { pathname } = location;
-      const parts = pathname.split('/');
+        if (parts[1] === 'gallery') {
+          [, , moduleId, galleryId] = parts;
+          draft.moduleId = moduleId;
+          draft.galleryId = galleryId;
+        } else if (parts[1] === 'login' || parts[1] === 'oauth') {
+          [, , moduleId] = parts;
+          galleryId = 'default';
+        }
 
-      if (parts[1] === 'gallery') {
-        const [, , moduleId, galleryId] = parts;
-        return state.merge({ moduleId, galleryId });
+        draft.moduleId = moduleId;
+        draft.galleryId = galleryId;
+        break;
       }
-      if (parts[1] === 'login' || parts[1] === 'oauth') {
-        const [, , moduleId] = parts;
-        return state.merge({ moduleId, galleryId: 'default' });
+      case TOGGLE_DARK_THEME: {
+        draft.darkTheme = !state.darkTheme;
+        break;
       }
+      default:
+        // Nothing to do
+        break;
+    }
+  });
 
-      return state;
-    }
-    case TOGGLE_DARK_THEME: {
-      return state.update('darkTheme', darkTheme => !darkTheme);
-    }
-    default:
-      return state;
-  }
-}
+export default authReducer;
