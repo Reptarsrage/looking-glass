@@ -40,8 +40,7 @@ const authReducer = (state = initialState, action) =>
       case FETCH_MODULES_SUCCESS: {
         for (const { id } of payload) {
           // Load module authentication from persistent electron store
-          draft[id] = store.get(module.id, initialAuthState);
-          console.log('Restored', { id, data: draft[id] });
+          draft[id] = { ...initialAuthState, ...store.get(id, {}) };
         }
 
         break;
@@ -72,8 +71,8 @@ const authReducer = (state = initialState, action) =>
 
         const mergeState = { ...payload, expires: date.valueOf(), fetching: false, success: true, error: null };
 
+        // Save module authentication from persistent electron store
         store.set(moduleId, mergeState);
-        console.log('Saved', { id: moduleId, data: mergeState });
 
         draft[moduleId] = {
           ...state[moduleId],
