@@ -215,7 +215,7 @@
     "testcafe-react-selectors": "3.1.0",
     "url-loader": "2.1.0",
     "uuid": "3.3.2",
-    "webpack": "4.36.0",
+    "webpack": "4.36.1",
     "webpack-bundle-analyzer": "3.3.2",
     "webpack-cli": "3.3.6",
     "webpack-dev-server": "3.7.2",
