@@ -263,5 +263,8 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "resolutions": {
+    "node-gyp": "6.0.1"
   }
 }
