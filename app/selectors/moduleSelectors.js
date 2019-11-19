@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
 
-import { moduleIdSelector } from './appSelectors';
-import { initialState, initialModuleState } from '../reducers/moduleReducer';
+import { initialState } from '../reducers/moduleReducer';
 
 const moduleState = state => state.module || initialState;
+
+const getModuleId = (state, props) => props.moduleId;
 
 const fetchingSelector = createSelector(
   moduleState,
@@ -22,13 +23,12 @@ const successSelector = createSelector(
 
 const modulesSelector = createSelector(
   moduleState,
-  state => state.modules
+  state => state.allIds
 );
 
 const moduleSelector = createSelector(
-  modulesSelector,
-  moduleIdSelector,
-  (state, moduleId) => state.find(m => m.id === moduleId) || initialModuleState
+  [moduleState, getModuleId],
+  (state, moduleId) => state.byId[moduleId]
 );
 
 export { successSelector, fetchingSelector, errorSelector, modulesSelector, moduleSelector };

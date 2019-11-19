@@ -3,7 +3,8 @@ import produce from 'immer';
 import { FETCH_MODULES_SUCCESS, FETCH_MODULES_ERROR, FETCH_MODULES } from '../actions/types';
 
 export const initialState = {
-  modules: [],
+  allIds: [],
+  byId: {},
   fetching: false,
   success: false,
   error: null,
@@ -15,6 +16,7 @@ export const initialModuleState = {
   description: null,
   authType: null,
   icon: null,
+  initialOffset: 0,
 };
 
 const moduleReducer = (state = initialState, action) =>
@@ -24,7 +26,16 @@ const moduleReducer = (state = initialState, action) =>
       case FETCH_MODULES_SUCCESS: {
         draft.fetching = false;
         draft.success = true;
-        draft.modules = payload;
+
+        draft.allIds = [];
+        draft.byId = {};
+        for (const module of payload) {
+          const { id } = module;
+
+          draft.byId[id] = module;
+          draft.allIds.push(id);
+        }
+
         break;
       }
       case FETCH_MODULES_ERROR:

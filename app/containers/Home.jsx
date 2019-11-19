@@ -13,10 +13,10 @@ import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
 
+import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 
@@ -67,18 +67,8 @@ class Home extends Component {
           {fetching && <CircularProgress />}
           {error && <Typography color="error">An Error occurred</Typography>}
           <List>
-            {modules.map(m => (
-              <ListItem
-                key={m.id}
-                button
-                component={Link}
-                to={`/${m.authType || 'gallery'}/${m.id}${m.authType ? '' : '/default'}`}
-              >
-                <ListItemAvatar>
-                  <Avatar alt={m.title} src={m.icon} />
-                </ListItemAvatar>
-                <ListItemText primary={m.title} secondary={m.description} />
-              </ListItem>
+            {modules.map(moduleId => (
+              <ModuleItem key={moduleId} moduleId={moduleId} />
             ))}
             <ListItem key="fs" button onClick={this.chooseFolder}>
               <ListItemAvatar>
@@ -102,7 +92,7 @@ Home.defaultProps = {
 Home.propTypes = {
   classes: PropTypes.object.isRequired,
   fetchModules: PropTypes.func.isRequired,
-  modules: PropTypes.arrayOf(PropTypes.object).isRequired,
+  modules: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,

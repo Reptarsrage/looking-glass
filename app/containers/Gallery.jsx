@@ -159,14 +159,14 @@ class Gallery extends Component {
   modalHasNext = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.id === modalItemId);
+    const idx = images.findIndex(i => i && i.id === modalItemId);
     return idx < images.length - 1;
   };
 
   modalHasPrev = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.id === modalItemId);
+    const idx = images.findIndex(i => i && i.id === modalItemId);
     return idx > 0;
   };
 
@@ -175,7 +175,7 @@ class Gallery extends Component {
   handleModalNextImage = () => {
     const { images } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.id === modalItemId);
+    const idx = images.findIndex(i => i && i.id === modalItemId);
 
     if (idx < images.length - 1) {
       const newModalItemId = images[idx + 1].id;
