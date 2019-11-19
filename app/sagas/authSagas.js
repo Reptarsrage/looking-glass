@@ -1,7 +1,8 @@
-import { put, call, takeLatest, all } from 'redux-saga/effects';
+import { put, call, takeLatest, all, select } from 'redux-saga/effects';
+import moment from 'moment';
 
 import LookingGlassService from '../services/lookingGlassService';
-
+import { expiresSelector, refreshTokenSelector } from '../selectors/authSelectors';
 import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
@@ -12,7 +13,34 @@ import {
   AUTHORIZE,
   AUTHORIZE_SUCCESS,
   AUTHORIZE_ERROR,
+  REFRESH,
+  REFRESH_SUCCESS,
+  REFRESH_ERROR,
 } from '../actions/types';
+
+function* handleRefresh(action) {
+  const { meta } = action;
+  const { moduleId } = meta;
+  const refreshToken = yield select(refreshTokenSelector);
+  const expires = yield select(expiresSelector);
+
+  // does this module even support expiration?
+  if (expires <= 0) {
+    return;
+  }
+
+  const expireDate = moment(expires);
+  const currentDate = moment();
+  if (currentDate.isSameOrAfter(expireDate)) {
+    try {
+      const lookingGlassService = new LookingGlassService();
+      const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
+      yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
+    } catch (e) {
+      yield put({ type: REFRESH_ERROR, payload: e, meta: { moduleId } });
+    }
+  }
+}
 
 function* handleAuthorize(action) {
   const { payload, meta } = action;
@@ -24,7 +52,7 @@ function* handleAuthorize(action) {
 
     yield put({ type: AUTHORIZE_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
-    yield put({ type: AUTHORIZE_ERROR, payload: { ...e }, meta: { moduleId } });
+    yield put({ type: AUTHORIZE_ERROR, payload: e, meta: { moduleId } });
   }
 }
 
@@ -38,7 +66,7 @@ function* handleFetchOauthURL(action) {
 
     yield put({ type: FETCH_OATH_URL_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
-    yield put({ type: FETCH_OATH_URL_ERROR, payload: { ...e }, meta: { moduleId } });
+    yield put({ type: FETCH_OATH_URL_ERROR, payload: e, meta: { moduleId } });
   }
 }
 
@@ -52,7 +80,7 @@ function* handleLogin(action) {
 
     yield put({ type: LOGIN_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
-    yield put({ type: LOGIN_ERROR, payload: { ...e }, meta: { moduleId } });
+    yield put({ type: LOGIN_ERROR, payload: e, meta: { moduleId } });
   }
 }
 
@@ -61,6 +89,7 @@ function* watchAuthSagas() {
     takeLatest(LOGIN, handleLogin),
     takeLatest(FETCH_OATH_URL, handleFetchOauthURL),
     takeLatest(AUTHORIZE, handleAuthorize),
+    takeLatest(REFRESH, handleRefresh),
   ]);
 }
 
