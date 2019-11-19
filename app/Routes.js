@@ -9,14 +9,15 @@ import OAuth from './containers/OAuth';
 import About from './containers/About';
 import NotFound from './containers/NotFound';
 import WithTransition from './hocs/WithTransition';
+import WithRouteParameters from './hocs/WithRouteParameters';
 
 export default () => (
   <App>
     <Switch>
       <Route exact path="/" component={WithTransition(Home)} />
-      <Route path="/login/:moduleId" component={WithTransition(Login)} />
-      <Route path="/oauth/:moduleId" component={WithTransition(OAuth)} />
-      <Route path="/gallery/:moduleId/:galleryId" component={WithTransition(Gallery)} />
+      <Route path="/login/:moduleId" component={WithTransition(WithRouteParameters(Login))} />
+      <Route path="/oauth/:moduleId" component={WithTransition(WithRouteParameters(OAuth))} />
+      <Route path="/gallery/:moduleId/:galleryId" component={WithTransition(WithRouteParameters(Gallery))} />
       <Route path="/about" component={WithTransition(About)} />
       <Route path="*" component={WithTransition(NotFound)} />
     </Switch>

@@ -21,8 +21,8 @@ import {
 function* handleRefresh(action) {
   const { meta } = action;
   const { moduleId } = meta;
-  const refreshToken = yield select(refreshTokenSelector);
-  const expires = yield select(expiresSelector);
+  const refreshToken = yield select(refreshTokenSelector, { moduleId });
+  const expires = yield select(expiresSelector, { moduleId });
 
   // does this module even support expiration?
   if (expires <= 0) {

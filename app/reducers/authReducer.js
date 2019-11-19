@@ -19,7 +19,10 @@ import {
 
 const store = new Store();
 
-export const initialState = {};
+export const initialState = {
+  byId: {},
+  allIds: [],
+};
 
 export const initialAuthState = {
   accessToken: '',
@@ -38,27 +41,30 @@ const authReducer = (state = initialState, action) =>
 
     switch (type) {
       case FETCH_MODULES_SUCCESS: {
+        draft.byId = {};
+        draft.allIds = [];
         for (const { id } of payload) {
           // Load module authentication from persistent electron store
-          draft[id] = { ...initialAuthState, ...store.get(id, {}) };
+          draft.byId[id] = store.get(id, initialAuthState);
+          draft.allIds.push(id);
         }
 
         break;
       }
       case FETCH_OATH_URL: {
-        draft[moduleId].fetching = true;
+        draft.byId[moduleId].fetching = true;
 
         break;
       }
       case FETCH_OATH_URL_SUCCESS: {
-        draft[moduleId].fetching = false;
-        draft[moduleId].oauthURL = payload;
+        draft.byId[moduleId].fetching = false;
+        draft.byId[moduleId].oauthURL = payload;
 
         break;
       }
       case FETCH_OATH_URL_ERROR: {
-        draft[moduleId].fetching = false;
-        draft[moduleId].error = payload;
+        draft.byId[moduleId].fetching = false;
+        draft.byId[moduleId].error = payload;
 
         break;
       }
@@ -74,8 +80,8 @@ const authReducer = (state = initialState, action) =>
         // Save module authentication from persistent electron store
         store.set(moduleId, mergeState);
 
-        draft[moduleId] = {
-          ...state[moduleId],
+        draft.byId[moduleId] = {
+          ...state.byId[moduleId],
           ...mergeState,
         };
 
@@ -84,15 +90,15 @@ const authReducer = (state = initialState, action) =>
       case REFRESH_ERROR:
       case AUTHORIZE_ERROR:
       case LOGIN_ERROR: {
-        draft[moduleId].fetching = false;
-        draft[moduleId].success = false;
-        draft[moduleId].error = payload;
+        draft.byId[moduleId].fetching = false;
+        draft.byId[moduleId].success = false;
+        draft.byId[moduleId].error = payload;
 
         break;
       }
       case AUTHORIZE:
       case LOGIN: {
-        draft[moduleId].fetching = true;
+        draft.byId[moduleId].fetching = true;
 
         break;
       }

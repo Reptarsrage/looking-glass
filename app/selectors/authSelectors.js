@@ -1,46 +1,44 @@
 import { createSelector } from 'reselect';
 
-import { moduleIdSelector } from './appSelectors';
-import { initialAuthState, initialState } from '../reducers/authReducer';
+import { initialState } from '../reducers/authReducer';
 
 const authState = state => state.auth || initialState;
 
-const getStateOrInitial = (state, moduleId) =>
-  moduleId && Object.prototype.hasOwnProperty.call(state, moduleId) ? state[moduleId] : initialAuthState;
+const getModuleId = (state, props) => props.moduleId;
 
 const fetchingSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).fetching
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].fetching
 );
 
 const errorSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).error
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].error
 );
 
 const successSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).success
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].success
 );
 
 const accessTokenSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).accessToken
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].accessToken
 );
 
 const refreshTokenSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).refreshToken
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].refreshToken
 );
 
 const oauthURLSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).oauthURL
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].oauthURL
 );
 
 const expiresSelector = createSelector(
-  [authState, moduleIdSelector],
-  (state, moduleId) => getStateOrInitial(state, moduleId).expires
+  [authState, getModuleId],
+  (state, moduleId) => state.byId[moduleId].expires
 );
 
 export {

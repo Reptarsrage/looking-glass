@@ -39,7 +39,7 @@ function* handleFetchImages(action) {
     yield put(refresh(moduleId));
 
     // get data
-    const accessToken = yield select(accessTokenSelector);
+    const accessToken = yield select(accessTokenSelector, { moduleId });
     const offset = yield select(offsetSelector);
     const before = yield select(beforeSelector);
     const after = yield select(afterSelector);
