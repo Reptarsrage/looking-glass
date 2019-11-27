@@ -1,81 +1,20 @@
 import { createSelector } from 'reselect';
 
-import { moduleIdSelector, galleryIdSelector } from './appSelectors';
-import { initialGalleryState, initialState } from '../reducers/galleryReducer';
+import { initialState } from '../reducers/moduleReducer';
 
-const galleryState = state => state.gallery || initialState;
+const selectGalleries = state => (state.module || initialState).galleries;
 
-const getStateOrInitial = (state, moduleId, galleryId) =>
-  moduleId &&
-  galleryId &&
-  Object.prototype.hasOwnProperty.call(state, moduleId) &&
-  Object.prototype.hasOwnProperty.call(state[moduleId], galleryId)
-    ? state[moduleId][galleryId]
-    : initialGalleryState;
+const selectGalleryId = (state, props) => props.galleryId;
 
-const imagesSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).images
-);
-
-const fetchingSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).fetching
-);
-
-const errorSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).error
-);
-
-const offsetSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).offset
-);
-
-const beforeSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).before
-);
-
-const afterSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).after
-);
-
-const hasNextSelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).hasNext
+const gallerySelector = createSelector(
+  [selectGalleries, selectGalleryId],
+  (state, galleryId) => state.byId[galleryId]
 );
 
 const searchQuerySelector = createSelector(
-  galleryState,
-  moduleIdSelector,
-  galleryIdSelector,
-  (state, moduleId, galleryId) => getStateOrInitial(state, moduleId, galleryId).searchQuery
+  gallerySelector,
+  gallery => (gallery && gallery.searchQuery) || null
 );
 
-export {
-  imagesSelector,
-  fetchingSelector,
-  errorSelector,
-  offsetSelector,
-  hasNextSelector,
-  beforeSelector,
-  afterSelector,
-  searchQuerySelector,
-};
+// eslint-disable-next-line import/prefer-default-export
+export { gallerySelector, searchQuerySelector };

@@ -2,32 +2,32 @@ import { createSelector } from 'reselect';
 
 import { initialState } from '../reducers/moduleReducer';
 
-const moduleState = state => state.module || initialState;
+const selectModules = state => (state.module || initialState).modules;
 
-const getModuleId = (state, props) => props.moduleId;
+const selectModuleId = (state, props) => props.moduleId;
 
 const fetchingSelector = createSelector(
-  moduleState,
+  selectModules,
   state => state.fetching
 );
 
 const errorSelector = createSelector(
-  moduleState,
+  selectModules,
   state => state.error
 );
 
 const successSelector = createSelector(
-  moduleState,
+  selectModules,
   state => state.success
 );
 
 const modulesSelector = createSelector(
-  moduleState,
+  selectModules,
   state => state.allIds
 );
 
 const moduleSelector = createSelector(
-  [moduleState, getModuleId],
+  [selectModules, selectModuleId],
   (state, moduleId) => state.byId[moduleId]
 );
 

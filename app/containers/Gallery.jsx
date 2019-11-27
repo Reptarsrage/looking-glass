@@ -17,16 +17,11 @@ import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
 import { Link as RouterLink } from 'react-router-dom';
 
-import {
-  imagesSelector,
-  fetchingSelector,
-  errorSelector,
-  hasNextSelector,
-  searchQuerySelector,
-} from '../selectors/gallerySelectors';
+import { gallerySelector } from '../selectors/gallerySelectors';
+import { galleryItemsSelector } from '../selectors/itemSelectors';
 import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import { moduleSelector } from '../selectors/moduleSelectors';
-import * as galleryActions from '../actions/galleryActions';
+import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
 import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
@@ -125,10 +120,12 @@ class Gallery extends Component {
   };
 
   clearSearch = () => {
-    const { clearSearch, moduleId, galleryId, searchQuery, fetchImages } = this.props;
+    const { fetchGallery, moduleId, galleryId, gallery, updateSearch } = this.props;
+    const { searchQuery } = gallery;
+
     if (searchQuery !== null && searchQuery.length > 0) {
-      clearSearch(moduleId, galleryId);
-      fetchImages(moduleId, galleryId);
+      updateSearch(null, moduleId, galleryId);
+      fetchGallery(moduleId, galleryId);
     }
   };
 
@@ -143,16 +140,18 @@ class Gallery extends Component {
   };
 
   fetchInitialImages = () => {
-    const { fetchImages, images, fetching, moduleId, galleryId, hasNext } = this.props;
+    const { fetchGallery, images, moduleId, galleryId, gallery } = this.props;
+    const { fetching, hasNext } = gallery;
     if (hasNext && images.length === 0 && !fetching) {
-      fetchImages(moduleId, galleryId);
+      fetchGallery(moduleId, galleryId);
     }
   };
 
   loadMoreImages = () => {
-    const { fetchImages, fetching, moduleId, galleryId, hasNext } = this.props;
+    const { fetchGallery, moduleId, galleryId, gallery } = this.props;
+    const { fetching, hasNext } = gallery;
     if (hasNext && !fetching) {
-      fetchImages(moduleId, galleryId);
+      fetchGallery(moduleId, galleryId);
     }
   };
 
@@ -280,7 +279,8 @@ class Gallery extends Component {
   };
 
   render() {
-    const { images, fetching, error, classes, moduleId, galleryId, location, module, searchQuery } = this.props;
+    const { images, gallery, classes, moduleId, galleryId, location, module } = this.props;
+    const { fetching, error, searchQuery } = gallery;
     const { showOverlayButtons } = this.state;
 
     // Sometimes react router renders things that aren't supposed to be
@@ -344,8 +344,6 @@ class Gallery extends Component {
 }
 
 Gallery.defaultProps = {
-  error: null,
-  searchQuery: null,
   moduleId: null,
   galleryId: null,
 };
@@ -355,30 +353,29 @@ Gallery.propTypes = {
   location: ReactRouterPropTypes.location.isRequired,
   moduleId: PropTypes.string,
   galleryId: PropTypes.string,
-  error: PropTypes.object,
-  searchQuery: PropTypes.string,
   module: PropTypes.object.isRequired,
-  fetching: PropTypes.bool.isRequired,
-  hasNext: PropTypes.bool.isRequired,
   images: PropTypes.arrayOf(PropTypes.object).isRequired,
-  fetchImages: PropTypes.func.isRequired,
-  clearSearch: PropTypes.func.isRequired,
+  fetchGallery: PropTypes.func.isRequired,
+  updateSearch: PropTypes.func.isRequired,
+  gallery: PropTypes.shape({
+    hasNext: PropTypes.bool.isRequired,
+    fetching: PropTypes.bool.isRequired,
+    error: PropTypes.object,
+    searchQuery: PropTypes.string,
+  }).isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  images: imagesSelector,
-  hasNext: hasNextSelector,
-  fetching: fetchingSelector,
-  error: errorSelector,
+  images: galleryItemsSelector,
   moduleId: moduleIdSelector,
   galleryId: galleryIdSelector,
   module: moduleSelector,
-  searchQuery: searchQuerySelector,
+  gallery: gallerySelector,
 });
 
 const mapDispatchToProps = {
-  fetchImages: galleryActions.fetchImages,
-  clearSearch: appActions.clearSearch,
+  fetchGallery: moduleActions.fetchGallery,
+  updateSearch: appActions.updateSearch,
 };
 
 export default compose(

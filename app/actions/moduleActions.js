@@ -1,6 +1,15 @@
-import { FETCH_MODULES } from './types';
+import { FETCH_MODULES, CLEAR_GALLERY } from './types';
 
-/* eslint-disable-next-line import/prefer-default-export */
 export const fetchModules = () => ({
   type: FETCH_MODULES,
+});
+
+export const fetchGallery = galleryId => ({
+  type: FETCH_MODULES,
+  payload: galleryId,
+});
+
+export const clearGallery = galleryId => ({
+  type: CLEAR_GALLERY,
+  payload: galleryId,
 });

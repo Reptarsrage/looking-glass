@@ -13,7 +13,7 @@ const useStyles = makeStyles({
 const WithTransition = Page => {
   const classes = useStyles();
   return props => (
-    <Fade appear={true} in={true}>
+    <Fade appear in>
       <Box className={classes.page}>
         <Page {...props} />
       </Box>

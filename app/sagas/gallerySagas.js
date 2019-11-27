@@ -2,9 +2,15 @@ import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga
 
 import LookingGlassService from '../services/lookingGlassService';
 import FileSystemService from '../services/fileSystemService';
-import { FETCH_IMAGES, FETCH_IMAGES_SUCCESS, FETCH_IMAGES_ERROR, UPDATE_SEARCH, CLEAR_IMAGES } from '../actions/types';
+import {
+  FETCH_GALLERY,
+  FETCH_GALLERY_SUCCESS,
+  FETCH_GALLERY_ERROR,
+  UPDATE_SEARCH,
+  CLEAR_GALLERY,
+} from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
-import { offsetSelector, beforeSelector, afterSelector, searchQuerySelector } from '../selectors/gallerySelectors';
+import { gallerySelector } from '../selectors/gallerySelectors';
 import { refresh } from '../actions/authActions';
 
 const fsService = new FileSystemService();
@@ -18,8 +24,8 @@ function* handleUpdateSearch(action) {
     return;
   }
 
-  yield put({ type: CLEAR_IMAGES, meta: { moduleId, galleryId } });
-  yield put({ type: FETCH_IMAGES, meta: { moduleId, galleryId } });
+  yield put({ type: CLEAR_GALLERY, meta: { moduleId, galleryId } });
+  yield put({ type: FETCH_GALLERY, meta: { moduleId, galleryId } });
 }
 
 function* handleFetchImages(action) {
@@ -40,10 +46,8 @@ function* handleFetchImages(action) {
 
     // get data
     const accessToken = yield select(accessTokenSelector, { moduleId });
-    const offset = yield select(offsetSelector);
-    const before = yield select(beforeSelector);
-    const after = yield select(afterSelector);
-    const searchQuery = yield select(searchQuerySelector);
+    const gallery = yield select(gallerySelector);
+    const { offset, before, after, searchQuery } = gallery;
     const { data } = yield call(
       service.fetchImages,
       moduleId,
@@ -55,15 +59,15 @@ function* handleFetchImages(action) {
       searchQuery
     );
 
-    yield put({ type: FETCH_IMAGES_SUCCESS, payload: data, meta: { moduleId, galleryId } });
+    yield put({ type: FETCH_GALLERY_SUCCESS, payload: data, meta: { moduleId, galleryId } });
   } catch (e) {
     console.error(e, 'Error fetching images');
-    yield put({ type: FETCH_IMAGES_ERROR, payload: e, meta: { moduleId, galleryId } });
+    yield put({ type: FETCH_GALLERY_ERROR, payload: e, meta: { moduleId, galleryId } });
   }
 }
 
 function* watchGallerySagas() {
-  yield all([takeLatest(FETCH_IMAGES, handleFetchImages), takeLatest(UPDATE_SEARCH, handleUpdateSearch)]);
+  yield all([takeLatest(FETCH_GALLERY, handleFetchImages), takeLatest(UPDATE_SEARCH, handleUpdateSearch)]);
 }
 
 export default watchGallerySagas;

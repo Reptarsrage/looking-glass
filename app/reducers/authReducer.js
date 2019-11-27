@@ -2,6 +2,8 @@ import produce from 'immer';
 import moment from 'moment';
 import Store from 'electron-store';
 
+import { initialAsyncState } from './asyncActionReducer';
+
 import {
   FETCH_MODULES_SUCCESS,
   LOGIN_SUCCESS,
@@ -29,9 +31,7 @@ export const initialAuthState = {
   oauthURL: '',
   refreshToken: '',
   expires: 0,
-  fetching: false,
-  success: false,
-  error: null,
+  ...initialAsyncState,
 };
 
 const authReducer = (state = initialState, action) =>
