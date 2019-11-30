@@ -1,31 +1,39 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import HomeIcon from '@material-ui/icons/Home';
+import { Link as RouterLink } from 'react-router-dom';
 
-class About extends PureComponent {
-  goBack = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
+const styles = theme => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+  body: {
+    margin: theme.spacing(1),
+  },
+  icon: {
+    marginRight: theme.spacing(0.5),
+  },
+});
 
-  render() {
-    return (
-      <Fragment>
-        <Typography variant="h1">About</Typography>
-
-        <Button variant="contained" color="primary" onClick={this.goBack}>
-          Back
-        </Button>
-      </Fragment>
-    );
-  }
-}
+const About = ({ classes }) => (
+  <Fragment>
+    <Typography variant="h1">About</Typography>
+    <Typography>
+      <Button variant="contained" color="default" className={classes.button} component={RouterLink} to="/">
+        <HomeIcon className={classes.icon} /> Home
+      </Button>
+    </Typography>
+    <Typography className={classes.body} variant="subtitle2">
+      TODO: About Page
+    </Typography>
+  </Fragment>
+);
 
 About.propTypes = {
-  history: PropTypes.shape({
-    goBack: PropTypes.func.isRequired,
-  }).isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
-export default About;
+export default withStyles(styles)(About);
