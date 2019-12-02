@@ -35,6 +35,7 @@ class VirtualizedMasonry extends PureComponent {
       scrollPosition: 0,
       scrollTop: 0,
       innerHeight: 0,
+      columnItems: [], // columnItems include a list of indexes of items in each column, and a total column size
     };
 
     this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
@@ -43,6 +44,7 @@ class VirtualizedMasonry extends PureComponent {
   componentWillMount() {
     const { location } = this.props;
     this.restoreScrollPosition(location.pathname);
+    this.recalculateColumnItems();
   }
 
   componentDidMount = () => {
@@ -65,6 +67,8 @@ class VirtualizedMasonry extends PureComponent {
     if (location.pathname !== prevLocation.pathname) {
       this.restoreScrollPosition(location.pathname);
     }
+
+    this.recalculateColumnItems();
   }
 
   componentWillUnmount = () => {
@@ -73,6 +77,38 @@ class VirtualizedMasonry extends PureComponent {
     window.removeEventListener('scroll', this.handleScroll);
     this.saveScrollPosition(location.pathname);
   };
+
+  recalculateColumnItems() {
+    const { columnCount, length } = this.props;
+    let { columnItems } = this.state;
+    let requiresUpdate = false;
+
+    // ensure each column has an entry
+    if (columnItems.length !== columnCount) {
+      columnItems = [];
+      for (let i = 0; i < columnCount; i += 1) {
+        columnItems.push({ items: [], height: 0 });
+      }
+
+      requiresUpdate = true;
+    }
+
+    // fill in column items with the missing indices
+    const totalItems = columnItems.reduce((prev, curr) => prev + curr.items.length, 0);
+    if (totalItems !== length) {
+      for (let i = totalItems; i < length; i += 1) {
+        const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
+        minHeightColumn.items.push(i);
+        minHeightColumn.height += this.getAdjustedHeightForItem(i);
+      }
+
+      requiresUpdate = true;
+    }
+
+    if (requiresUpdate) {
+      this.setState({ columnItems });
+    }
+  }
 
   handleLoadMore = () => {
     const { loadMore, isLoading } = this.props;
@@ -165,13 +201,13 @@ class VirtualizedMasonry extends PureComponent {
 
   renderColumn = columnNumber => {
     const { length, overscan, renderItem, columnCount, classes } = this.props;
-    const { width, height, scrollPosition, scrollTop, innerHeight } = this.state;
-    const columnItems = [...Array(length).keys()].filter(i => i % columnCount === columnNumber);
+    const { width, height, scrollPosition, scrollTop, innerHeight, columnItems } = this.state;
+    const { items } = columnItems[columnNumber];
 
     return (
       <div className={classes.columnContainer} key={columnNumber}>
         <Virtualized
-          items={columnItems}
+          items={items}
           length={length}
           overscan={overscan}
           getHeightForItem={this.getAdjustedHeightForItem}
