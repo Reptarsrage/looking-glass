@@ -44,7 +44,6 @@ class Masonry extends Component {
 
   loadMoreRows = () => {
     const { loadMore, loading, moduleId, galleryId } = this.props;
-    console.log('load more?', { loading });
     if (!loading) {
       loadMore(moduleId, galleryId);
     }

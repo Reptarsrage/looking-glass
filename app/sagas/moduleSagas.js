@@ -11,6 +11,7 @@ function* handleFetchModules() {
     yield put({ type: FETCH_MODULES_SUCCESS, payload: data });
     yield all(data.map(module => put({ type: ADD_MODULE, payload: module })));
   } catch (e) {
+    console.error(e, 'Error fetching modules');
     yield put({ type: FETCH_MODULES_ERROR, payload: e });
   }
 }

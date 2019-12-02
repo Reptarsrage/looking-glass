@@ -37,6 +37,7 @@ function* handleRefresh(action) {
       const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
       yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
     } catch (e) {
+      console.error(e, 'Error refreshing authentication token');
       yield put({ type: REFRESH_ERROR, payload: e, meta: { moduleId } });
     }
   }
@@ -52,6 +53,7 @@ function* handleAuthorize(action) {
 
     yield put({ type: AUTHORIZE_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
+    console.error(e, 'Error retrieving authentication token');
     yield put({ type: AUTHORIZE_ERROR, payload: e, meta: { moduleId } });
   }
 }
@@ -66,6 +68,7 @@ function* handleFetchOauthURL(action) {
 
     yield put({ type: FETCH_OATH_URL_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
+    console.error(e, 'Error fetching OAuth info');
     yield put({ type: FETCH_OATH_URL_ERROR, payload: e, meta: { moduleId } });
   }
 }
@@ -80,6 +83,7 @@ function* handleLogin(action) {
 
     yield put({ type: LOGIN_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
+    console.error(e, 'Error logging in');
     yield put({ type: LOGIN_ERROR, payload: e, meta: { moduleId } });
   }
 }

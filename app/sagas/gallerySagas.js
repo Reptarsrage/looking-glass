@@ -70,7 +70,7 @@ function* handleFetchImages(action) {
     yield all(items.map(item => put({ type: ADD_IMAGE, payload: item, meta: galleryId })));
     yield put({ type: FETCH_GALLERY_SUCCESS, payload: galleryId });
   } catch (e) {
-    console.error(e, 'Error fetching images');
+    console.error(e, 'Error fetching gallery');
     yield put({ type: FETCH_GALLERY_ERROR, payload: e, meta: galleryId });
   }
 }
