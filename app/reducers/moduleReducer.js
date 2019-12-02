@@ -1,6 +1,5 @@
 import produce from 'immer';
 import uuidv3 from 'uuid/v3';
-import uuidv4 from 'uuid/v4';
 
 import { initialAsyncState, handleAsyncFetch, handleAsyncError, handleAsyncSuccess } from './asyncActionReducer';
 import {
@@ -22,14 +21,14 @@ import {
   UPDATE_IMAGE,
 } from '../actions/types';
 
-// uuid namespaces
-export const MODULES_NAMESPACE = uuidv4();
-export const DEFAULT_GALLERY_ID = uuidv4();
-export const SEARCH_GALLERY_ID = uuidv4();
-export const MODULE_GALLERY_NAMESPACE = uuidv4();
-export const GALLERIES_NAMESPACE = uuidv4();
-export const GALLERY_IMAGE_NAMESPACE = uuidv4();
-export const IMAGES_NAMESPACE = uuidv4();
+// namespace uuid constants
+export const MODULES_NAMESPACE = '124f5b23-53e1-4258-9f17-0eaa1b9bf86f';
+export const DEFAULT_GALLERY_ID = '8d8ba67e-bbad-4908-9ce2-e55e9add872d';
+export const SEARCH_GALLERY_ID = '766e634b-9815-4098-8562-315bb37786ac';
+export const MODULE_GALLERY_NAMESPACE = '357757cf-6140-4439-b2ee-08c7f31ecfb4';
+export const GALLERIES_NAMESPACE = '0e20817f-1e71-4afb-b107-e215cc7d29d0';
+export const GALLERY_IMAGE_NAMESPACE = '2e26db14-58ab-4060-812e-5fae4cc4fd87';
+export const IMAGES_NAMESPACE = '05948023-6791-4837-96f4-ceff6416b3e3';
 
 export const initialState = {
   modules: {
