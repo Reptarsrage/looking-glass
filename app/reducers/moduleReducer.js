@@ -84,6 +84,9 @@ const addGallery = (state, draft, moduleId, gallery) => {
   const moduleGalleryId = uuidv3(moduleId + gallery.id, MODULE_GALLERY_NAMESPACE);
   const galleryId = uuidv3(moduleGalleryId, GALLERIES_NAMESPACE);
 
+  // get module
+  const module = state.modules.byId[moduleId];
+
   // add to moduleGallery
   draft.moduleGallery.allIds.push(moduleGalleryId);
   draft.moduleGallery.byId[moduleGalleryId] = {
@@ -99,6 +102,7 @@ const addGallery = (state, draft, moduleId, gallery) => {
     ...gallery,
     siteId: gallery.id,
     id: galleryId,
+    offset: module.initialOffset,
   };
 
   return galleryId;
