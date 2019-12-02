@@ -3,8 +3,6 @@ import produce from 'immer';
 import { TOGGLE_DARK_THEME, SET_CURRENT_GALLERY } from '../actions/types';
 
 export const initialState = {
-  moduleId: null,
-  galleryId: null,
   darkTheme: true,
   currentModuleId: null,
   currentGalleryId: null,

@@ -4,6 +4,7 @@ import { compose } from 'recompose';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -11,8 +12,9 @@ const styles = theme => ({
   fab: {
     margin: theme.spacing(1),
   },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
+  iconButton: {
+    marginLeft: -12,
+    marginRight: 20,
   },
 });
 
@@ -32,24 +34,32 @@ class BackButton extends Component {
   };
 
   render() {
-    const { color, classes } = this.props;
+    const { color, classes, isFab } = this.props;
+    const Container = isFab ? <Fab /> : <IconButton />;
 
     return (
-      <Fab color={color} aria-label="Back" className={classes.fab} onClick={this.goBack}>
+      <Container
+        color={color}
+        aria-label="Back"
+        className={isFab ? classes.fab : classes.iconButton}
+        onClick={this.goBack}
+      >
         <ArrowBackIcon />
-      </Fab>
+      </Container>
     );
   }
 }
 
 BackButton.defaultProps = {
   color: 'default',
+  isFab: true,
 };
 
 BackButton.propTypes = {
   history: ReactRouterPropTypes.history.isRequired,
   classes: PropTypes.object.isRequired,
   color: PropTypes.string,
+  isFab: PropTypes.bool,
 };
 
 export default compose(

@@ -6,12 +6,12 @@ const appState = state => state.app || initialState;
 
 const moduleIdSelector = createSelector(
   appState,
-  state => state.moduleId
+  state => state.currentModuleId
 );
 
 const galleryIdSelector = createSelector(
   appState,
-  state => state.galleryId
+  state => state.currentGalleryId
 );
 
 const darkThemeSelector = createSelector(

@@ -9,7 +9,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { withRouter } from 'react-router';
@@ -17,10 +16,10 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 import Container from '@material-ui/core/Container';
 
 import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
-import { searchQuerySelector } from '../selectors/gallerySelectors';
 import * as appActions from '../actions/appActions';
 import WithErrors from '../hocs/WithErrors';
 import SearchBar from '../components/SearchBar';
+import BackButton from '../components/BackButton';
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -44,10 +43,6 @@ const styles = theme => ({
   grow: {
     flexGrow: 1,
   },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-  },
   title: {
     display: 'none',
     [theme.breakpoints.up('sm')]: {
@@ -58,19 +53,13 @@ const styles = theme => ({
 
 class App extends Component {
   renderBackButton = () => {
-    const { classes, location, history } = this.props;
-    const showBackButton = location.pathname.startsWith('/gallery');
+    const { history, moduleId } = this.props;
 
-    if (!showBackButton) {
-      // TODO: render only when on gallery
+    if (!moduleId) {
       return null;
     }
 
-    return (
-      <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer" onClick={history.goBack}>
-        <ArrowBackIcon />
-      </IconButton>
-    );
+    return <BackButton history={history} color="inherit" isFab={false} />;
   };
 
   render() {
@@ -103,31 +92,26 @@ class App extends Component {
 App.defaultProps = {
   moduleId: null,
   galleryId: null,
-  searchQuery: null,
 };
 
 App.propTypes = {
-  updateSearch: PropTypes.func.isRequired,
   toggleDarkTheme: PropTypes.func.isRequired,
   children: PropTypes.element.isRequired,
   darkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
-  location: ReactRouterPropTypes.location.isRequired,
   history: ReactRouterPropTypes.history.isRequired,
+  moduleId: PropTypes.string,
   galleryId: PropTypes.string,
-  searchQuery: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   darkTheme: darkThemeSelector,
   moduleId: moduleIdSelector,
   galleryId: galleryIdSelector,
-  searchQuery: searchQuerySelector,
 });
 
 const mapDispatchToProps = {
   toggleDarkTheme: appActions.toggleDarkTheme,
-  updateSearch: appActions.updateSearch,
 };
 
 export default compose(
