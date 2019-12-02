@@ -11,7 +11,7 @@ const actionTyper = (prefix = '', separator = '/') => {
 
 export const { LOCATION_CHANGE } = actionTyper('@@router');
 
-export const { TOGGLE_DARK_THEME, UPDATE_SEARCH } = actionTyper('app');
+export const { TOGGLE_DARK_THEME, UPDATE_SEARCH, SET_CURRENT_GALLERY } = actionTyper('app');
 
 export const {
   FETCH_MODULES,
