@@ -85,7 +85,7 @@ const addGallery = (state, draft, moduleId, gallery) => {
   const galleryId = uuidv3(moduleGalleryId, GALLERIES_NAMESPACE);
 
   // get module
-  const module = state.modules.byId[moduleId];
+  const module = draft.modules.byId[moduleId];
 
   // add to moduleGallery
   draft.moduleGallery.allIds.push(moduleGalleryId);
