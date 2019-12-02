@@ -8,9 +8,12 @@ import {
   FETCH_GALLERY_ERROR,
   UPDATE_SEARCH,
   CLEAR_GALLERY,
+  ADD_IMAGE,
+  UPDATE_GALLERY,
 } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
-import { gallerySelector } from '../selectors/gallerySelectors';
+import { galleryByIdSelector } from '../selectors/gallerySelectors';
+import { moduleByIdSelector } from '../selectors/moduleSelectors';
 import { refresh } from '../actions/authActions';
 
 const fsService = new FileSystemService();
@@ -29,8 +32,11 @@ function* handleUpdateSearch(action) {
 }
 
 function* handleFetchImages(action) {
-  const { meta } = action;
-  const { moduleId, galleryId } = meta;
+  const { payload } = action;
+  const { moduleId, galleryId } = payload;
+
+  const module = yield select(moduleByIdSelector, { moduleId });
+  const gallery = yield select(galleryByIdSelector, { galleryId });
 
   try {
     // resolve service
@@ -42,27 +48,30 @@ function* handleFetchImages(action) {
     }
 
     // refresh token (if needed)
-    yield put(refresh(moduleId));
+    yield put(refresh(module.siteId));
 
     // get data
-    const accessToken = yield select(accessTokenSelector, { moduleId });
-    const gallery = yield select(gallerySelector);
-    const { offset, before, after, searchQuery } = gallery;
+    const accessToken = yield select(accessTokenSelector, { moduleId: module.siteId });
+
     const { data } = yield call(
       service.fetchImages,
-      moduleId,
-      galleryId,
+      module.siteId,
+      gallery.siteId,
       accessToken,
-      offset,
-      before,
-      after,
-      searchQuery
+      gallery.offset,
+      gallery.before,
+      gallery.after,
+      gallery.searchQuery
     );
 
-    yield put({ type: FETCH_GALLERY_SUCCESS, payload: data, meta: { moduleId, galleryId } });
+    const { items, ...newState } = data;
+
+    yield put({ type: UPDATE_GALLERY, payload: newState, meta: galleryId });
+    yield all(items.map(item => put({ type: ADD_IMAGE, payload: item, meta: galleryId })));
+    yield put({ type: FETCH_GALLERY_SUCCESS, payload: galleryId });
   } catch (e) {
     console.error(e, 'Error fetching images');
-    yield put({ type: FETCH_GALLERY_ERROR, payload: e, meta: { moduleId, galleryId } });
+    yield put({ type: FETCH_GALLERY_ERROR, payload: e, meta: galleryId });
   }
 }
 

@@ -23,13 +23,13 @@ import {
 } from '../actions/types';
 
 // uuid namespaces
-const MODULES_NAMESPACE = uuidv4();
-const DEFAULT_GALLERY_ID = uuidv4();
-const SEARCH_GALLERY_ID = uuidv4();
-const MODULE_GALLERY_NAMESPACE = uuidv4();
-const GALLERIES_NAMESPACE = uuidv4();
-const GALLERY_IMAGE_NAMESPACE = uuidv4();
-const IMAGES_NAMESPACE = uuidv4();
+export const MODULES_NAMESPACE = uuidv4();
+export const DEFAULT_GALLERY_ID = uuidv4();
+export const SEARCH_GALLERY_ID = uuidv4();
+export const MODULE_GALLERY_NAMESPACE = uuidv4();
+export const GALLERIES_NAMESPACE = uuidv4();
+export const GALLERY_IMAGE_NAMESPACE = uuidv4();
+export const IMAGES_NAMESPACE = uuidv4();
 
 export const initialState = {
   modules: {
@@ -102,7 +102,7 @@ const addGallery = (state, draft, moduleId, gallery) => {
     id: galleryId,
   };
 
-  return moduleGalleryId;
+  return galleryId;
 };
 
 const removeItem = (state, draft, galleryItemId) => {
@@ -143,15 +143,15 @@ const moduleReducer = (state = initialState, action) =>
 
     switch (type) {
       case FETCH_MODULES: {
-        handleAsyncFetch(state, draft);
+        handleAsyncFetch(state.modules, draft.modules);
         break;
       }
       case FETCH_MODULES_SUCCESS: {
-        handleAsyncSuccess(state, draft);
+        handleAsyncSuccess(state.modules, draft.modules);
         break;
       }
       case FETCH_MODULES_ERROR: {
-        handleAsyncError(state, draft);
+        handleAsyncError(state.modules, draft.modules);
         break;
       }
       case ADD_MODULE: {
@@ -194,19 +194,19 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case UPDATE_MODULE: {
-        const { moduleId } = meta;
+        const moduleId = meta;
         const module = payload;
 
         // update gallery
         draft.modules.byId[moduleId] = {
-          ...draft.modules.byId[moduleId],
+          ...state.modules.byId[moduleId],
           ...module,
         };
 
         break;
       }
       case FETCH_GALLERY: {
-        const galleryId = payload;
+        const { galleryId } = payload;
         handleAsyncFetch(state.galleries.byId[galleryId], draft.galleries.byId[galleryId]);
         break;
       }
@@ -216,8 +216,9 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_GALLERY_ERROR: {
-        const galleryId = payload;
-        handleAsyncError(state.galleries.byId[galleryId], draft.galleries.byId[galleryId]);
+        const error = payload;
+        const galleryId = meta;
+        handleAsyncError(state.galleries.byId[galleryId], draft.galleries.byId[galleryId], error);
         break;
       }
       case CLEAR_GALLERY: {
@@ -243,17 +244,15 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case UPDATE_GALLERY: {
-        const { moduleGalleryId } = meta;
+        const galleryId = meta;
         const gallery = payload;
-
-        // get gallery id
-        const moduleGallery = state.moduleGallery.byId[moduleGalleryId];
-        const { galleryId } = moduleGallery;
 
         // update gallery
         draft.galleries.byId[galleryId] = {
-          ...draft.galleries.byId[galleryId],
+          ...state.galleries.byId[galleryId],
           ...gallery,
+          id: state.galleries.byId[galleryId].id,
+          siteId: state.galleries.byId[galleryId].siteId,
         };
 
         break;
@@ -267,16 +266,16 @@ const moduleReducer = (state = initialState, action) =>
         const itemId = uuidv3(galleryItemId, IMAGES_NAMESPACE);
 
         // Add galleryItem
-        state.galleryItem.allIds.push(galleryItemId);
-        state.galleryItem.byId[galleryItemId] = {
+        draft.galleryItem.allIds.push(galleryItemId);
+        draft.galleryItem.byId[galleryItemId] = {
           id: galleryItemId,
           itemId,
           galleryId,
         };
 
         // Add item
-        state.items.allIds.push(itemId);
-        state.items.byId[itemId] = {
+        draft.items.allIds.push(itemId);
+        draft.items.byId[itemId] = {
           ...item,
           siteId: item.id,
           id: itemId,
@@ -290,16 +289,12 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case UPDATE_IMAGE: {
-        const galleryItemId = meta;
+        const itemId = meta;
         const item = payload;
-
-        // get gallery id
-        const galleryItem = state.galleryItem.byId[galleryItemId];
-        const { itemId } = galleryItem;
 
         // update gallery
         draft.items.byId[itemId] = {
-          ...draft.items.byId[itemId],
+          ...state.items.byId[itemId],
           ...item,
         };
 

@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { InView } from 'react-intersection-observer';
 
 const styles = () => ({
   image: {
@@ -26,23 +25,18 @@ const styles = () => ({
 });
 
 const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
-  <InView threshold={0}>
-    {({ inView, ref }) => (
-      <Fragment>
-        <div ref={ref} className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}") ` : undefined }} />
-        <img
-          className={classes.image}
-          src={inView ? src : null}
-          alt={title}
-          width={`${width}px`}
-          height={`${height}px`}
-          title={title}
-          style={{ display: inView ? 'inline-block' : 'none' }}
-          {...other}
-        />
-      </Fragment>
-    )}
-  </InView>
+  <Fragment>
+    <div className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}") ` : undefined }} />
+    <img
+      className={classes.image}
+      src={src}
+      alt={title}
+      width={`${width}px`}
+      height={`${height}px`}
+      title={title}
+      {...other}
+    />
+  </Fragment>
 );
 
 Image.defaultProps = {

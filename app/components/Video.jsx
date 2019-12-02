@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { extname } from 'path';
-import { InView } from 'react-intersection-observer';
 
 const styles = () => ({
   video: {
@@ -48,43 +47,32 @@ class Video extends PureComponent {
     this.setState({ volume: event.target.volume });
   };
 
-  handleSetRef = (ref, refCallback) => {
-    refCallback(ref);
-    this.videoRef = ref;
-  };
-
   render() {
     const { volume } = this.state;
     const { classes, src, thumb, width, height, title, ...other } = this.props;
 
     return (
-      <InView threshold={0}>
-        {({ inView, ref: refCallback }) => (
-          // eslint-disable-next-line jsx-a11y/media-has-caption
-          <video
-            ref={ref => this.handleSetRef(ref, refCallback)}
-            className={classes.video}
-            width={width}
-            height={height}
-            title={title}
-            poster={thumb}
-            onVolumeChange={this.handleVolumeChange}
-            volume={volume}
-            {...other}
-          >
-            {inView ? (
-              <source
-                src={src}
-                type={`video/${
-                  extname(src)
-                    .slice(1)
-                    .split('?')[0]
-                }`}
-              />
-            ) : null}
-          </video>
-        )}
-      </InView>
+      // eslint-disable-next-line jsx-a11y/media-has-caption
+      <video
+        ref={this.videoRef}
+        className={classes.video}
+        width={width}
+        height={height}
+        title={title}
+        poster={thumb}
+        onVolumeChange={this.handleVolumeChange}
+        volume={volume}
+        {...other}
+      >
+        <source
+          src={src}
+          type={`video/${
+            extname(src)
+              .slice(1)
+              .split('?')[0]
+          }`}
+        />
+      </video>
     );
   }
 }

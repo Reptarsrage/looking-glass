@@ -1,23 +1,34 @@
 import { createSelector } from 'reselect';
 
-import { initialState } from '../reducers/moduleReducer';
+import { initialState, initialItemState } from '../reducers/moduleReducer';
 
-const selectItems = state => (state.module || initialState).items;
+const getGalleryId = (state, props) => props.galleryId;
 
-const selectGalleryItem = state => (state.module || initialState).galleryItem;
+const getItemId = (state, props) => props.itemId;
 
-const selectGalleryId = (state, props) => props.galleryId;
+const itemsStateSelctor = state => (state.module || initialState).items;
 
-const selectItemId = (state, props) => props.itemId;
+const galleryItemStateSelctor = state => (state.module || initialState).galleryItem;
 
-const galleryItemsSelector = createSelector(
-  [selectGalleryItem, selectGalleryId],
-  (galleryItem, galleryId) => galleryItem.allIds.filter(id => galleryItem.byId[id].galleryId === galleryId)
+const itemsInGallerySelector = createSelector(
+  [galleryItemStateSelctor, getGalleryId],
+  (state, galleryId) =>
+    state.allIds.filter(id => state.byId[id].galleryId === galleryId).map(id => state.byId[id].itemId)
 );
 
-const itemSelector = createSelector(
-  [selectItems, selectItemId],
-  (items, itemId) => items.byId[itemId]
+const itemByIdSelector = createSelector(
+  [itemsStateSelctor, getItemId],
+  (state, itemId) => state.byId[itemId] || initialItemState
 );
 
-export { galleryItemsSelector, itemSelector };
+const itemWidthsSelector = createSelector(
+  [itemsStateSelctor, itemsInGallerySelector],
+  (state, items) => items.map(itemId => state.byId[itemId].width)
+);
+
+const itemHeightsSelector = createSelector(
+  [itemsStateSelctor, itemsInGallerySelector],
+  (state, items) => items.map(itemId => state.byId[itemId].height)
+);
+
+export { itemsInGallerySelector, itemByIdSelector, itemWidthsSelector, itemHeightsSelector };

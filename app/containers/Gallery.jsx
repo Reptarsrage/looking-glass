@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import ReactRouterPropTypes from 'react-router-prop-types';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
@@ -16,11 +14,10 @@ import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
 import { Link as RouterLink } from 'react-router-dom';
+import ReactRouterPropTypes from 'react-router-prop-types';
 
-import { gallerySelector } from '../selectors/gallerySelectors';
-import { galleryItemsSelector } from '../selectors/itemSelectors';
-import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
-import { moduleSelector } from '../selectors/moduleSelectors';
+import { galleryByIdSelector } from '../selectors/gallerySelectors';
+import { itemsInGallerySelector, itemHeightsSelector, itemWidthsSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
 import Masonry from '../components/Masonry';
@@ -93,22 +90,37 @@ class Gallery extends Component {
   }
 
   componentDidMount() {
-    this.fetchInitialImages();
+    const { setCurrentGallery, moduleId, galleryId } = this.props;
+
+    // set event listeners
     window.addEventListener('scroll', this.handleScroll);
     document.addEventListener('keydown', this.handleKeyPress, false);
+
+    // set current gallery and module
+    setCurrentGallery(moduleId, galleryId);
+
+    // fetch images
+    this.fetchInitialItems();
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    const { location: prevLocation } = prevProps;
+    const { moduleId, galleryId, setCurrentGallery } = this.props;
+    const { moduleId: prevModuleId, galleryId: prevGalleryId } = prevProps;
 
-    if (location.pathname !== prevLocation.pathname) {
-      this.setState({ modalIn: false, modalItemId: null });
-      this.fetchInitialImages();
+    if (moduleId !== prevModuleId || galleryId !== prevGalleryId) {
+      // clear modal
+      this.handleModalClose();
+
+      // set current gallery and module
+      setCurrentGallery(moduleId, galleryId);
+
+      // fetch images
+      this.fetchInitialItems();
     }
   }
 
   componentWillUnmount() {
+    // remove event listeners from componentDidMount
     window.removeEventListener('scroll', this.handleScroll);
     document.removeEventListener('keydown', this.handleKeyPress, false);
   }
@@ -116,16 +128,6 @@ class Gallery extends Component {
   handleKeyPress = event => {
     if (event.key === 'Escape') {
       this.handleModalClose();
-    }
-  };
-
-  clearSearch = () => {
-    const { fetchGallery, moduleId, galleryId, gallery, updateSearch } = this.props;
-    const { searchQuery } = gallery;
-
-    if (searchQuery !== null && searchQuery.length > 0) {
-      updateSearch(null, moduleId, galleryId);
-      fetchGallery(moduleId, galleryId);
     }
   };
 
@@ -139,45 +141,44 @@ class Gallery extends Component {
     }
   };
 
-  fetchInitialImages = () => {
-    const { fetchGallery, images, moduleId, galleryId, gallery } = this.props;
-    const { fetching, hasNext } = gallery;
-    if (hasNext && images.length === 0 && !fetching) {
+  fetchInitialItems = () => {
+    const { fetchGallery, moduleId, galleryId, gallery } = this.props;
+    const { hasNext, fetching, success } = gallery;
+    if (hasNext && !fetching && !success) {
       fetchGallery(moduleId, galleryId);
     }
   };
 
-  loadMoreImages = () => {
+  loadMoreItems = () => {
     const { fetchGallery, moduleId, galleryId, gallery } = this.props;
-    const { fetching, hasNext } = gallery;
+    const { hasNext, fetching } = gallery;
     if (hasNext && !fetching) {
       fetchGallery(moduleId, galleryId);
     }
   };
 
   modalHasNext = () => {
-    const { images } = this.props;
+    const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i && i.id === modalItemId);
-    return idx < images.length - 1;
+    const idx = items.findIndex(id => id === modalItemId);
+    return idx < items.length - 1;
   };
 
   modalHasPrev = () => {
-    const { images } = this.props;
+    const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i && i.id === modalItemId);
-    return idx > 0;
+    return items.length > 0 && items[0] !== modalItemId; // not first item
   };
 
   getlInitialBoundsForTarget = ({ target }) => target && target.getBoundingClientRect();
 
   handleModalNextImage = () => {
-    const { images } = this.props;
+    const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i && i.id === modalItemId);
+    const idx = items.findIndex(id => id === modalItemId);
 
-    if (idx < images.length - 1) {
-      const newModalItemId = images[idx + 1].id;
+    if (idx < items.length - 1) {
+      const newModalItemId = items[idx + 1];
 
       // TODO: Update modalInitialBounds
       this.setState({ modalItemId: newModalItemId });
@@ -185,12 +186,12 @@ class Gallery extends Component {
   };
 
   handleModalPrevImage = () => {
-    const { images } = this.props;
+    const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = images.findIndex(i => i.id === modalItemId);
+    const idx = items.findIndex(id => id === modalItemId);
 
     if (idx > 0) {
-      const newModalItemId = images[idx - 1].id;
+      const newModalItemId = items[idx - 1];
 
       // TODO: Update modalInitialBounds
       this.setState({ modalItemId: newModalItemId });
@@ -198,7 +199,7 @@ class Gallery extends Component {
   };
 
   handleModalClose = () => {
-    this.setState({ modalIn: false });
+    this.setState({ modalIn: false, modalItemId: null });
   };
 
   handleItemClick = (event, modalItemId) => {
@@ -213,9 +214,9 @@ class Gallery extends Component {
   };
 
   renderModal = () => {
-    const { classes, images } = this.props;
+    const { classes, items } = this.props;
     const { mountModal, modalIn, modalItemId, modalInitialBounds } = this.state;
-    const modalItem = modalItemId && images.find(i => i.id === modalItemId);
+    const modalItem = modalItemId && items.find(id => id === modalItemId);
     const hasPrev = this.modalHasPrev();
     const hasNext = this.modalHasNext();
 
@@ -279,8 +280,8 @@ class Gallery extends Component {
   };
 
   render() {
-    const { images, gallery, classes, moduleId, galleryId, location, module } = this.props;
-    const { fetching, error, searchQuery } = gallery;
+    const { items, classes, moduleId, galleryId, gallery, location, heights, widths } = this.props;
+    const { fetching, error } = gallery;
     const { showOverlayButtons } = this.state;
 
     // Sometimes react router renders things that aren't supposed to be
@@ -288,6 +289,7 @@ class Gallery extends Component {
       return null;
     }
 
+    // TODO: Refactor Breadcrumbs
     return (
       <Fragment>
         {this.renderModal()}
@@ -296,29 +298,6 @@ class Gallery extends Component {
             <Link className={classes.pointer} component={RouterLink} color="inherit" to="/">
               Home
             </Link>
-            <Link
-              className={classes.pointer}
-              component={RouterLink}
-              color="inherit"
-              to={`/gallery/${moduleId}/default`}
-              onClick={this.clearSearch}
-            >
-              {module.title}
-            </Link>
-            {galleryId !== 'default' ? (
-              <Link
-                className={classes.pointer}
-                component={RouterLink}
-                color="inherit"
-                to={`/gallery/${moduleId}/${galleryId}`}
-                onClick={this.clearSearch}
-              >
-                {galleryId}
-              </Link>
-            ) : null}
-            {searchQuery !== null && searchQuery.length > 0 ? (
-              <Typography color="textPrimary">&quot;{searchQuery}&quot;</Typography>
-            ) : null}
           </Breadcrumbs>
         </Paper>
 
@@ -328,14 +307,16 @@ class Gallery extends Component {
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
         <Masonry
-          key={`${moduleId}_${galleryId}`}
+          key={`${moduleId}/${galleryId}`}
           location={location}
           moduleId={moduleId}
           galleryId={galleryId}
-          items={images}
+          items={items}
+          heights={heights}
+          widths={widths}
           loading={fetching}
           error={error !== null}
-          loadMore={this.loadMoreImages}
+          loadMore={this.loadMoreItems}
           onItemClick={this.handleItemClick}
         />
       </Fragment>
@@ -343,39 +324,34 @@ class Gallery extends Component {
   }
 }
 
-Gallery.defaultProps = {
-  moduleId: null,
-  galleryId: null,
-};
-
 Gallery.propTypes = {
   classes: PropTypes.object.isRequired,
-  location: ReactRouterPropTypes.location.isRequired,
-  moduleId: PropTypes.string,
-  galleryId: PropTypes.string,
-  module: PropTypes.object.isRequired,
-  images: PropTypes.arrayOf(PropTypes.object).isRequired,
-  fetchGallery: PropTypes.func.isRequired,
-  updateSearch: PropTypes.func.isRequired,
+  moduleId: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
+  heights: PropTypes.arrayOf(PropTypes.number).isRequired,
+  widths: PropTypes.arrayOf(PropTypes.number).isRequired,
   gallery: PropTypes.shape({
-    hasNext: PropTypes.bool.isRequired,
-    fetching: PropTypes.bool.isRequired,
+    hasNext: PropTypes.bool,
+    fetching: PropTypes.bool,
+    success: PropTypes.bool,
     error: PropTypes.object,
-    searchQuery: PropTypes.string,
   }).isRequired,
+  fetchGallery: PropTypes.func.isRequired,
+  setCurrentGallery: PropTypes.func.isRequired,
+  location: ReactRouterPropTypes.location.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  images: galleryItemsSelector,
-  moduleId: moduleIdSelector,
-  galleryId: galleryIdSelector,
-  module: moduleSelector,
-  gallery: gallerySelector,
+  gallery: galleryByIdSelector,
+  items: itemsInGallerySelector,
+  heights: itemHeightsSelector,
+  widths: itemWidthsSelector,
 });
 
 const mapDispatchToProps = {
   fetchGallery: moduleActions.fetchGallery,
-  updateSearch: appActions.updateSearch,
+  setCurrentGallery: appActions.setCurrentGallery,
 };
 
 export default compose(

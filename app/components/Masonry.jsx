@@ -21,11 +21,9 @@ const styles = theme => ({
     flex: '1 1 auto',
   },
   masonryItemContainer: {
-    padding: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
     height: '100%',
   },
 });
@@ -46,6 +44,7 @@ class Masonry extends Component {
 
   loadMoreRows = () => {
     const { loadMore, loading, moduleId, galleryId } = this.props;
+    console.log('load more?', { loading });
     if (!loading) {
       loadMore(moduleId, galleryId);
     }
@@ -57,60 +56,50 @@ class Masonry extends Component {
   };
 
   getItemWidth = index => {
-    const { items } = this.props;
+    const { widths } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
-    return items[index].width;
+    return widths[index]; // TODO: How to get this with normalized data?
   };
 
   getItemHeight = index => {
-    const { items } = this.props;
+    const { heights } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
-    return items[index].height;
+    return heights[index];
   };
 
   renderRow = index => {
-    const { classes } = this.props;
+    const { items, classes, moduleId, galleryId, onItemClick, gutter } = this.props;
 
     if (!this.isLoaded(index)) {
       return null;
     }
 
-    const { items, moduleId, onItemClick } = this.props;
-    const item = items[index];
-
     return (
-      <Box className={classes.masonryItemContainer}>
+      <Box className={classes.masonryItemContainer} style={{ padding: `${gutter}px` }}>
         <MasonryItem
-          videoURL={item.videoURL}
-          imageURL={item.imageURL}
-          thumbURL={item.thumbURL}
-          isVideo={item.isVideo}
-          isGallery={item.isGallery}
-          title={item.title}
-          id={item.id}
-          width={item.width}
-          height={item.height}
           moduleId={moduleId}
-          galleryId={item.galleryId}
+          galleryId={galleryId}
+          itemId={items[index]}
           onClick={onItemClick}
+          gutter={gutter}
         />
       </Box>
     );
   };
 
   render() {
-    const { items, loading, error } = this.props;
+    const { items, loading, error, gutter } = this.props;
     const { columnCount } = this.state;
 
     // TODO: allow transient errors
     if (error) {
-      console.warn('Encountered an error');
+      console.warn('Encountered an error', error);
     }
 
     if (items.length === 0 && !loading) {
@@ -132,18 +121,26 @@ class Masonry extends Component {
         overscan={500}
         loadMoreThreshhold={5000}
         columnCount={columnCount}
+        gutter={gutter}
       />
     );
   }
 }
 
+Masonry.defaultProps = {
+  gutter: 8,
+};
+
 Masonry.propTypes = {
   classes: PropTypes.object.isRequired,
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
+  heights: PropTypes.arrayOf(PropTypes.number).isRequired,
+  widths: PropTypes.arrayOf(PropTypes.number).isRequired,
   loading: PropTypes.bool.isRequired,
   moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   error: PropTypes.bool.isRequired,
+  gutter: PropTypes.number,
   loadMore: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,
 };

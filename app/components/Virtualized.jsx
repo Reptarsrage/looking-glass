@@ -12,7 +12,6 @@ const styles = () => ({
   },
   itemInner: {
     position: 'relative',
-    width: '100%',
     height: '100%',
   },
   container: {
@@ -61,7 +60,11 @@ class Virtualized extends PureComponent {
     const windowBottom = scrollPosition + innerHeight - scrollTop + overscan;
     const windowTop = scrollPosition - scrollTop - overscan;
 
-    if ((itemTop >= windowTop && itemTop <= windowBottom) || (itemBottom >= windowTop && itemBottom <= windowBottom)) {
+    if (
+      (itemTop >= windowTop && itemTop <= windowBottom) || // top of item is on screen
+      (itemBottom >= windowTop && itemBottom <= windowBottom) || // bottom of item is on screen
+      (itemTop <= windowTop && itemBottom >= windowBottom) // item is larger than screen, middle is on screen
+    ) {
       return (
         <div className={classes.item} key={i} style={{ height: `${itemHeight}px`, top: `${itemTop}px` }}>
           <div className={classes.itemInner}>{renderItem(i)}</div>

@@ -35,17 +35,24 @@ class BackButton extends Component {
 
   render() {
     const { color, classes, isFab } = this.props;
-    const Container = isFab ? <Fab /> : <IconButton />;
+
+    if (isFab) {
+      return (
+        <Fab color={color} aria-label="Back" className={isFab ? classes.fab : classes.iconButton} onClick={this.goBack}>
+          <ArrowBackIcon />
+        </Fab>
+      );
+    }
 
     return (
-      <Container
+      <IconButton
         color={color}
         aria-label="Back"
         className={isFab ? classes.fab : classes.iconButton}
         onClick={this.goBack}
       >
         <ArrowBackIcon />
-      </Container>
+      </IconButton>
     );
   }
 }
@@ -63,6 +70,6 @@ BackButton.propTypes = {
 };
 
 export default compose(
-  withStyles(styles),
-  withRouter
+  withRouter,
+  withStyles(styles)
 )(BackButton);

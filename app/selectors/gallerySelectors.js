@@ -1,20 +1,20 @@
 import { createSelector } from 'reselect';
 
-import { initialState } from '../reducers/moduleReducer';
+import { initialState, initialGalleryState } from '../reducers/moduleReducer';
 
-const selectGalleries = state => (state.module || initialState).galleries;
+const getGalleryId = (state, props) => props.galleryId;
 
-const selectGalleryId = (state, props) => props.galleryId;
+const galleriesStateSelctor = state => (state.module || initialState).galleries;
 
-const gallerySelector = createSelector(
-  [selectGalleries, selectGalleryId],
-  (state, galleryId) => state.byId[galleryId]
+const galleryByIdSelector = createSelector(
+  [galleriesStateSelctor, getGalleryId],
+  (state, galleryId) => state.byId[galleryId] || initialGalleryState
 );
 
 const searchQuerySelector = createSelector(
-  gallerySelector,
-  gallery => (gallery && gallery.searchQuery) || null
+  galleryByIdSelector,
+  gallery => gallery.searchQuery
 );
 
 // eslint-disable-next-line import/prefer-default-export
-export { gallerySelector, searchQuerySelector };
+export { galleryByIdSelector, searchQuerySelector };

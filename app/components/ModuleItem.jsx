@@ -10,7 +10,7 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { moduleSelector } from '../selectors/moduleSelectors';
+import { moduleByIdSelector } from '../selectors/moduleSelectors';
 
 const styles = () => ({
   wrapper: {
@@ -33,7 +33,7 @@ const ModuleItem = ({ module, moduleId }) => (
   <ListItem
     button
     component={Link}
-    to={`/${module.authType || 'gallery'}/${moduleId}${module.authType ? '' : '/default'}`}
+    to={`/${module.authType || 'gallery'}/${moduleId}${module.authType ? '' : `/${module.defaultGalleryId}`}`}
   >
     <ListItemAvatar>
       <Avatar alt={module.title} src={module.icon} />
@@ -42,17 +42,19 @@ const ModuleItem = ({ module, moduleId }) => (
   </ListItem>
 );
 
-ModuleItem.defaultProps = {
-  module: null,
-};
-
 ModuleItem.propTypes = {
   moduleId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  module: PropTypes.object,
+  module: PropTypes.shape({
+    authType: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    icon: PropTypes.string,
+    defaultGalleryId: PropTypes.string,
+  }).isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  module: moduleSelector,
+  module: moduleByIdSelector,
 });
 
 export default compose(

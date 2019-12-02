@@ -111,7 +111,7 @@ class VirtualizedMasonry extends PureComponent {
 
   getAdjustedHeightForItem = i => {
     this.calculations += 1;
-    const { columnCount, fitToWindow } = this.props;
+    const { columnCount, fitToWindow, gutter } = this.props;
     const { width, innerHeight } = this.state;
 
     if (width <= 0 || innerHeight <= 0) {
@@ -119,10 +119,10 @@ class VirtualizedMasonry extends PureComponent {
       return height;
     }
 
-    const columnWidth = width / columnCount;
+    const columnWidth = width / columnCount - 2 * gutter;
     const { width: itemWidth, height: itemHeight } = this.itemDimensionsMemoizer(i);
     const calculatedWidth = Math.min(itemWidth, columnWidth);
-    const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth;
+    const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth + 2 * gutter;
 
     if (fitToWindow) {
       return Math.min(calculatedHeight, innerHeight);
@@ -143,7 +143,6 @@ class VirtualizedMasonry extends PureComponent {
       const scrollPosition = window.scrollY;
       const scrollTop = window.scrollY + rect.top;
       this.setState({ scrollPosition, scrollTop });
-
       if (Math.abs(scrollTop + rect.height - scrollPosition - window.innerHeight) <= loadMoreThreshhold) {
         this.handleLoadMore();
       }
@@ -204,6 +203,7 @@ VirtualizedMasonry.defaultProps = {
   loadMoreThreshhold: 1000,
   columnCount: 1,
   fitToWindow: false,
+  gutter: 8,
 };
 
 VirtualizedMasonry.propTypes = {
@@ -219,6 +219,7 @@ VirtualizedMasonry.propTypes = {
   loadMoreThreshhold: PropTypes.number,
   columnCount: PropTypes.number,
   fitToWindow: PropTypes.bool,
+  gutter: PropTypes.number,
 };
 
 export default compose(

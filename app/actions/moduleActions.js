@@ -1,12 +1,12 @@
-import { FETCH_MODULES, CLEAR_GALLERY, UPDATE_SEARCH } from './types';
+import { FETCH_MODULES, FETCH_GALLERY, CLEAR_GALLERY, UPDATE_SEARCH } from './types';
 
 export const fetchModules = () => ({
   type: FETCH_MODULES,
 });
 
-export const fetchGallery = galleryId => ({
-  type: FETCH_MODULES,
-  payload: galleryId,
+export const fetchGallery = (moduleId, galleryId) => ({
+  type: FETCH_GALLERY,
+  payload: { moduleId, galleryId },
 });
 
 export const clearGallery = galleryId => ({

@@ -1,34 +1,35 @@
 import { createSelector } from 'reselect';
 
-import { initialState } from '../reducers/moduleReducer';
+import { initialState, initialModuleState } from '../reducers/moduleReducer';
 
-const selectModules = state => (state.module || initialState).modules;
+const getModuleId = (state, props) => props.moduleId;
 
-const selectModuleId = (state, props) => props.moduleId;
+const modulesStateSelector = state => (state.module || initialState).modules;
+
+const modulesSelector = createSelector(
+  modulesStateSelector,
+  state => state.allIds
+);
+
+const moduleByIdSelector = createSelector(
+  modulesStateSelector,
+  getModuleId,
+  (state, moduleId) => state.byId[moduleId] || initialModuleState
+);
+
+const successSelector = createSelector(
+  modulesStateSelector,
+  state => state.success
+);
 
 const fetchingSelector = createSelector(
-  selectModules,
+  modulesStateSelector,
   state => state.fetching
 );
 
 const errorSelector = createSelector(
-  selectModules,
+  modulesStateSelector,
   state => state.error
 );
 
-const successSelector = createSelector(
-  selectModules,
-  state => state.success
-);
-
-const modulesSelector = createSelector(
-  selectModules,
-  state => state.allIds
-);
-
-const moduleSelector = createSelector(
-  [selectModules, selectModuleId],
-  (state, moduleId) => state.byId[moduleId]
-);
-
-export { successSelector, fetchingSelector, errorSelector, modulesSelector, moduleSelector };
+export { modulesSelector, moduleByIdSelector, successSelector, fetchingSelector, errorSelector };

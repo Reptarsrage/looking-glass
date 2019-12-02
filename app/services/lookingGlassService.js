@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { stringify } from 'qs';
 
+import { DEFAULT_GALLERY_ID } from '../reducers/moduleReducer';
+
 export default class FileSystemService {
   config;
 
@@ -41,7 +43,7 @@ export default class FileSystemService {
     const params = { offset, before, after, query };
 
     let url = `/${moduleId}?${stringify(params)}`;
-    if (galleryId !== 'default') {
+    if (galleryId !== DEFAULT_GALLERY_ID) {
       url = `/${moduleId}/gallery/${galleryId}?${stringify(params)}`;
     }
 
