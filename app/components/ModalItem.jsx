@@ -1,8 +1,12 @@
 import React, { PureComponent } from 'react';
+import { compose } from 'recompose';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 
+import { itemByIdSelector } from '../selectors/itemSelectors';
 import Image from './Image';
 import Video from './Video';
 
@@ -27,26 +31,29 @@ const styles = () => ({
 
 class ModalItem extends PureComponent {
   handleClick = () => {
-    const { onClick } = this.props;
+    const { onClick, itemId } = this.props;
     if (onClick) {
-      onClick();
+      onClick(itemId);
     }
   };
 
   renderImage = () => {
-    const { width, height, title, imageURL } = this.props;
+    const { item } = this.props;
+    const { width, height, title, imageURL } = item;
 
     return <Image src={imageURL} title={title} width={width} height={height} />;
   };
 
   renderVideo = () => {
-    const { width, height, title, videoURL } = this.props;
+    const { item } = this.props;
+    const { width, height, title, videoURL } = item;
 
     return <Video src={videoURL} title={title} width={width} height={height} autoPlay controls />;
   };
 
   render() {
-    const { classes, isVideo } = this.props;
+    const { classes, item } = this.props;
+    const { isVideo } = item;
 
     return (
       <div className={classes.container}>
@@ -59,21 +66,31 @@ class ModalItem extends PureComponent {
 }
 
 ModalItem.defaultProps = {
-  videoURL: '',
-  imageURL: '',
-  title: '',
   onClick: null,
 };
 
 ModalItem.propTypes = {
   classes: PropTypes.object.isRequired,
-  videoURL: PropTypes.string,
-  imageURL: PropTypes.string,
-  isVideo: PropTypes.bool.isRequired,
-  title: PropTypes.string,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
+  itemId: PropTypes.string.isRequired,
+  item: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    isVideo: PropTypes.bool,
+    isGallery: PropTypes.bool,
+    imageURL: PropTypes.string,
+    thumbURL: PropTypes.string,
+    videoURL: PropTypes.string,
+  }).isRequired,
   onClick: PropTypes.func,
 };
 
-export default withStyles(styles)(ModalItem);
+const mapStateToProps = createStructuredSelector({
+  item: itemByIdSelector,
+});
+
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles)
+)(ModalItem);

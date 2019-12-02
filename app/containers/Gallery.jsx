@@ -199,7 +199,7 @@ class Gallery extends Component {
   };
 
   handleModalClose = () => {
-    this.setState({ modalIn: false, modalItemId: null });
+    this.setState({ modalIn: false });
   };
 
   handleItemClick = (event, modalItemId) => {
@@ -214,27 +214,14 @@ class Gallery extends Component {
   };
 
   renderModal = () => {
-    const { classes, items } = this.props;
+    const { classes } = this.props;
     const { mountModal, modalIn, modalItemId, modalInitialBounds } = this.state;
-    const modalItem = modalItemId && items.find(id => id === modalItemId);
     const hasPrev = this.modalHasPrev();
     const hasNext = this.modalHasNext();
 
     if (!mountModal) {
       return null;
     }
-
-    const modalContent = modalItem && (
-      <ModalItem
-        videoURL={modalItem.videoURL}
-        imageURL={modalItem.imageURL}
-        isVideo={modalItem.isVideo}
-        title={modalItem.title}
-        width={modalItem.width}
-        height={modalItem.height}
-        onClick={this.handleModalClose}
-      />
-    );
 
     return (
       <Fragment>
@@ -272,7 +259,7 @@ class Gallery extends Component {
             aria-pressed="false"
             onKeyDown={this.handleKeyPress}
           >
-            {modalContent}
+            <ModalItem itemId={modalItemId} onClick={this.handleModalClose} />
           </div>
         </ImageFullscreenTransition>
       </Fragment>
