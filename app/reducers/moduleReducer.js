@@ -264,6 +264,12 @@ const moduleReducer = (state = initialState, action) =>
         const galleryId = meta;
         const item = payload;
 
+        // quick sanity check
+        if (!item.width || !item.height) {
+          console.error('Invalid item', item);
+          break;
+        }
+
         // generate ids
         const galleryItemId = uuidv3(galleryId + item.id, GALLERY_IMAGE_NAMESPACE);
         const itemId = uuidv3(galleryItemId, IMAGES_NAMESPACE);
