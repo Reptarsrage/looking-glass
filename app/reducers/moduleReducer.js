@@ -10,15 +10,6 @@ import {
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
   CLEAR_GALLERY,
-  ADD_MODULE,
-  REMOVE_MODULE,
-  UPDATE_MODULE,
-  ADD_GALLERY,
-  REMOVE_GALLERY,
-  UPDATE_GALLERY,
-  ADD_IMAGE,
-  REMOVE_IMAGE,
-  UPDATE_IMAGE,
 } from '../actions/types';
 
 // namespace uuid constants
@@ -140,6 +131,53 @@ const removeGallery = (state, draft, moduleGalleryId) => {
   galleryItems.forEach(galleryItemId => removeItem(state, draft, galleryItemId));
 };
 
+const addItem = (state, draft, galleryId, item) => {
+  // quick sanity check
+  if (!item.width || !item.height) {
+    console.error('Invalid item', item);
+    return;
+  }
+
+  // generate ids
+  const galleryItemId = uuidv3(galleryId + item.id, GALLERY_IMAGE_NAMESPACE);
+  const itemId = uuidv3(galleryItemId, IMAGES_NAMESPACE);
+
+  // Add galleryItem
+  draft.galleryItem.allIds.push(galleryItemId);
+  draft.galleryItem.byId[galleryItemId] = {
+    id: galleryItemId,
+    itemId,
+    galleryId,
+  };
+
+  // Add item
+  draft.items.allIds.push(itemId);
+  draft.items.byId[itemId] = {
+    ...item,
+    siteId: item.id,
+    id: itemId,
+  };
+};
+
+const addModule = (state, draft, module) => {
+  // generate id
+  const moduleId = uuidv3(module.id, MODULES_NAMESPACE);
+
+  // add to modules
+  draft.modules.allIds.push(moduleId);
+  draft.modules.byId[moduleId] = {
+    ...module,
+    siteId: module.id,
+    id: moduleId,
+  };
+
+  // Add default gallery
+  draft.modules.byId[moduleId].defaultGalleryId = addGallery(state, draft, moduleId, { id: DEFAULT_GALLERY_ID });
+
+  // Add search gallery
+  draft.modules.byId[moduleId].searchGalleryId = addGallery(state, draft, moduleId, { id: SEARCH_GALLERY_ID });
+};
+
 const moduleReducer = (state = initialState, action) =>
   produce(state, draft => {
     const { type, payload, meta } = action || {};
@@ -150,62 +188,13 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_MODULES_SUCCESS: {
+        const modules = payload;
         handleAsyncSuccess(state.modules, draft.modules);
+        modules.forEach(module => addModule(state, draft, module));
         break;
       }
       case FETCH_MODULES_ERROR: {
         handleAsyncError(state.modules, draft.modules);
-        break;
-      }
-      case ADD_MODULE: {
-        const module = payload;
-
-        // generate id
-        const moduleId = uuidv3(module.id, MODULES_NAMESPACE);
-
-        // add to modules
-        draft.modules.allIds.push(moduleId);
-        draft.modules.byId[moduleId] = {
-          ...module,
-          siteId: module.id,
-          id: moduleId,
-        };
-
-        // Add default gallery
-        draft.modules.byId[moduleId].defaultGalleryId = addGallery(state, draft, moduleId, { id: DEFAULT_GALLERY_ID });
-
-        // Add search gallery
-        draft.modules.byId[moduleId].searchGalleryId = addGallery(state, draft, moduleId, { id: SEARCH_GALLERY_ID });
-
-        break;
-      }
-      case REMOVE_MODULE: {
-        const moduleId = payload;
-
-        // delete from modules
-        delete draft.modules.byId[moduleId];
-        draft.modules.allIds = draft.modules.allIds.filter(id => id !== moduleId);
-
-        // get modules galleries
-        const moduleGalleries = state.moduleGallery.allIds.filter(
-          id => state.moduleGallery.byId[id].moduleId === moduleId
-        );
-
-        // delete module galleries
-        moduleGalleries.forEach(moduleGalleryId => removeGallery(state, draft, moduleGalleryId));
-
-        break;
-      }
-      case UPDATE_MODULE: {
-        const moduleId = meta;
-        const module = payload;
-
-        // update gallery
-        draft.modules.byId[moduleId] = {
-          ...state.modules.byId[moduleId],
-          ...module,
-        };
-
         break;
       }
       case FETCH_GALLERY: {
@@ -214,8 +203,24 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_GALLERY_SUCCESS: {
-        const galleryId = payload;
-        handleAsyncSuccess(state.galleries.byId[galleryId], draft.galleries.byId[galleryId]);
+        const galleryId = meta;
+        const gallery = payload;
+        const { items, ...galleryState } = gallery;
+
+        // add all items
+        items.forEach(item => addItem(state, draft, galleryId, item));
+
+        // merge gallery state
+        draft.galleries.byId[galleryId] = {
+          ...state.galleries.byId[galleryId],
+          ...galleryState,
+          id: state.galleries.byId[galleryId].id,
+          siteId: state.galleries.byId[galleryId].siteId,
+          fetching: false,
+          success: true,
+          error: null,
+        };
+
         break;
       }
       case FETCH_GALLERY_ERROR: {
@@ -233,80 +238,6 @@ const moduleReducer = (state = initialState, action) =>
 
         removeGallery(state, draft, moduleGalleryId);
         addGallery(state, draft, moduleId, galleryId);
-        break;
-      }
-      case ADD_GALLERY: {
-        const { moduleId } = meta;
-        const gallery = payload;
-        addGallery(state, draft, moduleId, gallery);
-        break;
-      }
-      case REMOVE_GALLERY: {
-        const { moduleGalleryId } = meta;
-        removeGallery(state, draft, moduleGalleryId);
-        break;
-      }
-      case UPDATE_GALLERY: {
-        const galleryId = meta;
-        const gallery = payload;
-
-        // update gallery
-        draft.galleries.byId[galleryId] = {
-          ...state.galleries.byId[galleryId],
-          ...gallery,
-          id: state.galleries.byId[galleryId].id,
-          siteId: state.galleries.byId[galleryId].siteId,
-        };
-
-        break;
-      }
-      case ADD_IMAGE: {
-        const galleryId = meta;
-        const item = payload;
-
-        // quick sanity check
-        if (!item.width || !item.height) {
-          console.error('Invalid item', item);
-          break;
-        }
-
-        // generate ids
-        const galleryItemId = uuidv3(galleryId + item.id, GALLERY_IMAGE_NAMESPACE);
-        const itemId = uuidv3(galleryItemId, IMAGES_NAMESPACE);
-
-        // Add galleryItem
-        draft.galleryItem.allIds.push(galleryItemId);
-        draft.galleryItem.byId[galleryItemId] = {
-          id: galleryItemId,
-          itemId,
-          galleryId,
-        };
-
-        // Add item
-        draft.items.allIds.push(itemId);
-        draft.items.byId[itemId] = {
-          ...item,
-          siteId: item.id,
-          id: itemId,
-        };
-
-        break;
-      }
-      case REMOVE_IMAGE: {
-        const galleryItemId = meta;
-        removeItem(state, draft, galleryItemId);
-        break;
-      }
-      case UPDATE_IMAGE: {
-        const itemId = meta;
-        const item = payload;
-
-        // update gallery
-        draft.items.byId[itemId] = {
-          ...state.items.byId[itemId],
-          ...item,
-        };
-
         break;
       }
       default:

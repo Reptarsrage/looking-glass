@@ -8,8 +8,6 @@ import {
   FETCH_GALLERY_ERROR,
   UPDATE_SEARCH,
   CLEAR_GALLERY,
-  ADD_IMAGE,
-  UPDATE_GALLERY,
 } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
@@ -68,11 +66,7 @@ function* handleFetchImages(action) {
       gallery.searchQuery
     );
 
-    const { items, ...newState } = data;
-
-    yield put({ type: UPDATE_GALLERY, payload: newState, meta: galleryId });
-    yield all(items.map(item => put({ type: ADD_IMAGE, payload: item, meta: galleryId })));
-    yield put({ type: FETCH_GALLERY_SUCCESS, payload: galleryId });
+    yield put({ type: FETCH_GALLERY_SUCCESS, payload: data, meta: galleryId });
   } catch (e) {
     console.error(e, 'Error fetching gallery');
     yield put({ type: FETCH_GALLERY_ERROR, payload: e, meta: galleryId });

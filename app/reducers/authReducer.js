@@ -6,7 +6,6 @@ import Store from 'electron-store';
 import { initialAsyncState, handleAsyncFetch, handleAsyncError, handleAsyncSuccess } from './asyncActionReducer';
 import { MODULES_NAMESPACE } from './moduleReducer';
 import {
-  ADD_MODULE,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   LOGIN,
@@ -18,6 +17,7 @@ import {
   AUTHORIZE_ERROR,
   REFRESH_SUCCESS,
   REFRESH_ERROR,
+  FETCH_MODULES_SUCCESS,
 } from '../actions/types';
 
 const store = new Store();
@@ -44,15 +44,18 @@ const authReducer = (state = initialState, action) =>
     const { moduleId } = meta || {};
 
     switch (type) {
-      case ADD_MODULE: {
-        const module = payload;
+      case FETCH_MODULES_SUCCESS: {
+        const modules = payload;
 
-        // generate id
-        const id = uuidv3(module.id, MODULES_NAMESPACE);
+        modules.forEach(module => {
+          // generate id
+          const id = uuidv3(module.id, MODULES_NAMESPACE);
 
-        // load from persistent store
-        draft.byId[id] = store.get(id, initialAuthState);
-        draft.allIds.push(id);
+          // load from persistent store
+          draft.byId[id] = store.get(id, initialAuthState);
+          draft.allIds.push(id);
+        });
+
         break;
       }
       case FETCH_OATH_URL: {
