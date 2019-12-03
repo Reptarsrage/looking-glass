@@ -60,7 +60,7 @@ class Masonry extends Component {
       return 0;
     }
 
-    return widths[index]; // TODO: How to get this with normalized data?
+    return widths[index];
   };
 
   getItemHeight = index => {

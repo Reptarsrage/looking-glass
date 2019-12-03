@@ -60,7 +60,7 @@ class Home extends Component {
 
     if (result && result.length === 1) {
       const galleryId = encodeURIComponent(result[0]);
-      history.push(`/gallery/fs/${galleryId}`); // TODO: set current gallery
+      history.push(`/gallery/fs/${galleryId}`); // TODO: set current filesystem gallery
     }
   };
 

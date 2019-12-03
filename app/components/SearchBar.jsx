@@ -63,7 +63,7 @@ class SearchBar extends Component {
     const { classes, galleryId, searchQuery } = this.props;
 
     if (!galleryId) {
-      // TODO: render only when on a gallery
+      // TODO: render only when on default or search gallery
       return null;
     }
 

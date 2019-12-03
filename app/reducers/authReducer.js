@@ -51,7 +51,7 @@ const authReducer = (state = initialState, action) =>
         const id = uuidv3(module.id, MODULES_NAMESPACE);
 
         // load from persistent store
-        draft.byId[id] = initialAuthState; // store.get(id, initialAuthState); // TODO: remove this ASAP
+        draft.byId[id] = store.get(id, initialAuthState);
         draft.allIds.push(id);
         break;
       }
