@@ -22,8 +22,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import withStyles from '@material-ui/core/styles/withStyles';
 
+import { defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
-import { moduleIdSelector } from '../selectors/appSelectors';
 import * as authActions from '../actions/authActions';
 
 const styles = theme => ({
@@ -106,11 +106,11 @@ class Login extends Component {
   };
 
   render() {
-    const { fetching, error, success, classes, moduleId } = this.props;
+    const { fetching, error, success, classes, defaultGalleryUrl } = this.props;
     const { username, password, rememberMe, showPassword } = this.state;
 
     if (success) {
-      return <Redirect to={`/gallery/${moduleId}/default`} />;
+      return <Redirect to={defaultGalleryUrl} />;
     }
 
     return (
@@ -202,13 +202,14 @@ Login.propTypes = {
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   classes: PropTypes.object,
+  defaultGalleryUrl: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   success: successSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-  moduleId: moduleIdSelector,
+  defaultGalleryUrl: defaultGalleryUrlSelector,
 });
 
 const mapDispatchToProps = {

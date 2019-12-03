@@ -2,6 +2,7 @@ import { put, call, takeLatest, all, select } from 'redux-saga/effects';
 import moment from 'moment';
 
 import LookingGlassService from '../services/lookingGlassService';
+import { moduleByIdSelector } from '../selectors/moduleSelectors';
 import { expiresSelector, refreshTokenSelector } from '../selectors/authSelectors';
 import {
   LOGIN_SUCCESS,
@@ -18,23 +19,28 @@ import {
   REFRESH_ERROR,
 } from '../actions/types';
 
-function* handleRefresh(action) {
-  const { meta } = action;
-  const { moduleId } = meta;
-  const refreshToken = yield select(refreshTokenSelector, { moduleId });
+export function* needsRefresh(moduleId) {
   const expires = yield select(expiresSelector, { moduleId });
-
-  // does this module even support expiration?
-  if (expires <= 0) {
-    return;
+  const refreshToken = yield select(refreshTokenSelector, { moduleId });
+  if (!refreshToken || expires <= 0) {
+    return false; // module does not support refreshing
   }
 
   const expireDate = moment(expires);
   const currentDate = moment();
-  if (currentDate.isSameOrAfter(expireDate)) {
+  return currentDate.isSameOrAfter(expireDate);
+}
+
+function* handleRefresh(action) {
+  const { meta } = action;
+  const { moduleId } = meta;
+  const needToRefresh = yield call(needsRefresh, moduleId);
+  if (needToRefresh) {
     try {
+      const { siteId } = yield select(moduleByIdSelector, { moduleId });
+      const refreshToken = yield select(refreshTokenSelector, { moduleId });
       const lookingGlassService = new LookingGlassService();
-      const { data } = yield call(lookingGlassService.refresh, moduleId, refreshToken);
+      const { data } = yield call(lookingGlassService.refresh, siteId, refreshToken);
       yield put({ type: REFRESH_SUCCESS, payload: data, meta: { moduleId } });
     } catch (e) {
       console.error(e, 'Error refreshing authentication token');
@@ -49,7 +55,8 @@ function* handleAuthorize(action) {
 
   try {
     const lookingGlassService = new LookingGlassService();
-    const { data } = yield call(lookingGlassService.authorize, moduleId, payload);
+    const { siteId } = yield select(moduleByIdSelector, { moduleId });
+    const { data } = yield call(lookingGlassService.authorize, siteId, payload);
 
     yield put({ type: AUTHORIZE_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
@@ -64,7 +71,8 @@ function* handleFetchOauthURL(action) {
 
   try {
     const lookingGlassService = new LookingGlassService();
-    const { data } = yield call(lookingGlassService.getOauthURL, moduleId);
+    const { siteId } = yield select(moduleByIdSelector, { moduleId });
+    const { data } = yield call(lookingGlassService.getOauthURL, siteId);
 
     yield put({ type: FETCH_OATH_URL_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {
@@ -79,7 +87,8 @@ function* handleLogin(action) {
 
   try {
     const lookingGlassService = new LookingGlassService();
-    const { data } = yield call(lookingGlassService.login, moduleId, payload);
+    const { siteId } = yield select(moduleByIdSelector, { moduleId });
+    const { data } = yield call(lookingGlassService.login, siteId, payload);
 
     yield put({ type: LOGIN_SUCCESS, payload: data, meta: { moduleId } });
   } catch (e) {

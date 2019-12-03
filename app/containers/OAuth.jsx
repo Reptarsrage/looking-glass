@@ -15,9 +15,17 @@ import { parse } from 'url'; // eslint-disable-line import/no-extraneous-depende
 import { remote } from 'electron';
 import qs from 'qs';
 
+import { defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
 import * as authActions from '../actions/authActions';
-import { successSelector, fetchingSelector, errorSelector, oauthURLSelector } from '../selectors/authSelectors';
-import { moduleIdSelector } from '../selectors/appSelectors';
+import {
+  successSelector,
+  fetchingSelector,
+  errorSelector,
+  oauthURLSelector,
+  oauthURLSuccessSelector,
+  oauthURLFetchingSelector,
+  oauthURLErrorSelector,
+} from '../selectors/authSelectors';
 
 const styles = theme => ({
   main: {
@@ -68,8 +76,8 @@ class OAuth extends Component {
   }
 
   componentWillMount() {
-    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
-    if (!fetching && !success) {
+    const { oauthURLFetching, oauthURLSuccess, moduleId, fetchOAuthURL } = this.props;
+    if (!oauthURLFetching && !oauthURLSuccess) {
       fetchOAuthURL(moduleId);
     }
   }
@@ -128,15 +136,15 @@ class OAuth extends Component {
   };
 
   render() {
-    const { classes, moduleId, fetching, error, success } = this.props;
+    const { classes, oauthURLFetching, oauthURLError, fetching, error, success, defaultGalleryUrl } = this.props;
     const { modalFetching } = this.state;
 
     if (success) {
-      return <Redirect to={`/gallery/${moduleId}/default`} />;
+      return <Redirect to={defaultGalleryUrl} />;
     }
 
-    const isFetching = modalFetching || fetching;
-    const isError = error !== null; // TODO: get message out of error object
+    const isFetching = oauthURLFetching || modalFetching || fetching;
+    const isError = (oauthURLError || error) !== null; // TODO: get message out of error object
 
     return (
       <main className={classes.main}>
@@ -149,7 +157,7 @@ class OAuth extends Component {
           </Typography>
           {isError && (
             <Typography align="center" color="error">
-              {JSON.stringify(error)}
+              {JSON.stringify(oauthURLError || error)}
             </Typography>
           )}
           <div className={classes.wrapper}>
@@ -174,6 +182,7 @@ class OAuth extends Component {
 
 OAuth.defaultProps = {
   error: null,
+  oauthURLError: null,
   oauthURL: null,
 };
 
@@ -181,11 +190,15 @@ OAuth.propTypes = {
   authorize: PropTypes.func.isRequired,
   fetchOAuthURL: PropTypes.func.isRequired,
   moduleId: PropTypes.string.isRequired,
+  defaultGalleryUrl: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   oauthURL: PropTypes.string,
+  oauthURLSuccess: PropTypes.bool.isRequired,
+  oauthURLFetching: PropTypes.bool.isRequired,
+  oauthURLError: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -193,7 +206,10 @@ const mapStateToProps = createStructuredSelector({
   success: successSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-  moduleId: moduleIdSelector,
+  oauthURLSuccess: oauthURLSuccessSelector,
+  oauthURLFetching: oauthURLFetchingSelector,
+  oauthURLError: oauthURLErrorSelector,
+  defaultGalleryUrl: defaultGalleryUrlSelector,
 });
 
 const mapDispatchToProps = {

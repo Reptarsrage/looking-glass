@@ -17,6 +17,16 @@ const moduleByIdSelector = createSelector(
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
 
+const moduleByIdSiteIdSelector = createSelector(
+  moduleByIdSelector,
+  module => module.siteId
+);
+
+const defaultGalleryUrlSelector = createSelector(
+  moduleByIdSelector,
+  module => `/gallery/${module.id}/${module.defaultGalleryId}`
+);
+
 const successSelector = createSelector(
   modulesStateSelector,
   state => state.success
@@ -32,4 +42,12 @@ const errorSelector = createSelector(
   state => state.error
 );
 
-export { modulesSelector, moduleByIdSelector, successSelector, fetchingSelector, errorSelector };
+export {
+  modulesSelector,
+  moduleByIdSelector,
+  successSelector,
+  fetchingSelector,
+  errorSelector,
+  moduleByIdSiteIdSelector,
+  defaultGalleryUrlSelector,
+};

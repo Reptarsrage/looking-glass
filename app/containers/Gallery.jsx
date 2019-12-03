@@ -13,9 +13,10 @@ import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 import ReactRouterPropTypes from 'react-router-prop-types';
 
+import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
 import { itemsInGallerySelector, itemHeightsSelector, itemWidthsSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
@@ -142,16 +143,26 @@ class Gallery extends Component {
   };
 
   fetchInitialItems = () => {
-    const { fetchGallery, moduleId, galleryId, gallery } = this.props;
+    const { fetchGallery, moduleId, galleryId, gallery, isAuthenticated, requiresAuth } = this.props;
     const { hasNext, fetching, success } = gallery;
+
+    if (requiresAuth && !isAuthenticated) {
+      return;
+    }
+
     if (hasNext && !fetching && !success) {
       fetchGallery(moduleId, galleryId);
     }
   };
 
   loadMoreItems = () => {
-    const { fetchGallery, moduleId, galleryId, gallery } = this.props;
+    const { fetchGallery, moduleId, galleryId, gallery, isAuthenticated, requiresAuth } = this.props;
     const { hasNext, fetching } = gallery;
+
+    if (requiresAuth && !isAuthenticated) {
+      return;
+    }
+
     if (hasNext && !fetching) {
       fetchGallery(moduleId, galleryId);
     }
@@ -267,9 +278,25 @@ class Gallery extends Component {
   };
 
   render() {
-    const { items, classes, moduleId, galleryId, gallery, location, heights, widths } = this.props;
+    const {
+      items,
+      classes,
+      moduleId,
+      galleryId,
+      gallery,
+      location,
+      heights,
+      widths,
+      isAuthenticated,
+      requiresAuth,
+      authUrl,
+    } = this.props;
     const { fetching, error } = gallery;
     const { showOverlayButtons } = this.state;
+
+    if (requiresAuth && !isAuthenticated) {
+      return <Redirect to={authUrl} />;
+    }
 
     // Sometimes react router renders things that aren't supposed to be
     if (!moduleId || !galleryId) {
@@ -311,6 +338,10 @@ class Gallery extends Component {
   }
 }
 
+Gallery.defaultProps = {
+  authUrl: null,
+};
+
 Gallery.propTypes = {
   classes: PropTypes.object.isRequired,
   moduleId: PropTypes.string.isRequired,
@@ -327,6 +358,9 @@ Gallery.propTypes = {
   fetchGallery: PropTypes.func.isRequired,
   setCurrentGallery: PropTypes.func.isRequired,
   location: ReactRouterPropTypes.location.isRequired,
+  requiresAuth: PropTypes.bool.isRequired,
+  authUrl: PropTypes.string,
+  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -334,6 +368,9 @@ const mapStateToProps = createStructuredSelector({
   items: itemsInGallerySelector,
   heights: itemHeightsSelector,
   widths: itemWidthsSelector,
+  requiresAuth: requiresAuthSelector,
+  authUrl: authUrlSelector,
+  isAuthenticated: isAuthenticatedSelector,
 });
 
 const mapDispatchToProps = {

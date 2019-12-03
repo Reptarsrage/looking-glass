@@ -1,11 +1,12 @@
 import produce from 'immer';
 import moment from 'moment';
+import uuidv3 from 'uuid/v3';
 import Store from 'electron-store';
 
-import { initialAsyncState } from './asyncActionReducer';
-
+import { initialAsyncState, handleAsyncFetch, handleAsyncError, handleAsyncSuccess } from './asyncActionReducer';
+import { MODULES_NAMESPACE } from './moduleReducer';
 import {
-  FETCH_MODULES_SUCCESS,
+  ADD_MODULE,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   LOGIN,
@@ -28,7 +29,10 @@ export const initialState = {
 
 export const initialAuthState = {
   accessToken: '',
-  oauthURL: '',
+  oauth: {
+    url: null,
+    ...initialAsyncState,
+  },
   refreshToken: '',
   expires: 0,
   ...initialAsyncState,
@@ -40,32 +44,33 @@ const authReducer = (state = initialState, action) =>
     const { moduleId } = meta || {};
 
     switch (type) {
-      case FETCH_MODULES_SUCCESS: {
-        draft.byId = {};
-        draft.allIds = [];
-        for (const { id } of payload) {
-          // Load module authentication from persistent electron store
-          draft.byId[id] = store.get(id, initialAuthState);
-          draft.allIds.push(id);
-        }
+      case ADD_MODULE: {
+        const module = payload;
 
+        // generate id
+        const id = uuidv3(module.id, MODULES_NAMESPACE);
+
+        // load from persistent store
+        draft.byId[id] = initialAuthState; // store.get(id, initialAuthState); // TODO: remove this ASAP
+        draft.allIds.push(id);
         break;
       }
       case FETCH_OATH_URL: {
-        draft.byId[moduleId].fetching = true;
-
+        handleAsyncFetch(state.byId[moduleId].oauth, draft.byId[moduleId].oauth);
         break;
       }
       case FETCH_OATH_URL_SUCCESS: {
-        draft.byId[moduleId].fetching = false;
-        draft.byId[moduleId].oauthURL = payload;
-
+        handleAsyncSuccess(state.byId[moduleId].oauth, draft.byId[moduleId].oauth);
+        draft.byId[moduleId].oauth.url = payload;
         break;
       }
       case FETCH_OATH_URL_ERROR: {
-        draft.byId[moduleId].fetching = false;
-        draft.byId[moduleId].error = payload;
-
+        handleAsyncError(state.byId[moduleId].oauth, draft.byId[moduleId].oauth, payload);
+        break;
+      }
+      case AUTHORIZE:
+      case LOGIN: {
+        handleAsyncFetch(state.byId[moduleId], draft.byId[moduleId]);
         break;
       }
       case REFRESH_SUCCESS:
@@ -75,31 +80,21 @@ const authReducer = (state = initialState, action) =>
         const date = moment();
         date.add(expiresIn, 'seconds');
 
-        const mergeState = { ...payload, expires: date.valueOf(), fetching: false, success: true, error: null };
-
-        // Save module authentication from persistent electron store
-        store.set(moduleId, mergeState);
-
+        handleAsyncSuccess(state.byId[moduleId], draft.byId[moduleId]);
         draft.byId[moduleId] = {
-          ...state.byId[moduleId],
-          ...mergeState,
+          ...draft.byId[moduleId],
+          ...payload,
+          expires: date.valueOf(),
         };
 
+        // save to persistent store
+        store.set(moduleId, draft.byId[moduleId]);
         break;
       }
       case REFRESH_ERROR:
       case AUTHORIZE_ERROR:
       case LOGIN_ERROR: {
-        draft.byId[moduleId].fetching = false;
-        draft.byId[moduleId].success = false;
-        draft.byId[moduleId].error = payload;
-
-        break;
-      }
-      case AUTHORIZE:
-      case LOGIN: {
-        draft.byId[moduleId].fetching = true;
-
+        handleAsyncError(state.byId[moduleId], draft.byId[moduleId], payload);
         break;
       }
       default:

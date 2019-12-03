@@ -10,7 +10,8 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { moduleByIdSelector } from '../selectors/moduleSelectors';
+import { moduleByIdSelector, defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
+import { requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 
 const styles = () => ({
   wrapper: {
@@ -29,12 +30,8 @@ const styles = () => ({
   },
 });
 
-const ModuleItem = ({ module, moduleId }) => (
-  <ListItem
-    button
-    component={Link}
-    to={`/${module.authType || 'gallery'}/${moduleId}${module.authType ? '' : `/${module.defaultGalleryId}`}`}
-  >
+const ModuleItem = ({ module, requiresAuth, authUrl, defaultGalleryUrl }) => (
+  <ListItem button component={Link} to={requiresAuth ? authUrl : defaultGalleryUrl}>
     <ListItemAvatar>
       <Avatar alt={module.title} src={module.icon} />
     </ListItemAvatar>
@@ -42,19 +39,26 @@ const ModuleItem = ({ module, moduleId }) => (
   </ListItem>
 );
 
+ModuleItem.defaultProps = {
+  authUrl: null,
+};
+
 ModuleItem.propTypes = {
-  moduleId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   module: PropTypes.shape({
-    authType: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
     icon: PropTypes.string,
-    defaultGalleryId: PropTypes.string,
   }).isRequired,
+  requiresAuth: PropTypes.bool.isRequired,
+  authUrl: PropTypes.string,
+  defaultGalleryUrl: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   module: moduleByIdSelector,
+  requiresAuth: requiresAuthSelector,
+  authUrl: authUrlSelector,
+  defaultGalleryUrl: defaultGalleryUrlSelector,
 });
 
 export default compose(
