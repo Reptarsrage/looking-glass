@@ -2,13 +2,7 @@ import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga
 
 import LookingGlassService from '../services/lookingGlassService';
 import FileSystemService from '../services/fileSystemService';
-import {
-  FETCH_GALLERY,
-  FETCH_GALLERY_SUCCESS,
-  FETCH_GALLERY_ERROR,
-  UPDATE_SEARCH,
-  CLEAR_GALLERY,
-} from '../actions/types';
+import { FETCH_GALLERY, FETCH_GALLERY_SUCCESS, FETCH_GALLERY_ERROR, UPDATE_SEARCH } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
 import { moduleByIdSelector } from '../selectors/moduleSelectors';
@@ -25,7 +19,6 @@ function* handleUpdateSearch(action) {
     return;
   }
 
-  yield put({ type: CLEAR_GALLERY, meta: { moduleId, galleryId } });
   yield put({ type: FETCH_GALLERY, meta: { moduleId, galleryId } });
 }
 

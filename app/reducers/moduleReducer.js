@@ -9,7 +9,6 @@ import {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
-  CLEAR_GALLERY,
 } from '../actions/types';
 
 // namespace uuid constants
@@ -99,6 +98,7 @@ const addGallery = (state, draft, moduleId, gallery) => {
   return galleryId;
 };
 
+// eslint-disable-next-line no-unused-vars
 const removeItem = (state, draft, galleryItemId) => {
   // lookup galleryItem
   const galleryItem = state.galleryItem.byId[galleryItemId];
@@ -110,25 +110,6 @@ const removeItem = (state, draft, galleryItemId) => {
   // remove from items
   delete draft.items.byId[galleryItem.itemId];
   draft.items.allIds = draft.items.allIds.filter(id => id !== galleryItem.itemId);
-};
-
-const removeGallery = (state, draft, moduleGalleryId) => {
-  // lookup moduleGallery by id
-  const moduleGallery = state.moduleGallery.byId[moduleGalleryId];
-
-  // delete from moduleGallery
-  delete draft.moduleGallery.byId[moduleGalleryId];
-  draft.moduleGallery.allIds = draft.moduleGallery.allIds.filter(id => id !== moduleGalleryId);
-
-  // delete from galleries
-  delete draft.galleries.byId[moduleGallery.galleryId];
-  draft.galleries.allIds = draft.galleries.allIds.filter(id => id !== moduleGallery.galleryId);
-
-  // collect all gallery items
-  const galleryItems = state.galleryItem.allIds.filter(id => state.galleryItem.byId[id] === moduleGallery.galleryId);
-
-  // remove all gallery items, and items related to the cleared gallery
-  galleryItems.forEach(galleryItemId => removeItem(state, draft, galleryItemId));
 };
 
 const addItem = (state, draft, galleryId, item) => {
@@ -227,17 +208,6 @@ const moduleReducer = (state = initialState, action) =>
         const error = payload;
         const galleryId = meta;
         handleAsyncError(state.galleries.byId[galleryId], draft.galleries.byId[galleryId], error);
-        break;
-      }
-      case CLEAR_GALLERY: {
-        const { moduleId, galleryId } = meta;
-        const moduleGalleryId = state.moduleGallery.allIds.find(
-          id =>
-            state.moduleGallery.byId[id].moduleId === moduleId && state.moduleGallery.byId[id].galleryId === galleryId
-        );
-
-        removeGallery(state, draft, moduleGalleryId);
-        addGallery(state, draft, moduleId, galleryId);
         break;
       }
       default:

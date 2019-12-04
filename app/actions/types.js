@@ -20,7 +20,6 @@ export const {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
-  CLEAR_GALLERY,
 } = actionTyper('module');
 
 export const {
