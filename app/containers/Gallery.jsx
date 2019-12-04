@@ -27,6 +27,12 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
 import globalStyles from '../index.css';
+import {
+  searchQuerySelector,
+  searchGalleryIdSelector,
+  searchGalleryUrlSelector,
+  defaultGalleryUrlSelector,
+} from '../selectors/moduleSelectors';
 
 const styles = () => ({
   floatedBottomRight: {
@@ -290,12 +296,27 @@ class Gallery extends Component {
       isAuthenticated,
       requiresAuth,
       authUrl,
+      searchQuery,
+      searchGalleryId,
+      searchGalleryUrl,
+      defaultGalleryUrl,
     } = this.props;
     const { fetching, error } = gallery;
     const { showOverlayButtons } = this.state;
 
+    // redirect to authenticate
     if (requiresAuth && !isAuthenticated) {
       return <Redirect to={authUrl} />;
+    }
+
+    // redirect to search gallery
+    if (searchQuery && galleryId !== searchGalleryId) {
+      return <Redirect to={searchGalleryUrl} />;
+    }
+
+    // redirect from search to default gallery
+    if (!searchQuery && galleryId === searchGalleryId) {
+      return <Redirect to={defaultGalleryUrl} />;
     }
 
     // Sometimes react router renders things that aren't supposed to be
@@ -340,6 +361,7 @@ class Gallery extends Component {
 
 Gallery.defaultProps = {
   authUrl: null,
+  searchQuery: null,
 };
 
 Gallery.propTypes = {
@@ -361,6 +383,10 @@ Gallery.propTypes = {
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
+  searchQuery: PropTypes.string,
+  searchGalleryId: PropTypes.string.isRequired,
+  searchGalleryUrl: PropTypes.string.isRequired,
+  defaultGalleryUrl: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -371,6 +397,10 @@ const mapStateToProps = createStructuredSelector({
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
+  searchQuery: searchQuerySelector,
+  searchGalleryId: searchGalleryIdSelector,
+  searchGalleryUrl: searchGalleryUrlSelector,
+  defaultGalleryUrl: defaultGalleryUrlSelector,
 });
 
 const mapDispatchToProps = {

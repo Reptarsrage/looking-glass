@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { stringify } from 'qs';
 
-import { DEFAULT_GALLERY_ID } from '../reducers/moduleReducer';
+import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/moduleReducer';
 
 export default class FileSystemService {
   config;
@@ -41,10 +41,8 @@ export default class FileSystemService {
 
   fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
     const params = { offset, before, after, query };
-
-    let url = `/${moduleId}?${stringify(params)}`;
-    if (galleryId !== DEFAULT_GALLERY_ID) {
-      url = `/${moduleId}/gallery/${galleryId}?${stringify(params)}`;
+    if (galleryId !== DEFAULT_GALLERY_ID && galleryId !== SEARCH_GALLERY_ID) {
+      params.galleryId = galleryId;
     }
 
     const config = {
@@ -52,6 +50,7 @@ export default class FileSystemService {
       headers: { 'access-token': accessToken },
     };
 
+    const url = `/${moduleId}?${stringify(params)}`;
     return this.instance.get(url, config);
   };
 }

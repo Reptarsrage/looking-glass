@@ -11,10 +11,5 @@ const galleryByIdSelector = createSelector(
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 );
 
-const searchQuerySelector = createSelector(
-  galleryByIdSelector,
-  gallery => gallery.searchQuery
-);
-
 // eslint-disable-next-line import/prefer-default-export
-export { galleryByIdSelector, searchQuerySelector };
+export { galleryByIdSelector };

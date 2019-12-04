@@ -6,6 +6,8 @@ const getModuleId = (state, props) => props.moduleId;
 
 const modulesStateSelector = state => (state.module || initialState).modules;
 
+const galleriesStateSelctor = state => (state.module || initialState).galleries;
+
 const modulesSelector = createSelector(
   modulesStateSelector,
   state => state.allIds
@@ -22,9 +24,14 @@ const moduleByIdSiteIdSelector = createSelector(
   module => module.siteId
 );
 
-const defaultGalleryUrlSelector = createSelector(
+const searchGalleryIdSelector = createSelector(
   moduleByIdSelector,
-  module => `/gallery/${module.id}/${module.defaultGalleryId}`
+  module => module.searchGalleryId
+);
+
+const defaultGalleryIdSelector = createSelector(
+  moduleByIdSelector,
+  module => module.defaultGalleryId
 );
 
 const successSelector = createSelector(
@@ -42,6 +49,21 @@ const errorSelector = createSelector(
   state => state.error
 );
 
+const searchQuerySelector = createSelector(
+  [searchGalleryIdSelector, galleriesStateSelctor],
+  (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
+);
+
+const defaultGalleryUrlSelector = createSelector(
+  [getModuleId, defaultGalleryIdSelector],
+  (moduleId, defaultGalleryId) => `/gallery/${moduleId}/${defaultGalleryId}`
+);
+
+const searchGalleryUrlSelector = createSelector(
+  [getModuleId, searchGalleryIdSelector],
+  (moduleId, searchGalleryId) => `/gallery/${moduleId}/${searchGalleryId}`
+);
+
 export {
   modulesSelector,
   moduleByIdSelector,
@@ -50,4 +72,7 @@ export {
   errorSelector,
   moduleByIdSiteIdSelector,
   defaultGalleryUrlSelector,
+  searchQuerySelector,
+  searchGalleryIdSelector,
+  searchGalleryUrlSelector,
 };

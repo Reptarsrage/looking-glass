@@ -9,6 +9,7 @@ import {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
+  UPDATE_SEARCH,
 } from '../actions/types';
 
 // namespace uuid constants
@@ -98,7 +99,6 @@ const addGallery = (state, draft, moduleId, gallery) => {
   return galleryId;
 };
 
-// eslint-disable-next-line no-unused-vars
 const removeItem = (state, draft, galleryItemId) => {
   // lookup galleryItem
   const galleryItem = state.galleryItem.byId[galleryItemId];
@@ -208,6 +208,23 @@ const moduleReducer = (state = initialState, action) =>
         const error = payload;
         const galleryId = meta;
         handleAsyncError(state.galleries.byId[galleryId], draft.galleries.byId[galleryId], error);
+        break;
+      }
+      case UPDATE_SEARCH: {
+        const searchQuery = payload;
+        const { galleryId } = meta;
+
+        if (searchQuery !== state.galleries.byId[galleryId].searchQuery) {
+          // clear gallery items
+          const galleryItems = state.galleryItem.allIds.filter(
+            id => state.galleryItem.byId[id].galleryId === galleryId
+          );
+
+          galleryItems.forEach(id => removeItem(state, draft, id));
+        }
+
+        handleAsyncFetch(state.galleries.byId[galleryId], draft.galleries.byId[galleryId]);
+        draft.galleries.byId[galleryId].searchQuery = searchQuery;
         break;
       }
       default:

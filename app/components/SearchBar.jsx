@@ -8,7 +8,8 @@ import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { searchQuerySelector } from '../selectors/gallerySelectors';
+import { moduleIdSelector } from '../selectors/appSelectors';
+import { searchQuerySelector, searchGalleryIdSelector } from '../selectors/moduleSelectors';
 import * as moduleActions from '../actions/moduleActions';
 
 const styles = theme => ({
@@ -55,14 +56,14 @@ const styles = theme => ({
 
 class SearchBar extends Component {
   handleSearchChange = e => {
-    const { updateSearch, galleryId } = this.props;
-    updateSearch(e.target.value, galleryId);
+    const { updateSearch, moduleId, galleryId } = this.props;
+    updateSearch(e.target.value, moduleId, galleryId);
   };
 
   render() {
-    const { classes, galleryId, searchQuery } = this.props;
+    const { classes, moduleId, galleryId, searchQuery } = this.props;
 
-    if (!galleryId) {
+    if (!moduleId || !galleryId) {
       // TODO: render only when on default or search gallery
       return null;
     }
@@ -87,6 +88,7 @@ class SearchBar extends Component {
 }
 
 SearchBar.defaultProps = {
+  moduleId: null,
   galleryId: null,
   searchQuery: null,
 };
@@ -94,11 +96,14 @@ SearchBar.defaultProps = {
 SearchBar.propTypes = {
   updateSearch: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
+  moduleId: PropTypes.string,
   galleryId: PropTypes.string,
   searchQuery: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
+  moduleId: moduleIdSelector,
+  galleryId: searchGalleryIdSelector,
   searchQuery: searchQuerySelector,
 });
 

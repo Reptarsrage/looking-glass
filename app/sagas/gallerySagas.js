@@ -12,17 +12,17 @@ const fsService = new FileSystemService();
 
 function* handleUpdateSearch(action) {
   const { meta } = action;
-  const { moduleId, galleryId } = meta;
+  const { galleryId, moduleId } = meta;
 
   yield delay(500);
   if (yield cancelled()) {
     return;
   }
 
-  yield put({ type: FETCH_GALLERY, meta: { moduleId, galleryId } });
+  yield put({ type: FETCH_GALLERY, payload: { moduleId, galleryId } });
 }
 
-function* handleFetchImages(action) {
+function* handleFetchGallery(action) {
   const { payload } = action;
   const { moduleId, galleryId } = payload;
 
@@ -63,7 +63,7 @@ function* handleFetchImages(action) {
 }
 
 function* watchGallerySagas() {
-  yield all([takeLatest(FETCH_GALLERY, handleFetchImages), takeLatest(UPDATE_SEARCH, handleUpdateSearch)]);
+  yield all([takeLatest(FETCH_GALLERY, handleFetchGallery), takeLatest(UPDATE_SEARCH, handleUpdateSearch)]);
 }
 
 export default watchGallerySagas;

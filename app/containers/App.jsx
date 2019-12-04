@@ -15,7 +15,7 @@ import { withRouter } from 'react-router';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import Container from '@material-ui/core/Container';
 
-import { darkThemeSelector, moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
+import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
 import * as appActions from '../actions/appActions';
 import WithErrors from '../hocs/WithErrors';
 import SearchBar from '../components/SearchBar';
@@ -63,7 +63,7 @@ class App extends Component {
   };
 
   render() {
-    const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme, galleryId } = this.props;
+    const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme, moduleId } = this.props;
 
     return (
       <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
@@ -74,7 +74,7 @@ class App extends Component {
             <Typography className={classes.title} variant="h6" color="inherit" noWrap>
               Looking Glass
             </Typography>
-            <SearchBar galleryId={galleryId} />
+            <SearchBar moduleId={moduleId} />
             <div className={classes.grow} />
             <div>
               <IconButton color="inherit" onClick={toggleDarkTheme}>
@@ -91,7 +91,6 @@ class App extends Component {
 
 App.defaultProps = {
   moduleId: null,
-  galleryId: null,
 };
 
 App.propTypes = {
@@ -101,13 +100,11 @@ App.propTypes = {
   classes: PropTypes.object.isRequired,
   history: ReactRouterPropTypes.history.isRequired,
   moduleId: PropTypes.string,
-  galleryId: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   darkTheme: darkThemeSelector,
   moduleId: moduleIdSelector,
-  galleryId: galleryIdSelector,
 });
 
 const mapDispatchToProps = {

@@ -9,8 +9,8 @@ export const fetchGallery = (moduleId, galleryId) => ({
   payload: { moduleId, galleryId },
 });
 
-export const updateSearch = (query, galleryId) => ({
+export const updateSearch = (query, moduleId, galleryId) => ({
   type: UPDATE_SEARCH,
   payload: query,
-  meta: { galleryId },
+  meta: { moduleId, galleryId },
 });
