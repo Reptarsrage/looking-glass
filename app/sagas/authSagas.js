@@ -14,12 +14,11 @@ import {
   AUTHORIZE,
   AUTHORIZE_SUCCESS,
   AUTHORIZE_ERROR,
-  REFRESH,
   REFRESH_SUCCESS,
   REFRESH_ERROR,
 } from '../actions/types';
 
-export function* needsRefresh(moduleId) {
+function* needsRefresh(moduleId) {
   const expires = yield select(expiresSelector, { moduleId });
   const refreshToken = yield select(refreshTokenSelector, { moduleId });
   if (!refreshToken || expires <= 0) {
@@ -31,7 +30,7 @@ export function* needsRefresh(moduleId) {
   return currentDate.isSameOrAfter(expireDate);
 }
 
-function* handleRefresh(action) {
+export function* handleRefresh(action) {
   const { meta } = action;
   const { moduleId } = meta;
   const needToRefresh = yield call(needsRefresh, moduleId);
@@ -102,7 +101,6 @@ function* watchAuthSagas() {
     takeLatest(LOGIN, handleLogin),
     takeLatest(FETCH_OATH_URL, handleFetchOauthURL),
     takeLatest(AUTHORIZE, handleAuthorize),
-    takeLatest(REFRESH, handleRefresh),
   ]);
 }
 

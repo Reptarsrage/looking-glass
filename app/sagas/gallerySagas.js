@@ -12,8 +12,7 @@ import {
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
 import { moduleByIdSelector } from '../selectors/moduleSelectors';
-import { refresh } from '../actions/authActions';
-import { needsRefresh } from './authSagas';
+import { handleRefresh } from './authSagas';
 
 const fsService = new FileSystemService();
 
@@ -47,10 +46,7 @@ function* handleFetchImages(action) {
     }
 
     // refresh token (if needed)
-    const needToRefresh = yield call(needsRefresh, moduleId);
-    if (needToRefresh) {
-      yield put(refresh(module.siteId));
-    }
+    yield call(handleRefresh, { meta: { moduleId } });
 
     // get data
     const accessToken = yield select(accessTokenSelector, { moduleId });

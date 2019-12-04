@@ -1,10 +1,4 @@
-import { LOGIN, AUTHORIZE, FETCH_OATH_URL, REFRESH } from './types';
-
-export const refresh = moduleId => ({
-  type: REFRESH,
-  payload: moduleId,
-  meta: { moduleId },
-});
+import { LOGIN, AUTHORIZE, FETCH_OATH_URL } from './types';
 
 export const authorize = (moduleId, code) => ({
   type: AUTHORIZE,
