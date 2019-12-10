@@ -14,6 +14,7 @@ export const { LOCATION_CHANGE } = actionTyper('@@router');
 export const { TOGGLE_DARK_THEME, UPDATE_SEARCH, SET_CURRENT_GALLERY } = actionTyper('app');
 
 export const {
+  ADD_GALLERY,
   FETCH_MODULES,
   FETCH_MODULES_SUCCESS,
   FETCH_MODULES_ERROR,

@@ -7,6 +7,7 @@ import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
 import { moduleByIdSelector } from '../selectors/moduleSelectors';
 import { handleRefresh } from './authSagas';
+import { FILE_SYSTEM_MODULE_ID } from '../reducers/moduleReducer';
 
 const fsService = new FileSystemService();
 
@@ -32,7 +33,7 @@ function* handleFetchGallery(action) {
   try {
     // resolve service
     let service;
-    if (moduleId === 'fs') {
+    if (moduleId === FILE_SYSTEM_MODULE_ID) {
       service = fsService;
     } else {
       service = new LookingGlassService();

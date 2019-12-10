@@ -20,6 +20,7 @@ import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
+import { FILE_SYSTEM_MODULE_ID } from '../reducers/moduleReducer';
 
 const styles = theme => ({
   main: {
@@ -55,12 +56,14 @@ class Home extends Component {
   }
 
   chooseFolder = () => {
-    const { history } = this.props;
+    const { history, setCurrentGallery, addGallery } = this.props;
     const result = remote.dialog.showOpenDialog({ properties: ['openDirectory'] });
 
     if (result && result.length === 1) {
-      const galleryId = encodeURIComponent(result[0]);
-      history.push(`/gallery/fs/${galleryId}`); // TODO: set current filesystem gallery
+      const galleryId = result[0];
+      addGallery(FILE_SYSTEM_MODULE_ID, galleryId);
+      setCurrentGallery(FILE_SYSTEM_MODULE_ID, galleryId);
+      history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`); // TODO: set current filesystem gallery
     }
   };
 
@@ -79,7 +82,7 @@ class Home extends Component {
 
     return (
       <List>
-        {modules.map(this.renderModule)}
+        {modules.filter(id => id !== FILE_SYSTEM_MODULE_ID).map(this.renderModule)}
         <ListItem key="fs" button onClick={this.chooseFolder}>
           <ListItemAvatar>
             <Avatar>
@@ -111,6 +114,7 @@ Home.propTypes = {
   classes: PropTypes.object.isRequired,
   fetchModules: PropTypes.func.isRequired,
   setCurrentGallery: PropTypes.func.isRequired,
+  addGallery: PropTypes.func.isRequired,
   modules: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
@@ -126,6 +130,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
+  addGallery: moduleActions.addGallery,
   fetchModules: moduleActions.fetchModules,
   setCurrentGallery: appActions.setCurrentGallery,
 };

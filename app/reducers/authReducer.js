@@ -4,7 +4,7 @@ import uuidv3 from 'uuid/v3';
 import Store from 'electron-store';
 
 import { initialAsyncState, handleAsyncFetch, handleAsyncError, handleAsyncSuccess } from './asyncActionReducer';
-import { MODULES_NAMESPACE } from './moduleReducer';
+import { MODULES_NAMESPACE, FILE_SYSTEM_MODULE_ID } from './moduleReducer';
 import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
@@ -55,6 +55,10 @@ const authReducer = (state = initialState, action) =>
           draft.byId[id] = store.get(id, initialAuthState);
           draft.allIds.push(id);
         });
+
+        // add file system
+        draft.byId[FILE_SYSTEM_MODULE_ID] = initialAuthState;
+        draft.allIds.push(FILE_SYSTEM_MODULE_ID);
 
         break;
       }

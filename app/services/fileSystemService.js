@@ -183,6 +183,7 @@ export default class FileSystemService {
       const stat = fs.statSync(itemPath);
       let result = null;
       if (stat && stat.isDirectory()) {
+        console.log('xxxxxxxxx', { itemPath });
         const details = await this.getThumbForDir(itemPath);
         const itemDirCount = this.dirCount(itemPath);
         const itemFileCount = this.fileCount(itemPath);
@@ -192,11 +193,10 @@ export default class FileSystemService {
             ? null
             : {
                 ...details,
-                id: this.sha512(itemPath),
+                id: encodeURIComponent(itemPath),
                 title,
-                description: '',
+                description: itemPath,
                 isGallery: itemFileCount > 1 || itemDirCount > 0,
-                galleryId: encodeURIComponent(itemPath),
               };
       } else {
         const details = await this.getThumbForFile(itemPath);
@@ -207,9 +207,8 @@ export default class FileSystemService {
                 ...details,
                 id: this.sha512(itemPath),
                 title,
-                description: '',
+                description: itemPath,
                 isGallery: false,
-                galleryId: null,
               };
       }
 
@@ -219,7 +218,7 @@ export default class FileSystemService {
     }
 
     return {
-      images: results,
+      items: results,
       hasNext: offset < dirItems.length,
       count: results.length,
       offset: offset + pageSize,
@@ -229,9 +228,10 @@ export default class FileSystemService {
   fetchImages = async (moduleId, galleryId, accessToken, offset) => {
     try {
       // NOTE: our location is the base64 encoded galleryId
-      const location = decodeURIComponent(galleryId);
+      const location = galleryId;
       const pageSize = 20;
-      return { data: await this.walk(location, offset - 1, pageSize) };
+      const data = await this.walk(location, offset, pageSize);
+      return { data };
     } catch (err) {
       // Deal with the fact the chain failed
       console.warn(err, 'Error crawling');

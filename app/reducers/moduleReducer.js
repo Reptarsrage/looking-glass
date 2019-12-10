@@ -3,6 +3,7 @@ import uuidv3 from 'uuid/v3';
 
 import { initialAsyncState, handleAsyncFetch, handleAsyncError, handleAsyncSuccess } from './asyncActionReducer';
 import {
+  ADD_GALLERY,
   FETCH_MODULES,
   FETCH_MODULES_SUCCESS,
   FETCH_MODULES_ERROR,
@@ -20,6 +21,7 @@ export const MODULE_GALLERY_NAMESPACE = '357757cf-6140-4439-b2ee-08c7f31ecfb4';
 export const GALLERIES_NAMESPACE = '0e20817f-1e71-4afb-b107-e215cc7d29d0';
 export const GALLERY_IMAGE_NAMESPACE = '2e26db14-58ab-4060-812e-5fae4cc4fd87';
 export const IMAGES_NAMESPACE = '05948023-6791-4837-96f4-ceff6416b3e3';
+export const FILE_SYSTEM_MODULE_ID = '3d527484-b8d6-4cf8-aab3-8a185e740033';
 
 export const initialState = {
   modules: {
@@ -70,10 +72,10 @@ export const initialGalleryState = {
   ...initialAsyncState,
 };
 
-const addGallery = (state, draft, moduleId, gallery) => {
+const addGallery = (state, draft, moduleId, gallery, actualGalleryId) => {
   // generate ids
   const moduleGalleryId = uuidv3(moduleId + gallery.id, MODULE_GALLERY_NAMESPACE);
-  const galleryId = uuidv3(moduleGalleryId, GALLERIES_NAMESPACE);
+  const galleryId = actualGalleryId || uuidv3(moduleGalleryId, GALLERIES_NAMESPACE);
 
   // get module
   const module = draft.modules.byId[moduleId];
@@ -140,9 +142,9 @@ const addItem = (state, draft, galleryId, item) => {
   };
 };
 
-const addModule = (state, draft, module) => {
+const addModule = (state, draft, module, actualModuleId) => {
   // generate id
-  const moduleId = uuidv3(module.id, MODULES_NAMESPACE);
+  const moduleId = actualModuleId || uuidv3(module.id, MODULES_NAMESPACE);
 
   // add to modules
   draft.modules.allIds.push(moduleId);
@@ -164,6 +166,23 @@ const moduleReducer = (state = initialState, action) =>
     const { type, payload, meta } = action || {};
 
     switch (type) {
+      case ADD_GALLERY: {
+        const { moduleId, galleryId } = payload;
+        if (!(galleryId in state.galleries.byId)) {
+          addGallery(
+            state,
+            draft,
+            moduleId,
+            {
+              ...initialGalleryState,
+              id: galleryId,
+            },
+            galleryId
+          );
+        }
+
+        break;
+      }
       case FETCH_MODULES: {
         handleAsyncFetch(state.modules, draft.modules);
         break;
@@ -172,6 +191,20 @@ const moduleReducer = (state = initialState, action) =>
         const modules = payload;
         handleAsyncSuccess(state.modules, draft.modules);
         modules.forEach(module => addModule(state, draft, module));
+        addModule(
+          state,
+          draft,
+          {
+            ...initialModuleState,
+            id: FILE_SYSTEM_MODULE_ID,
+            title: 'Local files',
+            description: 'Choose a directory',
+            authType: '',
+            initialOffset: 0,
+          },
+          FILE_SYSTEM_MODULE_ID
+        );
+
         break;
       }
       case FETCH_MODULES_ERROR: {
