@@ -1,0 +1,6 @@
+{
+  "directories": {
+    "output": "release"
+  },
+  "files": ["dist", "main.js"]
+}
