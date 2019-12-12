@@ -31,14 +31,9 @@ class Virtualized extends PureComponent {
       minHeight: 0,
     };
 
+    const { items } = props;
     this.positioner = new Positioner();
     this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
-  }
-
-  // TODO: componentWillMount is deprecated since React 16.9.0
-  // eslint-disable-next-line react/no-deprecated
-  componentWillMount() {
-    const { items } = this.props;
     this.positioner.updatePositions(items.map(id => ({ id, height: this.getHeightForItemMemoizer(id) })));
   }
 
