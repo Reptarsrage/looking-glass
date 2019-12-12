@@ -50,6 +50,10 @@ class VirtualizedMasonry extends PureComponent {
     window.addEventListener('scroll', this.handleScroll);
   };
 
+  componentDidMount = () => {
+    window.addEventListener('scroll', this.handleScroll);
+  };
+
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     const { location: prevLocation } = prevProps;
