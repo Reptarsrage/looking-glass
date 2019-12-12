@@ -46,6 +46,7 @@ class VirtualizedMasonry extends PureComponent {
   componentWillMount() {
     const { location } = this.props;
     this.restoreScrollPosition(location.pathname);
+    this.recalculateColumnItems();
   }
 
   componentDidMount = () => {
