@@ -63,7 +63,7 @@ class Home extends Component {
 
     if (result && result.length === 1) {
       const galleryId = result[0];
-      addGallery(FILE_SYSTEM_MODULE_ID, galleryId);
+      addGallery(FILE_SYSTEM_MODULE_ID, galleryId, galleryId);
       setCurrentGallery(FILE_SYSTEM_MODULE_ID, galleryId);
       history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`); // TODO: set current filesystem gallery
     }

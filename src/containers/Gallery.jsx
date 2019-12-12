@@ -219,10 +219,17 @@ class Gallery extends Component {
     this.setState({ modalIn: false });
   };
 
-  handleItemClick = (event, modalItemId) => {
-    const modalInitialBounds = this.getlInitialBoundsForTarget(event);
-    document.body.classList.add(globalStyles.stopScroll);
-    this.setState({ mountModal: true, modalIn: true, modalItemId, modalInitialBounds });
+  handleItemClick = (event, item) => {
+    const { addGallery, moduleId } = this.props;
+    const { isGallery, id, siteId } = item;
+
+    if (isGallery) {
+      addGallery(moduleId, id, siteId);
+    } else {
+      const modalInitialBounds = this.getlInitialBoundsForTarget(event);
+      document.body.classList.add(globalStyles.stopScroll);
+      this.setState({ mountModal: true, modalIn: true, modalItemId: id, modalInitialBounds });
+    }
   };
 
   handleModalExited = () => {
@@ -378,6 +385,7 @@ Gallery.propTypes = {
     error: PropTypes.object,
   }).isRequired,
   fetchGallery: PropTypes.func.isRequired,
+  addGallery: PropTypes.func.isRequired,
   setCurrentGallery: PropTypes.func.isRequired,
   location: ReactRouterPropTypes.location.isRequired,
   requiresAuth: PropTypes.bool.isRequired,
@@ -405,6 +413,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = {
   fetchGallery: moduleActions.fetchGallery,
+  addGallery: moduleActions.addGallery,
   setCurrentGallery: appActions.setCurrentGallery,
 };
 

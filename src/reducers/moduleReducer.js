@@ -167,7 +167,7 @@ const moduleReducer = (state = initialState, action) =>
 
     switch (type) {
       case ADD_GALLERY: {
-        const { moduleId, galleryId } = payload;
+        const { moduleId, galleryId, siteId } = payload;
         if (!(galleryId in state.galleries.byId)) {
           addGallery(
             state,
@@ -175,7 +175,7 @@ const moduleReducer = (state = initialState, action) =>
             moduleId,
             {
               ...initialGalleryState,
-              id: galleryId,
+              id: siteId,
             },
             galleryId
           );

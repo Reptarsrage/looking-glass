@@ -37,9 +37,9 @@ const MasonryItem = props => {
   });
 
   const handleClick = event => {
-    const { onClick, itemId } = props;
+    const { onClick, item } = props;
     if (onClick) {
-      onClick(event, itemId);
+      onClick(event, item);
     }
   };
 
@@ -57,16 +57,15 @@ const MasonryItem = props => {
     ) : null;
   };
 
-  const { classes, item, galleryId, moduleId } = props;
+  const { classes, item, moduleId, itemId } = props;
   const { isVideo, isGallery } = item;
 
-  const to = isGallery ? `/gallery/${moduleId}/${galleryId}` : null;
+  const to = isGallery ? `/gallery/${moduleId}/${itemId}` : null;
   const Wrapper = isGallery ? Link : Fragment;
   const wrapperProps = to ? { to } : {};
-  const clickHandler = to ? null : handleClick;
 
   return (
-    <Paper ref={ref} onClick={clickHandler} className={classes.paper}>
+    <Paper ref={ref} onClick={handleClick} className={classes.paper}>
       <Wrapper {...wrapperProps}>
         {isGallery ? <PhotoLibraryIcon color="primary" className={classes.icon} /> : null}
         {isVideo ? renderVideo() : renderImage()}
