@@ -26,9 +26,13 @@ cache:
     - $HOME/.cache/electron-builder
 
 install:
+  - yarn global add codecov
   - yarn --ignore-engines
 
 script:
   - yarn lint
-  - yarn build
-  - yarn test
+  - yarn test-cov
+  - yarn package-ci
+
+after_success:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then codecov; fi
