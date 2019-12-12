@@ -18,25 +18,17 @@ class Video extends PureComponent {
     super(props);
 
     this.state = {
-      volume: 0.5,
+      volume: sessionStorage.getItem('volume') || 0.5,
     };
 
-    this.videoRef = null;
-  }
-
-  // TODO: componentWillMount is deprecated since React 16.9.0
-  // eslint-disable-next-line react/no-deprecated
-  componentWillMount() {
-    const volume = sessionStorage.getItem('volume');
-    if (volume !== null) {
-      this.setState({ volume });
-    }
+    this.video = null;
   }
 
   componentDidMount() {
-    if (this.videoRef) {
-      const { volume } = this.state;
-      this.videoRef.volume = volume;
+    const { volume } = this.state;
+
+    if (this.video) {
+      this.video.volume = volume;
     }
   }
 
@@ -45,25 +37,29 @@ class Video extends PureComponent {
     sessionStorage.setItem('volume', volume);
   }
 
+  setVideo = elt => {
+    this.video = elt;
+  };
+
   handleVolumeChange = event => {
-    this.setState({ volume: event.target.volume });
+    const { target } = event;
+    const { volume, muted } = target;
+    this.setState({ volume: muted ? 0 : volume });
   };
 
   render() {
-    const { volume } = this.state;
     const { classes, src, thumb, width, height, title, ...other } = this.props;
 
     return (
       // eslint-disable-next-line jsx-a11y/media-has-caption
       <video
-        ref={this.videoRef}
+        ref={this.setVideo}
         className={classes.video}
         width={width}
         height={height}
         title={title}
         poster={thumb}
         onVolumeChange={this.handleVolumeChange}
-        volume={volume}
         {...other}
       >
         <source
