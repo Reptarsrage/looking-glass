@@ -25,6 +25,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
 import * as authActions from '../actions/authActions';
+import * as appActions from '../actions/appActions';
 
 const styles = theme => ({
   main: {
@@ -79,6 +80,11 @@ class Login extends Component {
       rememberMe: false,
       showPassword: false,
     };
+  }
+
+  componentDidMount() {
+    const { moduleId, setCurrentGallery } = this.props;
+    setCurrentGallery(moduleId, null);
   }
 
   handleClickShowPassword = () => {
@@ -198,6 +204,7 @@ Login.defaultProps = {
 Login.propTypes = {
   moduleId: PropTypes.string.isRequired,
   login: PropTypes.func.isRequired,
+  setCurrentGallery: PropTypes.func.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
@@ -214,6 +221,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = {
   login: authActions.login,
+  setCurrentGallery: appActions.setCurrentGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login);

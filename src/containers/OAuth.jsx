@@ -17,6 +17,7 @@ import qs from 'qs';
 
 import { defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
 import * as authActions from '../actions/authActions';
+import * as appActions from '../actions/appActions';
 import {
   successSelector,
   fetchingSelector,
@@ -74,10 +75,10 @@ class OAuth extends Component {
     };
   }
 
-  // TODO: componentWillMount is deprecated since React 16.9.0
-  // eslint-disable-next-line react/no-deprecated
-  componentWillMount() {
-    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
+  componentDidMount() {
+    const { fetching, success, moduleId, fetchOAuthURL, setCurrentGallery } = this.props;
+    setCurrentGallery(moduleId, null);
+
     if (!fetching && !success) {
       fetchOAuthURL(moduleId);
     }
@@ -190,6 +191,7 @@ OAuth.defaultProps = {
 OAuth.propTypes = {
   authorize: PropTypes.func.isRequired,
   fetchOAuthURL: PropTypes.func.isRequired,
+  setCurrentGallery: PropTypes.func.isRequired,
   moduleId: PropTypes.string.isRequired,
   defaultGalleryUrl: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
@@ -214,6 +216,7 @@ const mapStateToProps = createStructuredSelector({
 const mapDispatchToProps = {
   authorize: authActions.authorize,
   fetchOAuthURL: authActions.fetchOAuthURL,
+  setCurrentGallery: appActions.setCurrentGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth);
