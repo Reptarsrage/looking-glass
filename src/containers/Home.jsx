@@ -43,9 +43,7 @@ const styles = theme => ({
 });
 
 class Home extends Component {
-  // TODO: componentWillMount is deprecated since React 16.9.0
-  // eslint-disable-next-line react/no-deprecated
-  componentWillMount() {
+  componentDidMount() {
     const { fetching, success, fetchModules, setCurrentGallery } = this.props;
 
     // make sure no module is selected
