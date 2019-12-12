@@ -36,11 +36,9 @@ const configureStore = initialState => {
   middleware.push(router);
 
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
-  /* eslint-disable no-underscore-dangle */
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
     : compose;
-  /* eslint-enable no-underscore-dangle */
 
   // Apply Middleware & Compose Enhancers
   enhancers.push(applyMiddleware(...middleware));
@@ -52,20 +50,6 @@ const configureStore = initialState => {
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {};
   store.close = () => store.dispatch(END);
-
-  if (module.hot) {
-    module.hot.accept('../reducers', () => {
-      // eslint-disable-next-line global-require
-      require('../reducers')
-        // eslint-disable-next-line promise/always-return
-        .then(reducerModule => {
-          const createReducers = reducerModule.default;
-          const nextReducers = createReducers(history, store.asyncReducers);
-          store.replaceReducer(nextReducers);
-        })
-        .catch(console.error);
-    });
-  }
 
   return store;
 };

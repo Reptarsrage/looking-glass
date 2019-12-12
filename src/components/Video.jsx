@@ -22,9 +22,6 @@ class Video extends PureComponent {
     };
 
     this.videoRef = null;
-  }
-
-  componentWillMount() {
     const volume = sessionStorage.getItem('volume');
     if (volume !== null) {
       this.setState({ volume });

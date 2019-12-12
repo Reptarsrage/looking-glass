@@ -33,11 +33,7 @@ class Virtualized extends PureComponent {
 
     this.positioner = new Positioner();
     this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
-  }
-
-  componentWillMount() {
     const { items } = this.props;
-
     this.positioner.updatePositions(items.map(id => ({ id, height: this.getHeightForItemMemoizer(id) })));
   }
 

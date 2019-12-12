@@ -8,10 +8,7 @@ const modulesStateSelector = state => (state.module || initialState).modules;
 
 const galleriesStateSelctor = state => (state.module || initialState).galleries;
 
-const modulesSelector = createSelector(
-  modulesStateSelector,
-  state => state.allIds
-);
+const modulesSelector = createSelector(modulesStateSelector, state => state.allIds);
 
 const moduleByIdSelector = createSelector(
   modulesStateSelector,
@@ -19,35 +16,17 @@ const moduleByIdSelector = createSelector(
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
 
-const moduleByIdSiteIdSelector = createSelector(
-  moduleByIdSelector,
-  module => module.siteId
-);
+const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, module => module.siteId);
 
-const searchGalleryIdSelector = createSelector(
-  moduleByIdSelector,
-  module => module.searchGalleryId
-);
+const searchGalleryIdSelector = createSelector(moduleByIdSelector, module => module.searchGalleryId);
 
-const defaultGalleryIdSelector = createSelector(
-  moduleByIdSelector,
-  module => module.defaultGalleryId
-);
+const defaultGalleryIdSelector = createSelector(moduleByIdSelector, module => module.defaultGalleryId);
 
-const successSelector = createSelector(
-  modulesStateSelector,
-  state => state.success
-);
+const successSelector = createSelector(modulesStateSelector, state => state.success);
 
-const fetchingSelector = createSelector(
-  modulesStateSelector,
-  state => state.fetching
-);
+const fetchingSelector = createSelector(modulesStateSelector, state => state.fetching);
 
-const errorSelector = createSelector(
-  modulesStateSelector,
-  state => state.error
-);
+const errorSelector = createSelector(modulesStateSelector, state => state.error);
 
 const searchQuerySelector = createSelector(
   [searchGalleryIdSelector, galleriesStateSelctor],

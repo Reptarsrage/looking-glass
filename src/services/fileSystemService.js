@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as crypto from 'crypto'; // eslint-disable-line import/no-extraneous-dependencies
-import { promisify } from 'util'; // eslint-disable-line import/no-extraneous-dependencies
+import * as crypto from 'crypto';
+import { promisify } from 'util';
 import { stringify } from 'qs';
 import { exec } from 'child_process';
 import imageSizeOfSync from 'image-size';
