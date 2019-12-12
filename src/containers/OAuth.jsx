@@ -22,7 +22,6 @@ import {
   fetchingSelector,
   errorSelector,
   oauthURLSelector,
-  oauthURLSuccessSelector,
   oauthURLFetchingSelector,
   oauthURLErrorSelector,
 } from '../selectors/authSelectors';
@@ -73,9 +72,13 @@ class OAuth extends Component {
     this.state = {
       modalFetching: false,
     };
+  }
 
-    const { oauthURLFetching, oauthURLSuccess, moduleId, fetchOAuthURL } = this.props;
-    if (!oauthURLFetching && !oauthURLSuccess) {
+  // TODO: componentWillMount is deprecated since React 16.9.0
+  // eslint-disable-next-line react/no-deprecated
+  componentWillMount() {
+    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
+    if (!fetching && !success) {
       fetchOAuthURL(moduleId);
     }
   }
@@ -194,7 +197,6 @@ OAuth.propTypes = {
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   oauthURL: PropTypes.string,
-  oauthURLSuccess: PropTypes.bool.isRequired,
   oauthURLFetching: PropTypes.bool.isRequired,
   oauthURLError: PropTypes.object,
 };
@@ -204,7 +206,6 @@ const mapStateToProps = createStructuredSelector({
   success: successSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-  oauthURLSuccess: oauthURLSuccessSelector,
   oauthURLFetching: oauthURLFetchingSelector,
   oauthURLError: oauthURLErrorSelector,
   defaultGalleryUrl: defaultGalleryUrlSelector,

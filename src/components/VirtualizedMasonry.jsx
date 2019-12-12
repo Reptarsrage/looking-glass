@@ -38,15 +38,30 @@ class VirtualizedMasonry extends PureComponent {
       columnItems: [], // columnItems include a list of indexes of items in each column, and a total column size
     };
 
-    const { location } = props;
     this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
+  }
+
+  // TODO: componentWillMount is deprecated since React 16.9.0
+  // eslint-disable-next-line react/no-deprecated
+  componentWillMount() {
+    const { location } = this.props;
     this.restoreScrollPosition(location.pathname);
-    this.recalculateColumnItems();
   }
 
   componentDidMount = () => {
     window.addEventListener('scroll', this.handleScroll);
   };
+
+  // TODO: componentWillUpdate is deprecated since React 16.9.0
+  // eslint-disable-next-line react/no-deprecated
+  componentWillUpdate(nextProps) {
+    const { location } = this.props;
+    const { location: nextLocation } = nextProps;
+
+    if (location.pathname !== nextLocation.pathname) {
+      this.saveScrollPosition(location.pathname);
+    }
+  }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;

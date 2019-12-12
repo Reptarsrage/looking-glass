@@ -22,6 +22,11 @@ class Video extends PureComponent {
     };
 
     this.videoRef = null;
+  }
+
+  // TODO: componentWillMount is deprecated since React 16.9.0
+  // eslint-disable-next-line react/no-deprecated
+  componentWillMount() {
     const volume = sessionStorage.getItem('volume');
     if (volume !== null) {
       this.setState({ volume });
