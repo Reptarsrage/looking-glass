@@ -28,6 +28,7 @@ class VirtualizedMasonry extends PureComponent {
   constructor(props) {
     super(props);
 
+    const { columnCount } = props;
     this.containerRef = createRef();
     this.state = {
       width: 0,
@@ -35,56 +36,40 @@ class VirtualizedMasonry extends PureComponent {
       scrollPosition: 0,
       scrollTop: 0,
       innerHeight: 0,
-      columnItems: [], // columnItems include a list of indexes of items in each column, and a total column size
+      totalItems: 0,
+      columnItems: [...Array(columnCount)].map(() => ({ items: [], height: 0 })), // columnItems include a list of indexes of items in each column, and a total column size
     };
 
     this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
   }
 
-  // TODO: componentWillMount is deprecated since React 16.9.0
-  // eslint-disable-next-line react/no-deprecated
-  componentWillMount() {
-    const { location } = this.props;
-    this.restoreScrollPosition(location.pathname);
-    this.recalculateColumnItems();
-  }
-
   componentDidMount = () => {
+    const { location } = this.props;
+    this.recalculateColumnItems();
+    this.restoreScrollPosition(location.pathname);
     window.addEventListener('scroll', this.handleScroll);
   };
-
-  // TODO: componentWillUpdate is deprecated since React 16.9.0
-  // eslint-disable-next-line react/no-deprecated
-  componentWillUpdate(nextProps) {
-    const { location } = this.props;
-    const { location: nextLocation } = nextProps;
-
-    if (location.pathname !== nextLocation.pathname) {
-      this.saveScrollPosition(location.pathname);
-    }
-  }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     const { location: prevLocation } = prevProps;
 
+    this.recalculateColumnItems();
     if (location.pathname !== prevLocation.pathname) {
       this.restoreScrollPosition(location.pathname);
     }
-
-    this.recalculateColumnItems();
   }
 
   componentWillUnmount = () => {
     const { location } = this.props;
 
-    window.removeEventListener('scroll', this.handleScroll);
     this.saveScrollPosition(location.pathname);
+    window.removeEventListener('scroll', this.handleScroll);
   };
 
   recalculateColumnItems() {
     const { columnCount, length } = this.props;
-    let { columnItems } = this.state;
+    let { columnItems, totalItems } = this.state;
     let requiresUpdate = false;
 
     // ensure each column has an entry
@@ -98,7 +83,6 @@ class VirtualizedMasonry extends PureComponent {
     }
 
     // fill in column items with the missing indices
-    const totalItems = columnItems.reduce((prev, curr) => prev + curr.items.length, 0);
     if (totalItems !== length) {
       for (let i = totalItems; i < length; i += 1) {
         const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
@@ -106,11 +90,12 @@ class VirtualizedMasonry extends PureComponent {
         minHeightColumn.height += this.getAdjustedHeightForItem(i);
       }
 
+      totalItems = length;
       requiresUpdate = true;
     }
 
     if (requiresUpdate) {
-      this.setState({ columnItems });
+      this.setState({ columnItems, totalItems });
     }
   }
 
