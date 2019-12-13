@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -25,7 +25,7 @@ const styles = () => ({
 });
 
 const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
-  <Fragment>
+  <>
     <div className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}") ` : undefined }} />
     <img
       className={classes.image}
@@ -36,7 +36,7 @@ const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
       title={title}
       {...other}
     />
-  </Fragment>
+  </>
 );
 
 Image.defaultProps = {

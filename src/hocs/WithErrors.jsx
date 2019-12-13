@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import Button from '@material-ui/core/Button';
@@ -30,9 +30,9 @@ const WithErrors = WrappedComponent =>
       const { error, errorInfo } = this.state;
 
       return (
-        <Fragment>
+        <>
           {error ? (
-            <Fragment>
+            <>
               <Typography variant="h2">Something went wrong.</Typography>
               <Button color="primary" variant="contained" onClick={this.handleClick} component={Link} to="/">
                 Take me home
@@ -44,11 +44,11 @@ const WithErrors = WrappedComponent =>
                 <br />
                 {errorInfo.componentStack}
               </Typography>
-            </Fragment>
+            </>
           ) : (
             <WrappedComponent {...this.props} />
           )}
-        </Fragment>
+        </>
       );
     }
   };

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -57,19 +57,27 @@ const MasonryItem = props => {
     ) : null;
   };
 
-  const { classes, item, moduleId, itemId } = props;
-  const { isVideo, isGallery } = item;
+  const renderLink = children => {
+    const { classes, item, moduleId, itemId } = props;
+    const { isGallery } = item;
 
-  const to = isGallery ? `/gallery/${moduleId}/${itemId}` : null;
-  const Wrapper = isGallery ? Link : Fragment;
-  const wrapperProps = to ? { to } : {};
+    if (isGallery) {
+      return (
+        <Link className={classes.link} to={`/gallery/${moduleId}/${itemId}`}>
+          <PhotoLibraryIcon color="primary" className={classes.icon} />
+          {children}
+        </Link>
+      );
+    }
 
+    return children;
+  };
+
+  const { classes, item } = props;
+  const { isVideo } = item;
   return (
     <Paper ref={ref} onClick={handleClick} className={classes.paper}>
-      <Wrapper {...wrapperProps}>
-        {isGallery ? <PhotoLibraryIcon color="primary" className={classes.icon} /> : null}
-        {isVideo ? renderVideo() : renderImage()}
-      </Wrapper>
+      {renderLink(isVideo ? renderVideo() : renderImage())}
     </Paper>
   );
 };
@@ -81,7 +89,6 @@ MasonryItem.defaultProps = {
 MasonryItem.propTypes = {
   classes: PropTypes.object.isRequired,
   moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
   itemId: PropTypes.string.isRequired,
   item: PropTypes.shape({
     title: PropTypes.string,

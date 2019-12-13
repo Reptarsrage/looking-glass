@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -19,7 +19,7 @@ const styles = theme => ({
 });
 
 const About = ({ classes }) => (
-  <Fragment>
+  <>
     <Typography variant="h1">About</Typography>
     <Typography>
       <Button variant="contained" color="default" className={classes.button} component={RouterLink} to="/">
@@ -29,7 +29,7 @@ const About = ({ classes }) => (
     <Typography className={classes.body} variant="subtitle2">
       TODO: About Page
     </Typography>
-  </Fragment>
+  </>
 );
 
 About.propTypes = {
