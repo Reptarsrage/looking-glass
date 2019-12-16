@@ -9,7 +9,7 @@ import imageSizeOfSync from 'image-size';
 const imageSizeOf = promisify(imageSizeOfSync);
 
 export default class FileSystemService {
-  port = process.env.SERVICE_PORT || 3001;
+  port = process.env.SERVICE_PORT || 3002;
 
   salt = null;
 
