@@ -10,6 +10,7 @@ import {
   initialAsyncState,
   SEARCH_GALLERY_ID,
   handleAsyncSuccess,
+  generateItemId,
 } from './constants';
 import {
   ADD_GALLERY,
@@ -34,6 +35,7 @@ export const initialGalleryState = {
   after: null,
   hasNext: true,
   searchQuery: null,
+  items: [],
   ...initialAsyncState,
 };
 
@@ -99,6 +101,13 @@ const galleryReducer = (state = initialState, action) =>
           id: galleryId,
         };
 
+        // add items
+        draft.byId[galleryId].items = [
+          ...draft.byId[galleryId].items,
+          ...items.map(({ id }) => generateItemId(galleryId, id)),
+        ];
+
+        // update async state
         handleAsyncSuccess(state.byId[galleryId], draft.byId[galleryId]);
         break;
       }

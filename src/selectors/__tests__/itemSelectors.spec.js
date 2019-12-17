@@ -1,5 +1,5 @@
 import { initialState, initialItemState } from '../../reducers/itemReducer';
-import { itemsSelector, itemByIdSelector, itemsInGallerySelector } from '../itemSelectors';
+import { itemsSelector, itemByIdSelector } from '../itemSelectors';
 
 describe('Item Selectors', () => {
   describe('itemsSelector', () => {
@@ -24,41 +24,6 @@ describe('Item Selectors', () => {
 
       // act
       const selected = itemsSelector(state);
-
-      // assert
-      expect(selected).toHaveLength(0);
-    });
-  });
-
-  describe('itemsInGallerySelector', () => {
-    it('should return items', () => {
-      // arrange
-      const galleryId = 'EXPECTED GALLERY ID';
-      const allIds = [...Array(3).keys()].map(id => id.toString());
-      const state = { item: { ...initialState, allIds } };
-      const props = { galleryId };
-      allIds.forEach(id => {
-        state.item.byId[id] = { ...initialItemState, id };
-      });
-
-      state.item.byId['1'].galleryId = galleryId;
-      state.item.byId['2'].galleryId = galleryId;
-
-      // act
-      const selected = itemsInGallerySelector(state, props);
-
-      // assert
-      expect(selected).toEqual(['1', '2']);
-    });
-
-    it('should return empty', () => {
-      // arrange
-      const galleryId = 'EXPECTED GALLERY ID';
-      const state = { item: initialState };
-      const props = { galleryId };
-
-      // act
-      const selected = itemsInGallerySelector(state, props);
 
       // assert
       expect(selected).toHaveLength(0);

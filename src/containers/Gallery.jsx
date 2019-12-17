@@ -17,8 +17,8 @@ import { Link as RouterLink, Redirect } from 'react-router-dom';
 import ReactRouterPropTypes from 'react-router-prop-types';
 
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
-import { galleryByIdSelector } from '../selectors/gallerySelectors';
-import { itemsInGallerySelector, itemHeightsSelector, itemWidthsSelector } from '../selectors/itemSelectors';
+import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
+import { itemHeightsSelector, itemWidthsSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
 import Masonry from '../components/Masonry';

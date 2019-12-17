@@ -1,5 +1,5 @@
 import { initialState, initialGalleryState } from '../../reducers/galleryReducer';
-import { galleryByIdSelector, galleriesSelector } from '../gallerySelectors';
+import { galleryByIdSelector, galleriesSelector, itemsInGallerySelector } from '../gallerySelectors';
 
 describe('Gallery Selectors', () => {
   describe('galleriesSelector', () => {
@@ -57,6 +57,42 @@ describe('Gallery Selectors', () => {
 
       // assert
       expect(selected).toEqual(initialGalleryState);
+    });
+  });
+
+  describe('itemsInGallerySelector', () => {
+    it('should return items', () => {
+      // arrange
+      const galleryId = 'EXPECTED GALLERY ID';
+      const state = { gallery: { ...initialState, allIds: [galleryId] } };
+      const expectedItems = [...Array(3).keys()].map(id => id.toString());
+      state.gallery.byId[galleryId] = {
+        ...initialGalleryState,
+        id: galleryId,
+        items: expectedItems,
+      };
+
+      // act
+      const selected = itemsInGallerySelector(state, { galleryId });
+
+      // assert
+      expect(selected).toEqual(expectedItems);
+    });
+
+    it('should return empty', () => {
+      // arrange
+      const galleryId = 'EXPECTED GALLERY ID';
+      const state = { gallery: { ...initialState, allIds: [galleryId] } };
+      state.gallery.byId[galleryId] = {
+        ...initialGalleryState,
+        id: galleryId,
+      };
+
+      // act
+      const selected = itemsInGallerySelector(state, { galleryId });
+
+      // assert
+      expect(selected).toHaveLength(0);
     });
   });
 });

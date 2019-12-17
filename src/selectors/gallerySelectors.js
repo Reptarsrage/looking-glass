@@ -4,13 +4,15 @@ import { initialState, initialGalleryState } from '../reducers/galleryReducer';
 
 const getGalleryId = (_, props) => props.galleryId;
 
-const galleriesStateSelctor = state => state.gallery || initialState;
+const galleriesStateSelector = state => state.gallery || initialState;
 
 const galleryByIdSelector = createSelector(
-  [galleriesStateSelctor, getGalleryId],
+  [galleriesStateSelector, getGalleryId],
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 );
 
-const galleriesSelector = createSelector(galleriesStateSelctor, state => state.allIds);
+const galleriesSelector = createSelector(galleriesStateSelector, state => state.allIds);
 
-export { galleryByIdSelector, galleriesSelector };
+const itemsInGallerySelector = createSelector(galleryByIdSelector, gallery => gallery.items);
+
+export { itemsInGallerySelector, galleryByIdSelector, galleriesSelector };

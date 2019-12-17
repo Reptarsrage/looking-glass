@@ -75,6 +75,7 @@ describe('gallery reducer', () => {
       hasNext: false,
       before: 'BEFORE',
       after: 'AFTER',
+      items: [Array(3).keys()].map(id => ({ id })),
     };
 
     // act
@@ -84,6 +85,11 @@ describe('gallery reducer', () => {
     expect(newState.byId[galleryId].error).toEqual(null);
     expect(newState.byId[galleryId].fetching).toEqual(false);
     expect(newState.byId[galleryId].success).toEqual(true);
+    expect(newState.byId[galleryId].hasNext).toEqual(payload.hasNext);
+    expect(newState.byId[galleryId].before).toEqual(payload.before);
+    expect(newState.byId[galleryId].after).toEqual(payload.after);
+    expect(newState.byId[galleryId].offset).toEqual(payload.offset);
+    expect(newState.byId[galleryId].items).toHaveLength(payload.items.length);
   });
 
   it('should handle FETCH_GALLERY_ERROR', () => {
