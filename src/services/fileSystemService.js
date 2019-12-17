@@ -109,8 +109,8 @@ export default class FileSystemService {
       if (this.images.some(ext => ext === path.extname(file).toLowerCase())) {
         const dimensions = await imageSizeOf(file);
         return {
-          imageURL: file,
-          thumbURL: null,
+          url: file,
+          thumb: null,
           isVideo: false,
           width: dimensions.width,
           height: dimensions.height,
@@ -120,8 +120,8 @@ export default class FileSystemService {
       if (this.videos.some(ext => ext === path.extname(file).toLowerCase())) {
         const dimensions = await this.videoSizeOf(file);
         return {
-          videoURL: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
-          thumbURL: null,
+          url: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
+          thumb: null,
           isVideo: true,
           width: dimensions.width,
           height: dimensions.height,

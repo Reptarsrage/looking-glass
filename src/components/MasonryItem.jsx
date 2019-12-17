@@ -45,15 +45,15 @@ const MasonryItem = props => {
 
   const renderImage = () => {
     const { item } = props;
-    const { width, height, title, imageURL, thumbURL } = item;
-    return inView ? <Image src={imageURL} thumb={thumbURL} title={title} width={width} height={height} /> : null;
+    const { width, height, title, url, thumb } = item;
+    return inView ? <Image src={url} thumb={thumb} title={title} width={width} height={height} /> : null;
   };
 
   const renderVideo = () => {
     const { item } = props;
-    const { width, height, title, videoURL, thumbURL } = item;
+    const { width, height, title, url, thumb } = item;
     return inView ? (
-      <Video src={videoURL} thumb={thumbURL} title={title} width={width} height={height} muted autoPlay loop />
+      <Video src={url} thumb={thumb} title={title} width={width} height={height} muted autoPlay loop />
     ) : null;
   };
 
@@ -97,9 +97,8 @@ MasonryItem.propTypes = {
     height: PropTypes.number,
     isVideo: PropTypes.bool,
     isGallery: PropTypes.bool,
-    imageURL: PropTypes.string,
-    thumbURL: PropTypes.string,
-    videoURL: PropTypes.string,
+    url: PropTypes.string,
+    thumb: PropTypes.string,
   }).isRequired,
   onClick: PropTypes.func,
 };

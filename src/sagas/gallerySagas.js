@@ -7,7 +7,7 @@ import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
 import { moduleByIdSelector } from '../selectors/moduleSelectors';
 import { handleRefresh } from './authSagas';
-import { FILE_SYSTEM_MODULE_ID } from '../reducers/moduleReducer';
+import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 
 const fsService = new FileSystemService();
 
@@ -20,6 +20,7 @@ function* handleUpdateSearch(action) {
     return;
   }
 
+  // TODO: check if query is different and clear gallery items
   yield put({ type: FETCH_GALLERY, payload: { moduleId, galleryId } });
 }
 

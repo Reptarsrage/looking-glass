@@ -1,10 +1,15 @@
 import produce from 'immer';
 import moment from 'moment';
-import uuidv3 from 'uuid/v3';
 import Store from 'electron-store';
 
-import { initialAsyncState, handleAsyncFetch, handleAsyncError, handleAsyncSuccess } from './asyncActionReducer';
-import { MODULES_NAMESPACE, FILE_SYSTEM_MODULE_ID } from './moduleReducer';
+import {
+  FILE_SYSTEM_MODULE_ID,
+  generateModuleId,
+  handleAsyncError,
+  handleAsyncFetch,
+  handleAsyncSuccess,
+  initialAsyncState,
+} from './constants';
 import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
@@ -20,7 +25,15 @@ import {
   FETCH_MODULES_SUCCESS,
 } from '../actions/types';
 
-const store = new Store();
+// Allow store to be passed via unit test
+let electronStore;
+const getStore = () => {
+  if (!electronStore) {
+    electronStore = new Store();
+  }
+
+  return electronStore;
+};
 
 export const initialState = {
   byId: {},
@@ -38,7 +51,7 @@ export const initialAuthState = {
   ...initialAsyncState,
 };
 
-const authReducer = (state = initialState, action) =>
+const authReducer = (state = initialState, action, store = getStore()) =>
   produce(state, draft => {
     const { type, payload, meta } = action || {};
     const { moduleId } = meta || {};
@@ -49,7 +62,7 @@ const authReducer = (state = initialState, action) =>
 
         modules.forEach(module => {
           // generate id
-          const id = uuidv3(module.id, MODULES_NAMESPACE);
+          const id = generateModuleId(module.id);
 
           // load from persistent store
           draft.byId[id] = store.get(id, initialAuthState);

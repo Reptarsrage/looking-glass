@@ -39,16 +39,16 @@ class ModalItem extends PureComponent {
 
   renderImage = () => {
     const { item } = this.props;
-    const { width, height, title, imageURL } = item;
+    const { width, height, title, url } = item;
 
-    return <Image src={imageURL} title={title} width={width} height={height} />;
+    return <Image src={url} title={title} width={width} height={height} />;
   };
 
   renderVideo = () => {
     const { item } = this.props;
-    const { width, height, title, videoURL } = item;
+    const { width, height, title, url } = item;
 
-    return <Video src={videoURL} title={title} width={width} height={height} autoPlay controls />;
+    return <Video src={url} title={title} width={width} height={height} autoPlay controls />;
   };
 
   render() {
@@ -79,9 +79,8 @@ ModalItem.propTypes = {
     height: PropTypes.number,
     isVideo: PropTypes.bool,
     isGallery: PropTypes.bool,
-    imageURL: PropTypes.string,
-    thumbURL: PropTypes.string,
-    videoURL: PropTypes.string,
+    url: PropTypes.string,
+    thumb: PropTypes.string,
   }).isRequired,
   onClick: PropTypes.func,
 };
