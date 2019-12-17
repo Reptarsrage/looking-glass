@@ -31,21 +31,26 @@ class Virtualized extends PureComponent {
       minHeight: 0,
     };
 
-    const { items } = props;
     this.positioner = new Positioner();
     this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
-    this.positioner.updatePositions(items.map(id => ({ id, height: this.getHeightForItemMemoizer(id) })));
+    this.update();
   }
 
   componentDidUpdate(prevProps) {
     const { length: prevLength, width: prevWidth } = prevProps;
-    const { length, width, items } = this.props;
+    const { length, width } = this.props;
     if (length !== prevLength || width !== prevWidth) {
-      this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
-      this.positioner.updatePositions(items.map(id => ({ id, height: this.getHeightForItemMemoizer(id) })));
-      this.setState({ minHeight: this.positioner.getTotalHeight() });
+      this.update();
+      const minHeight = this.positioner.getTotalHeight();
+      this.setState({ minHeight });
     }
   }
+
+  update = () => {
+    const { items } = this.props;
+    this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
+    this.positioner.updatePositions(items.map(id => ({ id, height: this.getHeightForItemMemoizer(id) })));
+  };
 
   renderItem = i => {
     const { renderItem, overscan, innerHeight, scrollTop, scrollPosition, classes } = this.props;

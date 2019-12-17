@@ -118,7 +118,7 @@ class Masonry extends Component {
         isLoading={loading}
         length={items.length}
         overscan={500}
-        loadMoreThreshhold={5000}
+        loadMoreThreshold={5000}
         columnCount={columnCount}
         gutter={gutter}
       />
