@@ -18,7 +18,7 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
-import { itemHeightsSelector, itemWidthsSelector } from '../selectors/itemSelectors';
+import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
 import Masonry from '../components/Masonry';
@@ -290,6 +290,16 @@ class Gallery extends Component {
     );
   };
 
+  getItemHeight = itemId => {
+    const { itemHeightSelectorFunc } = this.props;
+    return itemHeightSelectorFunc(itemId);
+  };
+
+  getItemWidth = itemId => {
+    const { itemWidthSelectorFunc } = this.props;
+    return itemWidthSelectorFunc(itemId);
+  };
+
   render() {
     const {
       items,
@@ -298,8 +308,6 @@ class Gallery extends Component {
       galleryId,
       gallery,
       location,
-      heights,
-      widths,
       isAuthenticated,
       requiresAuth,
       authUrl,
@@ -354,8 +362,8 @@ class Gallery extends Component {
           moduleId={moduleId}
           galleryId={galleryId}
           items={items}
-          heights={heights}
-          widths={widths}
+          getItemHeight={this.getItemHeight}
+          getItemWidth={this.getItemWidth}
           loading={fetching}
           error={error !== null}
           loadMore={this.loadMoreItems}
@@ -376,8 +384,6 @@ Gallery.propTypes = {
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  heights: PropTypes.arrayOf(PropTypes.number).isRequired,
-  widths: PropTypes.arrayOf(PropTypes.number).isRequired,
   gallery: PropTypes.shape({
     hasNext: PropTypes.bool,
     fetching: PropTypes.bool,
@@ -385,6 +391,8 @@ Gallery.propTypes = {
     error: PropTypes.object,
   }).isRequired,
   fetchGallery: PropTypes.func.isRequired,
+  itemHeightSelectorFunc: PropTypes.func.isRequired,
+  itemWidthSelectorFunc: PropTypes.func.isRequired,
   addGallery: PropTypes.func.isRequired,
   setCurrentGallery: PropTypes.func.isRequired,
   location: ReactRouterPropTypes.location.isRequired,
@@ -400,8 +408,6 @@ Gallery.propTypes = {
 const mapStateToProps = createStructuredSelector({
   gallery: galleryByIdSelector,
   items: itemsInGallerySelector,
-  heights: itemHeightsSelector,
-  widths: itemWidthsSelector,
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
@@ -409,6 +415,8 @@ const mapStateToProps = createStructuredSelector({
   searchGalleryId: searchGalleryIdSelector,
   searchGalleryUrl: searchGalleryUrlSelector,
   defaultGalleryUrl: defaultGalleryUrlSelector,
+  itemHeightSelectorFunc: state => itemId => itemHeightSelector(state, { itemId }),
+  itemWidthSelectorFunc: state => itemId => itemWidthSelector(state, { itemId }),
 });
 
 const mapDispatchToProps = {

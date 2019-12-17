@@ -55,21 +55,21 @@ class Masonry extends Component {
   };
 
   getItemWidth = index => {
-    const { widths } = this.props;
+    const { getItemWidth, items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
-    return widths[index];
+    return getItemWidth(items[index]);
   };
 
   getItemHeight = index => {
-    const { heights } = this.props;
+    const { getItemHeight, items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
     }
 
-    return heights[index];
+    return getItemHeight(items[index]);
   };
 
   renderRow = index => {
@@ -133,8 +133,8 @@ Masonry.defaultProps = {
 Masonry.propTypes = {
   classes: PropTypes.object.isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  heights: PropTypes.arrayOf(PropTypes.number).isRequired,
-  widths: PropTypes.arrayOf(PropTypes.number).isRequired,
+  getItemHeight: PropTypes.func.isRequired,
+  getItemWidth: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,

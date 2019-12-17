@@ -1,25 +1,20 @@
 import { createSelector } from 'reselect';
 
-import { itemsInGallerySelector } from './gallerySelectors';
 import { initialState, initialItemState } from '../reducers/itemReducer';
 
 const getItemId = (_, props) => props.itemId;
 
-const itemsStateSelctor = state => state.item || initialState;
+const itemsStateSelector = state => state.item || initialState;
 
-const itemsSelector = createSelector(itemsStateSelctor, state => state.allIds);
+const itemsSelector = createSelector(itemsStateSelector, state => state.allIds);
 
 const itemByIdSelector = createSelector(
-  [itemsStateSelctor, getItemId],
+  [itemsStateSelector, getItemId],
   (state, itemId) => state.byId[itemId] || initialItemState
 );
 
-const itemWidthsSelector = createSelector([itemsStateSelctor, itemsInGallerySelector], (state, items) =>
-  items.map(itemId => state.byId[itemId].width)
-);
+const itemWidthSelector = createSelector(itemByIdSelector, item => item.width);
 
-const itemHeightsSelector = createSelector([itemsStateSelctor, itemsInGallerySelector], (state, items) =>
-  items.map(itemId => state.byId[itemId].height)
-);
+const itemHeightSelector = createSelector(itemByIdSelector, item => item.height);
 
-export { itemsSelector, itemByIdSelector, itemWidthsSelector, itemHeightsSelector };
+export { itemsSelector, itemByIdSelector, itemWidthSelector, itemHeightSelector };
