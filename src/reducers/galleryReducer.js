@@ -9,6 +9,7 @@ import {
   handleAsyncFetch,
   initialAsyncState,
   SEARCH_GALLERY_ID,
+  handleAsyncSuccess,
 } from './constants';
 import {
   ADD_GALLERY,
@@ -27,6 +28,7 @@ export const initialState = {
 export const initialGalleryState = {
   id: null,
   siteId: null,
+  moduleId: null,
   offset: 0,
   before: null,
   after: null,
@@ -47,6 +49,7 @@ const addGallery = (draft, moduleId, siteId, actualGalleryId = null) => {
       ...initialGalleryState,
       siteId,
       id: galleryId,
+      moduleId,
     };
   }
 };
@@ -58,8 +61,8 @@ const galleryReducer = (state = initialState, action) =>
     switch (type) {
       case ADD_GALLERY: {
         const { moduleId, galleryId, siteId } = payload;
-        if (!(galleryId in state.galleries.byId)) {
-          addGallery(draft, moduleId, { id: siteId }, galleryId);
+        if (!(galleryId in state.byId)) {
+          addGallery(draft, moduleId, siteId, galleryId);
         }
 
         break;
@@ -94,12 +97,9 @@ const galleryReducer = (state = initialState, action) =>
           ...state.byId[galleryId],
           ...galleryState,
           id: galleryId,
-          siteId: gallery.id,
-          fetching: false,
-          success: true,
-          error: null,
         };
 
+        handleAsyncSuccess(state.byId[galleryId], draft.byId[galleryId]);
         break;
       }
       case FETCH_GALLERY_ERROR: {
@@ -111,8 +111,8 @@ const galleryReducer = (state = initialState, action) =>
       case UPDATE_SEARCH: {
         const searchQuery = payload;
         const { galleryId } = meta;
-        handleAsyncFetch(state.galleries.byId[galleryId], draft.galleries.byId[galleryId]);
-        draft.galleries.byId[galleryId].searchQuery = searchQuery;
+        handleAsyncFetch(state.byId[galleryId], draft.byId[galleryId]);
+        draft.byId[galleryId].searchQuery = searchQuery;
         break;
       }
       default:

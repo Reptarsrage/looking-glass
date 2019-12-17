@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { stringify } from 'qs';
 
-import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/moduleReducer';
+import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/constants';
 
 export default class FileSystemService {
   config;

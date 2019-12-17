@@ -2,16 +2,16 @@ import { createSelector } from 'reselect';
 
 import { initialState, initialModuleState } from '../reducers/moduleReducer';
 
-const getModuleId = (state, props) => props.moduleId;
+const getModuleId = (_, props) => props.moduleId;
 
-const modulesStateSelector = state => (state.module || initialState).modules;
+const moduleStateSelector = state => state.module || initialState;
 
-const galleriesStateSelctor = state => (state.module || initialState).galleries;
+const galleryStateSelctor = state => state.gallery || initialState;
 
-const modulesSelector = createSelector(modulesStateSelector, state => state.allIds);
+const modulesSelector = createSelector(moduleStateSelector, state => state.allIds);
 
 const moduleByIdSelector = createSelector(
-  modulesStateSelector,
+  moduleStateSelector,
   getModuleId,
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
@@ -22,14 +22,14 @@ const searchGalleryIdSelector = createSelector(moduleByIdSelector, module => mod
 
 const defaultGalleryIdSelector = createSelector(moduleByIdSelector, module => module.defaultGalleryId);
 
-const successSelector = createSelector(modulesStateSelector, state => state.success);
+const successSelector = createSelector(moduleStateSelector, state => state.success);
 
-const fetchingSelector = createSelector(modulesStateSelector, state => state.fetching);
+const fetchingSelector = createSelector(moduleStateSelector, state => state.fetching);
 
-const errorSelector = createSelector(modulesStateSelector, state => state.error);
+const errorSelector = createSelector(moduleStateSelector, state => state.error);
 
 const searchQuerySelector = createSelector(
-  [searchGalleryIdSelector, galleriesStateSelctor],
+  [searchGalleryIdSelector, galleryStateSelctor],
   (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
 );
 

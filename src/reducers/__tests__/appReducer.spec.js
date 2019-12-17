@@ -8,14 +8,14 @@ describe('app reducer', () => {
   });
 
   it('should handle TOGGLE_DARK_THEME', () => {
-    const newState = reducer({ ...initialState }, actions.toggleDarkTheme());
+    const newState = reducer(initialState, actions.toggleDarkTheme());
     expect(newState.darkTheme).toEqual(!initialState.darkTheme);
   });
 
   it('should handle SET_CURRENT_GALLERY', () => {
     const galleryId = 'EXPECTED GALLERY ID';
     const moduleId = 'EXPECTED MODULE ID';
-    const newState = reducer({ ...initialState }, actions.setCurrentGallery(moduleId, galleryId));
+    const newState = reducer(initialState, actions.setCurrentGallery(moduleId, galleryId));
     expect(newState.currentModuleId).toEqual(moduleId);
     expect(newState.currentGalleryId).toEqual(galleryId);
   });

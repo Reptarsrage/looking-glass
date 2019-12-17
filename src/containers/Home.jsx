@@ -20,7 +20,7 @@ import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
-import { FILE_SYSTEM_MODULE_ID } from '../reducers/moduleReducer';
+import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 
 const styles = theme => ({
   main: {

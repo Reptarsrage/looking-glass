@@ -30,15 +30,15 @@ export const initialModuleState = {
   searchGalleryId: null,
 };
 
-const addModule = (state, draft, module, actualModuleId) => {
+const addModule = (draft, module, actualModuleId) => {
   // generate id
   const moduleId = actualModuleId || generateModuleId(module.id);
 
   // if module does not exist
   if (!(moduleId in draft.byId)) {
     // add module
-    draft.modules.allIds.push(moduleId);
-    draft.modules.byId[moduleId] = {
+    draft.allIds.push(moduleId);
+    draft.byId[moduleId] = {
       ...module,
       siteId: module.id,
       id: moduleId,
@@ -60,9 +60,12 @@ const moduleReducer = (state = initialState, action) =>
       case FETCH_MODULES_SUCCESS: {
         const modules = payload;
         handleAsyncSuccess(state, draft);
-        modules.forEach(module => addModule(state, draft, module));
+
+        // add modules
+        modules.forEach(module => addModule(draft, module));
+
+        // add file system module
         addModule(
-          state,
           draft,
           {
             ...initialModuleState,
@@ -77,7 +80,7 @@ const moduleReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_MODULES_ERROR: {
-        handleAsyncError(state, draft);
+        handleAsyncError(state, draft, payload);
         break;
       }
       default:

@@ -11,6 +11,7 @@ export const initialState = {
 export const initialItemState = {
   id: null,
   siteId: null,
+  galleryId: null,
   title: null,
   description: null,
   width: 0,
@@ -39,6 +40,7 @@ const addItem = (draft, galleryId, item) => {
       ...item,
       siteId: item.id,
       id: itemId,
+      galleryId,
     };
   }
 };
@@ -49,11 +51,11 @@ const itemReducer = (state = initialState, action) =>
 
     switch (type) {
       case CLEAR_GALLERY: {
-        const { galleryId } = meta;
+        const galleryId = meta;
 
         // remove items
-        const galleryItemsToRemove = draft.allIds.filter(id => state.byId[id].galleryId === galleryId);
-        draft.allIds = draft.allIds.filter(id => state.byId[id].galleryId !== galleryId);
+        const galleryItemsToRemove = state.allIds.filter(id => state.byId[id].galleryId === galleryId);
+        draft.allIds = state.allIds.filter(id => state.byId[id].galleryId !== galleryId);
         galleryItemsToRemove.forEach(id => delete draft.byId[id]);
         break;
       }

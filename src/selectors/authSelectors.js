@@ -5,7 +5,7 @@ import { moduleByIdSelector } from './moduleSelectors';
 
 const authState = state => state.auth || initialState;
 
-const getModuleId = (state, props) => props.moduleId;
+const getModuleId = (_, props) => props.moduleId;
 
 const authByModuleIdSelector = createSelector([authState, getModuleId], (state, moduleId) => state.byId[moduleId]);
 
@@ -31,13 +31,14 @@ const oauthURLErrorSelector = createSelector(authByModuleIdSelector, state => st
 
 const isAuthenticatedSelector = createSelector(authByModuleIdSelector, state => state.success);
 
-const authUrlSelector = createSelector([moduleByIdSelector], module =>
-  module.authType ? `/${module.authType}/${module.id}` : null
+const authUrlSelector = createSelector([moduleByIdSelector], ({ id, authType }) =>
+  authType ? `/${authType}/${id}` : null
 );
 
 const requiresAuthSelector = createSelector([moduleByIdSelector], module => !!module.authType);
 
 export {
+  authByModuleIdSelector,
   successSelector,
   fetchingSelector,
   errorSelector,

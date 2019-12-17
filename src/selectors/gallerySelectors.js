@@ -1,15 +1,16 @@
 import { createSelector } from 'reselect';
 
-import { initialState, initialGalleryState } from '../reducers/moduleReducer';
+import { initialState, initialGalleryState } from '../reducers/galleryReducer';
 
-const getGalleryId = (state, props) => props.galleryId;
+const getGalleryId = (_, props) => props.galleryId;
 
-const galleriesStateSelctor = state => (state.module || initialState).galleries;
+const galleriesStateSelctor = state => state.gallery || initialState;
 
 const galleryByIdSelector = createSelector(
   [galleriesStateSelctor, getGalleryId],
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 );
 
-// eslint-disable-next-line import/prefer-default-export
-export { galleryByIdSelector };
+const galleriesSelector = createSelector(galleriesStateSelctor, state => state.allIds);
+
+export { galleryByIdSelector, galleriesSelector };
