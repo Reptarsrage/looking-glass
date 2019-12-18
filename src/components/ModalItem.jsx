@@ -12,20 +12,19 @@ import Video from './Video';
 
 const styles = () => ({
   container: {
-    width: '100%',
-    height: '100%',
-    padding: 0,
-    margin: 0,
+    flex: '1 1 auto',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
   },
   paper: {
-    width: 'fit-content',
-    height: 'fit-content',
-    maxWidth: '100%',
-    maxHeight: '100%',
+    padding: 0,
+    maxHeight: '100vh',
+    display: 'inline-flex',
+    overflow: 'hidden',
+    position: 'relative',
+    textAlign: 'center',
   },
 });
 

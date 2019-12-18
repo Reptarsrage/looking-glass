@@ -8,7 +8,7 @@ const styles = () => ({
     width: 'auto',
     height: 'auto',
     maxWidth: '100%',
-    maxHeight: '100%',
+    maxHeight: 'inherit',
     marginBottom: '-4px',
   },
 });

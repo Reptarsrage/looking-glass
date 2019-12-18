@@ -9,13 +9,15 @@ const styles = () => ({
   item: {
     position: 'absolute',
     width: '100%',
+    display: 'flex',
   },
   itemInner: {
     position: 'relative',
-    height: '100%',
+    display: 'flex',
+    flex: '1 1 auto',
   },
   container: {
-    flex: '1',
+    flex: '1 1 auto',
     display: 'flex',
     flexWrap: 'wrap',
     position: 'relative',

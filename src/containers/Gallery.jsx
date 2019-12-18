@@ -53,12 +53,8 @@ const styles = () => ({
   animationElement: {
     position: 'fixed',
     zIndex: 5,
-  },
-  full: {
-    width: '100%',
-    margin: 0,
-    padding: 0,
-    height: '100%',
+    display: 'flex',
+    overflow: 'hidden',
   },
   backdrop: {
     position: 'fixed',

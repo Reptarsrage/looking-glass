@@ -7,8 +7,9 @@ const styles = () => ({
     width: 'auto',
     height: '100%',
     maxWidth: '100%',
-    maxHeight: '100%',
+    maxHeight: 'inherit',
     position: 'relative',
+    objectFit: 'contain',
     zIndex: 2,
   },
   thumb: {

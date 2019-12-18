@@ -16,15 +16,11 @@ const styles = theme => ({
     alignItems: 'stretch',
     padding: theme.spacing(1),
   },
-  column: {
-    display: 'flex',
-    flex: '1 1 auto',
-  },
   masonryItemContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%',
+    flex: '1 1 auto',
   },
 });
 

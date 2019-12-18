@@ -17,6 +17,8 @@ const styles = theme => ({
   paper: {
     padding: 0,
     height: '100%',
+    maxHeight: '100%',
+    display: 'inline-flex',
     overflow: 'hidden',
     position: 'relative',
     textAlign: 'center',

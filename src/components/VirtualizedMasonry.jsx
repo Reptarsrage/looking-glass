@@ -10,13 +10,13 @@ import Virtualized from './Virtualized';
 
 const styles = () => ({
   column: {
-    flex: '1',
+    flex: '1 1 auto',
     display: 'flex',
     flexWrap: 'nowrap',
     position: 'relative',
   },
   columnContainer: {
-    flex: '1',
+    flex: '1 1 auto',
     display: 'flex',
     flexWrap: 'wrap',
     position: 'relative',
@@ -198,7 +198,7 @@ class VirtualizedMasonry extends PureComponent {
     const { items } = columnItems[columnNumber];
 
     return (
-      <div className={classes.columnContainer} key={columnNumber}>
+      <div className={classes.column} key={columnNumber}>
         <Virtualized
           items={items}
           length={length}
