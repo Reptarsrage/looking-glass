@@ -6,6 +6,7 @@ import authReducer from './authReducer';
 import moduleReducer from './moduleReducer';
 import galleryReducer from './galleryReducer';
 import itemReducer from './itemReducer';
+import sortReducer from './sortReducer';
 
 const rootReducer = (history, asyncReducers) =>
   combineReducers({
@@ -15,6 +16,7 @@ const rootReducer = (history, asyncReducers) =>
     module: moduleReducer,
     gallery: galleryReducer,
     item: itemReducer,
+    sort: sortReducer,
     ...asyncReducers,
   });
 

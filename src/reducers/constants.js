@@ -34,6 +34,7 @@ export const GALLERY_NAMESPACE = '0e20817f-1e71-4afb-b107-e215cc7d29d0';
 export const GALLERY_ITEM_NAMESPACE = '2e26db14-58ab-4060-812e-5fae4cc4fd87';
 export const MODULE_GALLERY_NAMESPACE = '357757cf-6140-4439-b2ee-08c7f31ecfb4';
 export const ITEM_NAMESPACE = '05948023-6791-4837-96f4-ceff6416b3e3';
+export const SORT_NAMESPACE = 'fe042171-3af8-4c2e-b215-8c95313a7768';
 
 // id generator functions
 export const generateModuleId = moduleId => uuidv3(moduleId, MODULE_NAMESPACE);
@@ -41,3 +42,4 @@ export const generateItemId = (galleryId, itemId) => uuidv3(galleryId + itemId, 
 export const generateGalleryId = (moduleId, galleryId) => uuidv3(moduleId + galleryId, GALLERY_NAMESPACE);
 export const generateModuleGalleryId = (moduleId, galleryId) => uuidv3(moduleId + galleryId, MODULE_GALLERY_NAMESPACE);
 export const generateGalleryItemId = (galleryId, itemId) => uuidv3(galleryId + itemId, GALLERY_ITEM_NAMESPACE);
+export const generateSortId = (moduleId, sortId) => uuidv3(moduleId + sortId, SORT_NAMESPACE);

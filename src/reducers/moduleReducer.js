@@ -36,10 +36,12 @@ const addModule = (draft, module, actualModuleId) => {
 
   // if module does not exist
   if (!(moduleId in draft.byId)) {
+    const { sortBy, filterBy, ...rest } = module;
+
     // add module
     draft.allIds.push(moduleId);
     draft.byId[moduleId] = {
-      ...module,
+      ...rest,
       siteId: module.id,
       id: moduleId,
       defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
