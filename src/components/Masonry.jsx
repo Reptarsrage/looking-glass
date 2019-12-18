@@ -1,45 +1,59 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
-import NoResults from './NoResults';
+import ErrorToast from './ErrorToast';
 import LoadingIndicator from './LoadingIndicator';
-import VirtualizedMasonry from './VirtualizedMasonry';
 import MasonryItem from './MasonryItem';
+import NoResults from './NoResults';
+import VirtualizedMasonry from './VirtualizedMasonry';
 
 const styles = theme => ({
   container: {
+    alignItems: 'stretch',
     display: 'flex',
     flexWrap: 'nowrap',
     justifyContent: 'space-evenly',
-    alignItems: 'stretch',
     padding: theme.spacing(1),
   },
   masonryItemContainer: {
-    display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    display: 'flex',
     flex: '1 1 auto',
+    justifyContent: 'center',
   },
 });
 
 class Masonry extends Component {
-  constructor(props) {
-    super(props);
-
-    this.width = 0;
-    this.columnHeight = 0;
-    this.columnWidth = 0; // keeps track of the column width calculated by the AutoSizer
-    this.columnRefs = []; // holds references to the react-virtualized List in each column
+  constructor() {
+    super();
 
     this.state = {
-      columnCount: 3, // total number of columns
+      message: null,
+      open: false,
     };
   }
 
-  loadMoreRows = () => {
-    const { loadMore, loading, moduleId, galleryId } = this.props;
+  static getDerivedStateFromProps(props, state) {
+    // TODO: Find a way to update based on multiple errors
+    if (props.error && !state.message) {
+      return {
+        message: `Error communicating with server`,
+        open: true,
+      };
+    }
+
+    // Return null to indicate no change to state.
+    return null;
+  }
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
+  loadMore = () => {
+    const { galleryId, loading, loadMore, moduleId } = this.props;
     if (!loading) {
       loadMore(moduleId, galleryId);
     }
@@ -68,8 +82,8 @@ class Masonry extends Component {
     return getItemHeight(items[index]);
   };
 
-  renderRow = index => {
-    const { items, classes, moduleId, galleryId, onItemClick, gutter } = this.props;
+  renderItem = index => {
+    const { classes, galleryId, gutter, items, moduleId, onItemClick } = this.props;
 
     if (!this.isLoaded(index)) {
       return null;
@@ -89,55 +103,60 @@ class Masonry extends Component {
   };
 
   render() {
-    const { items, loading, error, gutter } = this.props;
-    const { columnCount } = this.state;
+    const { columnCount, gutter, items, loading } = this.props;
+    const { message, open } = this.state;
 
-    // TODO: allow transient errors
-    if (error) {
-      console.warn('Encountered an error', error);
-    }
-
-    if (items.length === 0 && !loading) {
-      return <NoResults />;
-    }
-
-    if (items.length === 0) {
+    if (items.length === 0 && loading) {
       return <LoadingIndicator />;
     }
 
     return (
-      <VirtualizedMasonry
-        renderItem={this.renderRow}
-        getHeightForItem={this.getItemHeight}
-        getWidthForItem={this.getItemWidth}
-        loadMore={this.loadMoreRows}
-        isLoading={loading}
-        length={items.length}
-        overscan={500}
-        loadMoreThreshold={5000}
-        columnCount={columnCount}
-        gutter={gutter}
-      />
+      <>
+        <ErrorToast message={message} onClose={this.handleClose} open={open} />
+        {items.length === 0 ? (
+          <NoResults />
+        ) : (
+          <VirtualizedMasonry
+            columnCount={columnCount}
+            getHeightForItem={this.getItemHeight}
+            getWidthForItem={this.getItemWidth}
+            gutter={gutter}
+            isLoading={loading}
+            length={items.length}
+            loadMore={this.loadMore}
+            loadMoreThreshold={5000}
+            overscan={500}
+            renderItem={this.renderItem}
+          />
+        )}
+      </>
     );
   }
 }
 
 Masonry.defaultProps = {
+  columnCount: 3,
   gutter: 8,
 };
 
 Masonry.propTypes = {
-  classes: PropTypes.object.isRequired,
-  items: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // required
+  error: PropTypes.bool.isRequired,
+  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   getItemHeight: PropTypes.func.isRequired,
   getItemWidth: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
-  moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  error: PropTypes.bool.isRequired,
-  gutter: PropTypes.number,
   loadMore: PropTypes.func.isRequired,
+  moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   onItemClick: PropTypes.func.isRequired,
+
+  // optional
+  columnCount: PropTypes.number,
+  gutter: PropTypes.number,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Masonry);
