@@ -1,27 +1,27 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
+import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import Positioner from './positioner';
 
 const styles = () => ({
+  container: {
+    display: 'flex',
+    flex: '1 1 auto',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    position: 'relative',
+  },
   item: {
+    display: 'flex',
     position: 'absolute',
     width: '100%',
-    display: 'flex',
   },
   itemInner: {
-    position: 'relative',
     display: 'flex',
     flex: '1 1 auto',
-  },
-  container: {
-    flex: '1 1 auto',
-    display: 'flex',
-    flexWrap: 'wrap',
     position: 'relative',
-    justifyContent: 'center',
   },
 });
 
@@ -29,35 +29,34 @@ class Virtualized extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = {
-      minHeight: 0,
-    };
-
     this.positioner = new Positioner();
     this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
-    this.update();
+
+    this.state = {
+      totalHeight: this.update(),
+    };
   }
 
   componentDidUpdate(prevProps) {
     const { length: prevLength, width: prevWidth } = prevProps;
     const { length, width } = this.props;
     if (length !== prevLength || width !== prevWidth) {
-      this.update();
-      const minHeight = this.positioner.getTotalHeight();
-      this.setState({ minHeight });
+      const totalHeight = this.update();
+      this.setState({ totalHeight });
     }
   }
 
   update = () => {
     const { items } = this.props;
     this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
-    this.positioner.updatePositions(items.map(id => ({ id, height: this.getHeightForItemMemoizer(id) })));
+    this.positioner.updatePositions(items.map(id => ({ height: this.getHeightForItemMemoizer(id), id })));
+    return this.positioner.getTotalHeight();
   };
 
   renderItem = i => {
-    const { renderItem, overscan, innerHeight, scrollTop, scrollPosition, classes } = this.props;
+    const { classes, innerHeight, overscan, renderItem, scrollPosition, scrollTop } = this.props;
 
-    const itemTop = this.positioner.getHeightForItem(i);
+    const itemTop = this.positioner.getPositionForItem(i);
     const itemHeight = this.getHeightForItemMemoizer(i);
     const itemBottom = itemTop + itemHeight;
     const windowBottom = scrollPosition + innerHeight - scrollTop + overscan;
@@ -79,11 +78,11 @@ class Virtualized extends PureComponent {
   };
 
   render() {
-    const { items, classes } = this.props;
-    const { minHeight } = this.state;
+    const { classes, items } = this.props;
+    const { totalHeight } = this.state;
 
     return (
-      <div className={classes.container} style={{ minHeight: `${minHeight}px` }}>
+      <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
         {items.map(this.renderItem)}
       </div>
     );
@@ -91,23 +90,28 @@ class Virtualized extends PureComponent {
 }
 
 Virtualized.defaultProps = {
+  innerHeight: 0,
   overscan: 0,
-  width: 0,
   scrollPosition: 0,
   scrollTop: 0,
-  innerHeight: 0,
+  width: 0,
 };
 
 Virtualized.propTypes = {
-  renderItem: PropTypes.func.isRequired,
+  // required
   getHeightForItem: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
   length: PropTypes.number.isRequired,
+  renderItem: PropTypes.func.isRequired,
+
+  // optional
+  innerHeight: PropTypes.number,
   overscan: PropTypes.number,
-  width: PropTypes.number,
   scrollPosition: PropTypes.number,
   scrollTop: PropTypes.number,
-  innerHeight: PropTypes.number,
+  width: PropTypes.number,
+
+  // from withStyles
   classes: PropTypes.object.isRequired,
 };
 
