@@ -1,26 +1,27 @@
 import React, { PureComponent, createRef } from 'react';
-import PropTypes from 'prop-types';
-import ReactResizeDetector from 'react-resize-detector';
-import _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
-import { compose } from 'redux';
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import { withResizeDetector } from 'react-resize-detector';
 import { withRouter } from 'react-router-dom';
+import ReactRouterPropTypes from 'react-router-prop-types';
+import { compose } from 'redux';
 
 import Virtualized from './Virtualized';
 
 const styles = () => ({
   column: {
-    flex: '1 1 auto',
     display: 'flex',
+    flex: '1 1 auto',
     flexWrap: 'nowrap',
     position: 'relative',
   },
   columnContainer: {
-    flex: '1 1 auto',
     display: 'flex',
+    flex: '1 1 auto',
     flexWrap: 'wrap',
-    position: 'relative',
     justifyContent: 'center',
+    position: 'relative',
   },
 });
 
@@ -28,128 +29,154 @@ class VirtualizedMasonry extends PureComponent {
   constructor(props) {
     super(props);
 
-    const { columnCount } = props;
-    this.containerRef = createRef();
+    // initialize
+    this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
+    const { columnCount, location } = props;
+    const columnItems = [...Array(columnCount).keys()].map(id => ({ height: 0, id, items: [] }));
     this.state = {
-      width: 0,
+      columnItems,
       height: 0,
+      innerHeight: 0,
       scrollPosition: 0,
       scrollTop: 0,
-      innerHeight: 0,
       totalItems: 0,
-      columnItems: [...Array(columnCount)].map(() => ({ items: [], height: 0 })), // columnItems include a list of indexes of items in each column, and a total column size
+      width: 0,
     };
 
-    this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
+    // create ref
+    this.containerRef = createRef();
+
+    // restore previous state
+    const restoredState = this.restoreScrollPosition(location.pathname);
+    if (restoredState) {
+      this.state = { ...this.state, ...restoredState };
+
+      // update positions
+      const updatedState = this.recalculateColumnItems();
+      if (updatedState) {
+        this.setState({ ...updatedState });
+      }
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    // handle resize event from hoc
+    if (props.width > 0 && props.width !== state.width) {
+      const { innerHeight } = window;
+      return {
+        innerHeight,
+        width: props.width,
+      };
+    }
+
+    // Return null to indicate no change to state.
+    return null;
   }
 
   componentDidMount = () => {
-    const { location } = this.props;
-    this.recalculateColumnItems();
-    this.restoreScrollPosition(location.pathname);
-    window.addEventListener('scroll', this.handleScroll);
+    const { scrollPosition } = this.state;
+
+    // restore scroll position
+    window.requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition);
+
+      // add event listeners (after done scrolling)
+      window.addEventListener('scroll', this.handleScroll);
+    });
   };
 
-  componentDidMount = () => {
-    window.addEventListener('scroll', this.handleScroll);
-  };
-
-  componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    const { location: prevLocation } = prevProps;
-
-    this.recalculateColumnItems();
-    if (location.pathname !== prevLocation.pathname) {
-      this.restoreScrollPosition(location.pathname);
+  componentDidUpdate() {
+    // update positions
+    const updatedState = this.recalculateColumnItems();
+    if (updatedState) {
+      this.setState({ ...updatedState });
     }
   }
 
   componentWillUnmount = () => {
-    const { location } = this.props;
-
-    this.saveScrollPosition(location.pathname);
+    // remove event listeners
     window.removeEventListener('scroll', this.handleScroll);
+
+    // save state in session
+    this.saveScrollPosition();
   };
 
   recalculateColumnItems() {
     const { columnCount, length } = this.props;
-    let { columnItems, totalItems } = this.state;
+    let { columnItems, height, totalItems } = this.state;
     let requiresUpdate = false;
 
     // ensure each column has an entry
     if (columnItems.length !== columnCount) {
-      columnItems = [];
-      for (let i = 0; i < columnCount; i += 1) {
-        columnItems.push({ items: [], height: 0 });
-      }
-
+      columnItems = [...Array(columnCount).keys()].map(id => ({ height: 0, id, items: [] }));
       requiresUpdate = true;
+      totalItems = 0;
     }
 
     // fill in column items with the missing indices
     if (totalItems !== length) {
       for (let i = totalItems; i < length; i += 1) {
+        columnItems = columnItems.map(c => ({ ...c, items: [...c.items] })); // deep copy
         const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
         minHeightColumn.items.push(i);
         minHeightColumn.height += this.getAdjustedHeightForItem(i);
       }
 
+      const maxHeightColumn = columnItems.reduce((prev, curr) => (prev.height > curr.height ? prev : curr));
+      ({ height } = maxHeightColumn);
       totalItems = length;
       requiresUpdate = true;
     }
 
     if (requiresUpdate) {
-      this.setState({ columnItems, totalItems });
+      return { columnItems, height, totalItems };
     }
+
+    return null;
   }
 
   handleLoadMore = () => {
-    const { loadMore, isLoading } = this.props;
-
+    const { isLoading, loadMore } = this.props;
     if (!isLoading) {
       loadMore();
     }
   };
 
-  saveScrollPosition = pathname => {
-    const value = JSON.stringify({ ...this.state });
-    sessionStorage.setItem(pathname, value);
+  saveScrollPosition = () => {
+    const { location } = this.props;
+    const { columnItems, totalItems, ...rest } = this.state;
+
+    sessionStorage.setItem(location.pathname, JSON.stringify(rest));
   };
 
-  restoreScrollPosition = pathname => {
-    const value = sessionStorage.getItem(pathname);
+  restoreScrollPosition = () => {
+    const { location } = this.props;
 
+    const value = sessionStorage.getItem(location.pathname);
     if (value !== null) {
-      const newState = JSON.parse(value);
-
-      if (newState.scrollPosition > 0) {
-        this.setState({ ...newState });
-        window.requestAnimationFrame(() => {
-          window.scrollTo(0, newState.scrollPosition);
-        });
-      }
+      return JSON.parse(value);
     }
+
+    return null;
   };
 
-  getDimensionsForItem = i => {
-    const { getWidthForItem, getHeightForItem } = this.props;
-
-    this.timesAskedForDims += 1;
-    return { width: getWidthForItem(i), height: getHeightForItem(i) };
+  getDimensionsForItem = itemId => {
+    const { getHeightForItem, getWidthForItem } = this.props;
+    return { height: getHeightForItem(itemId), width: getWidthForItem(itemId) };
   };
 
-  getAdjustedHeightForItem = i => {
-    this.calculations += 1;
+  getAdjustedHeightForItem = itemId => {
     const { columnCount, fitToWindow, gutter } = this.props;
-    const { width, innerHeight } = this.state;
+    const { innerHeight, width } = this.state;
 
+    // if unable to calculate height, return actual height
     if (width <= 0 || innerHeight <= 0) {
-      const { height } = this.itemDimensionsMemoizer(i);
+      const { height } = this.itemDimensionsMemoizer(itemId);
       return height;
     }
 
     const columnWidth = width / columnCount - 2 * gutter;
-    const { width: itemWidth, height: itemHeight } = this.itemDimensionsMemoizer(i);
+    const { height: itemHeight, width: itemWidth } = this.itemDimensionsMemoizer(itemId);
     const calculatedWidth = Math.min(itemWidth, columnWidth);
     const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth + 2 * gutter;
 
@@ -161,94 +188,92 @@ class VirtualizedMasonry extends PureComponent {
   };
 
   handleScroll = () => {
-    const { loadMoreThreshhold } = this.props;
+    const { loadMoreThreshold } = this.props;
     const { current } = this.containerRef;
-    if (current === undefined) {
-      return;
-    }
+    if (current) {
+      const rect = current.getBoundingClientRect();
+      if (rect) {
+        // we've made it here, so dimensions are available
+        // use them to set our current scroll position
+        const scrollPosition = window.scrollY;
+        const scrollTop = window.scrollY + rect.top;
+        this.setState({ scrollPosition, scrollTop });
 
-    const rect = current.getBoundingClientRect();
-    if (rect) {
-      const scrollPosition = window.scrollY;
-      const scrollTop = window.scrollY + rect.top;
-      this.setState({ scrollPosition, scrollTop });
-      if (Math.abs(scrollTop + rect.height - scrollPosition - window.innerHeight) <= loadMoreThreshhold) {
-        this.handleLoadMore();
+        // load more if over threshold
+        if (Math.abs(scrollTop + rect.height - scrollPosition - window.innerHeight) <= loadMoreThreshold) {
+          this.handleLoadMore();
+        }
       }
     }
   };
 
-  handleResize = () => {
-    const { current } = this.containerRef;
-    if (current === undefined) {
-      return;
-    }
-
-    const width = current.clientWidth;
-    const height = current.clientHeight;
-    const { innerHeight } = window;
-
-    this.handleScroll();
-    this.setState({ width, height, innerHeight });
-  };
-
-  renderColumn = columnNumber => {
-    const { length, overscan, renderItem, columnCount, classes } = this.props;
-    const { width, height, scrollPosition, scrollTop, innerHeight, columnItems } = this.state;
-    const { items } = columnItems[columnNumber];
+  renderColumn = columnItem => {
+    const { classes, columnCount, overscan, renderItem } = this.props;
+    const { innerHeight, scrollPosition, scrollTop, width } = this.state;
+    const { id, items } = columnItem;
 
     return (
-      <div className={classes.column} key={columnNumber}>
+      <div className={classes.column} key={id}>
         <Virtualized
-          items={items}
-          length={length}
-          overscan={overscan}
           getHeightForItem={this.getAdjustedHeightForItem}
+          items={items}
+          length={items.length}
           renderItem={renderItem}
-          width={width / columnCount}
-          height={height}
+          innerHeight={innerHeight}
+          overscan={overscan}
           scrollPosition={scrollPosition}
           scrollTop={scrollTop}
-          innerHeight={innerHeight}
+          width={width / columnCount}
         />
       </div>
     );
   };
 
   render() {
-    const { columnCount, classes } = this.props;
+    const { classes } = this.props;
+    const { columnItems, height } = this.state;
 
     return (
-      <div ref={this.containerRef} className={classes.columnContainer}>
-        <ReactResizeDetector handleWidth onResize={this.handleResize} />
-        {[...Array(columnCount).keys()].map(this.renderColumn)}
+      <div ref={this.containerRef} className={classes.columnContainer} style={{ minHeight: `${height}px` }}>
+        {columnItems.map(this.renderColumn)}
       </div>
     );
   }
 }
 
 VirtualizedMasonry.defaultProps = {
-  overscan: 0,
-  loadMoreThreshhold: 1000,
   columnCount: 1,
   fitToWindow: false,
   gutter: 8,
+  loadMoreThreshold: 1000,
+  overscan: 0,
+  width: 0,
 };
 
 VirtualizedMasonry.propTypes = {
-  renderItem: PropTypes.func.isRequired,
+  // required
   getHeightForItem: PropTypes.func.isRequired,
   getWidthForItem: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  loadMore: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
   length: PropTypes.number.isRequired,
-  overscan: PropTypes.number,
-  loadMoreThreshhold: PropTypes.number,
+  loadMore: PropTypes.func.isRequired,
+  renderItem: PropTypes.func.isRequired,
+
+  // optional
   columnCount: PropTypes.number,
   fitToWindow: PropTypes.bool,
   gutter: PropTypes.number,
+  loadMoreThreshold: PropTypes.number,
+  overscan: PropTypes.number,
+
+  // withRouter
+  location: ReactRouterPropTypes.location.isRequired,
+
+  // withResizeDetector
+  width: PropTypes.number,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
 };
 
-export default compose(withStyles(styles), withRouter)(VirtualizedMasonry);
+export default compose(withResizeDetector, withStyles(styles), withRouter)(VirtualizedMasonry);
