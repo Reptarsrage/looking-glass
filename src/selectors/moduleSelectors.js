@@ -16,6 +16,8 @@ const moduleByIdSelector = createSelector(
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
 
+const sortByValuesSelector = createSelector(moduleByIdSelector, module => module.sortBy);
+
 const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, module => module.siteId);
 
 const searchGalleryIdSelector = createSelector(moduleByIdSelector, module => module.searchGalleryId);
@@ -54,4 +56,5 @@ export {
   searchQuerySelector,
   searchGalleryIdSelector,
   searchGalleryUrlSelector,
+  sortByValuesSelector,
 };

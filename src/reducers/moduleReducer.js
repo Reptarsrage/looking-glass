@@ -11,6 +11,7 @@ import {
   handleAsyncSuccess,
   initialAsyncState,
   SEARCH_GALLERY_ID,
+  generateSortId,
 } from './constants';
 
 export const initialState = {
@@ -26,6 +27,7 @@ export const initialModuleState = {
   description: null,
   authType: null,
   icon: null,
+  sortBy: [],
   defaultGalleryId: null,
   searchGalleryId: null,
 };
@@ -44,6 +46,7 @@ const addModule = (draft, module, actualModuleId) => {
       ...rest,
       siteId: module.id,
       id: moduleId,
+      sortBy: (sortBy || []).map(sortValue => generateSortId(moduleId, sortValue.id)),
       defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
       searchGalleryId: generateGalleryId(moduleId, SEARCH_GALLERY_ID),
     };

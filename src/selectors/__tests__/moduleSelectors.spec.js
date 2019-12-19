@@ -1,5 +1,5 @@
 import { initialState, initialModuleState } from '../../reducers/moduleReducer';
-import { modulesSelector, moduleByIdSelector } from '../moduleSelectors';
+import { modulesSelector, moduleByIdSelector, sortByValuesSelector } from '../moduleSelectors';
 
 describe('Module Selectors', () => {
   describe('modulesSelector', () => {
@@ -57,6 +57,32 @@ describe('Module Selectors', () => {
 
       // assert
       expect(selected).toEqual(initialModuleState);
+    });
+  });
+
+  describe('sortByValuesSelector', () => {
+    it('should return sort values', () => {
+      // arrange
+      const moduleId = 'EXPECTED MODULE ID';
+      const sortBy = [...Array(3).keys()].map(id => (id + 33).toString());
+      const state = {
+        module: {
+          ...initialState,
+          allIds: [moduleId],
+          byId: {
+            [moduleId]: {
+              ...initialModuleState,
+              sortBy,
+            },
+          },
+        },
+      };
+
+      // act
+      const selected = sortByValuesSelector(state, { moduleId });
+
+      // assert
+      expect(selected).toEqual(sortBy);
     });
   });
 });
