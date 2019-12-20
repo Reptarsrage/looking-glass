@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router';
 import { hot } from 'react-hot-loader/root';
 
+import WithErrors from './hocs/WithErrors';
 import App from './containers/App';
 import Home from './containers/Home';
 import Gallery from './containers/Gallery';
@@ -15,12 +16,15 @@ import WithRouteParameters from './hocs/WithRouteParameters';
 const Routes = () => (
   <App>
     <Switch>
-      <Route exact path="/" component={WithTransition(Home)} />
-      <Route path="/login/:moduleId" component={WithTransition(WithRouteParameters(Login))} />
-      <Route path="/oauth/:moduleId" component={WithTransition(WithRouteParameters(OAuth))} />
-      <Route path="/gallery/:moduleId/:galleryId" component={WithTransition(WithRouteParameters(Gallery))} />
-      <Route path="/about" component={WithTransition(About)} />
-      <Route path="*" component={WithTransition(NotFound)} />
+      <Route exact path="/" component={WithTransition(WithErrors(Home))} />
+      <Route path="/login/:moduleId" component={WithTransition(WithRouteParameters(WithErrors(Login)))} />
+      <Route path="/oauth/:moduleId" component={WithTransition(WithRouteParameters(WithErrors(OAuth)))} />
+      <Route
+        path="/gallery/:moduleId/:galleryId"
+        component={WithTransition(WithRouteParameters(WithErrors(Gallery)))}
+      />
+      <Route path="/about" component={WithTransition(WithErrors(About))} />
+      <Route path="*" component={WithTransition(WithErrors(NotFound))} />
     </Switch>
   </App>
 );

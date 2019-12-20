@@ -17,7 +17,6 @@ import Container from '@material-ui/core/Container';
 
 import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
 import * as appActions from '../actions/appActions';
-import WithErrors from '../hocs/WithErrors';
 import SearchBar from '../components/SearchBar';
 import BackButton from '../components/BackButton';
 
@@ -111,4 +110,4 @@ const mapDispatchToProps = {
   toggleDarkTheme: appActions.toggleDarkTheme,
 };
 
-export default compose(withRouter, WithErrors, connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App);
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App);
