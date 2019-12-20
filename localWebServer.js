@@ -3,7 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const qs = require('qs');
 
-const createServer = callback => {
+const createServer = () => {
   const port = 30002; // TODO: choose a better port
   const server = http.createServer((req, res) => {
     // parse URL
@@ -38,12 +38,9 @@ const createServer = callback => {
     }
   });
 
-  server.on('listening', callback);
+  server.on('listening', () => console.log(`Local web server listening on port ${port}`));
   server.on('close', () => console.log('Local web server closing'));
   server.listen(port);
-
-  console.log(`Local web server listening on port ${port}`);
-  return server;
 };
 
 module.exports = createServer;
