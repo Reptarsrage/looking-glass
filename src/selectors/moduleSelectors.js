@@ -18,6 +18,8 @@ const moduleByIdSelector = createSelector(
 
 const sortByValuesSelector = createSelector(moduleByIdSelector, module => module.sortBy);
 
+const defaultSortValueSelector = createSelector(moduleByIdSelector, module => module.defaultSortValueId);
+
 const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, module => module.siteId);
 
 const searchGalleryIdSelector = createSelector(moduleByIdSelector, module => module.searchGalleryId);
@@ -57,4 +59,5 @@ export {
   searchGalleryIdSelector,
   searchGalleryUrlSelector,
   sortByValuesSelector,
+  defaultSortValueSelector,
 };

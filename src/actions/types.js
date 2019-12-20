@@ -22,6 +22,8 @@ export const {
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
   CLEAR_GALLERY,
+  UPDATE_SORT,
+  SORT_CHANGE,
 } = actionTyper('module');
 
 export const {

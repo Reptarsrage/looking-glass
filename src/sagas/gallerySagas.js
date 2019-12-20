@@ -2,14 +2,36 @@ import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga
 
 import LookingGlassService from '../services/lookingGlassService';
 import FileSystemService from '../services/fileSystemService';
-import { FETCH_GALLERY, FETCH_GALLERY_SUCCESS, FETCH_GALLERY_ERROR, UPDATE_SEARCH } from '../actions/types';
+import {
+  FETCH_GALLERY,
+  FETCH_GALLERY_SUCCESS,
+  FETCH_GALLERY_ERROR,
+  UPDATE_SEARCH,
+  SORT_CHANGE,
+} from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
-import { galleryByIdSelector } from '../selectors/gallerySelectors';
-import { moduleByIdSelector } from '../selectors/moduleSelectors';
+import { galleryByIdSelector, currentSortSelector } from '../selectors/gallerySelectors';
+import { moduleByIdSelector, defaultSortValueSelector } from '../selectors/moduleSelectors';
+import { valueSiteIdSelector } from '../selectors/sortSelectors';
 import { handleRefresh } from './authSagas';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
+import { fetchGallery, updateSort, clearGallery } from '../actions/moduleActions';
 
 const fsService = new FileSystemService();
+
+function* handleSortChange(action) {
+  const { meta, payload } = action;
+  const { moduleId, galleryId } = meta;
+  const valueId = payload;
+
+  const currentSort = yield select(currentSortSelector, { moduleId });
+
+  if (currentSort !== valueId) {
+    yield put(clearGallery(galleryId));
+    yield put(updateSort(galleryId, valueId));
+    yield put(fetchGallery(moduleId, galleryId));
+  }
+}
 
 function* handleUpdateSearch(action) {
   const { meta } = action;
@@ -45,6 +67,8 @@ function* handleFetchGallery(action) {
 
     // get data
     const accessToken = yield select(accessTokenSelector, { moduleId });
+    const defaultSort = yield select(defaultSortValueSelector, { moduleId });
+    const sort = yield select(valueSiteIdSelector, { valueId: gallery.currentSort || defaultSort });
 
     const { data } = yield call(
       service.fetchImages,
@@ -54,7 +78,8 @@ function* handleFetchGallery(action) {
       gallery.offset,
       gallery.before,
       gallery.after,
-      gallery.searchQuery
+      gallery.searchQuery,
+      sort
     );
 
     yield put({ type: FETCH_GALLERY_SUCCESS, payload: data, meta: galleryId });
@@ -65,7 +90,11 @@ function* handleFetchGallery(action) {
 }
 
 function* watchGallerySagas() {
-  yield all([takeLatest(FETCH_GALLERY, handleFetchGallery), takeLatest(UPDATE_SEARCH, handleUpdateSearch)]);
+  yield all([
+    takeLatest(FETCH_GALLERY, handleFetchGallery),
+    takeLatest(UPDATE_SEARCH, handleUpdateSearch),
+    takeLatest(SORT_CHANGE, handleSortChange),
+  ]);
 }
 
 export default watchGallerySagas;

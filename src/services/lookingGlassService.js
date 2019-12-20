@@ -39,8 +39,8 @@ export default class FileSystemService {
     return this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`, this.config);
   };
 
-  fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query) => {
-    const params = { offset, before, after, query };
+  fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query, sort) => {
+    const params = { offset, before, after, query, sort };
     if (galleryId !== DEFAULT_GALLERY_ID && galleryId !== SEARCH_GALLERY_ID) {
       params.galleryId = galleryId;
     }

@@ -28,6 +28,7 @@ export const initialModuleState = {
   authType: null,
   icon: null,
   sortBy: [],
+  defaultSortValueId: null,
   defaultGalleryId: null,
   searchGalleryId: null,
 };
@@ -39,6 +40,7 @@ const addModule = (draft, module, actualModuleId) => {
   // if module does not exist
   if (!(moduleId in draft.byId)) {
     const { sortBy, filterBy, ...rest } = module;
+    const sortValues = (sortBy || []).map(sortValue => generateSortId(moduleId, sortValue.id));
 
     // add module
     draft.allIds.push(moduleId);
@@ -46,7 +48,8 @@ const addModule = (draft, module, actualModuleId) => {
       ...rest,
       siteId: module.id,
       id: moduleId,
-      sortBy: (sortBy || []).map(sortValue => generateSortId(moduleId, sortValue.id)),
+      sortBy: sortValues,
+      defaultSortValueId: sortValues.length > 0 ? sortValues[0] : null,
       defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
       searchGalleryId: generateGalleryId(moduleId, SEARCH_GALLERY_ID),
     };

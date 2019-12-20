@@ -21,6 +21,7 @@ import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/galler
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
+import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
 import ScrollToTopButton from '../components/ScrollToTopButton';
@@ -76,6 +77,11 @@ const styles = () => ({
   },
   next: {
     right: '0.5rem',
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -345,6 +351,9 @@ class Gallery extends Component {
               Home
             </Link>
           </Breadcrumbs>
+          <div className={classes.toolbar}>
+            <SortMenu moduleId={moduleId} galleryId={galleryId} />
+          </div>
         </Paper>
 
         <br />

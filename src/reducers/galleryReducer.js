@@ -19,6 +19,8 @@ import {
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
   UPDATE_SEARCH,
+  UPDATE_SORT,
+  CLEAR_GALLERY,
 } from '../actions/types';
 
 export const initialState = {
@@ -35,6 +37,7 @@ export const initialGalleryState = {
   after: null,
   hasNext: true,
   searchQuery: null,
+  currentSort: null,
   items: [],
   ...initialAsyncState,
 };
@@ -122,6 +125,25 @@ const galleryReducer = (state = initialState, action) =>
         const { galleryId } = meta;
         handleAsyncFetch(state.byId[galleryId], draft.byId[galleryId]);
         draft.byId[galleryId].searchQuery = searchQuery;
+        break;
+      }
+      case UPDATE_SORT: {
+        const galleryId = meta;
+        const valueId = payload;
+        draft.byId[galleryId].currentSort = valueId;
+        break;
+      }
+      case CLEAR_GALLERY: {
+        const galleryId = payload;
+        const gallery = state.byId[galleryId];
+
+        draft.byId[galleryId] = {
+          ...initialGalleryState,
+          siteId: gallery.siteId,
+          id: galleryId,
+          moduleId: gallery.moduleId,
+          searchQuery: gallery.searchQuery,
+        };
         break;
       }
       default:

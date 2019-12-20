@@ -13,4 +13,6 @@ const valueByIdSelector = createSelector(
   (state, valueId) => state.byId[valueId] || initialSortState
 );
 
-export { valuesSelector, valueByIdSelector };
+const valueSiteIdSelector = createSelector(valueByIdSelector, value => value && value.siteId);
+
+export { valuesSelector, valueByIdSelector, valueSiteIdSelector };
