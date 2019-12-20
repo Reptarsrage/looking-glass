@@ -54,7 +54,7 @@ class VirtualizedMasonry extends PureComponent {
       // update positions
       const updatedState = this.recalculateColumnItems();
       if (updatedState) {
-        this.setState({ ...updatedState });
+        this.state = { ...this.state, ...updatedState };
       }
     }
   }
