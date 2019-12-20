@@ -24,7 +24,7 @@ export const initialItemState = {
 
 const addItem = (draft, galleryId, item) => {
   // quick sanity check
-  if (!item.width || !item.height) {
+  if (!item.width || !item.height || !item.url) {
     console.error('Invalid item', item);
     return;
   }

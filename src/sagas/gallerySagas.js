@@ -42,8 +42,8 @@ function* handleUpdateSearch(action) {
     return;
   }
 
-  // TODO: check if query is different and clear gallery items
-  yield put({ type: FETCH_GALLERY, payload: { moduleId, galleryId } });
+  yield put(clearGallery(galleryId));
+  yield put(fetchGallery(moduleId, galleryId));
 }
 
 function* handleFetchGallery(action) {

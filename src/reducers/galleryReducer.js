@@ -107,7 +107,9 @@ const galleryReducer = (state = initialState, action) =>
         // add items
         draft.byId[galleryId].items = [
           ...draft.byId[galleryId].items,
-          ...items.map(({ id }) => generateItemId(galleryId, id)),
+          ...items
+            .filter(({ url, width, height }) => url && width && height)
+            .map(({ id }) => generateItemId(galleryId, id)),
         ];
 
         // update async state
@@ -123,7 +125,7 @@ const galleryReducer = (state = initialState, action) =>
       case UPDATE_SEARCH: {
         const searchQuery = payload;
         const { galleryId } = meta;
-        handleAsyncFetch(state.byId[galleryId], draft.byId[galleryId]);
+        handleAsyncFetch(state.byId[galleryId], draft.byId[galleryId]); // make sure nothing tries to fetch gallery until saga says go
         draft.byId[galleryId].searchQuery = searchQuery;
         break;
       }

@@ -24,7 +24,7 @@ export const fetchGallery = (moduleId, galleryId) => ({
 
 export const clearGallery = galleryId => ({ type: CLEAR_GALLERY, payload: galleryId });
 
-export const updateSearch = (query, moduleId, galleryId) => ({
+export const updateSearch = (moduleId, galleryId, query) => ({
   type: UPDATE_SEARCH,
   payload: query,
   meta: { moduleId, galleryId },

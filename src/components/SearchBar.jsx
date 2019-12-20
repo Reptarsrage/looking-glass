@@ -57,7 +57,7 @@ const styles = theme => ({
 class SearchBar extends Component {
   handleSearchChange = e => {
     const { updateSearch, moduleId, galleryId } = this.props;
-    updateSearch(e.target.value, moduleId, galleryId);
+    updateSearch(moduleId, galleryId, e.target.value);
   };
 
   render() {
