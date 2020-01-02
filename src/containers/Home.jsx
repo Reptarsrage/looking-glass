@@ -57,14 +57,14 @@ class Home extends Component {
 
   chooseFolder = () => {
     const { history, setCurrentGallery, addGallery } = this.props;
-    const result = remote.dialog.showOpenDialog({ properties: ['openDirectory'] });
-
-    if (result && result.length === 1) {
-      const galleryId = result[0];
-      addGallery(FILE_SYSTEM_MODULE_ID, galleryId, galleryId);
-      setCurrentGallery(FILE_SYSTEM_MODULE_ID, galleryId);
-      history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`); // TODO: set current filesystem gallery
-    }
+    remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
+      if (!canceled && filePaths) {
+        const galleryId = filePaths[0];
+        addGallery(FILE_SYSTEM_MODULE_ID, galleryId, galleryId);
+        setCurrentGallery(FILE_SYSTEM_MODULE_ID, galleryId);
+        history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`); // TODO: set current filesystem gallery
+      }
+    });
   };
 
   renderModule = moduleId => <ModuleItem key={moduleId} moduleId={moduleId} />;
