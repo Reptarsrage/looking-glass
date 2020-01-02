@@ -102,6 +102,7 @@
     "clsx": "^1.0.4",
     "connected-react-router": "^6.6.1",
     "core-js": "^3.4.8",
+    "electron-dl": "^2.0.0",
     "electron-is-dev": "^1.1.0",
     "electron-store": "^5.1.0",
     "history": "^4.10.1",

@@ -3,6 +3,7 @@ const { app, BrowserWindow } = require('electron');
 const isDev = require('electron-is-dev');
 const path = require('path');
 
+const MenuBuilder = require('./menu');
 const createLocalWebServer = require('./localWebServer');
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -34,6 +35,10 @@ const createWindow = () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  // Configure Menu
+  const menuBuilder = new MenuBuilder(mainWindow);
+  menuBuilder.buildContextMenu();
 
   // Wait until window is presentable to show
   mainWindow.once('ready-to-show', () => {
