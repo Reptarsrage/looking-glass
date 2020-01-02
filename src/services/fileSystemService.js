@@ -5,53 +5,16 @@ import { promisify } from 'util';
 import { stringify } from 'qs';
 import { exec } from 'child_process';
 import imageSizeOfSync from 'image-size';
+import { lookup } from 'mime-types';
 
 const imageSizeOf = promisify(imageSizeOfSync);
 
 export default class FileSystemService {
-  port = process.env.SERVICE_PORT || 3002;
+  port = process.env.SERVICE_PORT || 30002;
 
   salt = null;
 
   host = process.env.SERVICE_HOST || 'localhost';
-
-  images = ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'];
-
-  videos = [
-    '.3g2',
-    '.3gp',
-    '.aaf',
-    '.asf',
-    '.avchd',
-    '.avi',
-    '.drc',
-    '.flv',
-    '.m2v',
-    '.m4p',
-    '.m4v',
-    '.mkv',
-    '.mng',
-    '.mov',
-    '.mp2',
-    '.mp4',
-    '.mpe',
-    '.mpeg',
-    '.mpg',
-    '.mpv',
-    '.mxf',
-    '.nsv',
-    '.ogg',
-    '.ogv',
-    '.qt',
-    '.rm',
-    '.rmvb',
-    '.roq',
-    '.svi',
-    '.vob',
-    '.webm',
-    '.wmv',
-    '.yuv',
-  ];
 
   constructor() {
     this.salt = this.genRandomString(6);
@@ -106,10 +69,11 @@ export default class FileSystemService {
 
   getThumbForFile = async file => {
     try {
-      if (this.images.some(ext => ext === path.extname(file).toLowerCase())) {
+      const mimeType = lookup(file);
+      if (mimeType.startsWith('image')) {
         const dimensions = await imageSizeOf(file);
         return {
-          url: file,
+          url: `http://${this.host}:${this.port}/image?${stringify({ uri: file })}`,
           thumb: null,
           isVideo: false,
           width: dimensions.width,
@@ -117,7 +81,7 @@ export default class FileSystemService {
         };
       }
 
-      if (this.videos.some(ext => ext === path.extname(file).toLowerCase())) {
+      if (mimeType.startsWith('video')) {
         const dimensions = await this.videoSizeOf(file);
         return {
           url: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
