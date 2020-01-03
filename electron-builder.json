@@ -1,6 +1,14 @@
 {
+  "productName": "The Looking-Glass",
+  "appId": "looking-glass",
+  "files": ["dist", "main.js"],
   "directories": {
     "output": "release"
   },
-  "files": ["dist", "main.js"]
+  "publish": {
+    "provider": "github",
+    "owner": "reptarsrage",
+    "repo": "looking-glass",
+    "private": false
+  }
 }

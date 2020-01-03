@@ -1,8 +1,32 @@
 {
-  "name": "test",
-  "version": "1.0.0",
+  "name": "looking-glass",
+  "productName": "The Looking-Glass",
+  "version": "0.0.1",
+  "description": "Electron application to browse various website content from one app. Built for development practice only.",
   "main": "main.js",
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reptarsrage/looking-glass.git"
+  },
+  "author": {
+    "name": "Reptarsrage",
+    "email": "reptarsrage@gmail.com",
+    "url": "https://github.com/reptarsrage"
+  },
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/reptarsrage/looking-glass/issues"
+  },
+  "keywords": [
+    "electron",
+    "react",
+    "redux",
+    "sass",
+    "webpack",
+    "hot",
+    "reload"
+  ],
+  "homepage": "https://github.com/reptarsrage/looking-glass#readme",
   "scripts": {
     "clean": "rimraf dist release .eslintcache",
     "build": "cross-env NODE_ENV=production webpack -p --config ./webpack.config.js",
@@ -129,5 +153,11 @@
     "redux-saga": "^1.1.3",
     "reselect": "^4.0.0",
     "uuid": "^3.3.3"
-  }
+  },
+  "devEngines": {
+    "node": ">=13.x",
+    "npm": ">=6.x",
+    "yarn": ">=1.x"
+  },
+  "browserslist": "electron 7.1"
 }
