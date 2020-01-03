@@ -5,6 +5,18 @@
   "directories": {
     "output": "release"
   },
+  "mac": {
+    "category": "public.app-category.entertainment",
+    "target": ["dmg"]
+  },
+  "win": {
+    "target": ["msi"]
+  },
+
+  "linux": {
+    "target": ["deb"],
+    "category": "Utility"
+  },
   "publish": {
     "provider": "github",
     "owner": "reptarsrage",
