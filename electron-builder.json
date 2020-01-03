@@ -1,0 +1,27 @@
+{
+  "productName": "The Looking-Glass",
+  "appId": "looking-glass",
+  "files": ["dist", "main.js"],
+  "directories": {
+    "buildResources": "resources",
+    "output": "release"
+  },
+  "mac": {
+    "category": "public.app-category.entertainment",
+    "target": ["dmg"]
+  },
+  "win": {
+    "target": ["msi"]
+  },
+
+  "linux": {
+    "target": ["deb"],
+    "category": "Utility"
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "reptarsrage",
+    "repo": "looking-glass",
+    "private": false
+  }
+}

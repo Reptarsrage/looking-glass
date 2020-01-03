@@ -1,0 +1,56 @@
+import axios from 'axios';
+import { stringify } from 'qs';
+
+import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/constants';
+
+export default class FileSystemService {
+  config;
+
+  instance;
+
+  constructor() {
+    const port = process.env.SERVICE_PORT || 3001;
+    const host = process.env.SERVICE_HOST || 'localhost';
+
+    const baseURL = `http://${host}:${port}`;
+    this.config = {};
+    this.instance = axios.create({
+      baseURL,
+    });
+  }
+
+  fetchModules = async () => {
+    return this.instance.get('/', this.config);
+  };
+
+  getOauthURL = async moduleId => {
+    return this.instance.get(`/${moduleId}/oauth`, this.config);
+  };
+
+  login = async (moduleId, params) => {
+    return this.instance.get(`/${moduleId}/login?${stringify(params)}`, this.config);
+  };
+
+  refresh = async (moduleId, refreshToken) => {
+    return this.instance.get(`/${moduleId}/refresh?${stringify({ refreshToken })}`, this.config);
+  };
+
+  authorize = async (moduleId, code) => {
+    return this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`, this.config);
+  };
+
+  fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query, sort) => {
+    const params = { offset, before, after, query, sort };
+    if (galleryId !== DEFAULT_GALLERY_ID && galleryId !== SEARCH_GALLERY_ID) {
+      params.galleryId = galleryId;
+    }
+
+    const config = {
+      ...this.config,
+      headers: { 'access-token': accessToken },
+    };
+
+    const url = `/${moduleId}?${stringify(params)}`;
+    return this.instance.get(url, config);
+  };
+}
