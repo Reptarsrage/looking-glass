@@ -285,7 +285,7 @@ class Gallery extends Component {
             aria-pressed="false"
             onKeyDown={this.handleKeyPress}
           >
-            <ModalItem itemId={modalItemId} onClick={this.handleModalClose} />
+            <ModalItem itemId={modalItemId} onClick={this.handleModalClose} open={modalIn} />
           </div>
         </ImageFullscreenTransition>
       </>
