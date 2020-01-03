@@ -3,6 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const qs = require('qs');
 const mime = require('mime-types');
+const log = require('electron-log');
 
 const createServer = () => {
   const port = 30002; // TODO: choose a better port
@@ -57,8 +58,8 @@ const createServer = () => {
   });
 
   // start server
-  server.on('listening', () => console.log(`Local web server listening on port ${port}`));
-  server.on('close', () => console.log('Local web server closing'));
+  server.on('listening', () => log.info(`Local web server listening on port ${port}`));
+  server.on('close', () => log.info('Local web server closing'));
   server.listen(port);
 };
 
