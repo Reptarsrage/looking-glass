@@ -10,14 +10,41 @@ describe('item reducer', () => {
   it('should handle FETCH_GALLERY_SUCCESS', () => {
     // arrange
     const galleryId = 'EXPECTED GALLERY ID';
-    const payload = { items: [...Array(3).keys()].map(id => ({ ...initialItemState, id, width: 1, height: 1 })) };
+    const payload = {
+      items: [...Array(3).keys()].map(id => ({
+        ...initialItemState,
+        id,
+        url: 'URL',
+        width: 1,
+        height: 1,
+      })),
+    };
 
     // act
     const newState = reducer(initialState, { type: FETCH_GALLERY_SUCCESS, payload, meta: galleryId });
 
     // assert
-    expect(newState.allIds.length).toEqual(payload.items.length);
-    expect(Object.keys(newState.byId).length).toEqual(payload.items.length);
+    expect(newState.allIds).toHaveLength(payload.items.length);
+    expect(Object.keys(newState.byId)).toHaveLength(payload.items.length);
+  });
+
+  it('should filter out malformed items on FETCH_GALLERY_SUCCESS', () => {
+    // arrange
+    const galleryId = 'EXPECTED GALLERY ID';
+    const payload = {
+      items: [
+        { id: '1', width: 1, height: 1 },
+        { id: '2', url: 'URL', height: 1 },
+        { id: '3', url: 'URL', width: 1 },
+      ],
+    };
+
+    // act
+    const newState = reducer(initialState, { type: FETCH_GALLERY_SUCCESS, payload, meta: galleryId });
+
+    // assert
+    expect(newState.allIds).toHaveLength(0);
+    expect(Object.keys(newState.byId)).toHaveLength(0);
   });
 
   it('should handle CLEAR_GALLERY for items with different galleryId', () => {

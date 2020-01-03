@@ -75,7 +75,7 @@ describe('gallery reducer', () => {
       hasNext: false,
       before: 'BEFORE',
       after: 'AFTER',
-      items: [Array(3).keys()].map(id => ({ id })),
+      items: [Array(3).keys()].map(id => ({ id, url: 'URL', width: 1, height: 1 })),
     };
 
     // act
@@ -90,6 +90,32 @@ describe('gallery reducer', () => {
     expect(newState.byId[galleryId].after).toEqual(payload.after);
     expect(newState.byId[galleryId].offset).toEqual(payload.offset);
     expect(newState.byId[galleryId].items).toHaveLength(payload.items.length);
+  });
+
+  it('should filter out malformed items on FETCH_GALLERY_SUCCESS', () => {
+    // arrange
+    const galleryId = 'EXPECTED GALLERY ID';
+    const oldState = { allIds: [galleryId], byId: {} };
+    oldState.byId[galleryId] = { ...initialGalleryState, id: galleryId };
+    const payload = {
+      ...initialGalleryState,
+      id: galleryId,
+      offset: 10,
+      hasNext: false,
+      before: 'BEFORE',
+      after: 'AFTER',
+      items: [
+        { id: '1', width: 1, height: 1 },
+        { id: '2', url: 'URL', height: 1 },
+        { id: '3', url: 'URL', width: 1 },
+      ],
+    };
+
+    // act
+    const newState = reducer(oldState, { type: FETCH_GALLERY_SUCCESS, payload, meta: galleryId });
+
+    // assert
+    expect(newState.byId[galleryId].items).toHaveLength(0);
   });
 
   it('should handle FETCH_GALLERY_ERROR', () => {
