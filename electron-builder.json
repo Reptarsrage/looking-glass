@@ -3,6 +3,7 @@
   "appId": "looking-glass",
   "files": ["dist", "main.js"],
   "directories": {
+    "buildResources": "resources",
     "output": "release"
   },
   "mac": {
