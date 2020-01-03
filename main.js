@@ -2,9 +2,20 @@
 const { app, BrowserWindow, screen } = require('electron');
 const isDev = require('electron-is-dev');
 const path = require('path');
+const log = require('electron-log');
+const { autoUpdater } = require('electron-updater');
 
 const MenuBuilder = require('./menu');
 const createLocalWebServer = require('./localWebServer');
+
+// Auto updater
+class AppUpdater {
+  constructor() {
+    log.transports.file.level = 'debug';
+    autoUpdater.logger = log;
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -58,6 +69,10 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow();
+
+  // Remove this if your app does not use auto updates
+  // eslint-disable-next-line
+  new AppUpdater();
 });
 
 // Quit when all windows are closed.

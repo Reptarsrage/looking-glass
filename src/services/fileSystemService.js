@@ -147,7 +147,6 @@ export default class FileSystemService {
       const stat = fs.statSync(itemPath);
       let result = null;
       if (stat && stat.isDirectory()) {
-        console.log('xxxxxxxxx', { itemPath });
         const details = await this.getThumbForDir(itemPath);
         const itemDirCount = this.dirCount(itemPath);
         const itemFileCount = this.fileCount(itemPath);
