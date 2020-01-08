@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialSortState } from '../reducers/sortReducer';
+import { currentSortSelector } from './gallerySelectors';
 import { moduleByIdSelector, searchQuerySelector } from './moduleSelectors';
 
 const getValueId = (_, props) => props.valueId;
@@ -64,6 +65,14 @@ const defaultSortValueSelector = createSelector(
   }
 );
 
+const currentSortTextSelector = createSelector(
+  [currentSortSelector, defaultSortValueSelector, stateSelector],
+  (currentSort, defaultSort, state) => {
+    const valueId = currentSort || defaultSort;
+    return state.byId[valueId].fullText || state.byId[valueId].name;
+  }
+);
+
 export {
   stateSelector,
   valuesSelector,
@@ -71,4 +80,5 @@ export {
   valueSiteIdSelector,
   moduleValuesSelector,
   defaultSortValueSelector,
+  currentSortTextSelector,
 };

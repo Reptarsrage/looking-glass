@@ -81,7 +81,7 @@ const styles = () => ({
   toolbar: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'start',
   },
 });
 
