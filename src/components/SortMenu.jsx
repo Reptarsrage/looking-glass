@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 
 import * as moduleActions from '../actions/moduleActions';
-import { sortByValuesSelector, defaultSortValueSelector } from '../selectors/moduleSelectors';
+import { moduleValuesSelector, defaultSortValueSelector } from '../selectors/sortSelectors';
 import { currentSortSelector } from '../selectors/gallerySelectors';
 import SortMenuItem from './SortMenuItem';
 
@@ -72,7 +72,7 @@ SortMenu.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  sortByValues: sortByValuesSelector,
+  sortByValues: moduleValuesSelector,
   currentSort: currentSortSelector,
   defaultSort: defaultSortValueSelector,
 });

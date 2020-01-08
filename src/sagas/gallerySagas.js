@@ -11,8 +11,8 @@ import {
 } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, currentSortSelector } from '../selectors/gallerySelectors';
-import { moduleByIdSelector, defaultSortValueSelector } from '../selectors/moduleSelectors';
-import { valueSiteIdSelector } from '../selectors/sortSelectors';
+import { moduleByIdSelector } from '../selectors/moduleSelectors';
+import { valueSiteIdSelector, defaultSortValueSelector } from '../selectors/sortSelectors';
 import { handleRefresh } from './authSagas';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 import { fetchGallery, updateSort, clearGallery } from '../actions/moduleActions';

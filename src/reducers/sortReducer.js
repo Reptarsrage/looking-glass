@@ -11,10 +11,11 @@ export const initialState = {
 export const initialSortState = {
   id: null,
   siteId: null,
-  moduleId: null,
   name: null,
   values: [],
-  icon: null,
+  default: false,
+  availableInSearch: false,
+  exclusiveToSearch: false,
 };
 
 const addSortForModule = (draft, module) => {

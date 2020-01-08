@@ -36,7 +36,6 @@ SortMenuItem.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     values: PropTypes.arrayOf(PropTypes.string),
-    icon: PropTypes.string.isRequired,
   }).isRequired,
 
   // withStyles

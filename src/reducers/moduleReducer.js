@@ -28,7 +28,6 @@ export const initialModuleState = {
   authType: null,
   icon: null,
   sortBy: [],
-  defaultSortValueId: null,
   defaultGalleryId: null,
   searchGalleryId: null,
 };
@@ -49,7 +48,6 @@ const addModule = (draft, module, actualModuleId) => {
       siteId: module.id,
       id: moduleId,
       sortBy: sortValues,
-      defaultSortValueId: sortValues.length > 0 ? sortValues[0] : null,
       defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
       searchGalleryId: generateGalleryId(moduleId, SEARCH_GALLERY_ID),
     };

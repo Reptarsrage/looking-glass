@@ -6,7 +6,7 @@ const getModuleId = (_, props) => props.moduleId;
 
 const moduleStateSelector = state => state.module || initialState;
 
-const galleryStateSelctor = state => state.gallery || initialState;
+const galleryStateSelector = state => state.gallery || initialState;
 
 const modulesSelector = createSelector(moduleStateSelector, state => state.allIds);
 
@@ -15,10 +15,6 @@ const moduleByIdSelector = createSelector(
   getModuleId,
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
-
-const sortByValuesSelector = createSelector(moduleByIdSelector, module => module.sortBy);
-
-const defaultSortValueSelector = createSelector(moduleByIdSelector, module => module.defaultSortValueId);
 
 const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, module => module.siteId);
 
@@ -33,7 +29,7 @@ const fetchingSelector = createSelector(moduleStateSelector, state => state.fetc
 const errorSelector = createSelector(moduleStateSelector, state => state.error);
 
 const searchQuerySelector = createSelector(
-  [searchGalleryIdSelector, galleryStateSelctor],
+  [searchGalleryIdSelector, galleryStateSelector],
   (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
 );
 
@@ -58,6 +54,4 @@ export {
   searchQuerySelector,
   searchGalleryIdSelector,
   searchGalleryUrlSelector,
-  sortByValuesSelector,
-  defaultSortValueSelector,
 };
