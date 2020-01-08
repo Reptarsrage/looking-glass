@@ -189,7 +189,7 @@ class Gallery extends Component {
     return items.length > 0 && items[0] !== modalItemId; // not first item
   };
 
-  getlInitialBoundsForTarget = ({ target }) => target && target.getBoundingClientRect();
+  getInitialBoundsForTarget = ({ target }) => target && target.getBoundingClientRect();
 
   handleModalNextImage = () => {
     const { items } = this.props;
@@ -228,7 +228,7 @@ class Gallery extends Component {
     if (isGallery) {
       addGallery(moduleId, id, siteId);
     } else {
-      const modalInitialBounds = this.getlInitialBoundsForTarget(event);
+      const modalInitialBounds = this.getInitialBoundsForTarget(event);
       document.body.classList.add(globalStyles.stopScroll);
       this.setState({ mountModal: true, modalIn: true, modalItemId: id, modalInitialBounds });
     }
