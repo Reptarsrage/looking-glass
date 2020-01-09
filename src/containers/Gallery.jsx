@@ -4,16 +4,14 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
+import Toolbar from '@material-ui/core/Toolbar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
-import { Link as RouterLink, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import ReactRouterPropTypes from 'react-router-prop-types';
 
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
@@ -21,6 +19,7 @@ import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/galler
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
+import Breadcrumbs from '../components/Breadcrumbs';
 import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
 import BackButton from '../components/BackButton';
@@ -78,10 +77,8 @@ const styles = () => ({
   next: {
     right: '0.5rem',
   },
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'start',
+  grow: {
+    flexGrow: 1,
   },
 });
 
@@ -341,20 +338,16 @@ class Gallery extends Component {
       return null;
     }
 
-    // TODO: Refactor Breadcrumbs
+    // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
     return (
       <>
         {this.renderModal()}
-        <Paper elevation={0} className={classes.paper}>
-          <Breadcrumbs aria-label="Breadcrumb">
-            <Link className={classes.pointer} component={RouterLink} color="inherit" to="/">
-              Home
-            </Link>
-          </Breadcrumbs>
-          <div className={classes.toolbar}>
-            <SortMenu moduleId={moduleId} galleryId={galleryId} />
-          </div>
-        </Paper>
+
+        <Toolbar variant="dense">
+          <Breadcrumbs />
+          <div className={classes.grow} />
+          <SortMenu moduleId={moduleId} galleryId={galleryId} />
+        </Toolbar>
 
         <br />
 

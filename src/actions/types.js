@@ -39,3 +39,5 @@ export const {
   AUTHORIZE_SUCCESS,
   AUTHORIZE_ERROR,
 } = actionTyper('auth');
+
+export const { UPDATE_BREADCRUMB } = actionTyper('breadcrumb');

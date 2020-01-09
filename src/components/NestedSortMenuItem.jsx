@@ -1,7 +1,6 @@
 import React from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -30,4 +29,4 @@ const mapStateToProps = createStructuredSelector({
   value: valueByIdSelector,
 });
 
-export default compose(connect(mapStateToProps))(NestedSortMenuItem);
+export default connect(mapStateToProps)(NestedSortMenuItem);
