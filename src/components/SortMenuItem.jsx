@@ -55,11 +55,11 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
           onClose={() => handleClose(null)}
           anchorOrigin={{
             vertical: 'top',
-            horizontal: 'right',
+            horizontal: 'left',
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'left',
+            horizontal: 'right',
           }}
         >
           <List>
