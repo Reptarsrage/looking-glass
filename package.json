@@ -116,7 +116,7 @@
     "wait-on": "3.3.0",
     "webpack": "4.41.2",
     "webpack-cli": "3.3.10",
-    "webpack-dev-server": "3.9.0"
+    "webpack-dev-server": "3.10.1"
   },
   "dependencies": {
     "@hot-loader/react-dom": "^16.11.0",
