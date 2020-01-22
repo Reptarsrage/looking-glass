@@ -40,4 +40,4 @@ export const {
   AUTHORIZE_ERROR,
 } = actionTyper('auth');
 
-export const { UPDATE_BREADCRUMB } = actionTyper('breadcrumb');
+export const { UPDATE_BREADCRUMB, CLEAR_BREADCRUMB } = actionTyper('breadcrumb');

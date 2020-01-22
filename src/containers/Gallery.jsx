@@ -220,10 +220,10 @@ class Gallery extends Component {
 
   handleItemClick = (event, item) => {
     const { addGallery, moduleId } = this.props;
-    const { isGallery, id, siteId } = item;
+    const { isGallery, id, siteId, title } = item;
 
     if (isGallery) {
-      addGallery(moduleId, id, siteId);
+      addGallery(moduleId, id, siteId, title);
     } else {
       const modalInitialBounds = this.getInitialBoundsForTarget(event);
       document.body.classList.add(globalStyles.stopScroll);

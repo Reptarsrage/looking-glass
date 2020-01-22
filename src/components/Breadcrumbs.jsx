@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { compose } from 'redux';
 
 import { breadcrumbsSelector } from '../selectors/breadcrumbSelectors';
+import BreadcrumbItem from './BreadcrumbItem';
 
 const styles = theme => ({
   link: {
@@ -28,8 +29,8 @@ const CustomBreadcrumbs = ({ breadcrumbs, classes }) => (
       <HomeIcon className={classes.icon} />
       Home
     </Link>
-    {breadcrumbs.map(breadcrumbId => (
-      <span key={breadcrumbId}>{breadcrumbId}</span>
+    {breadcrumbs.map((breadcrumbId, i) => (
+      <BreadcrumbItem key={breadcrumbId} breadcrumbId={breadcrumbId} depth={i - breadcrumbs.length + 1} />
     ))}
   </Breadcrumbs>
 );

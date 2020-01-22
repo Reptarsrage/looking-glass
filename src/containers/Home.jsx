@@ -15,10 +15,12 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
+import * as path from 'path';
 
 import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
 import * as appActions from '../actions/appActions';
+import * as breadcrumbActions from '../actions/breadcrumbActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 
@@ -44,10 +46,13 @@ const styles = theme => ({
 
 class Home extends Component {
   componentDidMount() {
-    const { fetching, success, fetchModules, setCurrentGallery } = this.props;
+    const { fetching, success, fetchModules, setCurrentGallery, clearBreadcrumbs } = this.props;
 
     // make sure no module is selected
     setCurrentGallery(null, null);
+
+    // clear breadcrumbs
+    clearBreadcrumbs();
 
     // fetch modules
     if (!fetching && !success) {
@@ -60,7 +65,7 @@ class Home extends Component {
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const galleryId = filePaths[0];
-        addGallery(FILE_SYSTEM_MODULE_ID, galleryId, galleryId);
+        addGallery(FILE_SYSTEM_MODULE_ID, galleryId, galleryId, path.basename(path.dirname(filePaths[0])));
         setCurrentGallery(FILE_SYSTEM_MODULE_ID, galleryId);
         history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`); // TODO: set current filesystem gallery
       }
@@ -111,15 +116,21 @@ Home.defaultProps = {
 };
 
 Home.propTypes = {
-  classes: PropTypes.object.isRequired,
-  fetchModules: PropTypes.func.isRequired,
-  setCurrentGallery: PropTypes.func.isRequired,
-  addGallery: PropTypes.func.isRequired,
+  // selectors
   modules: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   history: ReactRouterPropTypes.history.isRequired,
+
+  // actions
+  fetchModules: PropTypes.func.isRequired,
+  setCurrentGallery: PropTypes.func.isRequired,
+  clearBreadcrumbs: PropTypes.func.isRequired,
+  addGallery: PropTypes.func.isRequired,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -130,6 +141,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
+  clearBreadcrumbs: breadcrumbActions.clearBreadcrumbs,
   addGallery: moduleActions.addGallery,
   fetchModules: moduleActions.fetchModules,
   setCurrentGallery: appActions.setCurrentGallery,
