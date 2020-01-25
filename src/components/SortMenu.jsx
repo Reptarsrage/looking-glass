@@ -1,21 +1,29 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import Popover from '@material-ui/core/Popover';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import SortIcon from '@material-ui/icons/Sort';
 
 import * as moduleActions from '../actions/moduleActions';
-import { sortByValuesSelector, defaultSortValueSelector } from '../selectors/moduleSelectors';
-import { currentSortSelector } from '../selectors/gallerySelectors';
+import { moduleValuesSelector, currentSortTextSelector } from '../selectors/sortSelectors';
 import SortMenuItem from './SortMenuItem';
 
-const styles = () => ({});
+const styles = theme => ({
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+  button: {
+    textTransform: 'none',
+  },
+});
 
-function SortMenu({ sortByValues, moduleId, sortChange, currentSort, galleryId, defaultSort }) {
+function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, currentSortText }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = event => {
@@ -31,30 +39,43 @@ function SortMenu({ sortByValues, moduleId, sortChange, currentSort, galleryId, 
   };
 
   // nothing to display
-  if (!sortByValues || !defaultSort) {
+  if (!sortByValues || !currentSortText) {
     return null;
   }
 
   const ariaId = `${moduleId}-sort-menu`;
   return (
     <>
-      <Button aria-controls={ariaId} aria-haspopup="true" onClick={handleClick}>
-        <SortMenuItem valueId={currentSort || defaultSort} />
+      <Button className={classes.button} aria-controls={ariaId} aria-haspopup="true" onClick={handleClick}>
+        <SortIcon className={classes.extendedIcon} />
+        <Typography>{currentSortText}</Typography>
       </Button>
-      <Menu id={ariaId} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => handleClose(null)}>
-        {sortByValues.map(valueId => (
-          <MenuItem key={valueId} onClick={() => handleClose(valueId)}>
-            <SortMenuItem valueId={valueId} />
-          </MenuItem>
-        ))}
-      </Menu>
+      <Popover
+        id={ariaId}
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => handleClose(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <List>
+          {sortByValues.map(valueId => (
+            <SortMenuItem key={valueId} valueId={valueId} onClick={handleClose} />
+          ))}
+        </List>
+      </Popover>
     </>
   );
 }
 
 SortMenu.defaultProps = {
-  defaultSort: null,
-  currentSort: null,
+  currentSortText: null,
 };
 
 SortMenu.propTypes = {
@@ -64,17 +85,18 @@ SortMenu.propTypes = {
 
   // selectors
   sortByValues: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentSort: PropTypes.string,
-  defaultSort: PropTypes.string,
+  currentSortText: PropTypes.string,
 
   // actions
   sortChange: PropTypes.func.isRequired,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  sortByValues: sortByValuesSelector,
-  currentSort: currentSortSelector,
-  defaultSort: defaultSortValueSelector,
+  sortByValues: moduleValuesSelector,
+  currentSortText: currentSortTextSelector,
 });
 
 const mapDispatchToProps = {

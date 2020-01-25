@@ -11,10 +11,12 @@ export const initialState = {
 export const initialSortState = {
   id: null,
   siteId: null,
-  moduleId: null,
   name: null,
+  fullText: null,
   values: [],
-  icon: null,
+  default: false,
+  availableInSearch: false,
+  exclusiveToSearch: false,
 };
 
 const addSortForModule = (draft, module) => {
@@ -33,6 +35,7 @@ const addSortForModule = (draft, module) => {
           ...nestedSortValue,
           siteId: nestedSortValue.id,
           id: nestedId,
+          fullText: `${sortValue.name} (${nestedSortValue.name})`,
         };
       });
     }

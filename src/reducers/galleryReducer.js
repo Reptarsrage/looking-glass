@@ -39,10 +39,11 @@ export const initialGalleryState = {
   searchQuery: null,
   currentSort: null,
   items: [],
+  title: null,
   ...initialAsyncState,
 };
 
-const addGallery = (draft, moduleId, siteId, actualGalleryId = null) => {
+const addGallery = (draft, moduleId, siteId, actualGalleryId = null, title = null) => {
   // generate ids
   const galleryId = actualGalleryId || generateGalleryId(moduleId, siteId);
 
@@ -55,6 +56,7 @@ const addGallery = (draft, moduleId, siteId, actualGalleryId = null) => {
       siteId,
       id: galleryId,
       moduleId,
+      title,
     };
   }
 };
@@ -65,9 +67,9 @@ const galleryReducer = (state = initialState, action) =>
 
     switch (type) {
       case ADD_GALLERY: {
-        const { moduleId, galleryId, siteId } = payload;
+        const { moduleId, galleryId, siteId, title } = payload;
         if (!(galleryId in state.byId)) {
-          addGallery(draft, moduleId, siteId, galleryId);
+          addGallery(draft, moduleId, siteId, galleryId, title);
         }
 
         break;
@@ -76,15 +78,15 @@ const galleryReducer = (state = initialState, action) =>
         const modules = payload;
 
         // Add default module galleries for all modules
-        modules.forEach(({ id }) => {
+        modules.forEach(({ id, title }) => {
           const moduleId = generateModuleId(id);
-          addGallery(draft, moduleId, DEFAULT_GALLERY_ID);
-          addGallery(draft, moduleId, SEARCH_GALLERY_ID);
+          addGallery(draft, moduleId, DEFAULT_GALLERY_ID, null, title);
+          addGallery(draft, moduleId, SEARCH_GALLERY_ID, null, title);
         });
 
         // Add file system default module galleries
-        addGallery(draft, FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID);
-        addGallery(draft, FILE_SYSTEM_MODULE_ID, SEARCH_GALLERY_ID);
+        addGallery(draft, FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID, null, 'Local Files');
+        addGallery(draft, FILE_SYSTEM_MODULE_ID, SEARCH_GALLERY_ID, null, 'Local Files');
         break;
       }
       case FETCH_GALLERY: {

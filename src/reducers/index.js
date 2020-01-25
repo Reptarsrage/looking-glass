@@ -7,6 +7,7 @@ import moduleReducer from './moduleReducer';
 import galleryReducer from './galleryReducer';
 import itemReducer from './itemReducer';
 import sortReducer from './sortReducer';
+import breadcrumbReducer from './breadcrumbReducer';
 
 const rootReducer = (history, asyncReducers) =>
   combineReducers({
@@ -17,6 +18,7 @@ const rootReducer = (history, asyncReducers) =>
     gallery: galleryReducer,
     item: itemReducer,
     sort: sortReducer,
+    breadcrumb: breadcrumbReducer,
     ...asyncReducers,
   });
 
