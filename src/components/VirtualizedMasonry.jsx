@@ -20,6 +20,7 @@ const styles = () => ({
     display: 'flex',
     flex: '1 1 auto',
     flexWrap: 'wrap',
+    flexDirection: 'row-reverse',
     justifyContent: 'center',
     position: 'relative',
   },
