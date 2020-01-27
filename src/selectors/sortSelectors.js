@@ -69,7 +69,11 @@ const currentSortTextSelector = createSelector(
   [currentSortSelector, defaultSortValueSelector, stateSelector],
   (currentSort, defaultSort, state) => {
     const valueId = currentSort || defaultSort;
-    return state.byId[valueId].fullText || state.byId[valueId].name;
+    if (valueId) {
+      return state.byId[valueId].fullText || state.byId[valueId].name;
+    }
+
+    return null;
   }
 );
 
