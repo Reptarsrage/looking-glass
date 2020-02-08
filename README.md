@@ -54,3 +54,5 @@ yarn package
 - [ ] Add more gallery information
 - [ ] Add more custom context menu items
 - [ ] Add custom menu items
+- [ ] Fix configured server address for different environments
+- [ ] Add custom icon
