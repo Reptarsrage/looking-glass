@@ -47,15 +47,13 @@
   },
   "lint-staged": {
     "*.{js,jsx}": [
-      "eslint --cache --format=pretty",
-      "git add"
+      "eslint --cache --format=pretty"
     ],
     "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
       "pretty-quick --staged"
     ],
     "*.{css,scss}": [
-      "stylelint --ignore-path .eslintignore --syntax scss --fix",
-      "git add"
+      "stylelint --ignore-path .eslintignore --syntax scss --fix"
     ],
     "*.{html,md,yml}": [
       "pretty-quick --staged"
