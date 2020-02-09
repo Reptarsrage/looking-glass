@@ -9,11 +9,11 @@ import {
   NAVIGATE_BREADCRUMB,
 } from '../actions/types';
 import { setCurrentGallery } from '../actions/appActions';
-import { addGallery } from '../actions/moduleActions';
+import { addGallery, updateSearch } from '../actions/moduleActions';
 import { pushBreadcrumb, popBreadcrumb, clearBreadcrumbs } from '../actions/breadcrumbActions';
 import { breadcrumbByIdSelector, breadcrumbsSelector } from '../selectors/breadcrumbSelectors';
 import { searchGalleryIdSelector, defaultGalleryIdSelector } from '../selectors/moduleSelectors';
-import { galleryIdSelector } from '../selectors/appSelectors';
+import { galleryIdSelector, moduleIdSelector } from '../selectors/appSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
 import { itemByIdSelector } from '../selectors/itemSelectors';
 import { history } from '../store/configureStore';
@@ -23,8 +23,16 @@ function* handleNavigateHome() {
   // Clear all breadcrumbs
   yield put(clearBreadcrumbs());
 
+  const galleryId = yield select(galleryIdSelector);
+  const moduleId = yield select(moduleIdSelector);
+
   // Set current gallery to null
   yield put(setCurrentGallery(null, null));
+
+  // Clear search
+  if (galleryId && moduleId) {
+    yield put(updateSearch(moduleId, galleryId, null));
+  }
 
   // Navigate
   history.push('/');
