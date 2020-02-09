@@ -17,11 +17,28 @@ class AppUpdater {
   }
 }
 
+// Dev tools installer
+const installExtensions = async () => {
+  // eslint-disable-next-line global-require
+  const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
+  const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS];
+
+  return Promise.all(extensions.map(installExtension)).catch(console.log);
+};
+
+// Fix warning https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = true;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-const createWindow = () => {
+const createWindow = async () => {
+  // Install dev tools
+  if (process.env.NODE_ENV === 'development') {
+    await installExtensions();
+  }
+
   // Create the browser window.
   const { bounds } = screen.getPrimaryDisplay();
   mainWindow = new BrowserWindow({
@@ -67,8 +84,8 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-  createWindow();
+app.on('ready', async () => {
+  await createWindow();
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
@@ -84,11 +101,11 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
+app.on('activate', async () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow();
+    await createWindow();
   }
 });
 
