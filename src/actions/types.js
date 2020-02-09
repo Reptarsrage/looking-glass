@@ -23,6 +23,7 @@ export const {
   FETCH_GALLERY_ERROR,
   CLEAR_GALLERY,
   UPDATE_SORT,
+  SEARCH_CHANGE,
   SORT_CHANGE,
 } = actionTyper('module');
 

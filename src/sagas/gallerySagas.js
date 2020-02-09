@@ -6,8 +6,8 @@ import {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
-  UPDATE_SEARCH,
   SORT_CHANGE,
+  SEARCH_CHANGE,
 } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, currentSortSelector } from '../selectors/gallerySelectors';
@@ -16,7 +16,7 @@ import { moduleByIdSelector, searchGalleryIdSelector } from '../selectors/module
 import { valueSiteIdSelector, defaultSortValueSelector } from '../selectors/sortSelectors';
 import { handleRefresh } from './authSagas';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
-import { fetchGallery, updateSort, clearGallery } from '../actions/moduleActions';
+import { fetchGallery, updateSort, clearGallery, updateSearch } from '../actions/moduleActions';
 import { navigateToSearch, navigateFromSearch } from '../actions/navigationActions';
 
 const fsService = new FileSystemService();
@@ -35,12 +35,14 @@ function* handleSortChange(action) {
   }
 }
 
-function* handleUpdateSearch(action) {
+function* handleSearchChange(action) {
   const { meta, payload: query } = action;
   const { galleryId, moduleId } = meta;
 
   const searchGalleryId = yield select(searchGalleryIdSelector, { moduleId });
   const currentGalleryId = yield select(galleryIdSelector, { moduleId });
+
+  yield put(updateSearch(searchGalleryId, query));
 
   if (query && searchGalleryId !== currentGalleryId) {
     // Searching, navigate to search gallery
@@ -109,7 +111,7 @@ function* handleFetchGallery(action) {
 function* watchGallerySagas() {
   yield all([
     takeEvery(FETCH_GALLERY, handleFetchGallery),
-    takeLatest(UPDATE_SEARCH, handleUpdateSearch),
+    takeLatest(SEARCH_CHANGE, handleSearchChange),
     takeLatest(SORT_CHANGE, handleSortChange),
   ]);
 }

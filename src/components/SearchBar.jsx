@@ -56,8 +56,8 @@ const styles = theme => ({
 
 class SearchBar extends Component {
   handleSearchChange = e => {
-    const { updateSearch, moduleId, galleryId } = this.props;
-    updateSearch(moduleId, galleryId, e.target.value);
+    const { searchChange, moduleId, galleryId } = this.props;
+    searchChange(moduleId, galleryId, e.target.value);
   };
 
   render() {
@@ -94,7 +94,7 @@ SearchBar.defaultProps = {
 };
 
 SearchBar.propTypes = {
-  updateSearch: PropTypes.func.isRequired,
+  searchChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   moduleId: PropTypes.string,
   galleryId: PropTypes.string,
@@ -108,7 +108,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  updateSearch: moduleActions.updateSearch,
+  searchChange: moduleActions.searchChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SearchBar);

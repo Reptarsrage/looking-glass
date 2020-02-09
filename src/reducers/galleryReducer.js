@@ -124,7 +124,7 @@ const galleryReducer = (state = initialState, action) =>
       }
       case UPDATE_SEARCH: {
         const searchQuery = payload;
-        const { galleryId } = meta;
+        const galleryId = meta;
         handleAsyncFetch(state.byId[galleryId], draft.byId[galleryId]); // make sure nothing tries to fetch gallery until saga says go
         draft.byId[galleryId].searchQuery = searchQuery;
         break;
