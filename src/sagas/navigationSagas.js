@@ -15,7 +15,9 @@ import { breadcrumbByIdSelector, breadcrumbsSelector } from '../selectors/breadc
 import { searchGalleryIdSelector, defaultGalleryIdSelector } from '../selectors/moduleSelectors';
 import { galleryIdSelector } from '../selectors/appSelectors';
 import { galleryByIdSelector } from '../selectors/gallerySelectors';
+import { itemByIdSelector } from '../selectors/itemSelectors';
 import { history } from '../store/configureStore';
+import { generateGalleryId } from '../reducers/constants';
 
 function* handleNavigateHome() {
   // Clear all breadcrumbs
@@ -77,14 +79,33 @@ function* handleNavigateFromSearch(action) {
 
 function* handleNavigateGallery(action) {
   const { payload } = action;
-  const { moduleId, galleryId, title } = payload;
+  const { moduleId, title } = payload;
+  let { galleryId } = payload;
 
-  const currentGalleryId = yield select(galleryIdSelector);
-
-  if (currentGalleryId !== galleryId) {
+  // Check if navigating to nested gallery
+  const item = yield select(itemByIdSelector, { itemId: galleryId });
+  if (item && item.siteId) {
+    // If we're navigating to an item that means we're navigating to a nested gallery
     // Ensure gallery exists in state
+    yield put(addGallery(moduleId, item.siteId));
+
+    // Update galleryId
+    galleryId = generateGalleryId(moduleId, item.siteId);
+  }
+
+  // check if navigating to non-existant gallery (file system)
+  const requestedGallery = yield select(galleryByIdSelector, { galleryId });
+  if (!requestedGallery || !requestedGallery.id) {
+    // Ensure gallery exists in state, assume we were given a site id
     yield put(addGallery(moduleId, galleryId));
 
+    // Update galleryId
+    galleryId = generateGalleryId(moduleId, galleryId);
+  }
+
+  // Gallery exists! Check if we need to navigate
+  const currentGalleryId = yield select(galleryIdSelector);
+  if (currentGalleryId !== galleryId) {
     // Add it as a breadcrumb item
     yield put(pushBreadcrumb(moduleId, galleryId, title));
 
