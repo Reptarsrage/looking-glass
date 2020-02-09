@@ -103,7 +103,7 @@ class Masonry extends Component {
   };
 
   render() {
-    const { columnCount, gutter, items, loading } = this.props;
+    const { columnCount, gutter, items, loading, moduleId, galleryId } = this.props;
     const { message, open } = this.state;
 
     if (items.length === 0 && loading) {
@@ -127,6 +127,7 @@ class Masonry extends Component {
             loadMoreThreshold={5000}
             overscan={500}
             renderItem={this.renderItem}
+            pathKey={`${moduleId}/${galleryId}`}
           />
         )}
       </>
@@ -142,13 +143,13 @@ Masonry.defaultProps = {
 Masonry.propTypes = {
   // required
   error: PropTypes.bool.isRequired,
-  galleryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  galleryId: PropTypes.string.isRequired,
   getItemHeight: PropTypes.func.isRequired,
   getItemWidth: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
   loadMore: PropTypes.func.isRequired,
-  moduleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  moduleId: PropTypes.string.isRequired,
   onItemClick: PropTypes.func.isRequired,
 
   // optional

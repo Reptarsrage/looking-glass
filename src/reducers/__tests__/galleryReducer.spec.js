@@ -16,28 +16,12 @@ describe('gallery reducer', () => {
     expect(newState).toEqual(initialState);
   });
 
-  it('should handle ADD_GALLERY with explicit galleryId', () => {
-    // arrange
-    const moduleId = 'EXPECTED MODULE ID';
-    const siteId = 'EXPECTED SITE ID';
-    const galleryId = 'EXPECTED GALLERY ID';
-    const payload = { moduleId, siteId, galleryId };
-
-    // act
-    const newState = reducer(initialState, { type: ADD_GALLERY, payload });
-
-    // assert
-    expect(newState.allIds.length).toEqual(1);
-    expect(Object.keys(newState.byId).length).toEqual(1);
-    expect(newState.byId).toHaveProperty(galleryId);
-  });
-
-  it('should handle ADD_GALLERY with implicit galleryId', () => {
+  it('should handle ADD_GALLERY', () => {
     // arrange
     const moduleId = 'EXPECTED MODULE ID';
     const siteId = 'EXPECTED SITE ID';
     const galleryId = generateGalleryId(moduleId, siteId);
-    const payload = { moduleId, siteId };
+    const payload = { moduleId, galleryId: siteId };
 
     // act
     const newState = reducer(initialState, { type: ADD_GALLERY, payload });

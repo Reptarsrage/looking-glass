@@ -3,8 +3,6 @@ import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { withResizeDetector } from 'react-resize-detector';
-import { withRouter } from 'react-router-dom';
-import ReactRouterPropTypes from 'react-router-prop-types';
 import { compose } from 'redux';
 
 import Virtualized from './Virtualized';
@@ -32,7 +30,7 @@ class VirtualizedMasonry extends PureComponent {
 
     // initialize
     this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
-    const { columnCount, location } = props;
+    const { columnCount, pathKey } = props;
     const columnItems = [...Array(columnCount).keys()].map(id => ({ height: 0, id, items: [] }));
     this.state = {
       columnItems,
@@ -48,7 +46,7 @@ class VirtualizedMasonry extends PureComponent {
     this.containerRef = createRef();
 
     // restore previous state
-    const restoredState = this.restoreScrollPosition(location.pathname);
+    const restoredState = this.restoreScrollPosition(pathKey);
     if (restoredState) {
       this.state = { ...this.state, ...restoredState };
 
@@ -144,16 +142,16 @@ class VirtualizedMasonry extends PureComponent {
   };
 
   saveScrollPosition = () => {
-    const { location } = this.props;
+    const { pathKey } = this.props;
     const { columnItems, totalItems, ...rest } = this.state;
 
-    sessionStorage.setItem(location.pathname, JSON.stringify(rest));
+    sessionStorage.setItem(pathKey, JSON.stringify(rest));
   };
 
   restoreScrollPosition = () => {
-    const { location } = this.props;
+    const { pathKey } = this.props;
 
-    const value = sessionStorage.getItem(location.pathname);
+    const value = sessionStorage.getItem(pathKey);
     if (value !== null) {
       return JSON.parse(value);
     }
@@ -259,6 +257,7 @@ VirtualizedMasonry.propTypes = {
   length: PropTypes.number.isRequired,
   loadMore: PropTypes.func.isRequired,
   renderItem: PropTypes.func.isRequired,
+  pathKey: PropTypes.string.isRequired,
 
   // optional
   columnCount: PropTypes.number,
@@ -267,9 +266,6 @@ VirtualizedMasonry.propTypes = {
   loadMoreThreshold: PropTypes.number,
   overscan: PropTypes.number,
 
-  // withRouter
-  location: ReactRouterPropTypes.location.isRequired,
-
   // withResizeDetector
   width: PropTypes.number,
 
@@ -277,4 +273,4 @@ VirtualizedMasonry.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(withResizeDetector, withStyles(styles), withRouter)(VirtualizedMasonry);
+export default compose(withResizeDetector, withStyles(styles))(VirtualizedMasonry);

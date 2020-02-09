@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import { useInView } from 'react-intersection-observer';
 
@@ -39,9 +38,9 @@ const MasonryItem = props => {
   });
 
   const handleClick = event => {
-    const { onClick, item } = props;
+    const { onClick, item, moduleId, itemId } = props;
     if (onClick) {
-      onClick(event, item);
+      onClick(event, item, moduleId, itemId);
     }
   };
 
@@ -60,15 +59,15 @@ const MasonryItem = props => {
   };
 
   const renderLink = children => {
-    const { classes, item, moduleId, itemId } = props;
+    const { classes, item } = props;
     const { isGallery } = item;
 
     if (isGallery) {
       return (
-        <Link className={classes.link} to={`/gallery/${moduleId}/${itemId}`}>
+        <div className={classes.link}>
           <PhotoLibraryIcon color="primary" className={classes.icon} />
           {children}
-        </Link>
+        </div>
       );
     }
 
@@ -89,9 +88,17 @@ MasonryItem.defaultProps = {
 };
 
 MasonryItem.propTypes = {
-  classes: PropTypes.object.isRequired,
+  // required
   moduleId: PropTypes.string.isRequired,
   itemId: PropTypes.string.isRequired,
+
+  // optional
+  onClick: PropTypes.func,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
+
+  // selectors
   item: PropTypes.shape({
     title: PropTypes.string,
     description: PropTypes.string,
@@ -102,7 +109,6 @@ MasonryItem.propTypes = {
     url: PropTypes.string,
     thumb: PropTypes.string,
   }).isRequired,
-  onClick: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({

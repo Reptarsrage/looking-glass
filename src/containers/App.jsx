@@ -12,7 +12,6 @@ import Typography from '@material-ui/core/Typography';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { withRouter } from 'react-router';
-import ReactRouterPropTypes from 'react-router-prop-types';
 import Container from '@material-ui/core/Container';
 
 import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
@@ -76,13 +75,13 @@ const styles = theme => ({
 
 class App extends Component {
   renderBackButton = () => {
-    const { history, moduleId } = this.props;
+    const { moduleId } = this.props;
 
     if (!moduleId) {
       return null;
     }
 
-    return <BackButton history={history} color="inherit" isFab={false} />;
+    return <BackButton color="inherit" isFab={false} />;
   };
 
   render() {
@@ -121,7 +120,6 @@ App.propTypes = {
   children: PropTypes.element.isRequired,
   darkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
-  history: ReactRouterPropTypes.history.isRequired,
   moduleId: PropTypes.string,
 };
 

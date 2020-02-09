@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
@@ -11,14 +12,12 @@ import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
-import { Redirect } from 'react-router-dom';
-import ReactRouterPropTypes from 'react-router-prop-types';
 
+import * as naviagationActions from '../actions/navigationActions';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
-import * as appActions from '../actions/appActions';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
@@ -27,12 +26,6 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
 import globalStyles from '../index.scss';
-import {
-  searchQuerySelector,
-  searchGalleryIdSelector,
-  searchGalleryUrlSelector,
-  defaultGalleryUrlSelector,
-} from '../selectors/moduleSelectors';
 
 const styles = () => ({
   floatedBottomRight: {
@@ -96,29 +89,21 @@ class Gallery extends Component {
   }
 
   componentDidMount() {
-    const { setCurrentGallery, moduleId, galleryId } = this.props;
-
     // set event listeners
     window.addEventListener('scroll', this.handleScroll);
     document.addEventListener('keydown', this.handleKeyPress, false);
-
-    // set current gallery and module
-    setCurrentGallery(moduleId, galleryId);
 
     // fetch images
     this.fetchInitialItems();
   }
 
   componentDidUpdate(prevProps) {
-    const { moduleId, galleryId, setCurrentGallery } = this.props;
+    const { moduleId, galleryId } = this.props;
     const { moduleId: prevModuleId, galleryId: prevGalleryId } = prevProps;
 
     if (moduleId !== prevModuleId || galleryId !== prevGalleryId) {
       // clear modal
       this.handleModalClose();
-
-      // set current gallery and module
-      setCurrentGallery(moduleId, galleryId);
 
       // fetch images
       this.fetchInitialItems();
@@ -132,17 +117,19 @@ class Gallery extends Component {
   }
 
   handleKeyPress = event => {
+    // TODO: Handle arrow key presses
     if (event.key === 'Escape') {
       this.handleModalClose();
     }
   };
 
   handleScroll = () => {
+    const { overlayButtonThreshold } = this.props;
     const { showOverlayButtons } = this.state;
 
-    if (window.scrollY > 25 && !showOverlayButtons) {
+    if (window.scrollY >= overlayButtonThreshold && !showOverlayButtons) {
       this.setState({ showOverlayButtons: true });
-    } else if (window.scrollY <= 25 && showOverlayButtons) {
+    } else if (window.scrollY < overlayButtonThreshold && showOverlayButtons) {
       this.setState({ showOverlayButtons: false });
     }
   };
@@ -151,10 +138,12 @@ class Gallery extends Component {
     const { fetchGallery, moduleId, galleryId, gallery, isAuthenticated, requiresAuth } = this.props;
     const { hasNext, fetching, success } = gallery;
 
+    // Abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
       return;
     }
 
+    // Check if first page is available and not already fetched, and fetch it
     if (hasNext && !fetching && !success) {
       fetchGallery(moduleId, galleryId);
     }
@@ -164,10 +153,12 @@ class Gallery extends Component {
     const { fetchGallery, moduleId, galleryId, gallery, isAuthenticated, requiresAuth } = this.props;
     const { hasNext, fetching } = gallery;
 
+    // Abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
       return;
     }
 
+    // Check if next page is available, and fetch it
     if (hasNext && !fetching) {
       fetchGallery(moduleId, galleryId);
     }
@@ -176,8 +167,7 @@ class Gallery extends Component {
   modalHasNext = () => {
     const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = items.findIndex(id => id === modalItemId);
-    return idx < items.length - 1;
+    return items.length > 0 && items[items.length - 1] !== modalItemId; // not last item
   };
 
   modalHasPrev = () => {
@@ -191,12 +181,11 @@ class Gallery extends Component {
   handleModalNextImage = () => {
     const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = items.findIndex(id => id === modalItemId);
 
-    if (idx < items.length - 1) {
-      const newModalItemId = items[idx + 1];
-
+    if (this.modalHasNext()) {
       // TODO: Update modalInitialBounds
+      const idx = items.findIndex(id => id === modalItemId);
+      const newModalItemId = items[idx + 1];
       this.setState({ modalItemId: newModalItemId });
     }
   };
@@ -204,29 +193,26 @@ class Gallery extends Component {
   handleModalPrevImage = () => {
     const { items } = this.props;
     const { modalItemId } = this.state;
-    const idx = items.findIndex(id => id === modalItemId);
 
-    if (idx > 0) {
-      const newModalItemId = items[idx - 1];
-
+    if (this.modalHasPrev()) {
       // TODO: Update modalInitialBounds
+      const idx = items.findIndex(id => id === modalItemId);
+      const newModalItemId = items[idx - 1];
       this.setState({ modalItemId: newModalItemId });
     }
   };
 
-  handleModalClose = () => {
-    this.setState({ modalIn: false });
-  };
+  handleModalClose = () => this.setState({ modalIn: false });
 
   handleItemClick = (event, item) => {
-    const { addGallery, moduleId } = this.props;
-    const { isGallery, id, siteId, title } = item;
+    const { navigateToGallery, moduleId } = this.props;
+    const { isGallery, id, title } = item;
 
     if (isGallery) {
-      addGallery(moduleId, id, siteId, title);
+      navigateToGallery(moduleId, id, title);
     } else {
-      const modalInitialBounds = this.getInitialBoundsForTarget(event);
       document.body.classList.add(globalStyles.stopScroll);
+      const modalInitialBounds = this.getInitialBoundsForTarget(event);
       this.setState({ mountModal: true, modalIn: true, modalItemId: id, modalInitialBounds });
     }
   };
@@ -300,42 +286,18 @@ class Gallery extends Component {
   };
 
   render() {
-    const {
-      items,
-      classes,
-      moduleId,
-      galleryId,
-      gallery,
-      location,
-      isAuthenticated,
-      requiresAuth,
-      authUrl,
-      searchQuery,
-      searchGalleryId,
-      searchGalleryUrl,
-      defaultGalleryUrl,
-    } = this.props;
+    const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
     const { fetching, error } = gallery;
     const { showOverlayButtons } = this.state;
-
-    // redirect to authenticate
-    if (requiresAuth && !isAuthenticated) {
-      return <Redirect to={authUrl} />;
-    }
-
-    // redirect to search gallery
-    if (searchQuery && galleryId !== searchGalleryId) {
-      return <Redirect to={searchGalleryUrl} />;
-    }
-
-    // redirect from search to default gallery
-    if (!searchQuery && galleryId === searchGalleryId) {
-      return <Redirect to={defaultGalleryUrl} />;
-    }
 
     // Sometimes react router renders things that aren't supposed to be
     if (!moduleId || !galleryId) {
       return null;
+    }
+
+    // Redirect to authenticate
+    if (requiresAuth && !isAuthenticated) {
+      return <Redirect to={authUrl} />;
     }
 
     // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
@@ -356,7 +318,6 @@ class Gallery extends Component {
 
         <Masonry
           key={`${moduleId}/${galleryId}`}
-          location={location}
           moduleId={moduleId}
           galleryId={galleryId}
           items={items}
@@ -374,33 +335,37 @@ class Gallery extends Component {
 
 Gallery.defaultProps = {
   authUrl: null,
-  searchQuery: null,
+  overlayButtonThreshold: 25,
 };
 
 Gallery.propTypes = {
-  classes: PropTypes.object.isRequired,
+  // required
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
-  items: PropTypes.arrayOf(PropTypes.string).isRequired,
+
+  // optional
+  overlayButtonThreshold: PropTypes.number,
+
+  // selectors
   gallery: PropTypes.shape({
     hasNext: PropTypes.bool,
     fetching: PropTypes.bool,
     success: PropTypes.bool,
     error: PropTypes.object,
   }).isRequired,
-  fetchGallery: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
   itemHeightSelectorFunc: PropTypes.func.isRequired,
   itemWidthSelectorFunc: PropTypes.func.isRequired,
-  addGallery: PropTypes.func.isRequired,
-  setCurrentGallery: PropTypes.func.isRequired,
-  location: ReactRouterPropTypes.location.isRequired,
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
-  searchQuery: PropTypes.string,
-  searchGalleryId: PropTypes.string.isRequired,
-  searchGalleryUrl: PropTypes.string.isRequired,
-  defaultGalleryUrl: PropTypes.string.isRequired,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
+
+  // actions
+  fetchGallery: PropTypes.func.isRequired,
+  navigateToGallery: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -409,18 +374,13 @@ const mapStateToProps = createStructuredSelector({
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
-  searchQuery: searchQuerySelector,
-  searchGalleryId: searchGalleryIdSelector,
-  searchGalleryUrl: searchGalleryUrlSelector,
-  defaultGalleryUrl: defaultGalleryUrlSelector,
   itemHeightSelectorFunc: state => itemId => itemHeightSelector(state, { itemId }),
   itemWidthSelectorFunc: state => itemId => itemWidthSelector(state, { itemId }),
 });
 
 const mapDispatchToProps = {
   fetchGallery: moduleActions.fetchGallery,
-  addGallery: moduleActions.addGallery,
-  setCurrentGallery: appActions.setCurrentGallery,
+  navigateToGallery: naviagationActions.navigateToGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery);

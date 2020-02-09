@@ -15,9 +15,8 @@ import { parse } from 'url';
 import { remote } from 'electron';
 import qs from 'qs';
 
-import { defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
+import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as authActions from '../actions/authActions';
-import * as appActions from '../actions/appActions';
 import {
   successSelector,
   fetchingSelector,
@@ -76,8 +75,7 @@ class OAuth extends Component {
   }
 
   componentDidMount() {
-    const { fetching, success, moduleId, fetchOAuthURL, setCurrentGallery } = this.props;
-    setCurrentGallery(moduleId, null);
+    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
 
     if (!fetching && !success) {
       fetchOAuthURL(moduleId);
@@ -138,11 +136,12 @@ class OAuth extends Component {
   };
 
   render() {
-    const { classes, oauthURLFetching, oauthURLError, fetching, error, success, defaultGalleryUrl } = this.props;
+    const { classes, oauthURLFetching, oauthURLError, fetching, error, success, moduleId, galleryId } = this.props;
     const { modalFetching } = this.state;
 
     if (success) {
-      return <Redirect to={defaultGalleryUrl} />;
+      // Redirect to whatever gallery the user was on before
+      return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
     }
 
     const isFetching = oauthURLFetching || modalFetching || fetching;
@@ -191,9 +190,8 @@ OAuth.defaultProps = {
 OAuth.propTypes = {
   authorize: PropTypes.func.isRequired,
   fetchOAuthURL: PropTypes.func.isRequired,
-  setCurrentGallery: PropTypes.func.isRequired,
   moduleId: PropTypes.string.isRequired,
-  defaultGalleryUrl: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
@@ -210,13 +208,13 @@ const mapStateToProps = createStructuredSelector({
   error: errorSelector,
   oauthURLFetching: oauthURLFetchingSelector,
   oauthURLError: oauthURLErrorSelector,
-  defaultGalleryUrl: defaultGalleryUrlSelector,
+  moduleId: moduleIdSelector,
+  galleryId: galleryIdSelector,
 });
 
 const mapDispatchToProps = {
   authorize: authActions.authorize,
   fetchOAuthURL: authActions.fetchOAuthURL,
-  setCurrentGallery: appActions.setCurrentGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth);

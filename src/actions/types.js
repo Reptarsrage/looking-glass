@@ -40,4 +40,13 @@ export const {
   AUTHORIZE_ERROR,
 } = actionTyper('auth');
 
-export const { UPDATE_BREADCRUMB, CLEAR_BREADCRUMB } = actionTyper('breadcrumb');
+export const { CLEAR_BREADCRUMBS, PUSH_BREADCRUMB, POP_BREADCRUMB } = actionTyper('breadcrumb');
+
+export const {
+  NAVIGATE_HOME,
+  NAVIGATE_TO_SEARCH,
+  NAVIGATE_FROM_SEARCH,
+  NAVIGATE_GALLERY,
+  NAVIGATE_BACK,
+  NAVIGATE_BREADCRUMB,
+} = actionTyper('navigation');

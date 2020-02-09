@@ -8,10 +8,9 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
-import { moduleByIdSelector, defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
-import { requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
+import * as naviagationActions from '../actions/navigationActions';
+import { moduleByIdSelector } from '../selectors/moduleSelectors';
 
 const styles = () => ({
   wrapper: {
@@ -30,35 +29,43 @@ const styles = () => ({
   },
 });
 
-const ModuleItem = ({ module, requiresAuth, authUrl, defaultGalleryUrl }) => (
-  <ListItem button component={Link} to={requiresAuth ? authUrl : defaultGalleryUrl}>
-    <ListItemAvatar>
-      <Avatar alt={module.title} src={module.icon} />
-    </ListItemAvatar>
-    <ListItemText primary={module.title} secondary={module.description} />
-  </ListItem>
-);
+const ModuleItem = ({ moduleId, module, navigateToGallery }) => {
+  const handleClick = () => {
+    navigateToGallery(moduleId, module.defaultGalleryId, module.title);
+  };
 
-ModuleItem.defaultProps = {
-  authUrl: null,
+  return (
+    <ListItem button onClick={handleClick}>
+      <ListItemAvatar>
+        <Avatar alt={module.title} src={module.icon} />
+      </ListItemAvatar>
+      <ListItemText primary={module.title} secondary={module.description} />
+    </ListItem>
+  );
 };
 
 ModuleItem.propTypes = {
+  // required
+  moduleId: PropTypes.string.isRequired,
+
+  // selectors
   module: PropTypes.shape({
     title: PropTypes.string,
     description: PropTypes.string,
     icon: PropTypes.string,
+    defaultGalleryId: PropTypes.string.isRequired,
   }).isRequired,
-  requiresAuth: PropTypes.bool.isRequired,
-  authUrl: PropTypes.string,
-  defaultGalleryUrl: PropTypes.string.isRequired,
+
+  // actions
+  navigateToGallery: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   module: moduleByIdSelector,
-  requiresAuth: requiresAuthSelector,
-  authUrl: authUrlSelector,
-  defaultGalleryUrl: defaultGalleryUrlSelector,
 });
 
-export default compose(connect(mapStateToProps), withStyles(styles))(ModuleItem);
+const mapDispatchToProps = {
+  navigateToGallery: naviagationActions.navigateToGallery,
+};
+
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(ModuleItem);
