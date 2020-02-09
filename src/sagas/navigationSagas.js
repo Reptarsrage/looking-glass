@@ -1,4 +1,4 @@
-import { takeLatest, all, put, select, call } from 'redux-saga/effects';
+import { takeLatest, all, put, select } from 'redux-saga/effects';
 
 import {
   NAVIGATE_HOME,
@@ -8,6 +8,8 @@ import {
   NAVIGATE_BACK,
   NAVIGATE_BREADCRUMB,
 } from '../actions/types';
+
+import { navigateHome, navigateToBreadcrumb } from '../actions/navigationActions';
 import { setCurrentGallery } from '../actions/appActions';
 import { addGallery, updateSearch } from '../actions/moduleActions';
 import { pushBreadcrumb, popBreadcrumb, clearBreadcrumbs } from '../actions/breadcrumbActions';
@@ -133,10 +135,10 @@ function* handleNavigateBack() {
 
   // Are we home?
   if (breadcrumbs.length === 0) {
-    yield call(handleNavigateHome);
+    yield put(navigateHome());
   } else {
     const breadcrumbId = breadcrumbs[breadcrumbs.length - 1];
-    yield call(handleNavigateBreadcrumb, { payload: { breadcrumbId } });
+    yield put(navigateToBreadcrumb(breadcrumbId));
   }
 }
 
