@@ -1,4 +1,4 @@
-import { put, call, takeLatest, all, select, delay, cancelled } from 'redux-saga/effects';
+import { put, call, takeLatest, all, select, delay, cancelled, takeEvery } from 'redux-saga/effects';
 
 import LookingGlassService from '../services/lookingGlassService';
 import FileSystemService from '../services/fileSystemService';
@@ -108,7 +108,7 @@ function* handleFetchGallery(action) {
 
 function* watchGallerySagas() {
   yield all([
-    takeLatest(FETCH_GALLERY, handleFetchGallery),
+    takeEvery(FETCH_GALLERY, handleFetchGallery),
     takeLatest(UPDATE_SEARCH, handleUpdateSearch),
     takeLatest(SORT_CHANGE, handleSortChange),
   ]);
