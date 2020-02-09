@@ -36,7 +36,7 @@ yarn package
 - [ ] Add Scroll bar
 - [ ] Fix modal to open from masonry item (continuous video)
 - [ ] Fix modal next/prev scrolls page (update item bounds)
-- [ ] Fix for search and switching galleries
+- [x] Fix for search and switching galleries
 - [ ] Add Filters/Tags
 - [ ] Add "The End" notification or something
 - [ ] Fix thumbnails/outline showing after image load (the size should be known right?)
