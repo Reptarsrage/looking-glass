@@ -11,11 +11,13 @@ import {
 } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, currentSortSelector } from '../selectors/gallerySelectors';
-import { moduleByIdSelector } from '../selectors/moduleSelectors';
+import { galleryIdSelector } from '../selectors/appSelectors';
+import { moduleByIdSelector, searchGalleryIdSelector } from '../selectors/moduleSelectors';
 import { valueSiteIdSelector, defaultSortValueSelector } from '../selectors/sortSelectors';
 import { handleRefresh } from './authSagas';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 import { fetchGallery, updateSort, clearGallery } from '../actions/moduleActions';
+import { navigateToSearch, navigateFromSearch } from '../actions/navigationActions';
 
 const fsService = new FileSystemService();
 
@@ -34,16 +36,31 @@ function* handleSortChange(action) {
 }
 
 function* handleUpdateSearch(action) {
-  const { meta } = action;
+  const { meta, payload: query } = action;
   const { galleryId, moduleId } = meta;
 
+  const searchGalleryId = yield select(searchGalleryIdSelector, { moduleId });
+  const currentGalleryId = yield select(galleryIdSelector, { moduleId });
+
+  if (query && searchGalleryId !== currentGalleryId) {
+    // Searching, navigate to search gallery
+    yield put(navigateToSearch(moduleId));
+  } else if (!query && searchGalleryId === currentGalleryId) {
+    // Done Searching, navigate back to default gallery
+    yield put(navigateFromSearch(moduleId));
+  }
+
+  // Wait for user to finish typing
   yield delay(500);
   if (yield cancelled()) {
     return;
   }
 
-  yield put(clearGallery(galleryId));
-  yield put(fetchGallery(moduleId, galleryId));
+  if (query) {
+    // Searching, clear and fetch results
+    yield put(clearGallery(galleryId));
+    yield put(fetchGallery(moduleId, galleryId));
+  }
 }
 
 function* handleFetchGallery(action) {

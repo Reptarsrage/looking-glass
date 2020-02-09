@@ -33,16 +33,6 @@ const searchQuerySelector = createSelector(
   (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
 );
 
-const defaultGalleryUrlSelector = createSelector(
-  [getModuleId, defaultGalleryIdSelector],
-  (moduleId, defaultGalleryId) => `/gallery/${moduleId}/${defaultGalleryId}`
-);
-
-const searchGalleryUrlSelector = createSelector(
-  [getModuleId, searchGalleryIdSelector],
-  (moduleId, searchGalleryId) => `/gallery/${moduleId}/${searchGalleryId}`
-);
-
 export {
   modulesSelector,
   moduleByIdSelector,
@@ -50,8 +40,7 @@ export {
   fetchingSelector,
   errorSelector,
   moduleByIdSiteIdSelector,
-  defaultGalleryUrlSelector,
   searchQuerySelector,
   searchGalleryIdSelector,
-  searchGalleryUrlSelector,
+  defaultGalleryIdSelector,
 };

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import ReactRouterPropTypes from 'react-router-prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import { compose } from 'redux';
@@ -19,8 +18,7 @@ import * as path from 'path';
 
 import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
-import * as appActions from '../actions/appActions';
-import * as breadcrumbActions from '../actions/breadcrumbActions';
+import * as navigationActions from '../actions/navigationActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 
@@ -46,13 +44,7 @@ const styles = theme => ({
 
 class Home extends Component {
   componentDidMount() {
-    const { fetching, success, fetchModules, setCurrentGallery, clearBreadcrumbs } = this.props;
-
-    // make sure no module is selected
-    setCurrentGallery(null, null);
-
-    // clear breadcrumbs
-    clearBreadcrumbs();
+    const { fetching, success, fetchModules } = this.props;
 
     // fetch modules
     if (!fetching && !success) {
@@ -61,13 +53,12 @@ class Home extends Component {
   }
 
   chooseFolder = () => {
-    const { history, setCurrentGallery, addGallery } = this.props;
+    const { navigateToGallery } = this.props;
+
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const galleryId = filePaths[0];
-        addGallery(FILE_SYSTEM_MODULE_ID, galleryId, galleryId, path.basename(path.dirname(filePaths[0])));
-        setCurrentGallery(FILE_SYSTEM_MODULE_ID, galleryId);
-        history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`); // TODO: set current filesystem gallery
+        navigateToGallery(FILE_SYSTEM_MODULE_ID, galleryId, path.basename(galleryId));
       }
     });
   };
@@ -121,13 +112,10 @@ Home.propTypes = {
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
-  history: ReactRouterPropTypes.history.isRequired,
 
   // actions
   fetchModules: PropTypes.func.isRequired,
-  setCurrentGallery: PropTypes.func.isRequired,
-  clearBreadcrumbs: PropTypes.func.isRequired,
-  addGallery: PropTypes.func.isRequired,
+  navigateToGallery: PropTypes.func.isRequired,
 
   // withStyles
   classes: PropTypes.object.isRequired,
@@ -141,10 +129,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  clearBreadcrumbs: breadcrumbActions.clearBreadcrumbs,
-  addGallery: moduleActions.addGallery,
   fetchModules: moduleActions.fetchModules,
-  setCurrentGallery: appActions.setCurrentGallery,
+  navigateToGallery: navigationActions.navigateToGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Home);

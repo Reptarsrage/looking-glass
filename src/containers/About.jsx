@@ -1,10 +1,13 @@
 import React from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
-import { Link as RouterLink } from 'react-router-dom';
+
+import * as naviagationActions from '../actions/navigationActions';
 
 const styles = theme => ({
   button: {
@@ -18,11 +21,11 @@ const styles = theme => ({
   },
 });
 
-const About = ({ classes }) => (
+const About = ({ classes, navigateHome }) => (
   <>
     <Typography variant="h1">About</Typography>
     <Typography>
-      <Button variant="contained" color="default" className={classes.button} component={RouterLink} to="/">
+      <Button variant="contained" color="default" className={classes.button} onClick={navigateHome}>
         <HomeIcon className={classes.icon} /> Home
       </Button>
     </Typography>
@@ -33,7 +36,15 @@ const About = ({ classes }) => (
 );
 
 About.propTypes = {
+  // actions
+  navigateHome: PropTypes.func.isRequired,
+
+  // withStyles
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(About);
+const mapDispatchToProps = {
+  navigateHome: naviagationActions.navigateHome,
+};
+
+export default compose(connect(null, mapDispatchToProps), withStyles(styles))(About);

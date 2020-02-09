@@ -22,10 +22,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import { defaultGalleryUrlSelector } from '../selectors/moduleSelectors';
+import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
 import * as authActions from '../actions/authActions';
-import * as appActions from '../actions/appActions';
 
 const styles = theme => ({
   main: {
@@ -82,11 +81,6 @@ class Login extends Component {
     };
   }
 
-  componentDidMount() {
-    const { moduleId, setCurrentGallery } = this.props;
-    setCurrentGallery(moduleId, null);
-  }
-
   handleClickShowPassword = () => {
     this.setState(prevState => ({ showPassword: !prevState.showPassword }));
   };
@@ -112,11 +106,12 @@ class Login extends Component {
   };
 
   render() {
-    const { fetching, error, success, classes, defaultGalleryUrl } = this.props;
+    const { fetching, error, success, classes, moduleId, galleryId } = this.props;
     const { username, password, rememberMe, showPassword } = this.state;
 
     if (success) {
-      return <Redirect to={defaultGalleryUrl} />;
+      // Redirect to whatever gallery the user was on before
+      return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
     }
 
     return (
@@ -203,25 +198,24 @@ Login.defaultProps = {
 
 Login.propTypes = {
   moduleId: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
   login: PropTypes.func.isRequired,
-  setCurrentGallery: PropTypes.func.isRequired,
   success: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   classes: PropTypes.object,
-  defaultGalleryUrl: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   success: successSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-  defaultGalleryUrl: defaultGalleryUrlSelector,
+  moduleId: moduleIdSelector,
+  galleryId: galleryIdSelector,
 });
 
 const mapDispatchToProps = {
   login: authActions.login,
-  setCurrentGallery: appActions.setCurrentGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login);

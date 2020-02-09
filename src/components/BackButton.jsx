@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { compose } from 'redux';
-import ReactRouterPropTypes from 'react-router-prop-types';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
-import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+
+import * as naviagationActions from '../actions/navigationActions';
 
 const styles = theme => ({
   fab: {
@@ -18,44 +19,26 @@ const styles = theme => ({
   },
 });
 
-class BackButton extends Component {
-  shouldComponentUpdate(nextProps) {
-    const { color } = this.props;
-
-    return nextProps.color !== color;
-  }
-
-  goBack = () => {
-    const { history } = this.props;
-
-    if (history && history.goBack) {
-      history.goBack();
-    }
-  };
-
-  render() {
-    const { color, classes, isFab } = this.props;
-
-    if (isFab) {
-      return (
-        <Fab color={color} aria-label="Back" className={isFab ? classes.fab : classes.iconButton} onClick={this.goBack}>
-          <ArrowBackIcon />
-        </Fab>
-      );
-    }
-
+const BackButton = ({ color, classes, isFab, navigateBack }) => {
+  if (isFab) {
     return (
-      <IconButton
-        color={color}
-        aria-label="Back"
-        className={isFab ? classes.fab : classes.iconButton}
-        onClick={this.goBack}
-      >
+      <Fab color={color} aria-label="Back" className={isFab ? classes.fab : classes.iconButton} onClick={navigateBack}>
         <ArrowBackIcon />
-      </IconButton>
+      </Fab>
     );
   }
-}
+
+  return (
+    <IconButton
+      color={color}
+      aria-label="Back"
+      className={isFab ? classes.fab : classes.iconButton}
+      onClick={navigateBack}
+    >
+      <ArrowBackIcon />
+    </IconButton>
+  );
+};
 
 BackButton.defaultProps = {
   color: 'default',
@@ -63,10 +46,19 @@ BackButton.defaultProps = {
 };
 
 BackButton.propTypes = {
-  history: ReactRouterPropTypes.history.isRequired,
-  classes: PropTypes.object.isRequired,
+  // optional
   color: PropTypes.string,
   isFab: PropTypes.bool,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
+
+  // actions
+  navigateBack: PropTypes.func.isRequired,
 };
 
-export default compose(withRouter, withStyles(styles))(BackButton);
+const mapDispatchToProps = {
+  navigateBack: naviagationActions.navigateBack,
+};
+
+export default compose(connect(null, mapDispatchToProps), withStyles(styles))(BackButton);
