@@ -62,12 +62,12 @@ const filterSectionReducer = (state = initialState, action) =>
       }
       case FETCH_FILTERS_SUCCESS: {
         const filters = payload;
-        const { moduleId, filterSectionId } = meta;
+        const filterSectionId = meta;
 
         handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId]);
 
         // add filter values
-        draft.byId[filterSectionId].values = filters.map(({ id }) => generateFilterId(moduleId, id));
+        draft.byId[filterSectionId].values = filters.map(({ id }) => generateFilterId(filterSectionId, id));
 
         break;
       }

@@ -4,7 +4,14 @@ import watchGallerySagas from './gallerySagas';
 import watchAuthSagas from './authSagas';
 import watchModuleSagas from './moduleSagas';
 import navigationSagas from './navigationSagas';
+import filterSagas from './filterSagas';
 
 export default function* rootSaga() {
-  yield all([fork(watchGallerySagas), fork(watchAuthSagas), fork(watchModuleSagas), fork(navigationSagas)]);
+  yield all([
+    fork(watchGallerySagas),
+    fork(watchAuthSagas),
+    fork(watchModuleSagas),
+    fork(navigationSagas),
+    fork(filterSagas),
+  ]);
 }
