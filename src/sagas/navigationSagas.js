@@ -1,4 +1,4 @@
-import { takeLatest, all, put, select, call } from 'redux-saga/effects';
+import { takeLatest, all, put, select } from 'redux-saga/effects';
 
 import {
   NAVIGATE_HOME,
@@ -8,8 +8,10 @@ import {
   NAVIGATE_BACK,
   NAVIGATE_BREADCRUMB,
 } from '../actions/types';
+
+import { navigateHome, navigateToBreadcrumb } from '../actions/navigationActions';
 import { setCurrentGallery } from '../actions/appActions';
-import { addGallery } from '../actions/moduleActions';
+import { addGallery, updateSearch } from '../actions/moduleActions';
 import { pushBreadcrumb, popBreadcrumb, clearBreadcrumbs } from '../actions/breadcrumbActions';
 import { breadcrumbByIdSelector, breadcrumbsSelector } from '../selectors/breadcrumbSelectors';
 import { searchGalleryIdSelector, defaultGalleryIdSelector } from '../selectors/moduleSelectors';
@@ -23,8 +25,15 @@ function* handleNavigateHome() {
   // Clear all breadcrumbs
   yield put(clearBreadcrumbs());
 
+  const galleryId = yield select(galleryIdSelector);
+
   // Set current gallery to null
   yield put(setCurrentGallery(null, null));
+
+  // Clear search
+  if (galleryId) {
+    yield put(updateSearch(galleryId, null));
+  }
 
   // Navigate
   history.push('/');
@@ -126,10 +135,10 @@ function* handleNavigateBack() {
 
   // Are we home?
   if (breadcrumbs.length === 0) {
-    yield call(handleNavigateHome);
+    yield put(navigateHome());
   } else {
     const breadcrumbId = breadcrumbs[breadcrumbs.length - 1];
-    yield call(handleNavigateBreadcrumb, { payload: { breadcrumbId } });
+    yield put(navigateToBreadcrumb(breadcrumbId));
   }
 }
 

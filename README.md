@@ -56,3 +56,5 @@ yarn package
 - [ ] Add custom menu items
 - [ ] Fix configured server address for different environments
 - [ ] Add custom icon
+- [ ] Modal close button instead of clicking anywhere
+- [ ] Add keyboard navigation

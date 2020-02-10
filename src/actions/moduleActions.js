@@ -4,6 +4,7 @@ import {
   UPDATE_SEARCH,
   UPDATE_SORT,
   ADD_GALLERY,
+  SEARCH_CHANGE,
   SORT_CHANGE,
   CLEAR_GALLERY,
 } from './types';
@@ -24,10 +25,16 @@ export const fetchGallery = (moduleId, galleryId) => ({
 
 export const clearGallery = galleryId => ({ type: CLEAR_GALLERY, payload: galleryId });
 
-export const updateSearch = (moduleId, galleryId, query) => ({
-  type: UPDATE_SEARCH,
+export const searchChange = (moduleId, galleryId, query) => ({
+  type: SEARCH_CHANGE,
   payload: query,
   meta: { moduleId, galleryId },
+});
+
+export const updateSearch = (galleryId, query) => ({
+  type: UPDATE_SEARCH,
+  payload: query,
+  meta: galleryId,
 });
 
 export const sortChange = (moduleId, galleryId, valueId) => ({

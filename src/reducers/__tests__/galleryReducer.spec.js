@@ -126,7 +126,7 @@ describe('gallery reducer', () => {
     oldState.byId[galleryId] = { ...initialGalleryState, id: galleryId };
 
     // act
-    const newState = reducer(oldState, { type: UPDATE_SEARCH, payload, meta: { galleryId } });
+    const newState = reducer(oldState, { type: UPDATE_SEARCH, payload, meta: galleryId });
 
     // assert
     expect(newState.byId[galleryId].searchQuery).toEqual(payload);
