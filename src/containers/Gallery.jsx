@@ -12,7 +12,9 @@ import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
+import { Helmet } from 'react-helmet';
 
+import { productName } from '../../package.json';
 import * as naviagationActions from '../actions/navigationActions';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
@@ -21,7 +23,6 @@ import * as moduleActions from '../actions/moduleActions';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
-import BackButton from '../components/BackButton';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
@@ -32,12 +33,6 @@ const styles = () => ({
     position: 'fixed',
     bottom: '10px',
     right: '10px',
-    zIndex: 3,
-  },
-  floatedTopLeft: {
-    position: 'fixed',
-    top: '10px',
-    left: '10px',
     zIndex: 3,
   },
   pointer: {
@@ -90,7 +85,7 @@ class Gallery extends Component {
 
   componentDidMount() {
     // set event listeners
-    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('continerScroll', this.handleScroll);
     document.addEventListener('keydown', this.handleKeyPress, false);
 
     // fetch images
@@ -112,7 +107,7 @@ class Gallery extends Component {
 
   componentWillUnmount() {
     // remove event listeners from componentDidMount
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('continerScroll', this.handleScroll);
     document.removeEventListener('keydown', this.handleKeyPress, false);
   }
 
@@ -123,13 +118,13 @@ class Gallery extends Component {
     }
   };
 
-  handleScroll = () => {
+  handleScroll = event => {
     const { overlayButtonThreshold } = this.props;
     const { showOverlayButtons } = this.state;
-
-    if (window.scrollY >= overlayButtonThreshold && !showOverlayButtons) {
+    const scrollY = event.detail;
+    if (scrollY >= overlayButtonThreshold && !showOverlayButtons) {
       this.setState({ showOverlayButtons: true });
-    } else if (window.scrollY < overlayButtonThreshold && showOverlayButtons) {
+    } else if (scrollY < overlayButtonThreshold && showOverlayButtons) {
       this.setState({ showOverlayButtons: false });
     }
   };
@@ -287,7 +282,7 @@ class Gallery extends Component {
 
   render() {
     const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
-    const { fetching, error } = gallery;
+    const { fetching, error, title } = gallery;
     const { showOverlayButtons } = this.state;
 
     // Sometimes react router renders things that aren't supposed to be
@@ -303,6 +298,10 @@ class Gallery extends Component {
     // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
     return (
       <>
+        <Helmet>
+          <title>{`${productName} - ${title}`}</title>
+        </Helmet>
+
         {this.renderModal()}
 
         <Toolbar variant="dense">
@@ -311,9 +310,6 @@ class Gallery extends Component {
           <SortMenu moduleId={moduleId} galleryId={galleryId} />
         </Toolbar>
 
-        <br />
-
-        <div className={classes.floatedTopLeft}>{showOverlayButtons ? <BackButton /> : null}</div>
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
         <Masonry
@@ -352,6 +348,7 @@ Gallery.propTypes = {
     fetching: PropTypes.bool,
     success: PropTypes.bool,
     error: PropTypes.object,
+    title: PropTypes.string,
   }).isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
   itemHeightSelectorFunc: PropTypes.func.isRequired,

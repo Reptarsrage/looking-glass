@@ -15,7 +15,10 @@ import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
 import * as path from 'path';
+import { animateScroll } from 'react-scroll';
+import { Helmet } from 'react-helmet';
 
+import { productName } from '../../package.json';
 import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
 import * as navigationActions from '../actions/navigationActions';
@@ -45,6 +48,13 @@ const styles = theme => ({
 class Home extends Component {
   componentDidMount() {
     const { fetching, success, fetchModules } = this.props;
+
+    // scroll to top
+    animateScroll.scrollToTop({
+      duration: 0,
+      delay: 0,
+      containerId: 'scroll-container',
+    });
 
     // fetch modules
     if (!fetching && !success) {
@@ -96,6 +106,10 @@ class Home extends Component {
 
     return (
       <main className={classes.main}>
+        <Helmet>
+          <title>{productName}</title>
+        </Helmet>
+
         <Paper className={classes.paper}>{this.renderModules()}</Paper>
       </main>
     );

@@ -33,7 +33,7 @@ yarn package
 
 ## TODO (In no particular order)
 
-- [ ] Add Scroll bar
+- [x] Add Scroll bar
 - [ ] Fix modal to open from masonry item (continuous video)
 - [ ] Fix modal next/prev scrolls page (update item bounds)
 - [x] Fix for search and switching galleries
@@ -43,7 +43,7 @@ yarn package
 - [ ] Fix breadcrumbs during search
 - [ ] Gif Scrubber
 - [ ] Fix updating view when switching galleries, and restoring scroll position
-- [ ] Add window title change based on current page
+- [x] Add window title change based on current page
 - [ ] Add settings for various customization (colors, autoplay, default sort, ect.)
 - [ ] Better Unit Testing
 - [ ] Better E2E Testing

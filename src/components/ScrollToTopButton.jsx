@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import Fab from '@material-ui/core/Fab';
 import { withStyles } from '@material-ui/core/styles';
+import { animateScroll } from 'react-scroll';
 
 const styles = theme => ({
   fab: {
@@ -16,8 +17,11 @@ const styles = theme => ({
 
 class ScrollToTopButton extends PureComponent {
   scrollToTop = () => {
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
+    animateScroll.scrollToTop({
+      duration: 400,
+      delay: 0,
+      smooth: 'easeInCubic',
+      containerId: 'scroll-container',
     });
   };
 

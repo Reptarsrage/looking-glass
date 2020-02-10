@@ -67,8 +67,8 @@ const galleryReducer = (state = initialState, action) =>
 
     switch (type) {
       case ADD_GALLERY: {
-        const { moduleId, galleryId } = payload;
-        addGallery(draft, moduleId, galleryId);
+        const { moduleId, galleryId, title } = payload;
+        addGallery(draft, moduleId, galleryId, null, title);
 
         break;
       }
@@ -79,7 +79,7 @@ const galleryReducer = (state = initialState, action) =>
         modules.forEach(({ id, title }) => {
           const moduleId = generateModuleId(id);
           addGallery(draft, moduleId, DEFAULT_GALLERY_ID, null, title);
-          addGallery(draft, moduleId, SEARCH_GALLERY_ID, null, title);
+          addGallery(draft, moduleId, SEARCH_GALLERY_ID, null, 'Search Results');
         });
 
         // Add file system default module galleries

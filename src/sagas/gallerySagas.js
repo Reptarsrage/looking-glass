@@ -1,4 +1,5 @@
 import { put, call, takeLatest, all, select, delay, cancelled, takeEvery } from 'redux-saga/effects';
+import { animateScroll } from 'react-scroll';
 
 import LookingGlassService from '../services/lookingGlassService';
 import FileSystemService from '../services/fileSystemService';
@@ -61,6 +62,15 @@ function* handleSearchChange(action) {
   if (query) {
     // Searching, clear and fetch results
     yield put(clearGallery(galleryId));
+
+    // Hack to reset scroll position when searching
+    sessionStorage.removeItem(`${moduleId}/${galleryId}`);
+    animateScroll.scrollToTop({
+      duration: 0,
+      delay: 0,
+      containerId: 'scroll-container',
+    });
+
     yield put(fetchGallery(moduleId, galleryId));
   }
 }
