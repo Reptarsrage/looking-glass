@@ -51,3 +51,5 @@ export const {
   NAVIGATE_BACK,
   NAVIGATE_BREADCRUMB,
 } = actionTyper('navigation');
+
+export const { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR } = actionTyper('filter');

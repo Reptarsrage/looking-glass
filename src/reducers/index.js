@@ -8,6 +8,8 @@ import galleryReducer from './galleryReducer';
 import itemReducer from './itemReducer';
 import sortReducer from './sortReducer';
 import breadcrumbReducer from './breadcrumbReducer';
+import filterSectionReducer from './filterSectionReducer';
+import filterReducer from './filterReducer';
 
 const rootReducer = (history, asyncReducers) =>
   combineReducers({
@@ -19,6 +21,8 @@ const rootReducer = (history, asyncReducers) =>
     item: itemReducer,
     sort: sortReducer,
     breadcrumb: breadcrumbReducer,
+    filterSection: filterSectionReducer,
+    filter: filterReducer,
     ...asyncReducers,
   });
 

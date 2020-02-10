@@ -37,6 +37,8 @@ export const MODULE_GALLERY_NAMESPACE = '357757cf-6140-4439-b2ee-08c7f31ecfb4';
 export const ITEM_NAMESPACE = '05948023-6791-4837-96f4-ceff6416b3e3';
 export const SORT_NAMESPACE = 'fe042171-3af8-4c2e-b215-8c95313a7768';
 export const BREADCRUMB_NAMESPACE = '0a082b6d-09d6-475f-95ee-fc307d10ed09';
+export const FILTER_SECTION_NAMESPACE = '86803187-aa7e-4209-bb30-907c404402c5';
+export const FILTER_NAMESPACE = '4d33d42f-49b3-4ec9-865d-a14c6ab8ad2b';
 
 // id generator functions
 export const generateModuleId = moduleId => uuidv3(moduleId, MODULE_NAMESPACE);
@@ -46,3 +48,6 @@ export const generateModuleGalleryId = (moduleId, galleryId) => uuidv3(moduleId 
 export const generateGalleryItemId = (galleryId, itemId) => uuidv3(galleryId + itemId, GALLERY_ITEM_NAMESPACE);
 export const generateSortId = (moduleId, sortId) => uuidv3(moduleId + sortId, SORT_NAMESPACE);
 export const generateBreadcrumbId = (moduleId, galleryId) => uuidv3(moduleId + galleryId, BREADCRUMB_NAMESPACE);
+export const generateFilterSectionId = (moduleId, filterSectionId) =>
+  uuidv3(moduleId + filterSectionId, FILTER_SECTION_NAMESPACE);
+export const generateFilterId = (filterSectionId, filterId) => uuidv3(filterSectionId + filterId, FILTER_NAMESPACE);
