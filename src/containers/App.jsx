@@ -9,10 +9,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { withRouter } from 'react-router';
-import Container from '@material-ui/core/Container';
+import clsx from 'clsx';
 
 import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
 import * as appActions from '../actions/appActions';
@@ -59,11 +60,22 @@ const lightTheme = createMuiTheme({
 });
 
 const styles = theme => ({
-  root: {
-    width: '100%',
+  scroll: {
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '10px',
+      backgroundColor: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#d5d5d5',
+      borderRadius: '4px',
+    },
   },
   grow: {
     flexGrow: 1,
+  },
+  appBar: {
+    zIndex: 1, // otherwise it's in the thousands (‡ಠ╭╮ಠ)
   },
   title: {
     display: 'none',
@@ -74,6 +86,10 @@ const styles = theme => ({
 });
 
 class App extends Component {
+  handleScroll = event => {
+    window.dispatchEvent(new CustomEvent('continerScroll', { detail: event.target.scrollTop }));
+  };
+
   renderBackButton = () => {
     const { moduleId } = this.props;
 
@@ -105,7 +121,14 @@ class App extends Component {
             </div>
           </Toolbar>
         </AppBar>
-        <Container maxWidth={false}>{children}</Container>
+        <Container
+          maxWidth={false}
+          id="scroll-container"
+          className={clsx(classes.grow, classes.scroll)}
+          onScroll={this.handleScroll}
+        >
+          {children}
+        </Container>
       </MuiThemeProvider>
     );
   }

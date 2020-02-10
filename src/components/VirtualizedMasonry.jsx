@@ -4,6 +4,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { withResizeDetector } from 'react-resize-detector';
 import { compose } from 'redux';
+import { animateScroll } from 'react-scroll';
 
 import Virtualized from './Virtualized';
 
@@ -76,12 +77,14 @@ class VirtualizedMasonry extends PureComponent {
     const { scrollPosition } = this.state;
 
     // restore scroll position
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
-
-      // add event listeners (after done scrolling)
-      window.addEventListener('scroll', this.handleScroll);
+    animateScroll.scrollTo(scrollPosition, {
+      duration: 0,
+      delay: 0,
+      containerId: 'scroll-container',
     });
+
+    // add event listeners (after done scrolling)
+    window.addEventListener('continerScroll', this.handleScroll);
   };
 
   componentDidUpdate() {
@@ -94,7 +97,7 @@ class VirtualizedMasonry extends PureComponent {
 
   componentWillUnmount = () => {
     // remove event listeners
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('continerScroll', this.handleScroll);
 
     // save state in session
     this.saveScrollPosition();
@@ -186,16 +189,18 @@ class VirtualizedMasonry extends PureComponent {
     return calculatedHeight;
   };
 
-  handleScroll = () => {
+  handleScroll = event => {
     const { loadMoreThreshold } = this.props;
     const { current } = this.containerRef;
+    const scrollY = event.detail;
+
     if (current) {
       const rect = current.getBoundingClientRect();
       if (rect) {
         // we've made it here, so dimensions are available
         // use them to set our current scroll position
-        const scrollPosition = window.scrollY;
-        const scrollTop = window.scrollY + rect.top;
+        const scrollPosition = scrollY;
+        const scrollTop = scrollY + rect.top;
         this.setState({ scrollPosition, scrollTop });
 
         // load more if over threshold

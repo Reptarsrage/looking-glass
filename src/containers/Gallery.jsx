@@ -21,7 +21,6 @@ import * as moduleActions from '../actions/moduleActions';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
-import BackButton from '../components/BackButton';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
@@ -32,12 +31,6 @@ const styles = () => ({
     position: 'fixed',
     bottom: '10px',
     right: '10px',
-    zIndex: 3,
-  },
-  floatedTopLeft: {
-    position: 'fixed',
-    top: '10px',
-    left: '10px',
     zIndex: 3,
   },
   pointer: {
@@ -90,7 +83,7 @@ class Gallery extends Component {
 
   componentDidMount() {
     // set event listeners
-    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('continerScroll', this.handleScroll);
     document.addEventListener('keydown', this.handleKeyPress, false);
 
     // fetch images
@@ -112,7 +105,7 @@ class Gallery extends Component {
 
   componentWillUnmount() {
     // remove event listeners from componentDidMount
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('continerScroll', this.handleScroll);
     document.removeEventListener('keydown', this.handleKeyPress, false);
   }
 
@@ -123,13 +116,13 @@ class Gallery extends Component {
     }
   };
 
-  handleScroll = () => {
+  handleScroll = event => {
     const { overlayButtonThreshold } = this.props;
     const { showOverlayButtons } = this.state;
-
-    if (window.scrollY >= overlayButtonThreshold && !showOverlayButtons) {
+    const scrollY = event.detail;
+    if (scrollY >= overlayButtonThreshold && !showOverlayButtons) {
       this.setState({ showOverlayButtons: true });
-    } else if (window.scrollY < overlayButtonThreshold && showOverlayButtons) {
+    } else if (scrollY < overlayButtonThreshold && showOverlayButtons) {
       this.setState({ showOverlayButtons: false });
     }
   };
@@ -311,9 +304,6 @@ class Gallery extends Component {
           <SortMenu moduleId={moduleId} galleryId={galleryId} />
         </Toolbar>
 
-        <br />
-
-        <div className={classes.floatedTopLeft}>{showOverlayButtons ? <BackButton /> : null}</div>
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
         <Masonry
