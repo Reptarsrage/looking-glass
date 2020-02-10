@@ -96,7 +96,7 @@ function* handleNavigateGallery(action) {
   if (item && item.siteId) {
     // If we're navigating to an item that means we're navigating to a nested gallery
     // Ensure gallery exists in state
-    yield put(addGallery(moduleId, item.siteId));
+    yield put(addGallery(moduleId, item.siteId, item.title));
 
     // Update galleryId
     galleryId = generateGalleryId(moduleId, item.siteId);
@@ -106,7 +106,7 @@ function* handleNavigateGallery(action) {
   const requestedGallery = yield select(galleryByIdSelector, { galleryId });
   if (!requestedGallery || !requestedGallery.id) {
     // Ensure gallery exists in state, assume we were given a site id
-    yield put(addGallery(moduleId, galleryId));
+    yield put(addGallery(moduleId, galleryId, title));
 
     // Update galleryId
     galleryId = generateGalleryId(moduleId, galleryId);

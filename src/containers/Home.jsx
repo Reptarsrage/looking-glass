@@ -16,7 +16,9 @@ import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
 import * as path from 'path';
 import { animateScroll } from 'react-scroll';
+import { Helmet } from 'react-helmet';
 
+import { productName } from '../../package.json';
 import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
 import * as navigationActions from '../actions/navigationActions';
@@ -104,6 +106,10 @@ class Home extends Component {
 
     return (
       <main className={classes.main}>
+        <Helmet>
+          <title>{productName}</title>
+        </Helmet>
+
         <Paper className={classes.paper}>{this.renderModules()}</Paper>
       </main>
     );

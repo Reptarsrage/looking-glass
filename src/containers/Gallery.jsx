@@ -12,7 +12,9 @@ import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import clsx from 'clsx';
+import { Helmet } from 'react-helmet';
 
+import { productName } from '../../package.json';
 import * as naviagationActions from '../actions/navigationActions';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
@@ -280,7 +282,7 @@ class Gallery extends Component {
 
   render() {
     const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
-    const { fetching, error } = gallery;
+    const { fetching, error, title } = gallery;
     const { showOverlayButtons } = this.state;
 
     // Sometimes react router renders things that aren't supposed to be
@@ -296,6 +298,10 @@ class Gallery extends Component {
     // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
     return (
       <>
+        <Helmet>
+          <title>{`${productName} - ${title}`}</title>
+        </Helmet>
+
         {this.renderModal()}
 
         <Toolbar variant="dense">
@@ -342,6 +348,7 @@ Gallery.propTypes = {
     fetching: PropTypes.bool,
     success: PropTypes.bool,
     error: PropTypes.object,
+    title: PropTypes.string,
   }).isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
   itemHeightSelectorFunc: PropTypes.func.isRequired,

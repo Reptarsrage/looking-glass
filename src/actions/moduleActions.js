@@ -13,9 +13,9 @@ export const fetchModules = () => ({
   type: FETCH_MODULES,
 });
 
-export const addGallery = (moduleId, galleryId) => ({
+export const addGallery = (moduleId, galleryId, title) => ({
   type: ADD_GALLERY,
-  payload: { moduleId, galleryId },
+  payload: { moduleId, galleryId, title },
 });
 
 export const fetchGallery = (moduleId, galleryId) => ({
