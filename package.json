@@ -104,7 +104,7 @@
     "prettier": "1.19.1",
     "pretty-quick": "2.0.1",
     "redux-mock-store": "1.5.4",
-    "rimraf": "3.0.1",
+    "rimraf": "3.0.2",
     "sass-loader": "8.0.2",
     "sinon": "8.1.1",
     "spectron": "10.0.1",
