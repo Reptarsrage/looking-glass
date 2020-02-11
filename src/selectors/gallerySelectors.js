@@ -17,4 +17,6 @@ const itemsInGallerySelector = createSelector(galleryByIdSelector, gallery => ga
 
 const currentSortSelector = createSelector(galleryByIdSelector, gallery => gallery.currentSort);
 
-export { itemsInGallerySelector, galleryByIdSelector, galleriesSelector, currentSortSelector };
+const currentFilterSelector = createSelector(galleryByIdSelector, gallery => gallery.currentFilter);
+
+export { itemsInGallerySelector, galleryByIdSelector, galleriesSelector, currentSortSelector, currentFilterSelector };

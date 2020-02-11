@@ -15,4 +15,6 @@ const filterByIdSelector = createSelector(
   (state, filterId) => state.byId[filterId] || initialFilterState
 );
 
-export { filtersSelector, filterByIdSelector };
+const filterSiteIdSelector = createSelector(filterByIdSelector, value => value.siteId || undefined);
+
+export { filtersSelector, filterByIdSelector, filterSiteIdSelector };

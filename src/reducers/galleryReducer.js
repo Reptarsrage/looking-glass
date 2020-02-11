@@ -21,6 +21,7 @@ import {
   UPDATE_SEARCH,
   UPDATE_SORT,
   CLEAR_GALLERY,
+  UPDATE_FILTER,
 } from '../actions/types';
 
 export const initialState = {
@@ -38,6 +39,7 @@ export const initialGalleryState = {
   hasNext: true,
   searchQuery: null,
   currentSort: null,
+  currentFilter: null,
   items: [],
   title: null,
   ...initialAsyncState,
@@ -135,17 +137,25 @@ const galleryReducer = (state = initialState, action) =>
         draft.byId[galleryId].currentSort = valueId;
         break;
       }
+      case UPDATE_FILTER: {
+        const galleryId = meta;
+        const filterId = payload;
+        draft.byId[galleryId].currentFilter = filterId;
+        break;
+      }
       case CLEAR_GALLERY: {
         const galleryId = payload;
         const gallery = state.byId[galleryId];
-
         draft.byId[galleryId] = {
-          ...initialGalleryState,
-          siteId: gallery.siteId,
-          id: galleryId,
-          moduleId: gallery.moduleId,
-          searchQuery: gallery.searchQuery,
+          ...gallery,
+          ...initialAsyncState,
+          offset: 0,
+          before: null,
+          after: null,
+          hasNext: true,
+          items: [],
         };
+
         break;
       }
       default:

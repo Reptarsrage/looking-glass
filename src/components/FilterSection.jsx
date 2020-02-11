@@ -22,16 +22,16 @@ const styles = theme => ({
 class FilterSection extends Component {
   componentDidMount() {
     const { filterSection, filterSectionId, fetchFilters } = this.props;
-    const { fetching, fetched } = filterSection;
+    const { fetching, success } = filterSection;
 
-    if (!fetching && !fetched) {
+    if (!fetching && !success) {
       fetchFilters(filterSectionId);
     }
   }
 
   render() {
     const { classes, filterSection, onClick } = this.props;
-    const { fetching, fetched, error, values, name } = filterSection;
+    const { fetching, success, error, values, name } = filterSection;
 
     if (fetching) {
       return <LoadingIndicator size={50} />;
@@ -41,7 +41,7 @@ class FilterSection extends Component {
       return <span>Error!</span>;
     }
 
-    if (fetched && filterSection.values.length === 0) {
+    if (success && filterSection.values.length === 0) {
       return null;
     }
 
@@ -72,7 +72,7 @@ FilterSection.propTypes = {
     name: PropTypes.string.isRequired,
     values: PropTypes.arrayOf(PropTypes.string).isRequired,
     fetching: PropTypes.bool.isRequired,
-    fetched: PropTypes.bool.isRequired,
+    success: PropTypes.bool.isRequired,
     error: PropTypes.object,
   }).isRequired,
 

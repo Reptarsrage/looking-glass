@@ -25,6 +25,8 @@ export const {
   UPDATE_SORT,
   SEARCH_CHANGE,
   SORT_CHANGE,
+  FILTER_CHANGE,
+  UPDATE_FILTER,
 } = actionTyper('module');
 
 export const {

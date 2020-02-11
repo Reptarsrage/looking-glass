@@ -15,13 +15,15 @@ import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import Drawer from '@material-ui/core/Drawer';
+import Chip from '@material-ui/core/Chip';
+import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
 import * as naviagationActions from '../actions/navigationActions';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
-import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
+import { galleryByIdSelector, itemsInGallerySelector, currentFilterSelector } from '../selectors/gallerySelectors';
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -88,6 +90,14 @@ const styles = theme => ({
     marginRight: theme.spacing(1),
     color: theme.palette.text.secondary,
   },
+  filtersContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    padding: theme.spacing(0.5),
+  },
+  filterItem: {
+    margin: theme.spacing(0.5),
+  },
 });
 
 class Gallery extends Component {
@@ -136,9 +146,15 @@ class Gallery extends Component {
     this.setState({ drawerOpen: false });
   };
 
+  handleDeleteFilter = () => {
+    const { moduleId, galleryId, filterChange } = this.props;
+    filterChange(moduleId, galleryId, null);
+  };
+
   handleFilterClick = filterId => {
-    console.log(filterId);
+    const { moduleId, galleryId, filterChange } = this.props;
     this.setState({ drawerOpen: false });
+    filterChange(moduleId, galleryId, filterId);
   };
 
   handleOpenDrawerClick = () => {
@@ -315,7 +331,17 @@ class Gallery extends Component {
   };
 
   render() {
-    const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
+    const {
+      items,
+      classes,
+      moduleId,
+      galleryId,
+      gallery,
+      isAuthenticated,
+      requiresAuth,
+      authUrl,
+      currentFilter,
+    } = this.props;
     const { fetching, error, title } = gallery;
     const { showOverlayButtons, drawerOpen } = this.state;
 
@@ -352,6 +378,12 @@ class Gallery extends Component {
           </Button>
         </Toolbar>
 
+        {currentFilter && (
+          <Paper className={classes.filtersContainer}>
+            <Chip className={classes.filterItem} label={currentFilter} onDelete={this.handleDeleteFilter} />
+          </Paper>
+        )}
+
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
         <Masonry
@@ -374,6 +406,7 @@ class Gallery extends Component {
 Gallery.defaultProps = {
   authUrl: null,
   overlayButtonThreshold: 25,
+  currentFilter: null,
 };
 
 Gallery.propTypes = {
@@ -398,6 +431,7 @@ Gallery.propTypes = {
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
+  currentFilter: PropTypes.string,
 
   // withStyles
   classes: PropTypes.object.isRequired,
@@ -405,6 +439,7 @@ Gallery.propTypes = {
   // actions
   fetchGallery: PropTypes.func.isRequired,
   navigateToGallery: PropTypes.func.isRequired,
+  filterChange: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -413,6 +448,7 @@ const mapStateToProps = createStructuredSelector({
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
+  currentFilter: currentFilterSelector,
   itemHeightSelectorFunc: state => itemId => itemHeightSelector(state, { itemId }),
   itemWidthSelectorFunc: state => itemId => itemWidthSelector(state, { itemId }),
 });
@@ -420,6 +456,7 @@ const mapStateToProps = createStructuredSelector({
 const mapDispatchToProps = {
   fetchGallery: moduleActions.fetchGallery,
   navigateToGallery: naviagationActions.navigateToGallery,
+  filterChange: moduleActions.filterChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery);
