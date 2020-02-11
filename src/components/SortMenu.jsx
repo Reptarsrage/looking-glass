@@ -17,9 +17,7 @@ import SortMenuItem from './SortMenuItem';
 const styles = theme => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
-  },
-  button: {
-    textTransform: 'none',
+    color: theme.palette.text.secondary,
   },
 });
 
@@ -46,9 +44,9 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, curr
   const ariaId = `${moduleId}-sort-menu`;
   return (
     <>
-      <Button className={classes.button} aria-controls={ariaId} aria-haspopup="true" onClick={handleClick}>
+      <Button aria-controls={ariaId} aria-haspopup="true" onClick={handleClick}>
         <SortIcon className={classes.extendedIcon} />
-        <Typography>{currentSortText}</Typography>
+        <Typography color="textSecondary">Sort By</Typography>
       </Button>
       <Popover
         id={ariaId}

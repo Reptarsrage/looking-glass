@@ -15,13 +15,21 @@ const styles = () => ({
   },
 });
 
-const LoadingIndicator = ({ classes }) => (
+const LoadingIndicator = ({ classes, size }) => (
   <div className={classes.wrapper}>
-    <CircularProgress size={100} />
+    <CircularProgress size={size} />
   </div>
 );
 
+LoadingIndicator.defaultProps = {
+  size: 100,
+};
+
 LoadingIndicator.propTypes = {
+  // optional
+  size: PropTypes.number,
+
+  // withStyles
   classes: PropTypes.object.isRequired,
 };
 

@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import TuneIcon from '@material-ui/icons/Tune';
 import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
@@ -73,11 +73,20 @@ const styles = theme => ({
   grow: {
     flexGrow: 1,
   },
+  drawer: {
+    minWidth: '360px',
+    '&::-webkit-scrollbar': {
+      width: '5px',
+      backgroundColor: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#d5d5d5',
+      borderRadius: '2px',
+    },
+  },
   extendedIcon: {
     marginRight: theme.spacing(1),
-  },
-  toolbarButton: {
-    textTransform: 'none',
+    color: theme.palette.text.secondary,
   },
 });
 
@@ -124,6 +133,11 @@ class Gallery extends Component {
   }
 
   handleDrawerClose = () => {
+    this.setState({ drawerOpen: false });
+  };
+
+  handleFilterClick = filterId => {
+    console.log(filterId);
     this.setState({ drawerOpen: false });
   };
 
@@ -324,18 +338,18 @@ class Gallery extends Component {
 
         {this.renderModal()}
 
-        <Drawer open={drawerOpen} onClose={this.handleDrawerClose}>
-          <FilterList moduleId={moduleId} />
+        <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={this.handleDrawerClose}>
+          <FilterList moduleId={moduleId} onClick={this.handleFilterClick} />
         </Drawer>
 
         <Toolbar variant="dense">
-          <Button className={classes.toolbarButton} onClick={this.handleOpenDrawerClick}>
-            <FilterListIcon className={classes.extendedIcon} />
-            <Typography>Filters</Typography>
-          </Button>
           <Breadcrumbs />
           <div className={classes.grow} />
           <SortMenu moduleId={moduleId} galleryId={galleryId} />
+          <Button onClick={this.handleOpenDrawerClick}>
+            <TuneIcon className={classes.extendedIcon} />
+            <Typography color="textSecondary">Filter By</Typography>
+          </Button>
         </Toolbar>
 
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>

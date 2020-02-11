@@ -7,20 +7,29 @@ import Divider from '@material-ui/core/Divider';
 import { filterBySelector } from '../selectors/moduleSelectors';
 import FilterSection from './FilterSection';
 
-function FilterList({ filterSections }) {
+function FilterList({ filterSections, onClick }) {
   return (
     <>
       {filterSections
-        .map(filterSectionId => <FilterSection key={filterSectionId} filterSectionId={filterSectionId} />)
+        .map(filterSectionId => (
+          <FilterSection key={filterSectionId} onClick={onClick} filterSectionId={filterSectionId} />
+        ))
         .reduce((p, c) => [...p, <Divider key={`${c.key}-divider`} />, c], [])}
     </>
   );
 }
 
+FilterList.defaultProps = {
+  onClick: null,
+};
+
 FilterList.propTypes = {
   // Required
   // eslint-disable-next-line react/no-unused-prop-types
   moduleId: PropTypes.string.isRequired,
+
+  // optional
+  onClick: PropTypes.func,
 
   // Selectors
   filterSections: PropTypes.arrayOf(PropTypes.string).isRequired,

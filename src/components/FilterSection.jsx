@@ -30,11 +30,11 @@ class FilterSection extends Component {
   }
 
   render() {
-    const { classes, filterSection } = this.props;
+    const { classes, filterSection, onClick } = this.props;
     const { fetching, fetched, error, values, name } = filterSection;
 
     if (fetching) {
-      return <LoadingIndicator />;
+      return <LoadingIndicator size={50} />;
     }
 
     if (error) {
@@ -48,16 +48,23 @@ class FilterSection extends Component {
     return (
       <List className={classes.root} subheader={<ListSubheader>{name}</ListSubheader>}>
         {values.map(filterId => (
-          <FilterValue key={filterId} filterId={filterId} />
+          <FilterValue key={filterId} filterId={filterId} onClick={onClick} />
         ))}
       </List>
     );
   }
 }
 
+FilterSection.defaultProps = {
+  onClick: null,
+};
+
 FilterSection.propTypes = {
   // Required
   filterSectionId: PropTypes.string.isRequired,
+
+  // Optional
+  onClick: PropTypes.func,
 
   // Selectors
   filterSection: PropTypes.shape({

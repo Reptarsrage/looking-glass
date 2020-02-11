@@ -15,18 +15,30 @@ const styles = () => ({
   },
 });
 
-function FilterValue({ filter, classes }) {
+function FilterValue({ filterId, filter, classes, onClick }) {
+  const handleClick = () => {
+    if (onClick) {
+      onClick(filterId);
+    }
+  };
+
   return (
-    <ListItem button>
+    <ListItem button onClick={handleClick}>
       <ListItemText className={classes.listItem} primary={filter.name} />
     </ListItem>
   );
 }
 
+FilterValue.defaultProps = {
+  onClick: null,
+};
+
 FilterValue.propTypes = {
   // Required
-  // eslint-disable-next-line react/no-unused-prop-types
   filterId: PropTypes.string.isRequired,
+
+  // Optional
+  onClick: PropTypes.func,
 
   // Selectors
   filter: PropTypes.shape({
