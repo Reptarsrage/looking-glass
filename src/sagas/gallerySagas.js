@@ -87,6 +87,11 @@ function* handleSearchChange(action) {
     });
 
     yield put(fetchGallery(moduleId, galleryId));
+  } else {
+    // Not searching anymore,. clear out old filters and sort
+    yield put(clearGallery(galleryId));
+    yield put(updateFilter(galleryId, null));
+    yield put(updateSort(galleryId, null));
   }
 }
 
