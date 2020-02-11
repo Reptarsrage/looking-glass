@@ -26,7 +26,7 @@ const styles = theme => ({
     position: 'absolute',
     top: theme.spacing(1),
     right: theme.spacing(1),
-    zIndex: 3,
+    zIndex: theme.zIndex.drawer + 3,
   },
 });
 

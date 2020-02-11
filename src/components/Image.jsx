@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = () => ({
+const styles = theme => ({
   image: {
     width: 'auto',
     height: '100%',
@@ -10,7 +10,7 @@ const styles = () => ({
     maxHeight: 'inherit',
     position: 'relative',
     objectFit: 'contain',
-    zIndex: 2,
+    zIndex: theme.zIndex.drawer + 2,
   },
   thumb: {
     filter: 'blur(8px)',
@@ -20,7 +20,7 @@ const styles = () => ({
     height: '100%',
     top: 0,
     left: 0,
-    zIndex: 1,
+    zIndex: theme.zIndex.drawer + 1,
     position: 'absolute',
   },
 });

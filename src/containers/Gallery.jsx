@@ -5,12 +5,16 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
+import Drawer from '@material-ui/core/Drawer';
 import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 
@@ -25,22 +29,23 @@ import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
+import FilterList from '../components/FilterList';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
 import globalStyles from '../index.scss';
 
-const styles = () => ({
+const styles = theme => ({
   floatedBottomRight: {
     position: 'fixed',
     bottom: '10px',
     right: '10px',
-    zIndex: 3,
+    zIndex: theme.zIndex.drawer + 3,
   },
   pointer: {
     cursor: 'pointer',
   },
   animationElement: {
     position: 'fixed',
-    zIndex: 5,
+    zIndex: theme.zIndex.drawer + 5,
     display: 'flex',
     overflow: 'hidden',
   },
@@ -50,14 +55,14 @@ const styles = () => ({
     width: '100%',
     top: 0,
     left: 0,
-    zIndex: 4,
+    zIndex: theme.zIndex.drawer + 4,
     background: 'rgba(0,0,0,1)',
   },
   button: {
     top: '50%',
     position: 'fixed',
     transform: 'translate(0, -50%)',
-    zIndex: 6,
+    zIndex: theme.zIndex.drawer + 6,
   },
   prev: {
     left: '0.5rem',
@@ -67,6 +72,12 @@ const styles = () => ({
   },
   grow: {
     flexGrow: 1,
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+  toolbarButton: {
+    textTransform: 'none',
   },
 });
 
@@ -80,6 +91,7 @@ class Gallery extends Component {
       modalItemId: null,
       modalInitialBounds: null,
       showOverlayButtons: false,
+      drawerOpen: false,
     };
   }
 
@@ -110,6 +122,14 @@ class Gallery extends Component {
     window.removeEventListener('continerScroll', this.handleScroll);
     document.removeEventListener('keydown', this.handleKeyPress, false);
   }
+
+  handleDrawerClose = () => {
+    this.setState({ drawerOpen: false });
+  };
+
+  handleOpenDrawerClick = () => {
+    this.setState({ drawerOpen: true });
+  };
 
   handleKeyPress = event => {
     // TODO: Handle arrow key presses
@@ -283,7 +303,7 @@ class Gallery extends Component {
   render() {
     const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
     const { fetching, error, title } = gallery;
-    const { showOverlayButtons } = this.state;
+    const { showOverlayButtons, drawerOpen } = this.state;
 
     // Sometimes react router renders things that aren't supposed to be
     if (!moduleId || !galleryId) {
@@ -304,7 +324,15 @@ class Gallery extends Component {
 
         {this.renderModal()}
 
+        <Drawer open={drawerOpen} onClose={this.handleDrawerClose}>
+          <FilterList moduleId={moduleId} />
+        </Drawer>
+
         <Toolbar variant="dense">
+          <Button className={classes.toolbarButton} onClick={this.handleOpenDrawerClick}>
+            <FilterListIcon className={classes.extendedIcon} />
+            <Typography>Filters</Typography>
+          </Button>
           <Breadcrumbs />
           <div className={classes.grow} />
           <SortMenu moduleId={moduleId} galleryId={galleryId} />

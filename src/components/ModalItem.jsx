@@ -28,7 +28,7 @@ const styles = theme => ({
     background: 'linear-gradient(#000, transparent)',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-    zIndex: 4,
+    zIndex: theme.zIndex.drawer + 4,
     padding: theme.spacing(1),
   },
   paper: {
