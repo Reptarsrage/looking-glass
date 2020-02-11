@@ -201,4 +201,8 @@ export default class FileSystemService {
       throw err;
     }
   };
+
+  fetchFilters = async () => {
+    return { data: [] }; // TODO: Implement this
+  };
 }

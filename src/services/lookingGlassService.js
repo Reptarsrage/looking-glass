@@ -53,4 +53,16 @@ export default class FileSystemService {
     const url = `/${moduleId}?${stringify(params)}`;
     return this.instance.get(url, config);
   };
+
+  fetchFilters = async (moduleId, filterSectionId, accessToken) => {
+    const params = { filter: filterSectionId };
+
+    const config = {
+      ...this.config,
+      headers: { 'access-token': accessToken },
+    };
+
+    const url = `/${moduleId}/filters?${stringify(params)}`;
+    return this.instance.get(url, config);
+  };
 }

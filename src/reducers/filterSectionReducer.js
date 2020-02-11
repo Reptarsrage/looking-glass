@@ -3,6 +3,7 @@ import produce from 'immer';
 import { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR, FETCH_MODULES_SUCCESS } from '../actions/types';
 import {
   generateFilterId,
+  generateFilterSectionId,
   generateModuleId,
   initialAsyncState,
   handleAsyncFetch,
@@ -30,7 +31,7 @@ const addFilterSectionForModule = (draft, module) => {
 
   // add filter sections
   module.filterBy.forEach(filterSection => {
-    const id = generateFilterId(moduleId, filterSection.id);
+    const id = generateFilterSectionId(moduleId, filterSection.id);
     draft.allIds.push(id);
     draft.byId[id] = {
       ...initialFilterSectionState,
@@ -61,18 +62,14 @@ const filterSectionReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_FILTERS_SUCCESS: {
-        const filters = payload;
         const filterSectionId = meta;
-
         handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId]);
-
-        // add filter values
-        draft.byId[filterSectionId].values = filters.map(({ id }) => generateFilterId(filterSectionId, id));
-
+        draft.byId[filterSectionId].values = payload.map(({ id }) => generateFilterId(filterSectionId, id));
         break;
       }
       case FETCH_FILTERS_ERROR: {
-        handleAsyncError(state, draft, payload);
+        const filterSectionId = meta;
+        handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload);
         break;
       }
       default:

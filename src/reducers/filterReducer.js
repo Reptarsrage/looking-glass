@@ -34,11 +34,8 @@ const filterReducer = (state = initialState, action) =>
 
     switch (type) {
       case FETCH_FILTERS_SUCCESS: {
-        const filters = payload;
-        const { filterSectionId } = meta;
-
         // add filters for modules
-        filters.forEach(filter => addFilterForSection(draft, filterSectionId, filter));
+        payload.forEach(filter => addFilterForSection(draft, meta, filter));
         break;
       }
       default:

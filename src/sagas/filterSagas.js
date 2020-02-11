@@ -1,4 +1,4 @@
-import { put, call, takeLatest, select } from 'redux-saga/effects';
+import { put, call, takeEvery, select } from 'redux-saga/effects';
 
 import LookingGlassService from '../services/lookingGlassService';
 import FileSystemService from '../services/fileSystemService';
@@ -6,6 +6,7 @@ import { FETCH_FILTERS } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
 import { filterSectionByIdSelector } from '../selectors/filterSectionSelectors';
 import { moduleIdSelector } from '../selectors/appSelectors';
+import { moduleByIdSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 import { handleRefresh } from './authSagas';
 import { fetchFiltersError, fetchFiltersSuccess } from '../actions/filterActions';
@@ -16,6 +17,7 @@ function* handleFetchFilters(action) {
   const { payload: filterSectionId } = action;
   const filterSection = yield select(filterSectionByIdSelector, { filterSectionId });
   const moduleId = yield select(moduleIdSelector);
+  const module = yield select(moduleByIdSelector, { moduleId });
 
   try {
     // resolve service
@@ -42,7 +44,7 @@ function* handleFetchFilters(action) {
 }
 
 function* watchFilterSagas() {
-  yield takeLatest(FETCH_FILTERS, handleFetchFilters);
+  yield takeEvery(FETCH_FILTERS, handleFetchFilters);
 }
 
 export default watchFilterSagas;
