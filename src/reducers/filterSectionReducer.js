@@ -64,7 +64,9 @@ const filterSectionReducer = (state = initialState, action) =>
       case FETCH_FILTERS_SUCCESS: {
         const filterSectionId = meta;
         handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId]);
-        draft.byId[filterSectionId].values = payload.map(({ id }) => generateFilterId(filterSectionId, id));
+        draft.byId[filterSectionId].values = payload
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(({ id }) => generateFilterId(filterSectionId, id));
         break;
       }
       case FETCH_FILTERS_ERROR: {
