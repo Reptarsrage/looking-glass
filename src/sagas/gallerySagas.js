@@ -126,7 +126,7 @@ function* handleFetchGallery(action) {
       gallery.siteId,
       accessToken,
       gallery.offset,
-      gallery.before,
+      gallery.count,
       gallery.after,
       gallery.searchQuery,
       sort,
