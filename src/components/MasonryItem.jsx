@@ -47,15 +47,17 @@ const MasonryItem = props => {
   const renderImage = () => {
     const { item } = props;
     const { width, height, title, url, thumb } = item;
-    return inView ? <Image src={url} thumb={thumb} title={title} width={width} height={height} /> : null;
+    const src = inView ? url : '';
+    const thumbSrc = inView ? thumb : '';
+    return <Image src={src} thumb={thumbSrc} title={title} width={width} height={height} />;
   };
 
   const renderVideo = () => {
     const { item } = props;
     const { width, height, title, url, thumb } = item;
-    return inView ? (
-      <Video src={url} thumb={thumb} title={title} width={width} height={height} muted autoPlay loop />
-    ) : null;
+    const src = inView ? url : '';
+    const thumbSrc = inView ? thumb : '';
+    return <Video src={src} thumb={thumbSrc} title={title} width={width} height={height} muted autoPlay loop />;
   };
 
   const renderLink = children => {
