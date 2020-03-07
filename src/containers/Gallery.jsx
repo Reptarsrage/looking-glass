@@ -15,15 +15,14 @@ import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import Drawer from '@material-ui/core/Drawer';
-import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
+
 import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
 import * as naviagationActions from '../actions/navigationActions';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
-import { galleryByIdSelector, itemsInGallerySelector, currentFilterSelector } from '../selectors/gallerySelectors';
+import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
 import * as moduleActions from '../actions/moduleActions';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -32,6 +31,7 @@ import Masonry from '../components/Masonry';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
 import FilterList from '../components/FilterList';
+import SelectedFilters from '../components/SelectedFilters';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
 import globalStyles from '../index.scss';
 
@@ -90,14 +90,6 @@ const styles = theme => ({
     marginRight: theme.spacing(1),
     color: theme.palette.text.secondary,
   },
-  filtersContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    padding: theme.spacing(0.5),
-  },
-  filterItem: {
-    margin: theme.spacing(0.5),
-  },
 });
 
 class Gallery extends Component {
@@ -144,11 +136,6 @@ class Gallery extends Component {
 
   handleDrawerClose = () => {
     this.setState({ drawerOpen: false });
-  };
-
-  handleDeleteFilter = () => {
-    const { moduleId, galleryId, filterChange } = this.props;
-    filterChange(moduleId, galleryId, null);
   };
 
   handleFilterClick = filterId => {
@@ -331,17 +318,7 @@ class Gallery extends Component {
   };
 
   render() {
-    const {
-      items,
-      classes,
-      moduleId,
-      galleryId,
-      gallery,
-      isAuthenticated,
-      requiresAuth,
-      authUrl,
-      currentFilter,
-    } = this.props;
+    const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
     const { fetching, error, title } = gallery;
     const { showOverlayButtons, drawerOpen } = this.state;
 
@@ -374,15 +351,11 @@ class Gallery extends Component {
           <SortMenu moduleId={moduleId} galleryId={galleryId} />
           <Button onClick={this.handleOpenDrawerClick}>
             <TuneIcon className={classes.extendedIcon} />
-            <Typography color="textSecondary">Filter By</Typography>
+            <Typography color="textSecondary">Filter</Typography>
           </Button>
         </Toolbar>
 
-        {currentFilter && (
-          <Paper className={classes.filtersContainer}>
-            <Chip className={classes.filterItem} label={currentFilter} onDelete={this.handleDeleteFilter} />
-          </Paper>
-        )}
+        <SelectedFilters moduleId={moduleId} galleryId={galleryId} />
 
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
@@ -406,7 +379,6 @@ class Gallery extends Component {
 Gallery.defaultProps = {
   authUrl: null,
   overlayButtonThreshold: 25,
-  currentFilter: null,
 };
 
 Gallery.propTypes = {
@@ -431,7 +403,6 @@ Gallery.propTypes = {
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
-  currentFilter: PropTypes.string,
 
   // withStyles
   classes: PropTypes.object.isRequired,
@@ -448,7 +419,6 @@ const mapStateToProps = createStructuredSelector({
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
-  currentFilter: currentFilterSelector,
   itemHeightSelectorFunc: state => itemId => itemHeightSelector(state, { itemId }),
   itemWidthSelectorFunc: state => itemId => itemWidthSelector(state, { itemId }),
 });
