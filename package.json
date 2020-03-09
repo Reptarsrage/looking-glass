@@ -132,7 +132,7 @@
     "electron-updater": "^4.2.0",
     "history": "^4.10.1",
     "image-size": "^0.8.3",
-    "immer": "^5.3.5",
+    "immer": "^6.0.0",
     "lodash": "^4.17.15",
     "mime-types": "^2.1.25",
     "moment": "^2.24.0",
