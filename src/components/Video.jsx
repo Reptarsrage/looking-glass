@@ -16,14 +16,16 @@ const styles = () => ({
 const Video = ({ classes, src, thumb, width, height, title, ...other }) => (
   // eslint-disable-next-line jsx-a11y/media-has-caption
   <video className={classes.video} width={width} height={height} title={title} poster={thumb} {...other}>
-    <source
-      src={src}
-      type={`video/${
-        extname(src)
-          .slice(1)
-          .split('?')[0]
-      }`}
-    />
+    {src && (
+      <source
+        src={src}
+        type={`video/${
+          extname(src)
+            .slice(1)
+            .split('?')[0]
+        }`}
+      />
+    )}
   </video>
 );
 
