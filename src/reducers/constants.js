@@ -1,4 +1,4 @@
-import uuidv3 from 'uuid/v3';
+import { v3 as uuidv3 } from 'uuid';
 
 // async state, and reducer functions
 export const initialAsyncState = {
