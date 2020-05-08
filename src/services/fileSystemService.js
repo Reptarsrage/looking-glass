@@ -46,8 +46,8 @@ export default class FileSystemService {
       .map(file => fs.lstatSync(file))
       .filter(stat => stat.isDirectory()).length;
 
-  videoSizeOf = async file => {
-    return new Promise((resolve, reject) =>
+  videoSizeOf = file =>
+    new Promise((resolve, reject) =>
       exec(
         `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 "${file}"`,
         (err, stdout) => {
@@ -65,7 +65,6 @@ export default class FileSystemService {
         }
       )
     );
-  };
 
   getThumbForFile = async file => {
     try {
@@ -142,43 +141,45 @@ export default class FileSystemService {
       });
     }
 
-    for (const itemPath of dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length))) {
-      const title = path.basename(itemPath, path.extname(itemPath));
-      const stat = fs.statSync(itemPath);
-      let result = null;
-      if (stat && stat.isDirectory()) {
-        const details = await this.getThumbForDir(itemPath);
-        const itemDirCount = this.dirCount(itemPath);
-        const itemFileCount = this.fileCount(itemPath);
+    await Promise.all(
+      dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length)).map(async itemPath => {
+        const title = path.basename(itemPath, path.extname(itemPath));
+        const stat = fs.statSync(itemPath);
+        let result = null;
+        if (stat && stat.isDirectory()) {
+          const details = await this.getThumbForDir(itemPath);
+          const itemDirCount = this.dirCount(itemPath);
+          const itemFileCount = this.fileCount(itemPath);
 
-        result =
-          details === null
-            ? null
-            : {
-                ...details,
-                id: encodeURIComponent(itemPath),
-                title,
-                description: itemPath,
-                isGallery: itemFileCount > 1 || itemDirCount > 0,
-              };
-      } else {
-        const details = await this.getThumbForFile(itemPath);
-        result =
-          details === null
-            ? null
-            : {
-                ...details,
-                id: this.sha512(itemPath),
-                title,
-                description: itemPath,
-                isGallery: false,
-              };
-      }
+          result =
+            details === null
+              ? null
+              : {
+                  ...details,
+                  id: encodeURIComponent(itemPath),
+                  title,
+                  description: itemPath,
+                  isGallery: itemFileCount > 1 || itemDirCount > 0,
+                };
+        } else {
+          const details = await this.getThumbForFile(itemPath);
+          result =
+            details === null
+              ? null
+              : {
+                  ...details,
+                  id: this.sha512(itemPath),
+                  title,
+                  description: itemPath,
+                  isGallery: false,
+                };
+        }
 
-      if (result !== null) {
-        results.push(result);
-      }
-    }
+        if (result !== null) {
+          results.push(result);
+        }
+      })
+    );
 
     return {
       items: results,
