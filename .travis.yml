@@ -19,6 +19,10 @@ matrix:
 notifications:
   email: false
 
+# Add codecov tool
+install:
+  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then yarn global add codecov; fi
+
 # cache some files for faster builds
 cache:
   yarn: true
