@@ -3,7 +3,7 @@
   "productName": "The Looking-Glass",
   "version": "0.0.1",
   "description": "Electron application to browse various website content from one app. Built for development practice only.",
-  "main": "main.js",
+  "main": "./main.prod.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reptarsrage/looking-glass.git"
@@ -29,7 +29,9 @@
   "homepage": "https://github.com/reptarsrage/looking-glass#readme",
   "scripts": {
     "clean": "rimraf dist release .eslintcache",
-    "build": "cross-env NODE_ENV=production webpack -p --config ./webpack.config.js",
+    "build-main": "webpack -p --config ./webpack.main.config.js",
+    "build-renderer": "webpack -p --config ./webpack.renderer.config.js",
+    "build": "cross-env NODE_ENV=production concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "start": "yarn build && cross-env ELECTRON_IS_DEV=0 electron .",
     "start-dev": "wait-on http://localhost:4000 && electron .",
     "dev-server": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.config.js",
