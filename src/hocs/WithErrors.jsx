@@ -6,9 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import Button from '@material-ui/core/Button';
 
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 
-const WithErrors = WrappedComponent =>
+const WithErrors = (WrappedComponent) =>
   class ErrorBoundary extends Component {
     static propTypes = {
       // actions
@@ -66,7 +66,7 @@ const WithErrors = WrappedComponent =>
   };
 
 const mapDispatchToProps = {
-  navigateHome: naviagationActions.navigateHome,
+  navigateHome: navigationActions.navigateHome,
 };
 
 export default compose(connect(null, mapDispatchToProps), WithErrors);

@@ -8,11 +8,11 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { compose } from 'redux';
 
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 import { breadcrumbsSelector } from '../selectors/breadcrumbSelectors';
 import BreadcrumbItem from './BreadcrumbItem';
 
-const styles = theme => ({
+const styles = (theme) => ({
   link: {
     display: 'flex',
   },
@@ -29,7 +29,7 @@ const CustomBreadcrumbs = ({ breadcrumbs, classes, navigateHome }) => (
       <HomeIcon className={classes.icon} />
       Home
     </Link>
-    {breadcrumbs.map(breadcrumbId => (
+    {breadcrumbs.map((breadcrumbId) => (
       <BreadcrumbItem key={breadcrumbId} breadcrumbId={breadcrumbId} />
     ))}
   </Breadcrumbs>
@@ -51,7 +51,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  navigateHome: naviagationActions.navigateHome,
+  navigateHome: navigationActions.navigateHome,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(CustomBreadcrumbs);

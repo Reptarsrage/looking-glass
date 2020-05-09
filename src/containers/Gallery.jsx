@@ -20,7 +20,7 @@ import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
@@ -35,7 +35,7 @@ import SelectedFilters from '../components/SelectedFilters';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
 import globalStyles from '../index.scss';
 
-const styles = theme => ({
+const styles = (theme) => ({
   floatedBottomRight: {
     position: 'fixed',
     bottom: '10px',
@@ -138,7 +138,7 @@ class Gallery extends Component {
     this.setState({ drawerOpen: false });
   };
 
-  handleFilterClick = filterId => {
+  handleFilterClick = (filterId) => {
     const { moduleId, galleryId, filterChange } = this.props;
     this.setState({ drawerOpen: false });
     filterChange(moduleId, galleryId, filterId);
@@ -148,14 +148,14 @@ class Gallery extends Component {
     this.setState({ drawerOpen: true });
   };
 
-  handleKeyPress = event => {
+  handleKeyPress = (event) => {
     // TODO: Handle arrow key presses
     if (event.key === 'Escape') {
       this.handleModalClose();
     }
   };
 
-  handleScroll = event => {
+  handleScroll = (event) => {
     const { overlayButtonThreshold } = this.props;
     const { showOverlayButtons } = this.state;
     const scrollY = event.detail;
@@ -216,7 +216,7 @@ class Gallery extends Component {
 
     if (this.modalHasNext()) {
       // TODO: Update modalInitialBounds
-      const idx = items.findIndex(id => id === modalItemId);
+      const idx = items.findIndex((id) => id === modalItemId);
       const newModalItemId = items[idx + 1];
       this.setState({ modalItemId: newModalItemId });
     }
@@ -228,7 +228,7 @@ class Gallery extends Component {
 
     if (this.modalHasPrev()) {
       // TODO: Update modalInitialBounds
-      const idx = items.findIndex(id => id === modalItemId);
+      const idx = items.findIndex((id) => id === modalItemId);
       const newModalItemId = items[idx - 1];
       this.setState({ modalItemId: newModalItemId });
     }
@@ -307,12 +307,12 @@ class Gallery extends Component {
     );
   };
 
-  getItemHeight = itemId => {
+  getItemHeight = (itemId) => {
     const { itemHeightSelectorFunc } = this.props;
     return itemHeightSelectorFunc(itemId);
   };
 
-  getItemWidth = itemId => {
+  getItemWidth = (itemId) => {
     const { itemWidthSelectorFunc } = this.props;
     return itemWidthSelectorFunc(itemId);
   };
@@ -419,13 +419,13 @@ const mapStateToProps = createStructuredSelector({
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
-  itemHeightSelectorFunc: state => itemId => itemHeightSelector(state, { itemId }),
-  itemWidthSelectorFunc: state => itemId => itemWidthSelector(state, { itemId }),
+  itemHeightSelectorFunc: (state) => (itemId) => itemHeightSelector(state, { itemId }),
+  itemWidthSelectorFunc: (state) => (itemId) => itemWidthSelector(state, { itemId }),
 });
 
 const mapDispatchToProps = {
   fetchGallery: moduleActions.fetchGallery,
-  navigateToGallery: naviagationActions.navigateToGallery,
+  navigateToGallery: navigationActions.navigateToGallery,
   filterChange: moduleActions.filterChange,
 };
 

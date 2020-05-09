@@ -7,9 +7,9 @@ import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 
-const styles = theme => ({
+const styles = (theme) => ({
   fab: {
     margin: theme.spacing(1),
   },
@@ -58,7 +58,7 @@ BackButton.propTypes = {
 };
 
 const mapDispatchToProps = {
-  navigateBack: naviagationActions.navigateBack,
+  navigateBack: navigationActions.navigateBack,
 };
 
 export default compose(connect(null, mapDispatchToProps), withStyles(styles))(BackButton);
