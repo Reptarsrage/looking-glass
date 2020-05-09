@@ -22,6 +22,7 @@ notifications:
 # Add codecov tool
 install:
   - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then yarn global add codecov; fi
+  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then yarn --prefer-offline --pure-lockfile --non-interactive; fi
 
 # cache some files for faster builds
 cache:
