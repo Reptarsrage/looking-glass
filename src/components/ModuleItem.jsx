@@ -9,7 +9,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 import { moduleByIdSelector } from '../selectors/moduleSelectors';
 
 const styles = () => ({
@@ -65,7 +65,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  navigateToGallery: naviagationActions.navigateToGallery,
+  navigateToGallery: navigationActions.navigateToGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(ModuleItem);

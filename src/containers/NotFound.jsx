@@ -7,9 +7,9 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
     margin: theme.spacing(1),
   },
@@ -44,7 +44,7 @@ NotFound.propTypes = {
 };
 
 const mapDispatchToProps = {
-  navigateHome: naviagationActions.navigateHome,
+  navigateHome: navigationActions.navigateHome,
 };
 
 export default compose(connect(null, mapDispatchToProps), withStyles(styles))(NotFound);

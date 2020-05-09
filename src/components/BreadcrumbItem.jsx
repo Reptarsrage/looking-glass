@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Link from '@material-ui/core/Link';
 import { withStyles } from '@material-ui/core/styles';
 
-import * as naviagationActions from '../actions/navigationActions';
+import * as navigationActions from '../actions/navigationActions';
 import { breadcrumbByIdSelector } from '../selectors/breadcrumbSelectors';
 
 const styles = () => ({
@@ -52,7 +52,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  navigateToBreadcrumb: naviagationActions.navigateToBreadcrumb,
+  navigateToBreadcrumb: navigationActions.navigateToBreadcrumb,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(BreadcrumbItem);
