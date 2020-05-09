@@ -5,12 +5,17 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TuneIcon from '@material-ui/icons/Tune';
 import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
+import Drawer from '@material-ui/core/Drawer';
+
 import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 
@@ -25,22 +30,24 @@ import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import ModalItem from '../components/ModalItem';
+import FilterList from '../components/FilterList';
+import SelectedFilters from '../components/SelectedFilters';
 import ImageFullscreenTransition from '../components/ImageFullscreenTransition';
 import globalStyles from '../index.scss';
 
-const styles = () => ({
+const styles = theme => ({
   floatedBottomRight: {
     position: 'fixed',
     bottom: '10px',
     right: '10px',
-    zIndex: 3,
+    zIndex: theme.zIndex.drawer + 3,
   },
   pointer: {
     cursor: 'pointer',
   },
   animationElement: {
     position: 'fixed',
-    zIndex: 5,
+    zIndex: theme.zIndex.drawer + 5,
     display: 'flex',
     overflow: 'hidden',
   },
@@ -50,14 +57,14 @@ const styles = () => ({
     width: '100%',
     top: 0,
     left: 0,
-    zIndex: 4,
+    zIndex: theme.zIndex.drawer + 4,
     background: 'rgba(0,0,0,1)',
   },
   button: {
     top: '50%',
     position: 'fixed',
     transform: 'translate(0, -50%)',
-    zIndex: 6,
+    zIndex: theme.zIndex.drawer + 6,
   },
   prev: {
     left: '0.5rem',
@@ -67,6 +74,21 @@ const styles = () => ({
   },
   grow: {
     flexGrow: 1,
+  },
+  drawer: {
+    minWidth: '360px',
+    '&::-webkit-scrollbar': {
+      width: '5px',
+      backgroundColor: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#d5d5d5',
+      borderRadius: '2px',
+    },
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+    color: theme.palette.text.secondary,
   },
 });
 
@@ -80,6 +102,7 @@ class Gallery extends Component {
       modalItemId: null,
       modalInitialBounds: null,
       showOverlayButtons: false,
+      drawerOpen: false,
     };
   }
 
@@ -110,6 +133,20 @@ class Gallery extends Component {
     window.removeEventListener('continerScroll', this.handleScroll);
     document.removeEventListener('keydown', this.handleKeyPress, false);
   }
+
+  handleDrawerClose = () => {
+    this.setState({ drawerOpen: false });
+  };
+
+  handleFilterClick = filterId => {
+    const { moduleId, galleryId, filterChange } = this.props;
+    this.setState({ drawerOpen: false });
+    filterChange(moduleId, galleryId, filterId);
+  };
+
+  handleOpenDrawerClick = () => {
+    this.setState({ drawerOpen: true });
+  };
 
   handleKeyPress = event => {
     // TODO: Handle arrow key presses
@@ -283,7 +320,7 @@ class Gallery extends Component {
   render() {
     const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
     const { fetching, error, title } = gallery;
-    const { showOverlayButtons } = this.state;
+    const { showOverlayButtons, drawerOpen } = this.state;
 
     // Sometimes react router renders things that aren't supposed to be
     if (!moduleId || !galleryId) {
@@ -304,11 +341,21 @@ class Gallery extends Component {
 
         {this.renderModal()}
 
+        <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={this.handleDrawerClose}>
+          <FilterList moduleId={moduleId} onClick={this.handleFilterClick} />
+        </Drawer>
+
         <Toolbar variant="dense">
           <Breadcrumbs />
           <div className={classes.grow} />
           <SortMenu moduleId={moduleId} galleryId={galleryId} />
+          <Button onClick={this.handleOpenDrawerClick}>
+            <TuneIcon className={classes.extendedIcon} />
+            <Typography color="textSecondary">Filter</Typography>
+          </Button>
         </Toolbar>
+
+        <SelectedFilters moduleId={moduleId} galleryId={galleryId} />
 
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
@@ -363,6 +410,7 @@ Gallery.propTypes = {
   // actions
   fetchGallery: PropTypes.func.isRequired,
   navigateToGallery: PropTypes.func.isRequired,
+  filterChange: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -378,6 +426,7 @@ const mapStateToProps = createStructuredSelector({
 const mapDispatchToProps = {
   fetchGallery: moduleActions.fetchGallery,
   navigateToGallery: naviagationActions.navigateToGallery,
+  filterChange: moduleActions.filterChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery);

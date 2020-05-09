@@ -1,7 +1,8 @@
 {
   "productName": "The Looking-Glass",
   "appId": "looking-glass",
-  "files": ["dist", "main.js"],
+  "files": ["main.prod.js"],
+  "extraResources": ["dist"],
   "directories": {
     "buildResources": "resources",
     "output": "release"

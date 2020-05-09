@@ -57,7 +57,7 @@ describe('gallery reducer', () => {
       id: galleryId,
       offset: 10,
       hasNext: false,
-      before: 'BEFORE',
+      count: 97,
       after: 'AFTER',
       items: [Array(3).keys()].map(id => ({ id, url: 'URL', width: 1, height: 1 })),
     };
@@ -70,7 +70,7 @@ describe('gallery reducer', () => {
     expect(newState.byId[galleryId].fetching).toEqual(false);
     expect(newState.byId[galleryId].success).toEqual(true);
     expect(newState.byId[galleryId].hasNext).toEqual(payload.hasNext);
-    expect(newState.byId[galleryId].before).toEqual(payload.before);
+    expect(newState.byId[galleryId].count).toEqual(payload.count);
     expect(newState.byId[galleryId].after).toEqual(payload.after);
     expect(newState.byId[galleryId].offset).toEqual(payload.offset);
     expect(newState.byId[galleryId].items).toHaveLength(payload.items.length);
@@ -86,7 +86,7 @@ describe('gallery reducer', () => {
       id: galleryId,
       offset: 10,
       hasNext: false,
-      before: 'BEFORE',
+      count: 97,
       after: 'AFTER',
       items: [
         { id: '1', width: 1, height: 1 },

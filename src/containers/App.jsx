@@ -75,7 +75,7 @@ const styles = theme => ({
     flexGrow: 1,
   },
   appBar: {
-    zIndex: 1, // otherwise it's in the thousands (‡ಠ╭╮ಠ)
+    zIndex: theme.zIndex.drawer + 1,
   },
   title: {
     display: 'none',

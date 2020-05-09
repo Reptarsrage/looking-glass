@@ -1,3 +1,7 @@
+# See: https://www.electron.build/multi-platform-build
+# Always run two parallel builds: one on mac and one on linux
+# the linux build will use wine to be able to build windows and
+# linux apps
 matrix:
   include:
     - os: osx
@@ -7,33 +11,69 @@ matrix:
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+
     - os: linux
-      dist: xenial
-      language: node_js
-      node_js:
-        - node
-      services:
-        - xvfb
+      services: docker
+      language: generic
 
-before_cache:
-  - rm -rf $HOME/.cache/electron-builder/wine
+notifications:
+  email: false
 
+# Add codecov tool
+install:
+  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then yarn global add codecov; fi
+  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then yarn --prefer-offline --pure-lockfile --non-interactive; fi
+
+# cache some files for faster builds
 cache:
   yarn: true
   directories:
     - node_modules
-    - $(npm config get prefix)/lib/node_modules
     - $HOME/.cache/electron
     - $HOME/.cache/electron-builder
 
-install:
-  - yarn global add codecov
-  - yarn --ignore-engines
-
+# on PRs and merges to master run tests and build the app
 script:
-  - yarn lint
-  - yarn test-cov
-  - yarn package-ci
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      docker run --rm \
+        -v ${PWD}:/project \
+        -v ~/.cache/electron:/root/.cache/electron \
+        -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+        electronuserland/builder:wine \
+        /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn test"
+    else
+      yarn test --coverage
+    fi
 
+# only deploy to github on a merge to the master branch
+deploy:
+  provider: script
+  script:
+    - |
+      if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+        docker run --rm \
+          --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
+          -v ${PWD}:/project \
+          -v ~/.cache/electron:/root/.cache/electron \
+          -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+          electronuserland/builder:wine \
+          /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn build && yarn release --linux --win"
+      else
+        yarn build && yarn release
+      fi
+  skip_cleanup: true
+  on:
+    branch: master
+
+before_cache:
+  - rm -rf $HOME/.cache/electron-builder/wine
+
+# only run this script on pull requests and merges into master
+branches:
+  only:
+    - master
+
+# upload coverage report on success
 after_success:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then codecov; fi
+  - if [[ "$TRAVIS_OS_NAME" != "linux" ]]; then codecov; fi

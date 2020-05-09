@@ -28,6 +28,8 @@ const fetchingSelector = createSelector(moduleStateSelector, state => state.fetc
 
 const errorSelector = createSelector(moduleStateSelector, state => state.error);
 
+const filterBySelector = createSelector(moduleByIdSelector, module => module.filterBy);
+
 const searchQuerySelector = createSelector(
   [searchGalleryIdSelector, galleryStateSelector],
   (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
@@ -41,6 +43,7 @@ export {
   errorSelector,
   moduleByIdSiteIdSelector,
   searchQuerySelector,
+  filterBySelector,
   searchGalleryIdSelector,
   defaultGalleryIdSelector,
 };

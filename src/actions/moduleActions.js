@@ -7,6 +7,8 @@ import {
   SEARCH_CHANGE,
   SORT_CHANGE,
   CLEAR_GALLERY,
+  FILTER_CHANGE,
+  UPDATE_FILTER,
 } from './types';
 
 export const fetchModules = () => ({
@@ -46,5 +48,17 @@ export const sortChange = (moduleId, galleryId, valueId) => ({
 export const updateSort = (galleryId, valueId) => ({
   type: UPDATE_SORT,
   payload: valueId,
+  meta: galleryId,
+});
+
+export const filterChange = (moduleId, galleryId, filterId) => ({
+  type: FILTER_CHANGE,
+  payload: filterId,
+  meta: { moduleId, galleryId },
+});
+
+export const updateFilter = (galleryId, filterId) => ({
+  type: UPDATE_FILTER,
+  payload: filterId,
   meta: galleryId,
 });

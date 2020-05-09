@@ -12,6 +12,7 @@ import {
   initialAsyncState,
   SEARCH_GALLERY_ID,
   generateSortId,
+  generateFilterSectionId,
 } from './constants';
 
 export const initialState = {
@@ -28,6 +29,7 @@ export const initialModuleState = {
   authType: null,
   icon: null,
   sortBy: [],
+  filterBy: [],
   defaultGalleryId: null,
   searchGalleryId: null,
 };
@@ -39,7 +41,8 @@ const addModule = (draft, module, actualModuleId) => {
   // if module does not exist
   if (!(moduleId in draft.byId)) {
     const { sortBy, filterBy, ...rest } = module;
-    const sortValues = (sortBy || []).map(sortValue => generateSortId(moduleId, sortValue.id));
+    const sortValues = (sortBy || []).map(({ id }) => generateSortId(moduleId, id));
+    const filterSections = (filterBy || []).map(({ id }) => generateFilterSectionId(moduleId, id));
 
     // add module
     draft.allIds.push(moduleId);
@@ -48,6 +51,7 @@ const addModule = (draft, module, actualModuleId) => {
       siteId: module.id,
       id: moduleId,
       sortBy: sortValues,
+      filterBy: filterSections,
       defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
       searchGalleryId: generateGalleryId(moduleId, SEARCH_GALLERY_ID),
     };

@@ -39,8 +39,8 @@ export default class FileSystemService {
     return this.instance.get(`/${moduleId}/authorize?${stringify({ code })}`, this.config);
   };
 
-  fetchImages = async (moduleId, galleryId, accessToken, offset, before, after, query, sort) => {
-    const params = { offset, before, after, query, sort };
+  fetchImages = async (moduleId, galleryId, accessToken, offset, count, after, query, sort, filter) => {
+    const params = { offset, count, after, query, sort, filter };
     if (galleryId !== DEFAULT_GALLERY_ID && galleryId !== SEARCH_GALLERY_ID) {
       params.galleryId = galleryId;
     }
@@ -51,6 +51,18 @@ export default class FileSystemService {
     };
 
     const url = `/${moduleId}?${stringify(params)}`;
+    return this.instance.get(url, config);
+  };
+
+  fetchFilters = async (moduleId, filterSectionId, accessToken) => {
+    const params = { filter: filterSectionId };
+
+    const config = {
+      ...this.config,
+      headers: { 'access-token': accessToken },
+    };
+
+    const url = `/${moduleId}/filters?${stringify(params)}`;
     return this.instance.get(url, config);
   };
 }

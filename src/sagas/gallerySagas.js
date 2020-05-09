@@ -7,17 +7,19 @@ import {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_ERROR,
+  FILTER_CHANGE,
   SORT_CHANGE,
   SEARCH_CHANGE,
 } from '../actions/types';
 import { accessTokenSelector } from '../selectors/authSelectors';
-import { galleryByIdSelector, currentSortSelector } from '../selectors/gallerySelectors';
+import { galleryByIdSelector, currentSortSelector, currentFilterSelector } from '../selectors/gallerySelectors';
 import { galleryIdSelector } from '../selectors/appSelectors';
 import { moduleByIdSelector, searchGalleryIdSelector } from '../selectors/moduleSelectors';
 import { valueSiteIdSelector, defaultSortValueSelector } from '../selectors/sortSelectors';
+import { filterSiteIdSelector } from '../selectors/filterSelectors';
 import { handleRefresh } from './authSagas';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
-import { fetchGallery, updateSort, clearGallery, updateSearch } from '../actions/moduleActions';
+import { fetchGallery, updateSort, clearGallery, updateSearch, updateFilter } from '../actions/moduleActions';
 import { navigateToSearch, navigateFromSearch } from '../actions/navigationActions';
 
 const fsService = new FileSystemService();
@@ -32,6 +34,19 @@ function* handleSortChange(action) {
   if (currentSort !== valueId) {
     yield put(clearGallery(galleryId));
     yield put(updateSort(galleryId, valueId));
+    yield put(fetchGallery(moduleId, galleryId));
+  }
+}
+
+function* handleFilterChange(action) {
+  const { meta, payload } = action;
+  const { moduleId, galleryId } = meta;
+  const filterId = payload;
+
+  const currentFilter = yield select(currentFilterSelector, { galleryId });
+  if (currentFilter !== filterId) {
+    yield put(clearGallery(galleryId));
+    yield put(updateFilter(galleryId, filterId));
     yield put(fetchGallery(moduleId, galleryId));
   }
 }
@@ -72,6 +87,11 @@ function* handleSearchChange(action) {
     });
 
     yield put(fetchGallery(moduleId, galleryId));
+  } else {
+    // Not searching anymore,. clear out old filters and sort
+    yield put(clearGallery(galleryId));
+    yield put(updateFilter(galleryId, null));
+    yield put(updateSort(galleryId, null));
   }
 }
 
@@ -98,6 +118,7 @@ function* handleFetchGallery(action) {
     const accessToken = yield select(accessTokenSelector, { moduleId });
     const defaultSort = yield select(defaultSortValueSelector, { moduleId });
     const sort = yield select(valueSiteIdSelector, { valueId: gallery.currentSort || defaultSort });
+    const filter = yield select(filterSiteIdSelector, { filterId: gallery.currentFilter });
 
     const { data } = yield call(
       service.fetchImages,
@@ -105,10 +126,11 @@ function* handleFetchGallery(action) {
       gallery.siteId,
       accessToken,
       gallery.offset,
-      gallery.before,
+      gallery.count,
       gallery.after,
       gallery.searchQuery,
-      sort
+      sort,
+      filter
     );
 
     yield put({ type: FETCH_GALLERY_SUCCESS, payload: data, meta: galleryId });
@@ -123,6 +145,7 @@ function* watchGallerySagas() {
     takeEvery(FETCH_GALLERY, handleFetchGallery),
     takeLatest(SEARCH_CHANGE, handleSearchChange),
     takeLatest(SORT_CHANGE, handleSortChange),
+    takeLatest(FILTER_CHANGE, handleFilterChange),
   ]);
 }
 
