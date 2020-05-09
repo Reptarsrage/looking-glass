@@ -1,7 +1,7 @@
 {
   "name": "looking-glass",
   "productName": "The Looking-Glass",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Electron application to browse various website content from one app. Built for development practice only.",
   "main": "./main.prod.js",
   "repository": {
@@ -35,7 +35,8 @@
     "start-dev": "wait-on http://localhost:4000 && electron .",
     "dev-server": "webpack-dev-server --config ./webpack.renderer.config.js",
     "dev": "cross-env NODE_ENV=development concurrently -k \"yarn dev-server\" \"yarn start-dev\"",
-    "release": "electron-builder",
+    "dist": "electron-builder",
+    "release": "standard-version",
     "test": "jest"
   },
   "lint-staged": {
@@ -54,6 +55,7 @@
   },
   "husky": {
     "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged"
     }
   },
@@ -62,6 +64,8 @@
     "@babel/plugin-proposal-class-properties": "7.8.3",
     "@babel/preset-env": "7.9.6",
     "@babel/preset-react": "7.9.4",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "autoprefixer": "9.7.6",
     "babel-eslint": "10.1.0",
     "babel-jest": "26.0.1",
@@ -70,6 +74,7 @@
     "cross-env": "7.0.2",
     "csp-html-webpack-plugin": "4.0.0",
     "css-loader": "3.5.3",
+    "cz-conventional-changelog": "^3.2.0",
     "electron": "8.2.5",
     "electron-builder": "22.6.0",
     "electron-devtools-installer": "3.0.0",
@@ -100,6 +105,7 @@
     "rimraf": "3.0.2",
     "sass-loader": "8.0.2",
     "sinon": "9.0.2",
+    "standard-version": "^8.0.0",
     "style-loader": "1.2.1",
     "stylelint": "13.3.3",
     "stylelint-config-prettier": "8.0.1",
@@ -151,5 +157,10 @@
     "npm": ">=6.x",
     "yarn": ">=1.x"
   },
-  "browserslist": "electron 8.0"
+  "browserslist": "electron 8.0",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
