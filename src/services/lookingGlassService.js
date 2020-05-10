@@ -23,7 +23,7 @@ export default class FileSystemService {
     return this.instance.get('/', this.config);
   };
 
-  getOauthURL = async moduleId => {
+  getOauthURL = async (moduleId) => {
     return this.instance.get(`/${moduleId}/oauth`, this.config);
   };
 

@@ -5,9 +5,9 @@ describe('Module Selectors', () => {
   describe('modulesSelector', () => {
     it('should return modules', () => {
       // arrange
-      const allIds = [...Array(3).keys()].map(id => id.toString());
+      const allIds = [...Array(3).keys()].map((id) => id.toString());
       const state = { module: { ...initialState, allIds } };
-      allIds.forEach(id => {
+      allIds.forEach((id) => {
         state.module.byId[id] = { ...initialModuleState, id };
       });
 
@@ -33,10 +33,10 @@ describe('Module Selectors', () => {
   describe('moduleByIdSelector', () => {
     it('should return module', () => {
       // arrange
-      const allIds = [...Array(3).keys()].map(id => id.toString());
+      const allIds = [...Array(3).keys()].map((id) => id.toString());
       const state = { module: { ...initialState, allIds } };
       const props = { moduleId: allIds[1] };
-      allIds.forEach(id => {
+      allIds.forEach((id) => {
         state.module.byId[id] = { ...initialModuleState, id };
       });
 

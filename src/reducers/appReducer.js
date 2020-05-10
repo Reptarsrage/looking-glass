@@ -9,7 +9,7 @@ export const initialState = {
 };
 
 const authReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload } = action || {};
     switch (type) {
       case SET_CURRENT_GALLERY: {

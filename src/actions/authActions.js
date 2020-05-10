@@ -6,7 +6,7 @@ export const authorize = (moduleId, code) => ({
   meta: { moduleId },
 });
 
-export const fetchOAuthURL = moduleId => ({
+export const fetchOAuthURL = (moduleId) => ({
   type: FETCH_OATH_URL,
   meta: { moduleId },
 });

@@ -4,12 +4,12 @@ import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_ERROR } from '../..
 import { generateModuleId, generateSortId } from '../constants';
 
 const generateTestData = (moduleCount, sortValueCount, nestedValueCount) =>
-  [...Array(moduleCount).keys()].map(moduleId => ({
+  [...Array(moduleCount).keys()].map((moduleId) => ({
     id: moduleId.toString(),
-    sortBy: [...Array(sortValueCount).keys()].map(sortById => ({
+    sortBy: [...Array(sortValueCount).keys()].map((sortById) => ({
       ...initialSortState,
       id: `${moduleId}-${sortById}`,
-      values: [...Array(nestedValueCount).keys()].map(nestedId => ({
+      values: [...Array(nestedValueCount).keys()].map((nestedId) => ({
         ...initialSortState,
         id: `${moduleId}-${sortById}-${nestedId}`,
       })),
@@ -30,7 +30,7 @@ describe('module reducer', () => {
   });
 
   it('should handle FETCH_MODULES_SUCCESS', () => {
-    const payload = [...Array(3).keys()].map(id => ({ ...initialModuleState, id: id.toString() }));
+    const payload = [...Array(3).keys()].map((id) => ({ ...initialModuleState, id: id.toString() }));
     const newState = reducer(initialState, { type: FETCH_MODULES_SUCCESS, payload });
     expect(newState.error).toEqual(null);
     expect(newState.fetching).toEqual(false);
@@ -50,11 +50,11 @@ describe('module reducer', () => {
     const newState = reducer(initialState, { type: FETCH_MODULES_SUCCESS, payload });
 
     // assert
-    payload.forEach(module => {
+    payload.forEach((module) => {
       // verify module sortBy array
       const moduleId = generateModuleId(module.id);
       expect(newState.byId[moduleId].sortBy).toEqual(
-        module.sortBy.map(sortValue => generateSortId(moduleId, sortValue.id))
+        module.sortBy.map((sortValue) => generateSortId(moduleId, sortValue.id))
       );
     });
   });

@@ -20,33 +20,29 @@ export default class FileSystemService {
     this.salt = this.genRandomString(6);
   }
 
-  genRandomString = length =>
+  genRandomString = (length) =>
     crypto
       .randomBytes(Math.ceil(length / 2))
       .toString('hex')
       .slice(0, length);
 
-  sha512 = s =>
-    crypto
-      .createHmac('sha1', this.salt)
-      .update(s)
-      .digest('base64');
+  sha512 = (s) => crypto.createHmac('sha1', this.salt).update(s).digest('base64');
 
-  fileCount = dir =>
+  fileCount = (dir) =>
     fs
       .readdirSync(dir)
-      .map(item => `${dir}${path.sep}${item}`)
-      .map(file => fs.lstatSync(file))
-      .filter(stat => stat.isFile()).length;
+      .map((item) => `${dir}${path.sep}${item}`)
+      .map((file) => fs.lstatSync(file))
+      .filter((stat) => stat.isFile()).length;
 
-  dirCount = dir =>
+  dirCount = (dir) =>
     fs
       .readdirSync(dir)
-      .map(item => `${dir}${path.sep}${item}`)
-      .map(file => fs.lstatSync(file))
-      .filter(stat => stat.isDirectory()).length;
+      .map((item) => `${dir}${path.sep}${item}`)
+      .map((file) => fs.lstatSync(file))
+      .filter((stat) => stat.isDirectory()).length;
 
-  videoSizeOf = file =>
+  videoSizeOf = (file) =>
     new Promise((resolve, reject) =>
       exec(
         `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 "${file}"`,
@@ -66,7 +62,7 @@ export default class FileSystemService {
       )
     );
 
-  getThumbForFile = async file => {
+  getThumbForFile = async (file) => {
     try {
       const mimeType = lookup(file);
       if (mimeType.startsWith('image')) {
@@ -97,7 +93,7 @@ export default class FileSystemService {
     return null;
   };
 
-  getThumbForDir = async dir => {
+  getThumbForDir = async (dir) => {
     let retItem = null;
     try {
       const dirItems = fs.readdirSync(dir);
@@ -124,7 +120,7 @@ export default class FileSystemService {
     const results = [];
 
     const dirCount = this.dirCount(dir);
-    let dirItems = fs.readdirSync(dir).map(item => `${dir}${path.sep}${item}`);
+    let dirItems = fs.readdirSync(dir).map((item) => `${dir}${path.sep}${item}`);
 
     // shuffle if contains directories
     if (dirCount > 0) {
@@ -142,7 +138,7 @@ export default class FileSystemService {
     }
 
     await Promise.all(
-      dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length)).map(async itemPath => {
+      dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length)).map(async (itemPath) => {
         const title = path.basename(itemPath, path.extname(itemPath));
         const stat = fs.statSync(itemPath);
         let result = null;

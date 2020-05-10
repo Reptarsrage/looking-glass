@@ -1,6 +1,6 @@
 import { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR } from './types';
 
-export const fetchFilters = filterSectionId => ({
+export const fetchFilters = (filterSectionId) => ({
   type: FETCH_FILTERS,
   payload: filterSectionId,
 });

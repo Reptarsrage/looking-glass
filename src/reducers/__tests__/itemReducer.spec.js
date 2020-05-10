@@ -11,7 +11,7 @@ describe('item reducer', () => {
     // arrange
     const galleryId = 'EXPECTED GALLERY ID';
     const payload = {
-      items: [...Array(3).keys()].map(id => ({
+      items: [...Array(3).keys()].map((id) => ({
         ...initialItemState,
         id,
         url: 'URL',

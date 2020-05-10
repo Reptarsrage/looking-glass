@@ -49,7 +49,7 @@ const addItem = (draft, galleryId, item) => {
 };
 
 const itemReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload, meta } = action || {};
 
     switch (type) {
@@ -57,9 +57,9 @@ const itemReducer = (state = initialState, action) =>
         const galleryId = meta;
 
         // remove items
-        const galleryItemsToRemove = state.allIds.filter(id => state.byId[id].galleryId === galleryId);
-        draft.allIds = state.allIds.filter(id => state.byId[id].galleryId !== galleryId);
-        galleryItemsToRemove.forEach(id => delete draft.byId[id]);
+        const galleryItemsToRemove = state.allIds.filter((id) => state.byId[id].galleryId === galleryId);
+        draft.allIds = state.allIds.filter((id) => state.byId[id].galleryId !== galleryId);
+        galleryItemsToRemove.forEach((id) => delete draft.byId[id]);
         break;
       }
       case FETCH_GALLERY_SUCCESS: {
@@ -68,7 +68,7 @@ const itemReducer = (state = initialState, action) =>
         const { items } = gallery;
 
         // add items
-        items.forEach(item => addItem(draft, galleryId, item));
+        items.forEach((item) => addItem(draft, galleryId, item));
         break;
       }
       default:

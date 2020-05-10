@@ -6,10 +6,10 @@ import { moduleByIdSelector, searchQuerySelector } from './moduleSelectors';
 
 const getValueId = (_, props) => props.valueId;
 
-const stateSelector = state => state.sort || initialState;
+const stateSelector = (state) => state.sort || initialState;
 
 /** All Values */
-const valuesSelector = createSelector(stateSelector, state => state.allIds);
+const valuesSelector = createSelector(stateSelector, (state) => state.allIds);
 
 /** Specific Value */
 const valueByIdSelector = createSelector(
@@ -23,19 +23,19 @@ const valueByIdSelector = createSelector(
     if (searchQuery) {
       return {
         ...value,
-        values: value.values.filter(id => state.byId[id].availableInSearch),
+        values: value.values.filter((id) => state.byId[id].availableInSearch),
       };
     }
 
     return {
       ...value,
-      values: value.values.filter(id => !state.byId[id].exclusiveToSearch),
+      values: value.values.filter((id) => !state.byId[id].exclusiveToSearch),
     };
   }
 );
 
 /** Translate internal id to siteId */
-const valueSiteIdSelector = createSelector(valueByIdSelector, value => value && value.siteId);
+const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => value && value.siteId);
 
 /** All values for a given module */
 const moduleValuesSelector = createSelector(
@@ -43,11 +43,11 @@ const moduleValuesSelector = createSelector(
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different sort values when searching
-      return module.sortBy.filter(id => sortState.byId[id].availableInSearch);
+      return module.sortBy.filter((id) => sortState.byId[id].availableInSearch);
     }
 
     // different sort values when not searching
-    return module.sortBy.filter(id => !sortState.byId[id].exclusiveToSearch);
+    return module.sortBy.filter((id) => !sortState.byId[id].exclusiveToSearch);
   }
 );
 
@@ -57,11 +57,11 @@ const defaultSortValueSelector = createSelector(
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different default sort value when searching
-      return module.sortBy.filter(id => sortState.byId[id].availableInSearch && sortState.byId[id].default)[0];
+      return module.sortBy.filter((id) => sortState.byId[id].availableInSearch && sortState.byId[id].default)[0];
     }
 
     // different default sort value when not searching
-    return module.sortBy.filter(id => !sortState.byId[id].exclusiveToSearch && sortState.byId[id].default)[0];
+    return module.sortBy.filter((id) => !sortState.byId[id].exclusiveToSearch && sortState.byId[id].default)[0];
   }
 );
 

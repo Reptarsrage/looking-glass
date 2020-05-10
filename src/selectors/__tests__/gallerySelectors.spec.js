@@ -5,9 +5,9 @@ describe('Gallery Selectors', () => {
   describe('galleriesSelector', () => {
     it('should return all galleries', () => {
       // arrange
-      const allIds = [...Array(3).keys()].map(id => id.toString());
+      const allIds = [...Array(3).keys()].map((id) => id.toString());
       const state = { gallery: { ...initialState, allIds } };
-      allIds.forEach(id => {
+      allIds.forEach((id) => {
         state.gallery.byId[id] = { ...initialGalleryState, id };
       });
 
@@ -33,10 +33,10 @@ describe('Gallery Selectors', () => {
   describe('galleryByIdSelector', () => {
     it('should return gallery', () => {
       // arrange
-      const allIds = [...Array(3).keys()].map(id => id.toString());
+      const allIds = [...Array(3).keys()].map((id) => id.toString());
       const state = { gallery: { ...initialState, allIds } };
       const props = { galleryId: allIds[1] };
-      allIds.forEach(id => {
+      allIds.forEach((id) => {
         state.gallery.byId[id] = { ...initialGalleryState, id };
       });
 
@@ -65,7 +65,7 @@ describe('Gallery Selectors', () => {
       // arrange
       const galleryId = 'EXPECTED GALLERY ID';
       const state = { gallery: { ...initialState, allIds: [galleryId] } };
-      const expectedItems = [...Array(3).keys()].map(id => id.toString());
+      const expectedItems = [...Array(3).keys()].map((id) => id.toString());
       state.gallery.byId[galleryId] = {
         ...initialGalleryState,
         id: galleryId,

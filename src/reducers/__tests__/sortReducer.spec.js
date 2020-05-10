@@ -3,12 +3,12 @@ import { FETCH_MODULES_SUCCESS } from '../../actions/types';
 import { generateModuleId, generateSortId } from '../constants';
 
 const generateTestData = (moduleCount, sortValueCount, nestedValueCount) =>
-  [...Array(moduleCount).keys()].map(moduleId => ({
+  [...Array(moduleCount).keys()].map((moduleId) => ({
     id: moduleId.toString(),
-    sortBy: [...Array(sortValueCount).keys()].map(sortById => ({
+    sortBy: [...Array(sortValueCount).keys()].map((sortById) => ({
       ...initialSortState,
       id: `${moduleId}-${sortById}`,
-      values: [...Array(nestedValueCount).keys()].map(nestedId => ({
+      values: [...Array(nestedValueCount).keys()].map((nestedId) => ({
         ...initialSortState,
         id: `${moduleId}-${sortById}-${nestedId}`,
       })),
@@ -96,16 +96,16 @@ describe('sort reducer', () => {
     const newState = reducer(initialState, { type: FETCH_MODULES_SUCCESS, payload });
 
     // assert
-    payload.forEach(module => {
+    payload.forEach((module) => {
       const moduleId = generateModuleId(module.id);
-      module.sortBy.forEach(sortValue => {
+      module.sortBy.forEach((sortValue) => {
         // verify un-nested values
         const sortValueId = generateSortId(moduleId, sortValue.id);
         expect(newState.byId[sortValueId]).toBeDefined();
         expect(newState.byId[sortValueId].values).toEqual(
-          sortValue.values.map(nestedValue => generateSortId(moduleId, nestedValue.id))
+          sortValue.values.map((nestedValue) => generateSortId(moduleId, nestedValue.id))
         );
-        sortValue.values.forEach(nestedValue => {
+        sortValue.values.forEach((nestedValue) => {
           // verify nested values
           const nestedValueId = generateSortId(moduleId, nestedValue.id);
           expect(newState.byId[nestedValueId]).toBeDefined();

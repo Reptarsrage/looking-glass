@@ -59,7 +59,7 @@ const addModule = (draft, module, actualModuleId) => {
 };
 
 const moduleReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload } = action || {};
 
     switch (type) {
@@ -72,7 +72,7 @@ const moduleReducer = (state = initialState, action) =>
         handleAsyncSuccess(state, draft);
 
         // add modules
-        modules.forEach(module => addModule(draft, module));
+        modules.forEach((module) => addModule(draft, module));
 
         // add file system module
         addModule(

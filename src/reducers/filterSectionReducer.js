@@ -30,7 +30,7 @@ const addFilterSectionForModule = (draft, module) => {
   const moduleId = generateModuleId(module.id);
 
   // add filter sections
-  module.filterBy.forEach(filterSection => {
+  module.filterBy.forEach((filterSection) => {
     const id = generateFilterSectionId(moduleId, filterSection.id);
     draft.allIds.push(id);
     draft.byId[id] = {
@@ -43,7 +43,7 @@ const addFilterSectionForModule = (draft, module) => {
 };
 
 const filterSectionReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload, meta } = action || {};
 
     switch (type) {
@@ -51,7 +51,7 @@ const filterSectionReducer = (state = initialState, action) =>
         const modules = payload;
 
         // add filter sections for modules
-        modules.forEach(module => addFilterSectionForModule(draft, module));
+        modules.forEach((module) => addFilterSectionForModule(draft, module));
 
         // TODO: add file system filter sections
         break;

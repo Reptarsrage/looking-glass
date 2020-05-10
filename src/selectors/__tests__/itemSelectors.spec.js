@@ -5,9 +5,9 @@ describe('Item Selectors', () => {
   describe('itemsSelector', () => {
     it('should return items', () => {
       // arrange
-      const allIds = [...Array(3).keys()].map(id => id.toString());
+      const allIds = [...Array(3).keys()].map((id) => id.toString());
       const state = { item: { ...initialState, allIds } };
-      allIds.forEach(id => {
+      allIds.forEach((id) => {
         state.item.byId[id] = { ...initialItemState, id };
       });
 
@@ -33,10 +33,10 @@ describe('Item Selectors', () => {
   describe('itemByIdSelector', () => {
     it('should return item', () => {
       // arrange
-      const allIds = [...Array(3).keys()].map(id => id.toString());
+      const allIds = [...Array(3).keys()].map((id) => id.toString());
       const state = { item: { ...initialState, allIds } };
       const props = { itemId: allIds[1] };
-      allIds.forEach(id => {
+      allIds.forEach((id) => {
         state.item.byId[id] = { ...initialItemState, id };
       });
 

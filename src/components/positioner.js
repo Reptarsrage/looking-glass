@@ -11,7 +11,7 @@ export default class Positioner {
     }
   };
 
-  getPositionForItem = i => this.positions[i];
+  getPositionForItem = (i) => this.positions[i];
 
   getTotalHeight = () => this.totalHeight;
 }

@@ -52,7 +52,7 @@ export const initialAuthState = {
 };
 
 const authReducer = (state = initialState, action, store = getStore()) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload, meta } = action || {};
     const { moduleId } = meta || {};
 
@@ -60,7 +60,7 @@ const authReducer = (state = initialState, action, store = getStore()) =>
       case FETCH_MODULES_SUCCESS: {
         const modules = payload;
 
-        modules.forEach(module => {
+        modules.forEach((module) => {
           // generate id
           const id = generateModuleId(module.id);
 

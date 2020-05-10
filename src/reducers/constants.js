@@ -41,7 +41,7 @@ export const FILTER_SECTION_NAMESPACE = '86803187-aa7e-4209-bb30-907c404402c5';
 export const FILTER_NAMESPACE = '4d33d42f-49b3-4ec9-865d-a14c6ab8ad2b';
 
 // id generator functions
-export const generateModuleId = moduleId => uuidv3(moduleId, MODULE_NAMESPACE);
+export const generateModuleId = (moduleId) => uuidv3(moduleId, MODULE_NAMESPACE);
 export const generateItemId = (galleryId, itemId) => uuidv3(galleryId + itemId, ITEM_NAMESPACE);
 export const generateGalleryId = (moduleId, galleryId) => uuidv3(moduleId + galleryId, GALLERY_NAMESPACE);
 export const generateModuleGalleryId = (moduleId, galleryId) => uuidv3(moduleId + galleryId, MODULE_GALLERY_NAMESPACE);

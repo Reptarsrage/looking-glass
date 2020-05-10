@@ -11,12 +11,12 @@ export const navigateHome = () => ({
   type: NAVIGATE_HOME,
 });
 
-export const navigateToSearch = moduleId => ({
+export const navigateToSearch = (moduleId) => ({
   type: NAVIGATE_TO_SEARCH,
   payload: { moduleId },
 });
 
-export const navigateFromSearch = moduleId => ({
+export const navigateFromSearch = (moduleId) => ({
   type: NAVIGATE_FROM_SEARCH,
   payload: { moduleId },
 });
@@ -30,7 +30,7 @@ export const navigateBack = () => ({
   type: NAVIGATE_BACK,
 });
 
-export const navigateToBreadcrumb = breadcrumbId => ({
+export const navigateToBreadcrumb = (breadcrumbId) => ({
   type: NAVIGATE_BREADCRUMB,
   payload: { breadcrumbId },
 });

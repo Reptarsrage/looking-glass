@@ -74,7 +74,7 @@ describe('Sort Selectors', () => {
       const valueId = 'EXPECTED VALUE ID';
       const moduleId = 'EXPECTED MODULE ID';
       const searchGalleryId = ' EXPECTED SEARCH GALLERY ID';
-      const nestedValues = [...Array(3).keys()].map(id => (id + 33).toString());
+      const nestedValues = [...Array(3).keys()].map((id) => (id + 33).toString());
       const state = {
         gallery: {
           ...galleryInitialState,
@@ -130,7 +130,7 @@ describe('Sort Selectors', () => {
       const valueId = 'EXPECTED VALUE ID';
       const moduleId = 'EXPECTED MODULE ID';
       const searchGalleryId = ' EXPECTED SEARCH GALLERY ID';
-      const nestedValues = [...Array(3).keys()].map(id => (id + 33).toString());
+      const nestedValues = [...Array(3).keys()].map((id) => (id + 33).toString());
       const state = {
         gallery: {
           ...galleryInitialState,
@@ -191,7 +191,7 @@ describe('Sort Selectors', () => {
     it('should return sort values', () => {
       // arrange
       const moduleId = 'EXPECTED MODULE ID';
-      const sortBy = [...Array(3).keys()].map(id => (id + 33).toString());
+      const sortBy = [...Array(3).keys()].map((id) => (id + 33).toString());
       const state = {
         sort: {
           ...initialState,
@@ -224,7 +224,7 @@ describe('Sort Selectors', () => {
       // arrange
       const moduleId = 'EXPECTED MODULE ID';
       const searchGalleryId = ' EXPECTED SEARCH GALLERY ID';
-      const sortBy = [...Array(3).keys()].map(id => (id + 33).toString());
+      const sortBy = [...Array(3).keys()].map((id) => (id + 33).toString());
       const state = {
         gallery: {
           ...galleryInitialState,
@@ -271,7 +271,7 @@ describe('Sort Selectors', () => {
     it('should return default sort value', () => {
       // arrange
       const moduleId = 'EXPECTED MODULE ID';
-      const sortBy = [...Array(3).keys()].map(id => (id + 33).toString());
+      const sortBy = [...Array(3).keys()].map((id) => (id + 33).toString());
       const state = {
         sort: {
           ...initialState,
@@ -304,7 +304,7 @@ describe('Sort Selectors', () => {
       // arrange
       const moduleId = 'EXPECTED MODULE ID';
       const searchGalleryId = ' EXPECTED SEARCH GALLERY ID';
-      const sortBy = [...Array(6).keys()].map(id => (id + 33).toString());
+      const sortBy = [...Array(6).keys()].map((id) => (id + 33).toString());
       const state = {
         gallery: {
           ...galleryInitialState,

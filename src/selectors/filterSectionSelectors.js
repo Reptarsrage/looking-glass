@@ -4,10 +4,10 @@ import { initialState, initialFilterSectionState } from '../reducers/filterSecti
 
 const getFilterSectionId = (_, props) => props.filterSectionId;
 
-const stateSelector = state => state.filterSection || initialState;
+const stateSelector = (state) => state.filterSection || initialState;
 
 /** All filter sections */
-const filterSectionsSelector = createSelector(stateSelector, state => state.allIds);
+const filterSectionsSelector = createSelector(stateSelector, (state) => state.allIds);
 
 /** Specific filter section */
 const filterSectionByIdSelector = createSelector(

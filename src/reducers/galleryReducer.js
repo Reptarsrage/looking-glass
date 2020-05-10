@@ -64,7 +64,7 @@ const addGallery = (draft, moduleId, siteId, actualGalleryId = null, title = nul
 };
 
 const galleryReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload, meta } = action || {};
 
     switch (type) {

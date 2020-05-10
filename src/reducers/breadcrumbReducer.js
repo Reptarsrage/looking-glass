@@ -16,7 +16,7 @@ export const inititalBreadcrumbState = {
 };
 
 const breadcrumbReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload } = action || {};
     switch (type) {
       case CLEAR_BREADCRUMBS: {

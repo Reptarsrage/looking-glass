@@ -59,7 +59,7 @@ describe('gallery reducer', () => {
       hasNext: false,
       count: 97,
       after: 'AFTER',
-      items: [Array(3).keys()].map(id => ({ id, url: 'URL', width: 1, height: 1 })),
+      items: [Array(3).keys()].map((id) => ({ id, url: 'URL', width: 1, height: 1 })),
     };
 
     // act
@@ -134,7 +134,7 @@ describe('gallery reducer', () => {
 
   it('should handle FETCH_MODULES_SUCCESS', () => {
     // arrange
-    const payload = [...Array(3).keys()].map(id => ({ ...initialModuleState, id: id.toString() }));
+    const payload = [...Array(3).keys()].map((id) => ({ ...initialModuleState, id: id.toString() }));
 
     // act
     const newState = reducer(initialState, { type: FETCH_MODULES_SUCCESS, payload });

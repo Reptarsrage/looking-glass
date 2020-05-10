@@ -4,11 +4,11 @@ import { initialState, initialModuleState } from '../reducers/moduleReducer';
 
 const getModuleId = (_, props) => props.moduleId;
 
-const moduleStateSelector = state => state.module || initialState;
+const moduleStateSelector = (state) => state.module || initialState;
 
-const galleryStateSelector = state => state.gallery || initialState;
+const galleryStateSelector = (state) => state.gallery || initialState;
 
-const modulesSelector = createSelector(moduleStateSelector, state => state.allIds);
+const modulesSelector = createSelector(moduleStateSelector, (state) => state.allIds);
 
 const moduleByIdSelector = createSelector(
   moduleStateSelector,
@@ -16,19 +16,19 @@ const moduleByIdSelector = createSelector(
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
 
-const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, module => module.siteId);
+const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, (module) => module.siteId);
 
-const searchGalleryIdSelector = createSelector(moduleByIdSelector, module => module.searchGalleryId);
+const searchGalleryIdSelector = createSelector(moduleByIdSelector, (module) => module.searchGalleryId);
 
-const defaultGalleryIdSelector = createSelector(moduleByIdSelector, module => module.defaultGalleryId);
+const defaultGalleryIdSelector = createSelector(moduleByIdSelector, (module) => module.defaultGalleryId);
 
-const successSelector = createSelector(moduleStateSelector, state => state.success);
+const successSelector = createSelector(moduleStateSelector, (state) => state.success);
 
-const fetchingSelector = createSelector(moduleStateSelector, state => state.fetching);
+const fetchingSelector = createSelector(moduleStateSelector, (state) => state.fetching);
 
-const errorSelector = createSelector(moduleStateSelector, state => state.error);
+const errorSelector = createSelector(moduleStateSelector, (state) => state.error);
 
-const filterBySelector = createSelector(moduleByIdSelector, module => module.filterBy);
+const filterBySelector = createSelector(moduleByIdSelector, (module) => module.filterBy);
 
 const searchQuerySelector = createSelector(
   [searchGalleryIdSelector, galleryStateSelector],

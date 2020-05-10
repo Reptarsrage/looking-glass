@@ -4,19 +4,19 @@ import { initialState, initialGalleryState } from '../reducers/galleryReducer';
 
 const getGalleryId = (_, props) => props.galleryId;
 
-const galleriesStateSelector = state => state.gallery || initialState;
+const galleriesStateSelector = (state) => state.gallery || initialState;
 
 const galleryByIdSelector = createSelector(
   [galleriesStateSelector, getGalleryId],
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 );
 
-const galleriesSelector = createSelector(galleriesStateSelector, state => state.allIds);
+const galleriesSelector = createSelector(galleriesStateSelector, (state) => state.allIds);
 
-const itemsInGallerySelector = createSelector(galleryByIdSelector, gallery => gallery.items);
+const itemsInGallerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.items);
 
-const currentSortSelector = createSelector(galleryByIdSelector, gallery => gallery.currentSort);
+const currentSortSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentSort);
 
-const currentFilterSelector = createSelector(galleryByIdSelector, gallery => gallery.currentFilter);
+const currentFilterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentFilter);
 
 export { itemsInGallerySelector, galleryByIdSelector, galleriesSelector, currentSortSelector, currentFilterSelector };
