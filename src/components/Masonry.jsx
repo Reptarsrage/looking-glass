@@ -9,7 +9,7 @@ import MasonryItem from './MasonryItem';
 import NoResults from './NoResults';
 import VirtualizedMasonry from './VirtualizedMasonry';
 
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
     alignItems: 'stretch',
     display: 'flex',
@@ -59,12 +59,12 @@ class Masonry extends Component {
     }
   };
 
-  isLoaded = index => {
+  isLoaded = (index) => {
     const { items } = this.props;
     return index < items.length;
   };
 
-  getItemWidth = index => {
+  getItemWidth = (index) => {
     const { getItemWidth, items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
@@ -73,7 +73,7 @@ class Masonry extends Component {
     return getItemWidth(items[index]);
   };
 
-  getItemHeight = index => {
+  getItemHeight = (index) => {
     const { getItemHeight, items } = this.props;
     if (!this.isLoaded(index)) {
       return 0;
@@ -82,7 +82,7 @@ class Masonry extends Component {
     return getItemHeight(items[index]);
   };
 
-  renderItem = index => {
+  renderItem = (index) => {
     const { classes, galleryId, gutter, items, moduleId, onItemClick } = this.props;
 
     if (!this.isLoaded(index)) {

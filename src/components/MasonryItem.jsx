@@ -12,7 +12,7 @@ import { itemByIdSelector } from '../selectors/itemSelectors';
 import Image from './Image';
 import Video from './Video';
 
-const styles = theme => ({
+const styles = (theme) => ({
   paper: {
     padding: 0,
     height: '100%',
@@ -30,14 +30,14 @@ const styles = theme => ({
   },
 });
 
-const MasonryItem = props => {
+const MasonryItem = (props) => {
   const [ref, inView] = useInView({
     /* Optional options */
     threshold: 0,
     rootMargin: '500px',
   });
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     const { onClick, item, moduleId, itemId } = props;
     if (onClick) {
       onClick(event, item, moduleId, itemId);
@@ -60,7 +60,7 @@ const MasonryItem = props => {
     return <Video src={src} thumb={thumbSrc} title={title} width={width} height={height} muted autoPlay loop />;
   };
 
-  const renderLink = children => {
+  const renderLink = (children) => {
     const { classes, item } = props;
     const { isGallery } = item;
 

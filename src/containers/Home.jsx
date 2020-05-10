@@ -25,7 +25,7 @@ import * as navigationActions from '../actions/navigationActions';
 import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 
-const styles = theme => ({
+const styles = (theme) => ({
   main: {
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
@@ -73,7 +73,7 @@ class Home extends Component {
     });
   };
 
-  renderModule = moduleId => <ModuleItem key={moduleId} moduleId={moduleId} />;
+  renderModule = (moduleId) => <ModuleItem key={moduleId} moduleId={moduleId} />;
 
   renderModules = () => {
     const { fetching, error, modules } = this.props;
@@ -88,7 +88,7 @@ class Home extends Component {
 
     return (
       <List>
-        {modules.filter(id => id !== FILE_SYSTEM_MODULE_ID).map(this.renderModule)}
+        {modules.filter((id) => id !== FILE_SYSTEM_MODULE_ID).map(this.renderModule)}
         <ListItem key="fs" button onClick={this.chooseFolder}>
           <ListItemAvatar>
             <Avatar>

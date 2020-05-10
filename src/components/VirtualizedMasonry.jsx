@@ -32,7 +32,7 @@ class VirtualizedMasonry extends PureComponent {
     // initialize
     this.itemDimensionsMemoizer = _.memoize(this.getDimensionsForItem);
     const { columnCount, pathKey } = props;
-    const columnItems = [...Array(columnCount).keys()].map(id => ({ height: 0, id, items: [] }));
+    const columnItems = [...Array(columnCount).keys()].map((id) => ({ height: 0, id, items: [] }));
     this.state = {
       columnItems,
       height: 0,
@@ -110,7 +110,7 @@ class VirtualizedMasonry extends PureComponent {
 
     // ensure each column has an entry
     if (columnItems.length !== columnCount) {
-      columnItems = [...Array(columnCount).keys()].map(id => ({ height: 0, id, items: [] }));
+      columnItems = [...Array(columnCount).keys()].map((id) => ({ height: 0, id, items: [] }));
       requiresUpdate = true;
       totalItems = 0;
     }
@@ -118,7 +118,7 @@ class VirtualizedMasonry extends PureComponent {
     // fill in column items with the missing indices
     if (totalItems !== length) {
       for (let i = totalItems; i < length; i += 1) {
-        columnItems = columnItems.map(c => ({ ...c, items: [...c.items] })); // deep copy
+        columnItems = columnItems.map((c) => ({ ...c, items: [...c.items] })); // deep copy
         const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
         minHeightColumn.items.push(i);
         minHeightColumn.height += this.getAdjustedHeightForItem(i);
@@ -162,12 +162,12 @@ class VirtualizedMasonry extends PureComponent {
     return null;
   };
 
-  getDimensionsForItem = itemId => {
+  getDimensionsForItem = (itemId) => {
     const { getHeightForItem, getWidthForItem } = this.props;
     return { height: getHeightForItem(itemId), width: getWidthForItem(itemId) };
   };
 
-  getAdjustedHeightForItem = itemId => {
+  getAdjustedHeightForItem = (itemId) => {
     const { columnCount, fitToWindow, gutter } = this.props;
     const { innerHeight, width } = this.state;
 
@@ -189,7 +189,7 @@ class VirtualizedMasonry extends PureComponent {
     return calculatedHeight;
   };
 
-  handleScroll = event => {
+  handleScroll = (event) => {
     const { loadMoreThreshold } = this.props;
     const { current } = this.containerRef;
     const scrollY = event.detail;
@@ -211,7 +211,7 @@ class VirtualizedMasonry extends PureComponent {
     }
   };
 
-  renderColumn = columnItem => {
+  renderColumn = (columnItem) => {
     const { classes, columnCount, overscan, renderItem } = this.props;
     const { innerHeight, scrollPosition, scrollTop, width } = this.state;
     const { id, items } = columnItem;
