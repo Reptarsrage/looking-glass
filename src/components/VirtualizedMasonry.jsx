@@ -9,12 +9,6 @@ import { animateScroll } from 'react-scroll';
 import Virtualized from './Virtualized';
 
 const styles = () => ({
-  column: {
-    display: 'flex',
-    flex: '1 1 auto',
-    flexWrap: 'nowrap',
-    position: 'relative',
-  },
   columnContainer: {
     display: 'flex',
     flex: '1 1 auto',
@@ -212,24 +206,23 @@ class VirtualizedMasonry extends PureComponent {
   };
 
   renderColumn = (columnItem) => {
-    const { classes, columnCount, overscan, renderItem } = this.props;
+    const { columnCount, overscan, renderItem } = this.props;
     const { innerHeight, scrollPosition, scrollTop, width } = this.state;
     const { id, items } = columnItem;
 
     return (
-      <div className={classes.column} key={id}>
-        <Virtualized
-          getHeightForItem={this.getAdjustedHeightForItem}
-          items={items}
-          length={items.length}
-          renderItem={renderItem}
-          innerHeight={innerHeight}
-          overscan={overscan}
-          scrollPosition={scrollPosition}
-          scrollTop={scrollTop}
-          width={width / columnCount}
-        />
-      </div>
+      <Virtualized
+        key={id}
+        getHeightForItem={this.getAdjustedHeightForItem}
+        items={items}
+        length={items.length}
+        renderItem={renderItem}
+        innerHeight={innerHeight}
+        overscan={overscan}
+        scrollPosition={scrollPosition}
+        scrollTop={scrollTop}
+        width={width / columnCount}
+      />
     );
   };
 

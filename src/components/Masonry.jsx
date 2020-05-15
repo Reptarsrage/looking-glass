@@ -18,10 +18,7 @@ const styles = (theme) => ({
     padding: theme.spacing(1),
   },
   masonryItemContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: '1 1 auto',
-    justifyContent: 'center',
+    position: 'absolute',
   },
 });
 
@@ -82,15 +79,18 @@ class Masonry extends Component {
     return getItemHeight(items[index]);
   };
 
-  renderItem = (index) => {
+  renderItem = ({ itemId: index, width, height, top, visible }) => {
     const { classes, galleryId, gutter, items, moduleId, onItemClick } = this.props;
 
-    if (!this.isLoaded(index)) {
+    if (!this.isLoaded(index) || !visible) {
       return null;
     }
 
     return (
-      <Box className={classes.masonryItemContainer} style={{ padding: `${gutter}px` }}>
+      <Box
+        className={classes.masonryItemContainer}
+        style={{ padding: `${gutter}px`, width: `${width}px`, height: `${height}px`, top: `${top}px` }}
+      >
         <MasonryItem
           moduleId={moduleId}
           galleryId={galleryId}

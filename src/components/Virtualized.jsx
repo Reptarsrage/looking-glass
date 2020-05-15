@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -11,13 +11,9 @@ const styles = () => ({
     flex: '1 1 auto',
     position: 'relative',
   },
-  item: {
-    display: 'flex',
-    position: 'absolute',
-  },
 });
 
-class Virtualized extends PureComponent {
+class Virtualized extends Component {
   constructor(props) {
     super(props);
 
@@ -25,23 +21,46 @@ class Virtualized extends PureComponent {
     this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
 
     this.state = {
-      totalHeight: this.update(),
+      totalHeight: this.calculateTotalHeight(0),
     };
   }
 
+  shouldComponentUpdate(nextProps) {
+    const { length, overscan, scrollPosition, scrollTop, width } = this.props;
+
+    return (
+      nextProps.length !== length ||
+      nextProps.overscan !== overscan ||
+      nextProps.scrollPosition !== scrollPosition ||
+      nextProps.scrollTop !== scrollTop ||
+      nextProps.width !== width
+    );
+  }
+
   componentDidUpdate(prevProps) {
-    const { length: prevLength, width: prevWidth } = prevProps;
-    const { length, width } = this.props;
-    if (length !== prevLength || width !== prevWidth) {
-      const totalHeight = this.update();
+    const { width: prevWidth, length: prevLength } = prevProps;
+    const { width, length } = this.props;
+    let from = prevLength;
+
+    // If width changed, clear cache and force re-calculate ALL heights
+    if (width !== prevWidth) {
+      this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
+      from = 0;
+    }
+
+    // If items length changed, or resized, calculate heights
+    if (width !== prevWidth || length !== prevLength) {
+      const totalHeight = this.calculateTotalHeight(from);
       this.setState({ totalHeight });
     }
   }
 
-  update = () => {
+  calculateTotalHeight = (from) => {
     const { items } = this.props;
-    this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
-    this.positioner.updatePositions(items.map((id) => ({ height: this.getHeightForItemMemoizer(id), id })));
+
+    const offset = from === 0 ? 0 : undefined;
+    const itemsToUpdate = items.slice(from).map((id) => ({ height: this.getHeightForItemMemoizer(id), id }));
+    this.positioner.updatePositions(itemsToUpdate, offset);
     return this.positioner.getTotalHeight();
   };
 
@@ -54,14 +73,15 @@ class Virtualized extends PureComponent {
         {items.map((itemId) => (
           <VirtualizedItem
             key={itemId}
+            renderItem={renderItem}
+            itemId={itemId}
             innerHeight={innerHeight}
             overscan={overscan}
-            renderItem={() => renderItem(itemId)}
             scrollPosition={scrollPosition}
             scrollTop={scrollTop}
             width={width}
-            itemTop={this.positioner.getPositionForItem(itemId)}
-            itemHeight={this.getHeightForItemMemoizer(itemId)}
+            top={this.positioner.getPositionForItem(itemId)}
+            height={this.getHeightForItemMemoizer(itemId)}
           />
         ))}
       </div>

@@ -15,9 +15,8 @@ import Video from './Video';
 const styles = (theme) => ({
   paper: {
     padding: 0,
+    width: '100%',
     height: '100%',
-    maxHeight: '100%',
-    display: 'inline-flex',
     overflow: 'hidden',
     position: 'relative',
     textAlign: 'center',
