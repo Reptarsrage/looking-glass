@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
-import { useInView } from 'react-intersection-observer';
 
 import { itemByIdSelector } from '../selectors/itemSelectors';
 import Image from './Image';
@@ -29,38 +28,28 @@ const styles = (theme) => ({
   },
 });
 
-const MasonryItem = (props) => {
-  const [ref, inView] = useInView({
-    /* Optional options */
-    threshold: 0,
-    rootMargin: '500px',
-  });
-
+const MasonryItem = ({ classes, item, onClick, moduleId, itemId, visible }) => {
   const handleClick = (event) => {
-    const { onClick, item, moduleId, itemId } = props;
     if (onClick) {
       onClick(event, item, moduleId, itemId);
     }
   };
 
   const renderImage = () => {
-    const { item } = props;
     const { width, height, title, url, thumb } = item;
-    const src = inView ? url : '';
-    const thumbSrc = inView ? thumb : '';
+    const src = visible ? url : '';
+    const thumbSrc = visible ? thumb : '';
     return <Image src={src} thumb={thumbSrc} title={title} width={width} height={height} />;
   };
 
   const renderVideo = () => {
-    const { item } = props;
     const { width, height, title, url, thumb } = item;
-    const src = inView ? url : '';
-    const thumbSrc = inView ? thumb : '';
+    const src = visible ? url : '';
+    const thumbSrc = visible ? thumb : '';
     return <Video src={src} thumb={thumbSrc} title={title} width={width} height={height} muted autoPlay loop />;
   };
 
   const renderLink = (children) => {
-    const { classes, item } = props;
     const { isGallery } = item;
 
     if (isGallery) {
@@ -75,10 +64,9 @@ const MasonryItem = (props) => {
     return children;
   };
 
-  const { classes, item } = props;
   const { isVideo } = item;
   return (
-    <Paper ref={ref} onClick={handleClick} className={classes.paper}>
+    <Paper onClick={handleClick} className={classes.paper}>
       {renderLink(isVideo ? renderVideo() : renderImage())}
     </Paper>
   );
@@ -86,6 +74,7 @@ const MasonryItem = (props) => {
 
 MasonryItem.defaultProps = {
   onClick: null,
+  visible: false,
 };
 
 MasonryItem.propTypes = {
@@ -95,6 +84,7 @@ MasonryItem.propTypes = {
 
   // optional
   onClick: PropTypes.func,
+  visible: PropTypes.bool,
 
   // withStyles
   classes: PropTypes.object.isRequired,

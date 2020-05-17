@@ -2,8 +2,6 @@ import React, { PureComponent, createRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { withResizeDetector } from 'react-resize-detector';
-import { compose } from 'redux';
 import { animateScroll } from 'react-scroll';
 
 import Virtualized from './Virtualized';
@@ -54,7 +52,7 @@ class VirtualizedMasonry extends PureComponent {
   }
 
   static getDerivedStateFromProps(props, state) {
-    // handle resize event from hoc
+    // handle resize events
     if (props.width > 0 && props.width !== state.width) {
       const { innerHeight } = window;
       return {
@@ -263,12 +261,10 @@ VirtualizedMasonry.propTypes = {
   gutter: PropTypes.number,
   loadMoreThreshold: PropTypes.number,
   overscan: PropTypes.number,
-
-  // withResizeDetector
   width: PropTypes.number,
 
   // withStyles
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(withResizeDetector, withStyles(styles))(VirtualizedMasonry);
+export default withStyles(styles)(VirtualizedMasonry);

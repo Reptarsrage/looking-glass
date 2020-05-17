@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Box from '@material-ui/core/Box';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import ReactResizeDetector from 'react-resize-detector';
 
 import ErrorToast from './ErrorToast';
 import LoadingIndicator from './LoadingIndicator';
@@ -82,7 +83,7 @@ class Masonry extends Component {
   renderItem = ({ itemId: index, width, height, top, visible }) => {
     const { classes, galleryId, gutter, items, moduleId, onItemClick } = this.props;
 
-    if (!this.isLoaded(index) || !visible) {
+    if (!this.isLoaded(index)) {
       return null;
     }
 
@@ -97,6 +98,7 @@ class Masonry extends Component {
           itemId={items[index]}
           onClick={onItemClick}
           gutter={gutter}
+          visible={visible}
         />
       </Box>
     );
@@ -116,19 +118,24 @@ class Masonry extends Component {
         {items.length === 0 ? (
           <NoResults />
         ) : (
-          <VirtualizedMasonry
-            columnCount={columnCount}
-            getHeightForItem={this.getItemHeight}
-            getWidthForItem={this.getItemWidth}
-            gutter={gutter}
-            isLoading={loading}
-            length={items.length}
-            loadMore={this.loadMore}
-            loadMoreThreshold={5000}
-            overscan={500}
-            renderItem={this.renderItem}
-            pathKey={`${moduleId}/${galleryId}`}
-          />
+          <ReactResizeDetector handleWidth refreshMode="debounce" refreshRate={400}>
+            {({ width }) => (
+              <VirtualizedMasonry
+                columnCount={columnCount}
+                getHeightForItem={this.getItemHeight}
+                getWidthForItem={this.getItemWidth}
+                gutter={gutter}
+                isLoading={loading}
+                length={items.length}
+                loadMore={this.loadMore}
+                loadMoreThreshold={5000}
+                overscan={500}
+                renderItem={this.renderItem}
+                pathKey={`${moduleId}/${galleryId}`}
+                width={width}
+              />
+            )}
+          </ReactResizeDetector>
         )}
       </>
     );
