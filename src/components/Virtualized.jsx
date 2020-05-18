@@ -18,7 +18,7 @@ class Virtualized extends Component {
     super(props);
 
     this.positioner = new Positioner();
-    this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
+    this.getDimensionsForItemMemoizer = _.memoize(props.getDimensionsForItem);
 
     this.state = {
       totalHeight: this.calculateTotalHeight(0),
@@ -44,7 +44,7 @@ class Virtualized extends Component {
 
     // If width changed, clear cache and force re-calculate ALL heights
     if (width !== prevWidth) {
-      this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
+      this.getDimensionsForItemMemoizer.cache = new _.memoize.Cache();
       from = 0;
     }
 
@@ -56,40 +56,56 @@ class Virtualized extends Component {
   }
 
   calculateTotalHeight = (from) => {
-    const { items } = this.props;
+    const { items, gutter } = this.props;
 
     const offset = from === 0 ? 0 : undefined;
-    const itemsToUpdate = items.slice(from).map((id) => ({ height: this.getHeightForItemMemoizer(id), id }));
-    this.positioner.updatePositions(itemsToUpdate, offset);
+    const itemsToUpdate = items.slice(from).map((id) => ({ height: this.getDimensionsForItemMemoizer(id).height, id }));
+    this.positioner.updatePositions(itemsToUpdate, offset, gutter);
     return this.positioner.getTotalHeight();
   };
 
   render() {
-    const { classes, items, innerHeight, overscan, renderItem, scrollPosition, scrollTop, width } = this.props;
+    const {
+      classes,
+      items,
+      innerHeight,
+      overscan,
+      renderItem,
+      scrollPosition,
+      scrollTop,
+      width: columnWidth,
+    } = this.props;
     const { totalHeight } = this.state;
 
     return (
       <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
-        {items.map((itemId) => (
-          <VirtualizedItem
-            key={itemId}
-            renderItem={renderItem}
-            itemId={itemId}
-            innerHeight={innerHeight}
-            overscan={overscan}
-            scrollPosition={scrollPosition}
-            scrollTop={scrollTop}
-            width={width}
-            top={this.positioner.getPositionForItem(itemId)}
-            height={this.getHeightForItemMemoizer(itemId)}
-          />
-        ))}
+        {items.map((itemId) => {
+          const { height, width } = this.getDimensionsForItemMemoizer(itemId);
+          const left = (columnWidth - width) / 2.0;
+
+          return (
+            <VirtualizedItem
+              key={itemId}
+              renderItem={renderItem}
+              itemId={itemId}
+              innerHeight={innerHeight}
+              overscan={overscan}
+              scrollPosition={scrollPosition}
+              scrollTop={scrollTop}
+              width={width}
+              top={this.positioner.getPositionForItem(itemId)}
+              height={height}
+              left={left}
+            />
+          );
+        })}
       </div>
     );
   }
 }
 
 Virtualized.defaultProps = {
+  gutter: 8,
   innerHeight: 0,
   overscan: 0,
   scrollPosition: 0,
@@ -99,7 +115,7 @@ Virtualized.defaultProps = {
 
 Virtualized.propTypes = {
   // required
-  getHeightForItem: PropTypes.func.isRequired,
+  getDimensionsForItem: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
   length: PropTypes.number.isRequired,
   renderItem: PropTypes.func.isRequired,
@@ -110,6 +126,7 @@ Virtualized.propTypes = {
   scrollPosition: PropTypes.number,
   scrollTop: PropTypes.number,
   width: PropTypes.number,
+  gutter: PropTypes.number,
 
   // from withStyles
   classes: PropTypes.object.isRequired,

@@ -113,7 +113,7 @@ class VirtualizedMasonry extends PureComponent {
         columnItems = columnItems.map((c) => ({ ...c, items: [...c.items] })); // deep copy
         const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
         minHeightColumn.items.push(i);
-        minHeightColumn.height += this.getAdjustedHeightForItem(i);
+        minHeightColumn.height += this.getAdjustedDimensionsForItem(i).height;
       }
 
       const maxHeightColumn = columnItems.reduce((prev, curr) => (prev.height > curr.height ? prev : curr));
@@ -159,26 +159,21 @@ class VirtualizedMasonry extends PureComponent {
     return { height: getHeightForItem(itemId), width: getWidthForItem(itemId) };
   };
 
-  getAdjustedHeightForItem = (itemId) => {
-    const { columnCount, fitToWindow, gutter } = this.props;
+  getAdjustedDimensionsForItem = (itemId) => {
+    const { columnCount, gutter } = this.props;
     const { innerHeight, width } = this.state;
 
-    // if unable to calculate height, return actual height
+    // if unable to calculate dimensions, return actual dimensions
     if (width <= 0 || innerHeight <= 0) {
-      const { height } = this.itemDimensionsMemoizer(itemId);
-      return height;
+      return this.itemDimensionsMemoizer(itemId);
     }
 
-    const columnWidth = width / columnCount - 2 * gutter;
+    const columnWidth = width / columnCount - gutter;
     const { height: itemHeight, width: itemWidth } = this.itemDimensionsMemoizer(itemId);
     const calculatedWidth = Math.min(itemWidth, columnWidth);
-    const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth + 2 * gutter;
+    const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth;
 
-    if (fitToWindow) {
-      return Math.min(calculatedHeight, innerHeight);
-    }
-
-    return calculatedHeight;
+    return { height: calculatedHeight, width: calculatedWidth };
   };
 
   handleScroll = (event) => {
@@ -211,7 +206,7 @@ class VirtualizedMasonry extends PureComponent {
     return (
       <Virtualized
         key={id}
-        getHeightForItem={this.getAdjustedHeightForItem}
+        getDimensionsForItem={this.getAdjustedDimensionsForItem}
         items={items}
         length={items.length}
         renderItem={renderItem}
@@ -238,11 +233,10 @@ class VirtualizedMasonry extends PureComponent {
 
 VirtualizedMasonry.defaultProps = {
   columnCount: 1,
-  fitToWindow: false,
-  gutter: 8,
   loadMoreThreshold: 1000,
   overscan: 0,
   width: 0,
+  gutter: 8,
 };
 
 VirtualizedMasonry.propTypes = {
@@ -257,11 +251,10 @@ VirtualizedMasonry.propTypes = {
 
   // optional
   columnCount: PropTypes.number,
-  fitToWindow: PropTypes.bool,
-  gutter: PropTypes.number,
   loadMoreThreshold: PropTypes.number,
   overscan: PropTypes.number,
   width: PropTypes.number,
+  gutter: PropTypes.number,
 
   // withStyles
   classes: PropTypes.object.isRequired,

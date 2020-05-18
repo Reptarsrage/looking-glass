@@ -3,14 +3,14 @@ export default class Positioner {
 
   totalHeight = 0;
 
-  updatePositions = (items, offset) => {
+  updatePositions = (items, offset, gutter) => {
     if (offset !== undefined) {
       this.totalHeight = offset;
     }
 
     for (const { id, height = 0 } of items) {
       this.positions[id] = this.totalHeight;
-      this.totalHeight += height;
+      this.totalHeight += height + gutter;
     }
   };
 

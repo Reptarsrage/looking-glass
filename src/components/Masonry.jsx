@@ -80,8 +80,8 @@ class Masonry extends Component {
     return getItemHeight(items[index]);
   };
 
-  renderItem = ({ itemId: index, width, height, top, visible }) => {
-    const { classes, galleryId, gutter, items, moduleId, onItemClick } = this.props;
+  renderItem = ({ itemId: index, width, height, top, visible, left }) => {
+    const { classes, galleryId, items, moduleId, onItemClick } = this.props;
 
     if (!this.isLoaded(index)) {
       return null;
@@ -90,14 +90,13 @@ class Masonry extends Component {
     return (
       <Box
         className={classes.masonryItemContainer}
-        style={{ padding: `${gutter}px`, width: `${width}px`, height: `${height}px`, top: `${top}px` }}
+        style={{ left: `${left}px`, width: `${width}px`, height: `${height}px`, top: `${top}px` }}
       >
         <MasonryItem
           moduleId={moduleId}
           galleryId={galleryId}
           itemId={items[index]}
           onClick={onItemClick}
-          gutter={gutter}
           visible={visible}
         />
       </Box>
@@ -105,7 +104,7 @@ class Masonry extends Component {
   };
 
   render() {
-    const { columnCount, gutter, items, loading, moduleId, galleryId } = this.props;
+    const { columnCount, items, loading, moduleId, galleryId, gutter } = this.props;
     const { message, open } = this.state;
 
     if (items.length === 0 && loading) {
@@ -124,11 +123,11 @@ class Masonry extends Component {
                 columnCount={columnCount}
                 getHeightForItem={this.getItemHeight}
                 getWidthForItem={this.getItemWidth}
-                gutter={gutter}
                 isLoading={loading}
                 length={items.length}
                 loadMore={this.loadMore}
                 loadMoreThreshold={5000}
+                gutter={gutter}
                 overscan={500}
                 renderItem={this.renderItem}
                 pathKey={`${moduleId}/${galleryId}`}

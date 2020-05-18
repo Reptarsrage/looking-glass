@@ -2,10 +2,10 @@ import React, { memo } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
 const VirtualizedItem = (props) => {
-  const { width, height, top, renderItem, itemId } = props;
+  const { width, height, top, renderItem, itemId, left } = props;
   const visible = calculateVisible(props);
 
-  return renderItem({ itemId, width, height, top, visible });
+  return renderItem({ itemId, width, height, top, visible, left });
 };
 
 VirtualizedItem.defaultProps = {
@@ -16,6 +16,7 @@ VirtualizedItem.defaultProps = {
   width: 0,
   top: 0,
   height: 0,
+  left: 0,
 };
 
 VirtualizedItem.propTypes = {
@@ -27,6 +28,7 @@ VirtualizedItem.propTypes = {
   top: PropTypes.number,
   height: PropTypes.number,
   width: PropTypes.number,
+  left: PropTypes.number,
 
   /* eslint-disable react/no-unused-prop-types */
   innerHeight: PropTypes.number,
