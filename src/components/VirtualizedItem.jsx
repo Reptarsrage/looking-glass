@@ -1,12 +1,38 @@
 import React, { memo } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-const VirtualizedItem = (props) => {
-  const { width, height, top, renderItem, itemId, left } = props;
-  const visible = calculateVisible(props);
+import MasonryItem from './MasonryItem';
 
-  return renderItem({ itemId, width, height, top, visible, left });
-};
+const styles = () => ({
+  masonryItemContainer: {
+    position: 'absolute',
+  },
+});
+
+const VirtualizedItem = ({
+  classes,
+  width,
+  height,
+  top,
+  itemId,
+  left,
+  innerHeight,
+  overscan,
+  scrollPosition,
+  scrollTop,
+}) => (
+  <div
+    className={classes.masonryItemContainer}
+    style={{ left: `${left}px`, width: `${width}px`, height: `${height}px`, top: `${top}px` }}
+  >
+    <MasonryItem
+      itemId={itemId}
+      onClick={() => {}}
+      visible={calculateVisible({ top, height, scrollPosition, innerHeight, scrollTop, overscan })}
+    />
+  </div>
+);
 
 VirtualizedItem.defaultProps = {
   innerHeight: 0,
@@ -21,21 +47,20 @@ VirtualizedItem.defaultProps = {
 
 VirtualizedItem.propTypes = {
   // required
-  renderItem: PropTypes.func.isRequired,
   itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 
   // optional
-  top: PropTypes.number,
   height: PropTypes.number,
-  width: PropTypes.number,
-  left: PropTypes.number,
-
-  /* eslint-disable react/no-unused-prop-types */
   innerHeight: PropTypes.number,
+  left: PropTypes.number,
   overscan: PropTypes.number,
   scrollPosition: PropTypes.number,
   scrollTop: PropTypes.number,
-  /* eslint-enable react/no-unused-prop-types */
+  top: PropTypes.number,
+  width: PropTypes.number,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
 };
 
 const calculateVisible = ({ top, height, scrollPosition, innerHeight, scrollTop, overscan }) => {
@@ -50,13 +75,10 @@ const calculateVisible = ({ top, height, scrollPosition, innerHeight, scrollTop,
   );
 };
 
-const compareProps = (prevProps, nextProps) => {
-  return (
-    prevProps.top === nextProps.top &&
-    prevProps.height === nextProps.height &&
-    prevProps.width === nextProps.width &&
-    calculateVisible(prevProps) === calculateVisible(nextProps)
-  );
-};
+const compareProps = (prevProps, nextProps) =>
+  prevProps.top === nextProps.top &&
+  prevProps.height === nextProps.height &&
+  prevProps.width === nextProps.width &&
+  calculateVisible(prevProps) === calculateVisible(nextProps);
 
-export default memo(VirtualizedItem, compareProps);
+export default memo(withStyles(styles)(VirtualizedItem), compareProps);

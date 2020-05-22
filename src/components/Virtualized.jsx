@@ -25,10 +25,12 @@ class Virtualized extends Component {
     };
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     const { length, overscan, scrollPosition, scrollTop, width } = this.props;
+    const { totalHeight } = this.state;
 
     return (
+      nextState.totalHeight !== totalHeight ||
       nextProps.length !== length ||
       nextProps.overscan !== overscan ||
       nextProps.scrollPosition !== scrollPosition ||
@@ -65,28 +67,17 @@ class Virtualized extends Component {
   };
 
   render() {
-    const {
-      classes,
-      items,
-      innerHeight,
-      overscan,
-      renderItem,
-      scrollPosition,
-      scrollTop,
-      width: columnWidth,
-    } = this.props;
+    const { classes, items, innerHeight, overscan, scrollPosition, scrollTop } = this.props;
     const { totalHeight } = this.state;
 
     return (
       <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
         {items.map((itemId) => {
-          const { height, width } = this.getDimensionsForItemMemoizer(itemId);
-          const left = (columnWidth - width) / 2.0;
+          const { height, width, left } = this.getDimensionsForItemMemoizer(itemId);
 
           return (
             <VirtualizedItem
               key={itemId}
-              renderItem={renderItem}
               itemId={itemId}
               innerHeight={innerHeight}
               overscan={overscan}
@@ -116,9 +107,8 @@ Virtualized.defaultProps = {
 Virtualized.propTypes = {
   // required
   getDimensionsForItem: PropTypes.func.isRequired,
-  items: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
   length: PropTypes.number.isRequired,
-  renderItem: PropTypes.func.isRequired,
 
   // optional
   innerHeight: PropTypes.number,

@@ -14,6 +14,7 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { withRouter } from 'react-router';
 import clsx from 'clsx';
+import _ from 'lodash';
 
 import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
 import * as appActions from '../actions/appActions';
@@ -59,7 +60,7 @@ const lightTheme = createMuiTheme({
   },
 });
 
-const styles = theme => ({
+const styles = (theme) => ({
   scroll: {
     overflow: 'auto',
     '&::-webkit-scrollbar': {
@@ -86,8 +87,16 @@ const styles = theme => ({
 });
 
 class App extends Component {
-  handleScroll = event => {
-    window.dispatchEvent(new CustomEvent('continerScroll', { detail: event.target.scrollTop }));
+  constructor(props) {
+    super(props);
+
+    const dispatch = (detail) => window.dispatchEvent(new CustomEvent('containerScroll', { detail }));
+    this.scrollCallback = _.throttle(dispatch, 200);
+  }
+
+  handleScroll = (event) => {
+    const { scrollTop = 0 } = event.target || {};
+    this.scrollCallback(scrollTop);
   };
 
   renderBackButton = () => {

@@ -28,10 +28,10 @@ const styles = (theme) => ({
   },
 });
 
-const MasonryItem = ({ classes, item, onClick, moduleId, itemId, visible }) => {
+const MasonryItem = ({ classes, item, onClick, itemId, visible }) => {
   const handleClick = (event) => {
     if (onClick) {
-      onClick(event, item, moduleId, itemId);
+      onClick(event, item, itemId);
     }
   };
 
@@ -79,7 +79,6 @@ MasonryItem.defaultProps = {
 
 MasonryItem.propTypes = {
   // required
-  moduleId: PropTypes.string.isRequired,
   itemId: PropTypes.string.isRequired,
 
   // optional

@@ -14,7 +14,7 @@ import * as moduleActions from '../actions/moduleActions';
 import { moduleValuesSelector, currentSortTextSelector } from '../selectors/sortSelectors';
 import SortMenuItem from './SortMenuItem';
 
-const styles = theme => ({
+const styles = (theme) => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
     color: theme.palette.text.secondary,
@@ -24,11 +24,11 @@ const styles = theme => ({
 function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, currentSortText }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = valueId => {
+  const handleClose = (valueId) => {
     if (valueId) {
       sortChange(moduleId, galleryId, valueId);
     }
@@ -63,7 +63,7 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, curr
         }}
       >
         <List>
-          {sortByValues.map(valueId => (
+          {sortByValues.map((valueId) => (
             <SortMenuItem key={valueId} valueId={valueId} onClick={handleClose} />
           ))}
         </List>
