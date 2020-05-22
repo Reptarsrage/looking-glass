@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { animateScroll } from 'react-scroll';
 
 import Virtualized from './Virtualized';
 
@@ -59,8 +60,26 @@ class VirtualizedMasonry extends Component {
     );
   }
 
-  componentDidUpdate() {
-    const { columnCount, items, getHeightForItem } = this.props;
+  componentDidUpdate(prevProps) {
+    const { columnCount, items, getHeightForItem, width } = this.props;
+    const { scrollPosition } = this.state;
+
+    // maintain relative scroll pos when resizing
+    if (prevProps.width !== width) {
+      const { current } = this.containerRef;
+      if (current) {
+        const rect = current.getBoundingClientRect();
+        if (rect) {
+          const whRatio = rect.height / rect.width;
+          const dHeight = (width * whRatio) / (prevProps.width * whRatio);
+          animateScroll.scrollTo(scrollPosition * dHeight, {
+            duration: 0,
+            delay: 0,
+            containerId: 'scroll-container',
+          });
+        }
+      }
+    }
 
     // update positions
     const updatedState = this.calculateColumnItems({ columnCount, items, getHeightForItem });
