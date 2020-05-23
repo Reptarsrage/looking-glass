@@ -12,7 +12,6 @@ const styles = () => ({
     flexWrap: 'wrap',
     flexDirection: 'row-reverse',
     justifyContent: 'center',
-    position: 'relative',
   },
 });
 
@@ -106,9 +105,9 @@ class VirtualizedMasonry extends Component {
 
     // fill in column items with the missing indices
     if (totalItems !== items.length) {
+      columnItems = columnItems.map((c) => ({ ...c, items: [...c.items] })); // deep copy
       for (let i = totalItems; i < items.length; i += 1) {
         const itemId = items[i];
-        columnItems = columnItems.map((c) => ({ ...c, items: [...c.items] })); // deep copy
         const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
         minHeightColumn.items.push(itemId);
         minHeightColumn.height += getHeightForItem(itemId);
