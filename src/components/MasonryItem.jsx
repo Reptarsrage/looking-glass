@@ -93,7 +93,9 @@ const MasonryItem = ({
     }
   });
 
-  const handleClick = () => {
+  const handleClick = (event) => {
+    event.preventDefault();
+
     if (item.isGallery) {
       navigateToGallery(moduleId, galleryId, item.title);
     } else if (fullScreenItemId === itemId) {
@@ -115,15 +117,27 @@ const MasonryItem = ({
   const renderImage = () => {
     const { width: itemWidth, height: itemHeight, title, url, thumb } = item;
     const src = visible ? url : '';
-    const thumbSrc = visible && !fullScreen ? thumb : '';
+    const thumbSrc = visible ? thumb : '';
     return <Image src={src} thumb={thumbSrc} title={title} width={itemWidth} height={itemHeight} />;
   };
 
   const renderVideo = () => {
     const { width: itemWidth, height: itemHeight, title, url, thumb } = item;
     const src = visible ? url : '';
-    const thumbSrc = visible && !fullScreen ? thumb : '';
-    return <Video src={src} thumb={thumbSrc} title={title} width={itemWidth} height={itemHeight} muted autoPlay loop />;
+    const thumbSrc = visible ? thumb : '';
+    return (
+      <Video
+        src={src}
+        thumb={thumbSrc}
+        title={title}
+        width={itemWidth}
+        height={itemHeight}
+        muted={!fullScreen}
+        controls={fullScreen}
+        autoPlay
+        loop
+      />
+    );
   };
 
   const renderLink = (children) => {
