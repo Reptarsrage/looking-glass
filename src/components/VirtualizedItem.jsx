@@ -1,37 +1,17 @@
 import React, { memo } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 
 import MasonryItem from './MasonryItem';
 
-const styles = () => ({
-  masonryItemContainer: {
-    position: 'absolute',
-  },
-});
-
-const VirtualizedItem = ({
-  classes,
-  width,
-  height,
-  top,
-  itemId,
-  left,
-  innerHeight,
-  overscan,
-  scrollPosition,
-  scrollTop,
-}) => (
-  <div
-    className={classes.masonryItemContainer}
-    style={{ left: `${left}px`, width: `${width}px`, height: `${height}px`, top: `${top}px` }}
-  >
-    <MasonryItem
-      itemId={itemId}
-      onClick={() => {}}
-      visible={calculateVisible({ top, height, scrollPosition, innerHeight, scrollTop, overscan })}
-    />
-  </div>
+const VirtualizedItem = ({ width, height, top, itemId, left, innerHeight, overscan, scrollPosition, scrollTop }) => (
+  <MasonryItem
+    itemId={itemId}
+    visible={calculateVisible({ top, height, scrollPosition, innerHeight, scrollTop, overscan })}
+    left={left}
+    top={top}
+    width={width}
+    height={height}
+  />
 );
 
 VirtualizedItem.defaultProps = {
@@ -58,9 +38,6 @@ VirtualizedItem.propTypes = {
   scrollTop: PropTypes.number,
   top: PropTypes.number,
   width: PropTypes.number,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 };
 
 const calculateVisible = ({ top, height, scrollPosition, innerHeight, scrollTop, overscan }) => {
@@ -81,4 +58,4 @@ const compareProps = (prevProps, nextProps) =>
   prevProps.width === nextProps.width &&
   calculateVisible(prevProps) === calculateVisible(nextProps);
 
-export default memo(withStyles(styles)(VirtualizedItem), compareProps);
+export default memo(VirtualizedItem, compareProps);

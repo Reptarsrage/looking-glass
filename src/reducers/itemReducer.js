@@ -1,7 +1,7 @@
 import produce from 'immer';
 
 import { generateItemId } from './constants';
-import { FETCH_GALLERY_SUCCESS, CLEAR_GALLERY } from '../actions/types';
+import { FETCH_GALLERY_SUCCESS, CLEAR_GALLERY, ITEM_FULL_SCREEN } from '../actions/types';
 
 export const initialState = {
   byId: {},
@@ -20,6 +20,7 @@ export const initialItemState = {
   isGallery: false,
   url: null,
   thumb: null,
+  isFullScreen: false,
 };
 
 const addItem = (draft, galleryId, item) => {
@@ -69,6 +70,13 @@ const itemReducer = (state = initialState, action) =>
 
         // add items
         items.forEach((item) => addItem(draft, galleryId, item));
+        break;
+      }
+      case ITEM_FULL_SCREEN: {
+        const itemId = payload;
+
+        // add items
+        draft.byId[itemId].isFullScreen = !draft.byId[itemId].isFullScreen;
         break;
       }
       default:

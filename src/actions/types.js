@@ -54,4 +54,6 @@ export const {
   NAVIGATE_BREADCRUMB,
 } = actionTyper('navigation');
 
+export const { ITEM_CLICK, ITEM_FULL_SCREEN } = actionTyper('item');
+
 export const { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR } = actionTyper('filter');

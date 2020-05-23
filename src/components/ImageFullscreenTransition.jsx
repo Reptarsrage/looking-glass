@@ -29,7 +29,7 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
   const theme = useTheme();
   const handleRef = useForkRef(children.ref, ref);
 
-  const handleEnter = node => {
+  const handleEnter = (node) => {
     reflow(node); // So the animation always start from the start.
 
     const transitionProps = getTransitionProps(
@@ -43,13 +43,15 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
     node.style.transition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
   };
 
-  const handleExited = node => {
+  const handleExited = (node) => {
+    node.style.webkitTransition = '';
+    node.style.transition = '';
     if (onExited) {
       onExited(node);
     }
   };
 
-  const handleExit = node => {
+  const handleExit = (node) => {
     const transitionProps = getTransitionProps(
       { style, timeout },
       {
@@ -91,11 +93,10 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
       {(state, childProps) => {
         return cloneElement(children, {
           style: {
-            visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
+            ...children.props.style,
             ...initialStyles,
             ...transitionStyles[state],
             ...style,
-            ...children.props.style,
           },
           ref: handleRef,
           ...childProps,
