@@ -22,4 +22,38 @@ const fullScreenItemSelector = createSelector([itemsStateSelector, fullScreenIte
   itemId ? state.byId[itemId] : null
 );
 
-export { itemsSelector, itemByIdSelector, itemWidthSelector, itemHeightSelector, fullScreenItemSelector };
+const prevItemSelector = createSelector([itemsStateSelector, fullScreenItemIdSelector], (state, itemId) => {
+  if (!itemId) {
+    return null;
+  }
+
+  const idx = state.allIds.indexOf(itemId);
+  if (idx <= 0) {
+    return false;
+  }
+
+  return state.allIds[idx - 1];
+});
+
+const nextItemSelector = createSelector([itemsStateSelector, fullScreenItemIdSelector], (state, itemId) => {
+  if (!itemId) {
+    return null;
+  }
+
+  const idx = state.allIds.indexOf(itemId);
+  if (idx >= state.allIds.length - 1) {
+    return false;
+  }
+
+  return state.allIds[idx + 1];
+});
+
+export {
+  itemsSelector,
+  itemByIdSelector,
+  itemWidthSelector,
+  itemHeightSelector,
+  fullScreenItemSelector,
+  prevItemSelector,
+  nextItemSelector,
+};

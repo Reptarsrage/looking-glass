@@ -79,6 +79,7 @@ const MasonryItem = ({
   const [initialBounds, setInitialBounds] = useState(null);
   const [fullScreen, setFullScreen] = useState(false);
   const [fullScreenIn, setFullScreenIn] = useState(false);
+  const [useTransitions, setUseTransitions] = useState(true);
 
   const ref = useRef();
 
@@ -90,6 +91,19 @@ const MasonryItem = ({
       setInitialBounds(bounds);
       setFullScreen(true);
       setFullScreenIn(true);
+    } else if (prevFullScreenItemId === itemId && fullScreenItemId !== itemId && fullScreenItemId) {
+      // Hand-off full screen to another item
+      // Close fullscreen (without transitions!)
+      setUseTransitions(false);
+      setFullScreenIn(false);
+    } else if (prevFullScreenItemId !== itemId && fullScreenItemId === itemId && prevFullScreenItemId) {
+      // Receive full screen from another item
+      // Open fullscreen (without transitions!)
+      const bounds = ref.current.getBoundingClientRect();
+      setInitialBounds(bounds);
+      setUseTransitions(false);
+      setFullScreen(true);
+      setFullScreenIn(true);
     }
   });
 
@@ -97,33 +111,42 @@ const MasonryItem = ({
     event.preventDefault();
 
     if (item.isGallery) {
+      // Follow link to gallery
       navigateToGallery(moduleId, galleryId, item.title);
     } else if (fullScreenItemId === itemId) {
+      // Close fullscreen (with transitions!)
+      setUseTransitions(true);
       fullScreenTransitionOut();
       setFullScreenIn(false);
     } else {
+      // Open full screen (with transitions!)
+      setUseTransitions(true);
       fullScreenTransitionIn(itemId);
     }
   };
 
   const handleFullScreenExited = () => {
     // Handle modal closed
-    document.body.classList.remove(globalStyles.stopScroll);
     setFullScreen(false);
     setInitialBounds(null);
-    fullScreenTransitionOver();
+
+    // If we're not handing off, then make sure the modal closes
+    if (fullScreenItemId === itemId) {
+      document.body.classList.remove(globalStyles.stopScroll);
+      fullScreenTransitionOver();
+    }
   };
 
   const renderImage = () => {
     const { width: itemWidth, height: itemHeight, title, url, thumb } = item;
-    const src = visible ? url : '';
-    const thumbSrc = visible ? thumb : '';
+    const src = visible || fullScreen ? url : '';
+    const thumbSrc = visible && !fullScreen ? thumb : '';
     return <Image src={src} thumb={thumbSrc} title={title} width={itemWidth} height={itemHeight} />;
   };
 
   const renderVideo = () => {
     const { width: itemWidth, height: itemHeight, title, url, thumb } = item;
-    const src = visible ? url : '';
+    const src = visible || fullScreen ? url : '';
     const thumbSrc = visible ? thumb : '';
     return (
       <Video
@@ -162,7 +185,12 @@ const MasonryItem = ({
     : { left: `${left}px`, top: `${top}px` };
 
   return (
-    <ImageFullscreenTransition in={fullScreenIn} initialBounds={initialBounds} onExited={handleFullScreenExited}>
+    <ImageFullscreenTransition
+      disabled={!useTransitions}
+      in={fullScreenIn}
+      initialBounds={initialBounds}
+      onExited={handleFullScreenExited}
+    >
       <div
         className={clsx(classes.element, fullScreen ? classes.animationElement : undefined)}
         style={{ ...style, width: `${width}px`, height: `${height}px` }}

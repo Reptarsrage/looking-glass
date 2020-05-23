@@ -24,7 +24,7 @@ const defaultInitialBounds = {
  * https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/Zoom/Zoom.js
  */
 const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(props, ref) {
-  const { children, initialBounds, in: inProp, onExited, style, timeout, ...other } = props;
+  const { children, initialBounds, in: inProp, onExited, style, timeout, disabled, ...other } = props;
 
   const theme = useTheme();
   const handleRef = useForkRef(children.ref, ref);
@@ -39,8 +39,12 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
       }
     );
 
-    node.style.webkitTransition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
-    node.style.transition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
+    node.style.webkitTransition = disabled
+      ? ''
+      : theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
+    node.style.transition = disabled
+      ? ''
+      : theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
   };
 
   const handleExited = (node) => {
@@ -59,8 +63,12 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
       }
     );
 
-    node.style.webkitTransition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
-    node.style.transition = theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
+    node.style.webkitTransition = disabled
+      ? ''
+      : theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
+    node.style.transition = disabled
+      ? ''
+      : theme.transitions.create(['width', 'height', 'top', 'left'], transitionProps);
   };
 
   const initialStyles = {};
@@ -87,7 +95,7 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
       onEnter={handleEnter}
       onExit={handleExit}
       onExited={handleExited}
-      timeout={timeout}
+      timeout={disabled ? 0 : timeout}
       {...other}
     >
       {(state, childProps) => {
@@ -109,6 +117,7 @@ const ImageFullscreenTransition = forwardRef(function ImageFullscreenTransition(
 ImageFullscreenTransition.defaultProps = {
   in: true,
   onExited: null,
+  disabled: false,
   style: {},
   timeout: defaultTimeout,
   initialBounds: defaultInitialBounds,
@@ -123,6 +132,7 @@ ImageFullscreenTransition.propTypes = {
     left: PropTypes.number,
   }),
   in: PropTypes.bool,
+  disabled: PropTypes.bool,
   onExited: PropTypes.func,
   style: PropTypes.object,
   timeout: PropTypes.oneOfType([

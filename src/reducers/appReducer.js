@@ -6,6 +6,7 @@ import {
   FULL_SCREEN_TRANSITION_IN,
   FULL_SCREEN_TRANSITION_OUT,
   FULL_SCREEN_TRANSITION_OVER,
+  FULL_SCREEN_ITEM_CHANGE,
 } from '../actions/types';
 
 export const initialState = {
@@ -42,6 +43,11 @@ const authReducer = (state = initialState, action) =>
       }
       case FULL_SCREEN_TRANSITION_OVER: {
         draft.fullScreenItem = null;
+        break;
+      }
+      case FULL_SCREEN_ITEM_CHANGE: {
+        const itemId = payload;
+        draft.fullScreenItem = itemId;
         break;
       }
       default:

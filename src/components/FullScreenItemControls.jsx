@@ -11,8 +11,9 @@ import Zoom from '@material-ui/core/Zoom';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
+import * as appActions from '../actions/appActions';
 import { fullScreenInSelector } from '../selectors/appSelectors';
-import { fullScreenItemSelector } from '../selectors/itemSelectors';
+import { fullScreenItemSelector, prevItemSelector, nextItemSelector } from '../selectors/itemSelectors';
 
 const styles = (theme) => ({
   backdrop: {
@@ -38,13 +39,13 @@ const styles = (theme) => ({
   },
 });
 
-const FullScreenItemControls = ({ classes, item, fullScreenIn }) => {
+const FullScreenItemControls = ({ classes, item, fullScreenIn, prevItemId, nextItemId, fullScreenItemChange }) => {
   if (!item) {
     return null;
   }
 
-  const handleClick = () => {
-    console.log('TODO');
+  const handleSwitchToItem = (itemId) => {
+    fullScreenItemChange(itemId);
   };
 
   return (
@@ -53,12 +54,24 @@ const FullScreenItemControls = ({ classes, item, fullScreenIn }) => {
         <div className={classes.backdrop} />
       </Fade>
       <Zoom in={fullScreenIn}>
-        <Fab color="default" aria-label="Previous" className={clsx(classes.prev, classes.button)} onClick={handleClick}>
+        <Fab
+          color="default"
+          aria-label="Previous"
+          className={clsx(classes.prev, classes.button)}
+          onClick={() => handleSwitchToItem(prevItemId)}
+          style={{ display: prevItemId ? 'inline-flex' : 'none' }}
+        >
           <ChevronLeftIcon />
         </Fab>
       </Zoom>
       <Zoom in={fullScreenIn}>
-        <Fab color="default" aria-label="Next" className={clsx(classes.next, classes.button)} onClick={handleClick}>
+        <Fab
+          color="default"
+          aria-label="Next"
+          className={clsx(classes.next, classes.button)}
+          onClick={() => handleSwitchToItem(nextItemId)}
+          style={{ display: nextItemId ? 'inline-flex' : 'none' }}
+        >
           <ChevronRightIcon />
         </Fab>
       </Zoom>
@@ -68,6 +81,8 @@ const FullScreenItemControls = ({ classes, item, fullScreenIn }) => {
 
 FullScreenItemControls.defaultProps = {
   item: null,
+  prevItemId: null,
+  nextItemId: null,
 };
 
 FullScreenItemControls.propTypes = {
@@ -76,6 +91,8 @@ FullScreenItemControls.propTypes = {
 
   // selectors
   fullScreenIn: PropTypes.bool.isRequired,
+  prevItemId: PropTypes.string,
+  nextItemId: PropTypes.string,
   item: PropTypes.shape({
     id: PropTypes.string,
     title: PropTypes.string,
@@ -83,13 +100,18 @@ FullScreenItemControls.propTypes = {
   }),
 
   // actions
+  fullScreenItemChange: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
+  prevItemId: prevItemSelector,
+  nextItemId: nextItemSelector,
   item: fullScreenItemSelector,
   fullScreenIn: fullScreenInSelector,
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  fullScreenItemChange: appActions.fullScreenItemChange,
+};
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(FullScreenItemControls);

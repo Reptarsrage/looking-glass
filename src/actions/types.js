@@ -18,6 +18,7 @@ export const {
   FULL_SCREEN_TRANSITION_IN,
   FULL_SCREEN_TRANSITION_OUT,
   FULL_SCREEN_TRANSITION_OVER,
+  FULL_SCREEN_ITEM_CHANGE,
 } = actionTyper('app');
 
 export const {
