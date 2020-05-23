@@ -9,7 +9,7 @@ import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import clsx from 'clsx';
 import { animateScroll } from 'react-scroll';
 
-import { moduleIdSelector, galleryIdSelector, fullScreenItemIdSelector } from '../selectors/appSelectors';
+import { moduleIdSelector, fullScreenItemIdSelector } from '../selectors/appSelectors';
 import { itemByIdSelector } from '../selectors/itemSelectors';
 import * as appActions from '../actions/appActions';
 import * as navigationActions from '../actions/navigationActions';
@@ -62,7 +62,6 @@ function usePrevious(value) {
 const MasonryItem = ({
   classes,
   moduleId,
-  galleryId,
   item,
   itemId,
   visible,
@@ -123,7 +122,7 @@ const MasonryItem = ({
 
     if (item.isGallery) {
       // Follow link to gallery
-      navigateToGallery(moduleId, galleryId, item.title);
+      navigateToGallery(moduleId, itemId, item.title);
     } else if (fullScreenItemId === itemId) {
       // Close fullscreen (with transitions!)
       setUseTransitions(true);
@@ -242,7 +241,6 @@ MasonryItem.propTypes = {
 
   // selectors
   moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
   fullScreenItemId: PropTypes.string,
   item: PropTypes.shape({
     title: PropTypes.string,
@@ -264,7 +262,6 @@ MasonryItem.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   moduleId: moduleIdSelector,
-  galleryId: galleryIdSelector,
   item: itemByIdSelector,
   fullScreenItemId: fullScreenItemIdSelector,
 });
