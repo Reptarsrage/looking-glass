@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
+import Typography from '@material-ui/core/Typography';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
@@ -37,6 +38,17 @@ const styles = (theme) => ({
   next: {
     right: '0.5rem',
   },
+  caption: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    background: 'linear-gradient(#000, transparent)',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    zIndex: theme.zIndex.drawer + 4,
+    padding: theme.spacing(1),
+  },
 });
 
 const FullScreenItemControls = ({ classes, item, fullScreenIn, prevItemId, nextItemId, fullScreenItemChange }) => {
@@ -50,6 +62,14 @@ const FullScreenItemControls = ({ classes, item, fullScreenIn, prevItemId, nextI
 
   return (
     <>
+      <Fade in={fullScreenIn}>
+        <div className={classes.caption}>
+          <Typography variant="h3">{item.title}</Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {item.description}
+          </Typography>
+        </div>
+      </Fade>
       <Fade in={fullScreenIn}>
         <div className={classes.backdrop} />
       </Fade>
