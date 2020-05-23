@@ -22,14 +22,14 @@ const styles = (theme) => ({
     width: '100%',
     top: 0,
     left: 0,
-    zIndex: theme.zIndex.drawer + 4,
+    zIndex: theme.zIndex.drawer + 1,
     background: 'rgba(0,0,0,1)',
   },
   button: {
     top: '50%',
     position: 'fixed',
     transform: 'translate(0, -50%)',
-    zIndex: theme.zIndex.drawer + 6,
+    zIndex: theme.zIndex.drawer + 3,
   },
   prev: {
     left: '0.5rem',

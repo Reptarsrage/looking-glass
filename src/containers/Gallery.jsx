@@ -31,7 +31,7 @@ const styles = (theme) => ({
     position: 'fixed',
     bottom: '10px',
     right: '10px',
-    zIndex: theme.zIndex.drawer + 3,
+    zIndex: theme.zIndex.drawer - 1,
   },
   grow: {
     flexGrow: '1',

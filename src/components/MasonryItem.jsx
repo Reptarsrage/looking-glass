@@ -30,7 +30,7 @@ const styles = (theme) => ({
     position: 'absolute',
     top: theme.spacing(1),
     right: theme.spacing(1),
-    zIndex: theme.zIndex.drawer + 3,
+    zIndex: theme.zIndex.drawer,
   },
   element: {
     position: 'absolute',
@@ -40,7 +40,7 @@ const styles = (theme) => ({
     alignItems: 'center',
   },
   animationElement: {
-    zIndex: theme.zIndex.drawer + 5,
+    zIndex: theme.zIndex.drawer + 2,
   },
 });
 

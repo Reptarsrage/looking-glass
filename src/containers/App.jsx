@@ -16,7 +16,7 @@ import { withRouter } from 'react-router';
 import clsx from 'clsx';
 import _ from 'lodash';
 
-import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
+import { darkThemeSelector, moduleIdSelector, fullScreenInSelector } from '../selectors/appSelectors';
 import * as appActions from '../actions/appActions';
 import SearchBar from '../components/SearchBar';
 import BackButton from '../components/BackButton';
@@ -76,7 +76,8 @@ const styles = (theme) => ({
     flexGrow: 1,
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 3,
+    transition: theme.transitions.create('opacity'),
   },
   title: {
     display: 'none',
@@ -110,12 +111,17 @@ class App extends Component {
   };
 
   render() {
-    const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme, moduleId } = this.props;
+    const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme, moduleId, fullScreenIn } = this.props;
 
     return (
       <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
         <CssBaseline />
-        <AppBar position="static" color="default" className={classes.appBar}>
+        <AppBar
+          position="static"
+          color="default"
+          className={classes.appBar}
+          style={{ opacity: fullScreenIn ? '0' : '1' }}
+        >
           <Toolbar>
             {this.renderBackButton()}
             <Typography className={classes.title} variant="h6" color="inherit" noWrap>
@@ -145,6 +151,7 @@ class App extends Component {
 
 App.defaultProps = {
   moduleId: null,
+  fullScreenIn: false,
 };
 
 App.propTypes = {
@@ -153,11 +160,13 @@ App.propTypes = {
   darkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
   moduleId: PropTypes.string,
+  fullScreenIn: PropTypes.bool,
 };
 
 const mapStateToProps = createStructuredSelector({
   darkTheme: darkThemeSelector,
   moduleId: moduleIdSelector,
+  fullScreenIn: fullScreenInSelector,
 });
 
 const mapDispatchToProps = {
