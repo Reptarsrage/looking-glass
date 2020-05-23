@@ -11,7 +11,14 @@ const actionTyper = (prefix = '', separator = '/') => {
 
 export const { LOCATION_CHANGE } = actionTyper('@@router');
 
-export const { TOGGLE_DARK_THEME, UPDATE_SEARCH, SET_CURRENT_GALLERY } = actionTyper('app');
+export const {
+  TOGGLE_DARK_THEME,
+  UPDATE_SEARCH,
+  SET_CURRENT_GALLERY,
+  FULL_SCREEN_TRANSITION_IN,
+  FULL_SCREEN_TRANSITION_OUT,
+  FULL_SCREEN_TRANSITION_OVER,
+} = actionTyper('app');
 
 export const {
   ADD_GALLERY,
@@ -53,7 +60,5 @@ export const {
   NAVIGATE_BACK,
   NAVIGATE_BREADCRUMB,
 } = actionTyper('navigation');
-
-export const { ITEM_CLICK, ITEM_FULL_SCREEN } = actionTyper('item');
 
 export const { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR } = actionTyper('filter');

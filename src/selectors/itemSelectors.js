@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialItemState } from '../reducers/itemReducer';
+import { fullScreenItemIdSelector } from './appSelectors';
 
 const getItemId = (_, props) => props.itemId;
 
@@ -17,4 +18,8 @@ const itemWidthSelector = createSelector(itemByIdSelector, (item) => item.width)
 
 const itemHeightSelector = createSelector(itemByIdSelector, (item) => item.height);
 
-export { itemsSelector, itemByIdSelector, itemWidthSelector, itemHeightSelector };
+const fullScreenItemSelector = createSelector([itemsStateSelector, fullScreenItemIdSelector], (state, itemId) =>
+  itemId ? state.byId[itemId] : null
+);
+
+export { itemsSelector, itemByIdSelector, itemWidthSelector, itemHeightSelector, fullScreenItemSelector };

@@ -24,6 +24,7 @@ import Masonry from '../components/Masonry';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import FilterList from '../components/FilterList';
 import SelectedFilters from '../components/SelectedFilters';
+import FullScreenItemControls from '../components/FullScreenItemControls';
 
 const styles = (theme) => ({
   floatedBottomRight: {
@@ -174,6 +175,8 @@ class Gallery extends Component {
         <SelectedFilters moduleId={moduleId} galleryId={galleryId} />
 
         <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
+
+        <FullScreenItemControls />
 
         <Masonry
           items={items}

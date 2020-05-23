@@ -8,8 +8,10 @@ import { withStyles } from '@material-ui/core/styles';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import clsx from 'clsx';
 
+import { moduleIdSelector, galleryIdSelector, fullScreenItemIdSelector } from '../selectors/appSelectors';
 import { itemByIdSelector } from '../selectors/itemSelectors';
-import * as itemActions from '../actions/itemActions';
+import * as appActions from '../actions/appActions';
+import * as navigationActions from '../actions/navigationActions';
 import Image from './Image';
 import Video from './Video';
 import ImageFullscreenTransition from './ImageFullscreenTransition';
@@ -18,11 +20,10 @@ import globalStyles from '../index.scss';
 const styles = (theme) => ({
   paper: {
     padding: 0,
-    width: '100%',
-    height: '100%',
     overflow: 'hidden',
     position: 'relative',
     textAlign: 'center',
+    display: 'contents',
   },
   icon: {
     position: 'absolute',
@@ -30,35 +31,15 @@ const styles = (theme) => ({
     right: theme.spacing(1),
     zIndex: theme.zIndex.drawer + 3,
   },
-  // Modal Specific
   element: {
     position: 'absolute',
     display: 'flex',
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   animationElement: {
     zIndex: theme.zIndex.drawer + 5,
-  },
-  backdrop: {
-    position: 'fixed',
-    height: '100%',
-    width: '100%',
-    top: 0,
-    left: 0,
-    zIndex: theme.zIndex.drawer + 4,
-    background: 'rgba(0,0,0,1)',
-  },
-  button: {
-    top: '50%',
-    position: 'fixed',
-    transform: 'translate(0, -50%)',
-    zIndex: theme.zIndex.drawer + 6,
-  },
-  prev: {
-    left: '0.5rem',
-  },
-  next: {
-    right: '0.5rem',
   },
 });
 
@@ -77,39 +58,58 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const MasonryItem = ({ classes, item, itemId, visible, width, height, top, left, itemClick }) => {
-  const prevItem = usePrevious(item);
+const MasonryItem = ({
+  classes,
+  moduleId,
+  galleryId,
+  item,
+  itemId,
+  visible,
+  width,
+  height,
+  top,
+  left,
+  fullScreenItemId,
+  navigateToGallery,
+  fullScreenTransitionIn,
+  fullScreenTransitionOut,
+  fullScreenTransitionOver,
+}) => {
+  const prevFullScreenItemId = usePrevious(fullScreenItemId);
   const [initialBounds, setInitialBounds] = useState(null);
   const [fullScreen, setFullScreen] = useState(false);
-  const [transitionIn, setTransitionIn] = useState(false);
+  const [fullScreenIn, setFullScreenIn] = useState(false);
 
   const ref = useRef();
 
   useEffect(() => {
-    if (prevItem && prevItem.isFullScreen !== item.isFullScreen) {
-      if (item.isFullScreen) {
-        // Handle change from closed to open
-        document.body.classList.add(globalStyles.stopScroll);
-        const bounds = ref.current.getBoundingClientRect();
-        setInitialBounds(bounds);
-        setFullScreen(true);
-        setTransitionIn(true);
-      } else {
-        // Handle change from open to closed
-        setTransitionIn(false);
-      }
+    if (prevFullScreenItemId === null && fullScreenItemId === itemId) {
+      // Handle change from closed to open
+      document.body.classList.add(globalStyles.stopScroll);
+      const bounds = ref.current.getBoundingClientRect();
+      setInitialBounds(bounds);
+      setFullScreen(true);
+      setFullScreenIn(true);
     }
   });
 
   const handleClick = () => {
-    itemClick(itemId);
+    if (item.isGallery) {
+      navigateToGallery(moduleId, galleryId, item.title);
+    } else if (fullScreenItemId === itemId) {
+      fullScreenTransitionOut();
+      setFullScreenIn(false);
+    } else {
+      fullScreenTransitionIn(itemId);
+    }
   };
 
-  const handleModalExited = () => {
+  const handleFullScreenExited = () => {
     // Handle modal closed
     document.body.classList.remove(globalStyles.stopScroll);
     setFullScreen(false);
     setInitialBounds(null);
+    fullScreenTransitionOver();
   };
 
   const renderImage = () => {
@@ -148,7 +148,7 @@ const MasonryItem = ({ classes, item, itemId, visible, width, height, top, left,
     : { left: `${left}px`, top: `${top}px` };
 
   return (
-    <ImageFullscreenTransition in={transitionIn} initialBounds={initialBounds} onExited={handleModalExited}>
+    <ImageFullscreenTransition in={fullScreenIn} initialBounds={initialBounds} onExited={handleFullScreenExited}>
       <div
         className={clsx(classes.element, fullScreen ? classes.animationElement : undefined)}
         style={{ ...style, width: `${width}px`, height: `${height}px` }}
@@ -163,6 +163,7 @@ const MasonryItem = ({ classes, item, itemId, visible, width, height, top, left,
 };
 
 MasonryItem.defaultProps = {
+  fullScreenItemId: null,
   visible: false,
   width: 0,
   top: 0,
@@ -185,6 +186,9 @@ MasonryItem.propTypes = {
   classes: PropTypes.object.isRequired,
 
   // selectors
+  moduleId: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
+  fullScreenItemId: PropTypes.string,
   item: PropTypes.shape({
     title: PropTypes.string,
     description: PropTypes.string,
@@ -194,19 +198,27 @@ MasonryItem.propTypes = {
     isGallery: PropTypes.bool,
     url: PropTypes.string,
     thumb: PropTypes.string,
-    isFullScreen: PropTypes.bool,
   }).isRequired,
 
   // actions
-  itemClick: PropTypes.func.isRequired,
+  navigateToGallery: PropTypes.func.isRequired,
+  fullScreenTransitionIn: PropTypes.func.isRequired,
+  fullScreenTransitionOut: PropTypes.func.isRequired,
+  fullScreenTransitionOver: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
+  moduleId: moduleIdSelector,
+  galleryId: galleryIdSelector,
   item: itemByIdSelector,
+  fullScreenItemId: fullScreenItemIdSelector,
 });
 
 const mapDispatchToProps = {
-  itemClick: itemActions.itemClick,
+  navigateToGallery: navigationActions.navigateToGallery,
+  fullScreenTransitionIn: appActions.fullScreenTransitionIn,
+  fullScreenTransitionOut: appActions.fullScreenTransitionOut,
+  fullScreenTransitionOver: appActions.fullScreenTransitionOver,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(MasonryItem);
