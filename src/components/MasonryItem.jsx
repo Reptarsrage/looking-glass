@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import clsx from 'clsx';
+import { animateScroll } from 'react-scroll';
 
 import { moduleIdSelector, galleryIdSelector, fullScreenItemIdSelector } from '../selectors/appSelectors';
 import { itemByIdSelector } from '../selectors/itemSelectors';
@@ -69,6 +70,7 @@ const MasonryItem = ({
   height,
   top,
   left,
+  scrollTop,
   fullScreenItemId,
   navigateToGallery,
   fullScreenTransitionIn,
@@ -98,9 +100,18 @@ const MasonryItem = ({
       setFullScreenIn(false);
     } else if (prevFullScreenItemId !== itemId && fullScreenItemId === itemId && prevFullScreenItemId) {
       // Receive full screen from another item
-      // Open fullscreen (without transitions!)
+
+      // Scroll masonry to this item
       const bounds = ref.current.getBoundingClientRect();
-      setInitialBounds(bounds);
+      const adjBounds = { left: bounds.left, top: 0, width, height };
+      animateScroll.scrollTo(top + scrollTop, {
+        duration: 0,
+        delay: 0,
+        containerId: 'scroll-container',
+      });
+
+      // Open fullscreen (without transitions!)
+      setInitialBounds(adjBounds);
       setUseTransitions(false);
       setFullScreen(true);
       setFullScreenIn(true);
@@ -116,8 +127,8 @@ const MasonryItem = ({
     } else if (fullScreenItemId === itemId) {
       // Close fullscreen (with transitions!)
       setUseTransitions(true);
-      fullScreenTransitionOut();
       setFullScreenIn(false);
+      fullScreenTransitionOut();
     } else {
       // Open full screen (with transitions!)
       setUseTransitions(true);
@@ -211,6 +222,7 @@ MasonryItem.defaultProps = {
   top: 0,
   height: 0,
   left: 0,
+  scrollTop: 0,
 };
 
 MasonryItem.propTypes = {
@@ -223,6 +235,7 @@ MasonryItem.propTypes = {
   left: PropTypes.number,
   top: PropTypes.number,
   width: PropTypes.number,
+  scrollTop: PropTypes.number,
 
   // withStyles
   classes: PropTypes.object.isRequired,

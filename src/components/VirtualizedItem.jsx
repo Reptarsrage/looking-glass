@@ -11,6 +11,7 @@ const VirtualizedItem = ({ width, height, top, itemId, left, innerHeight, oversc
     top={top}
     width={width}
     height={height}
+    scrollTop={scrollTop}
   />
 );
 
