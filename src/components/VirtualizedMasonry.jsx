@@ -65,7 +65,8 @@ const VirtualizedMasonry = ({
         // use them to set our current scroll position
         const scrollPosition = scrollY;
         const scrollTop = scrollY + rect.top;
-        setScrollPosition({ scrollPosition, scrollTop });
+        setScrollPosition(scrollPosition);
+        setScrollTop(scrollTop);
 
         // load more if over threshold
         if (Math.abs(scrollTop + rect.height - scrollPosition - window.innerHeight) <= loadMoreThreshold) {
@@ -76,7 +77,8 @@ const VirtualizedMasonry = ({
   };
 
   const containerRef = useRef(null);
-  const [{ scrollTop, scrollPosition }, setScrollPosition] = useState({ scrollTop: 0, scrollPosition: 0 });
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
   const [prevWidth, setPrevWidth] = useState(width);
   const columnItems = useMemo(calculateColumnItems, [columnCount, items.length]);
 
@@ -165,10 +167,12 @@ VirtualizedMasonry.propTypes = {
 };
 
 const propsAreEqual = (prevProps, nextProps) =>
+  nextProps.items.length === prevProps.items.length &&
+  nextProps.width === prevProps.width &&
+  nextProps.loadMore === prevProps.loadMore &&
   nextProps.columnCount === prevProps.columnCount &&
   nextProps.loadMoreThreshold === prevProps.loadMoreThreshold &&
   nextProps.overscan === prevProps.overscan &&
-  nextProps.gutter === prevProps.gutter &&
-  nextProps.width === prevProps.width;
+  nextProps.gutter === prevProps.gutter;
 
 export default withStyles(styles)(memo(VirtualizedMasonry, propsAreEqual));
