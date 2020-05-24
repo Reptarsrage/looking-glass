@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -7,68 +7,50 @@ import LoadingIndicator from './LoadingIndicator';
 import NoResults from './NoResults';
 import VirtualizedMasonry from './VirtualizedMasonry';
 
-class Masonry extends Component {
-  constructor() {
-    super();
+const Masonry = ({ error, columnCount, items, loading, gutter, getItemHeight, getItemWidth, loadMore }) => {
+  const [message, setMessage] = useState(null);
+  const [open, setOpen] = useState(false);
 
-    this.state = {
-      message: null,
-      open: false,
-    };
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    // TODO: Find a way to update based on multiple errors
-    // maybe notistack
-    if (props.error && !state.message) {
-      return {
-        message: `Error communicating with server`,
-        open: true,
-      };
+  useEffect(() => {
+    if (error && !message) {
+      setMessage('Error communicating with server');
+      setOpen(true);
     }
+  });
 
-    // Return null to indicate no change to state.
-    return null;
-  }
-
-  handleToastClosed = () => {
-    this.setState({ open: false });
+  const handleToastClosed = () => {
+    setOpen(false);
   };
 
-  render() {
-    const { columnCount, items, loading, gutter, getItemHeight, getItemWidth, loadMore } = this.props;
-    const { message, open } = this.state;
-
-    if (items.length === 0 && loading) {
-      return <LoadingIndicator />;
-    }
-
-    return (
-      <>
-        <ErrorToast message={message} onClose={this.handleToastClosed} open={open} />
-        {items.length === 0 ? (
-          <NoResults />
-        ) : (
-          <ReactResizeDetector handleWidth refreshMode="debounce" refreshRate={200}>
-            {({ width }) => (
-              <VirtualizedMasonry
-                items={items}
-                getHeightForItem={getItemHeight}
-                getWidthForItem={getItemWidth}
-                loadMore={loadMore}
-                columnCount={columnCount}
-                loadMoreThreshold={5000}
-                overscan={500}
-                gutter={gutter}
-                width={width}
-              />
-            )}
-          </ReactResizeDetector>
-        )}
-      </>
-    );
+  if (items.length === 0 && loading) {
+    return <LoadingIndicator />;
   }
-}
+
+  return (
+    <>
+      <ErrorToast message={message} onClose={handleToastClosed} open={open} />
+      {items.length === 0 ? (
+        <NoResults />
+      ) : (
+        <ReactResizeDetector handleWidth refreshMode="debounce" refreshRate={200}>
+          {({ width }) => (
+            <VirtualizedMasonry
+              items={items}
+              getHeightForItem={getItemHeight}
+              getWidthForItem={getItemWidth}
+              loadMore={loadMore}
+              columnCount={columnCount}
+              loadMoreThreshold={5000}
+              overscan={500}
+              gutter={gutter}
+              width={width}
+            />
+          )}
+        </ReactResizeDetector>
+      )}
+    </>
+  );
+};
 
 Masonry.defaultProps = {
   columnCount: 3,
