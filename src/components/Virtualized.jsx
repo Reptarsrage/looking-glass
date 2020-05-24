@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import React, { memo, useMemo } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import Positioner from './positioner';
 import VirtualizedItem from './VirtualizedItem';
 
 const styles = () => ({
@@ -13,87 +11,50 @@ const styles = () => ({
   },
 });
 
-class Virtualized extends Component {
-  constructor(props) {
-    super(props);
+const Virtualized = ({
+  classes,
+  items,
+  innerHeight,
+  overscan,
+  scrollPosition,
+  scrollTop,
+  gutter,
+  width,
+  length,
+  getDimensionsForItem,
+}) => {
+  const computeDimensions = () => {
+    const lookup = {};
+    let total = 0;
+    items.forEach((id) => {
+      const dims = getDimensionsForItem(id);
+      lookup[id] = { ...dims, top: total };
+      total += dims.height + gutter;
+    });
 
-    this.positioner = new Positioner();
-    this.getDimensionsForItemMemoizer = _.memoize(props.getDimensionsForItem);
-
-    this.state = {
-      totalHeight: this.calculateTotalHeight(0),
-    };
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const { length, overscan, scrollPosition, scrollTop, width } = this.props;
-    const { totalHeight } = this.state;
-
-    return (
-      nextState.totalHeight !== totalHeight ||
-      nextProps.length !== length ||
-      nextProps.overscan !== overscan ||
-      nextProps.scrollPosition !== scrollPosition ||
-      nextProps.scrollTop !== scrollTop ||
-      nextProps.width !== width
-    );
-  }
-
-  componentDidUpdate(prevProps) {
-    const { width: prevWidth, length: prevLength } = prevProps;
-    const { width, length } = this.props;
-    let from = prevLength;
-
-    // If width changed, clear cache and force re-calculate ALL heights
-    if (width !== prevWidth) {
-      this.getDimensionsForItemMemoizer.cache = new _.memoize.Cache();
-      from = 0;
-    }
-
-    // If items length changed, or resized, calculate heights
-    if (width !== prevWidth || length !== prevLength) {
-      const totalHeight = this.calculateTotalHeight(from);
-      this.setState({ totalHeight });
-    }
-  }
-
-  calculateTotalHeight = (from) => {
-    const { items, gutter } = this.props;
-
-    const offset = from === 0 ? 0 : undefined;
-    const itemsToUpdate = items.slice(from).map((id) => ({ height: this.getDimensionsForItemMemoizer(id).height, id }));
-    this.positioner.updatePositions(itemsToUpdate, offset, gutter);
-    return this.positioner.getTotalHeight();
+    return [lookup, total];
   };
 
-  render() {
-    const { classes, items, innerHeight, overscan, scrollPosition, scrollTop } = this.props;
-    const { totalHeight } = this.state;
-
-    return (
-      <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
-        {items.map((itemId) => {
-          const { height, width, left } = this.getDimensionsForItemMemoizer(itemId);
-
-          return (
-            <VirtualizedItem
-              key={itemId}
-              itemId={itemId}
-              innerHeight={innerHeight}
-              overscan={overscan}
-              scrollPosition={scrollPosition}
-              scrollTop={scrollTop}
-              width={width}
-              top={this.positioner.getPositionForItem(itemId)}
-              height={height}
-              left={left}
-            />
-          );
-        })}
-      </div>
-    );
-  }
-}
+  const [itemDimensions, totalHeight] = useMemo(computeDimensions, [width, length]);
+  return (
+    <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
+      {items.map((itemId) => (
+        <VirtualizedItem
+          key={itemId}
+          itemId={itemId}
+          innerHeight={innerHeight}
+          overscan={overscan}
+          scrollPosition={scrollPosition}
+          scrollTop={scrollTop}
+          width={itemDimensions[itemId].width}
+          top={itemDimensions[itemId].top}
+          height={itemDimensions[itemId].height}
+          left={itemDimensions[itemId].left}
+        />
+      ))}
+    </div>
+  );
+};
 
 Virtualized.defaultProps = {
   gutter: 8,
@@ -122,4 +83,11 @@ Virtualized.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Virtualized);
+const propsAreEqual = (prevProps, nextProps) =>
+  nextProps.scrollPosition === prevProps.scrollPosition &&
+  nextProps.scrollTop === prevProps.scrollTop &&
+  nextProps.length === prevProps.length &&
+  nextProps.overscan === prevProps.overscan &&
+  nextProps.width === prevProps.width;
+
+export default withStyles(styles)(memo(Virtualized, propsAreEqual));
