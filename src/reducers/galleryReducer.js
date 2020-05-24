@@ -114,6 +114,11 @@ const galleryReducer = (state = initialState, action) =>
             .map(({ id }) => generateItemId(galleryId, id)),
         ];
 
+        // Remove duplicates (if any)
+        draft.byId[galleryId].items = draft.byId[galleryId].items.filter(
+          (id, idx) => draft.byId[galleryId].items.indexOf(id) === idx
+        );
+
         // update async state
         handleAsyncSuccess(state.byId[galleryId], draft.byId[galleryId]);
         break;
