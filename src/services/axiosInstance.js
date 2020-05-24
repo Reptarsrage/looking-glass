@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import axiosRetry from 'axios-retry';
 
 export const create = (options) => {
   // Create new axios instance
@@ -9,7 +8,6 @@ export const create = (options) => {
 
   // Setup interceptors
   loadProgressBar(axios);
-  axiosRetry(axios, { retries: 3 });
 
   return axios;
 };
