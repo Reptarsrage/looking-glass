@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
@@ -53,56 +53,60 @@ const styles = (theme) => ({
   },
 });
 
-class Gallery extends Component {
-  constructor(props) {
-    super(props);
+const Gallery = ({
+  items,
+  classes,
+  moduleId,
+  galleryId,
+  gallery,
+  isAuthenticated,
+  requiresAuth,
+  authUrl,
+  filterChange,
+  overlayButtonThreshold,
+  fetchGallery,
+  itemWidthSelectorFunc,
+  itemHeightSelectorFunc,
+}) => {
+  const [showOverlayButtons, setShowOverlayButtons] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-    this.state = {
-      showOverlayButtons: false,
-      drawerOpen: false,
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     // set event listeners
-    window.addEventListener('containerScroll', this.handleScroll);
+    window.addEventListener('containerScroll', handleScroll);
 
     // fetch images
-    this.fetchInitialItems();
-  }
+    fetchInitialItems();
 
-  componentWillUnmount() {
-    // remove event listeners from componentDidMount
-    window.removeEventListener('containerScroll', this.handleScroll);
-  }
+    return () => {
+      // remove event listeners from componentDidMount
+      window.removeEventListener('containerScroll', handleScroll);
+    };
+  });
 
-  handleDrawerClose = () => {
-    this.setState({ drawerOpen: false });
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
   };
 
-  handleFilterClick = (filterId) => {
-    const { moduleId, galleryId, filterChange } = this.props;
-    this.setState({ drawerOpen: false });
+  const handleFilterClick = (filterId) => {
+    setDrawerOpen(false);
     filterChange(moduleId, galleryId, filterId);
   };
 
-  handleOpenDrawerClick = () => {
-    this.setState({ drawerOpen: true });
+  const handleOpenDrawerClick = () => {
+    setDrawerOpen(true);
   };
 
-  handleScroll = (event) => {
-    const { overlayButtonThreshold } = this.props;
-    const { showOverlayButtons } = this.state;
+  const handleScroll = (event) => {
     const scrollY = event.detail;
     if (scrollY >= overlayButtonThreshold && !showOverlayButtons) {
-      this.setState({ showOverlayButtons: true });
+      setShowOverlayButtons(true);
     } else if (scrollY < overlayButtonThreshold && showOverlayButtons) {
-      this.setState({ showOverlayButtons: false });
+      setShowOverlayButtons(false);
     }
   };
 
-  fetchInitialItems = () => {
-    const { fetchGallery, moduleId, galleryId, gallery, isAuthenticated, requiresAuth } = this.props;
+  const fetchInitialItems = () => {
     const { fetching, success } = gallery;
 
     // Abort if waiting for authentication
@@ -116,8 +120,7 @@ class Gallery extends Component {
     }
   };
 
-  loadMoreItems = () => {
-    const { fetchGallery, moduleId, galleryId, gallery, isAuthenticated, requiresAuth } = this.props;
+  const loadMoreItems = () => {
     const { hasNext, fetching } = gallery;
 
     // Abort if waiting for authentication
@@ -131,65 +134,58 @@ class Gallery extends Component {
     }
   };
 
-  getItemHeight = (itemId) => {
-    const { itemHeightSelectorFunc } = this.props;
+  const getItemHeight = (itemId) => {
     return itemHeightSelectorFunc(itemId);
   };
 
-  getItemWidth = (itemId) => {
-    const { itemWidthSelectorFunc } = this.props;
+  const getItemWidth = (itemId) => {
     return itemWidthSelectorFunc(itemId);
   };
 
-  render() {
-    const { items, classes, moduleId, galleryId, gallery, isAuthenticated, requiresAuth, authUrl } = this.props;
-    const { fetching, error, title } = gallery;
-    const { showOverlayButtons, drawerOpen } = this.state;
-
-    // Redirect to authenticate
-    if (requiresAuth && !isAuthenticated) {
-      return <Redirect to={authUrl} />;
-    }
-
-    // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
-    return (
-      <>
-        <Helmet>
-          <title>{`${productName} - ${title}`}</title>
-        </Helmet>
-
-        <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={this.handleDrawerClose}>
-          <FilterList moduleId={moduleId} onClick={this.handleFilterClick} />
-        </Drawer>
-
-        <Toolbar variant="dense">
-          <Breadcrumbs />
-          <div className={classes.grow} />
-          <SortMenu moduleId={moduleId} galleryId={galleryId} />
-          <Button onClick={this.handleOpenDrawerClick}>
-            <TuneIcon className={classes.extendedIcon} />
-            <Typography color="textSecondary">Filter</Typography>
-          </Button>
-        </Toolbar>
-
-        <SelectedFilters moduleId={moduleId} galleryId={galleryId} />
-
-        <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
-
-        <FullScreenItemControls />
-
-        <Masonry
-          items={items}
-          getItemHeight={this.getItemHeight}
-          getItemWidth={this.getItemWidth}
-          loading={fetching}
-          error={error !== null}
-          loadMore={this.loadMoreItems}
-        />
-      </>
-    );
+  // Redirect to authenticate
+  if (requiresAuth && !isAuthenticated) {
+    return <Redirect to={authUrl} />;
   }
-}
+
+  // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
+  const { fetching, error, title } = gallery;
+  return (
+    <>
+      <Helmet>
+        <title>{`${productName} - ${title}`}</title>
+      </Helmet>
+
+      <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={handleDrawerClose}>
+        <FilterList moduleId={moduleId} onClick={handleFilterClick} />
+      </Drawer>
+
+      <Toolbar variant="dense">
+        <Breadcrumbs />
+        <div className={classes.grow} />
+        <SortMenu moduleId={moduleId} galleryId={galleryId} />
+        <Button onClick={handleOpenDrawerClick}>
+          <TuneIcon className={classes.extendedIcon} />
+          <Typography color="textSecondary">Filter</Typography>
+        </Button>
+      </Toolbar>
+
+      <SelectedFilters moduleId={moduleId} galleryId={galleryId} />
+
+      <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
+
+      <FullScreenItemControls />
+
+      <Masonry
+        items={items}
+        getItemHeight={getItemHeight}
+        getItemWidth={getItemWidth}
+        loading={fetching}
+        error={error !== null}
+        loadMore={loadMoreItems}
+      />
+    </>
+  );
+};
 
 Gallery.defaultProps = {
   authUrl: null,
