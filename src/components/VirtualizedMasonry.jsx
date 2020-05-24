@@ -2,7 +2,13 @@ import React, { useRef, memo, useState, useEffect, useMemo } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { animateScroll } from 'react-scroll';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 
+import * as moduleActions from '../actions/moduleActions';
+import { galleryIdSelector } from '../selectors/appSelectors';
+import { savedScrollPositionSelector, savedScrollTopSelector } from '../selectors/gallerySelectors';
 import Virtualized from './Virtualized';
 
 const styles = () => ({
@@ -26,6 +32,10 @@ const VirtualizedMasonry = ({
   gutter,
   classes,
   overscan,
+  galleryId,
+  savedScrollPosition,
+  savedScrollTop,
+  saveScrollPosition,
 }) => {
   const calculateColumnItems = () => {
     // Ensure each column has an entry
@@ -79,35 +89,52 @@ const VirtualizedMasonry = ({
   const containerRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
-  const [prevWidth, setPrevWidth] = useState(width);
-  const columnItems = useMemo(calculateColumnItems, [columnCount, items.length]);
+  // const [prevWidth, setPrevWidth] = useState(width);
+  const columnItems = useMemo(calculateColumnItems, [columnCount, items.length, galleryId]);
 
   useEffect(() => {
     window.addEventListener('containerScroll', handleScroll);
-
-    // maintain relative scroll pos when resizing
-    if (prevWidth !== width) {
-      const { current } = containerRef;
-      if (current) {
-        const rect = current.getBoundingClientRect();
-        if (rect) {
-          const whRatio = rect.height / rect.width;
-          const dHeight = (width * whRatio) / (prevWidth * whRatio);
-          animateScroll.scrollTo(scrollPosition * dHeight, {
-            duration: 0,
-            delay: 0,
-            containerId: 'scroll-container',
-          });
-        }
-      }
-
-      setPrevWidth(width);
-    }
 
     return () => {
       window.removeEventListener('containerScroll', handleScroll);
     };
   });
+
+  useEffect(() => {
+    saveScrollPosition(galleryId, scrollPosition, scrollTop);
+  }, [scrollPosition, scrollTop]);
+
+  useEffect(() => {
+    setScrollPosition(savedScrollPosition);
+    setScrollTop(savedScrollTop);
+    animateScroll.scrollTo(savedScrollPosition, {
+      duration: 0,
+      delay: 0,
+      containerId: 'scroll-container',
+    });
+  }, [galleryId]);
+
+  // TODO: Fix this
+  // useEffect(() => {
+  //   // maintain relative scroll pos when resizing
+  //   if (prevWidth !== width) {
+  //     const { current } = containerRef;
+  //     if (current) {
+  //       const rect = current.getBoundingClientRect();
+  //       if (rect) {
+  //         const whRatio = rect.height / rect.width;
+  //         const dHeight = (width * whRatio) / (prevWidth * whRatio);
+  //         animateScroll.scrollTo(scrollPosition * dHeight, {
+  //           duration: 0,
+  //           delay: 0,
+  //           containerId: 'scroll-container',
+  //         });
+  //       }
+  //     }
+
+  //     setPrevWidth(width);
+  //   }
+  // }, [width]);
 
   const renderColumn = (columnItem) => {
     const { innerHeight } = window;
@@ -134,7 +161,11 @@ const VirtualizedMasonry = ({
   };
 
   return (
-    <div ref={containerRef} className={classes.columnContainer}>
+    <div
+      ref={containerRef}
+      className={classes.columnContainer}
+      style={{ minHeight: `${savedScrollPosition + window.innerHeight}px` }}
+    >
       {columnItems.map(renderColumn)}
     </div>
   );
@@ -155,6 +186,14 @@ VirtualizedMasonry.propTypes = {
   getWidthForItem: PropTypes.func.isRequired,
   loadMore: PropTypes.func.isRequired,
 
+  // selectors
+  galleryId: PropTypes.string.isRequired,
+  savedScrollPosition: PropTypes.number.isRequired,
+  savedScrollTop: PropTypes.number.isRequired,
+
+  // actions
+  saveScrollPosition: PropTypes.func.isRequired,
+
   // optional
   columnCount: PropTypes.number,
   loadMoreThreshold: PropTypes.number,
@@ -167,6 +206,7 @@ VirtualizedMasonry.propTypes = {
 };
 
 const propsAreEqual = (prevProps, nextProps) =>
+  nextProps.galleryId === prevProps.galleryId &&
   nextProps.items.length === prevProps.items.length &&
   nextProps.width === prevProps.width &&
   nextProps.loadMore === prevProps.loadMore &&
@@ -175,4 +215,17 @@ const propsAreEqual = (prevProps, nextProps) =>
   nextProps.overscan === prevProps.overscan &&
   nextProps.gutter === prevProps.gutter;
 
-export default withStyles(styles)(memo(VirtualizedMasonry, propsAreEqual));
+const mapStateToProps = createStructuredSelector({
+  galleryId: galleryIdSelector,
+  savedScrollPosition: savedScrollPositionSelector,
+  savedScrollTop: savedScrollTopSelector,
+});
+
+const mapDispatchToProps = {
+  saveScrollPosition: moduleActions.saveScrollPosition,
+};
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles)
+)(memo(VirtualizedMasonry, propsAreEqual));

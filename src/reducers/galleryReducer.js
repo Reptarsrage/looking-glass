@@ -22,6 +22,7 @@ import {
   UPDATE_SORT,
   CLEAR_GALLERY,
   UPDATE_FILTER,
+  SAVE_SCROLL_POSITION,
 } from '../actions/types';
 
 export const initialState = {
@@ -42,6 +43,8 @@ export const initialGalleryState = {
   currentFilter: null,
   items: [],
   title: null,
+  savedScrollPosition: 0,
+  savedScrollTop: 0,
   ...initialAsyncState,
 };
 
@@ -140,6 +143,13 @@ const galleryReducer = (state = initialState, action) =>
         const galleryId = meta;
         const valueId = payload;
         draft.byId[galleryId].currentSort = valueId;
+        break;
+      }
+      case SAVE_SCROLL_POSITION: {
+        const galleryId = meta;
+        const { scrollPosition, scrollTop } = payload;
+        draft.byId[galleryId].savedScrollPosition = scrollPosition;
+        draft.byId[galleryId].savedScrollTop = scrollTop;
         break;
       }
       case UPDATE_FILTER: {

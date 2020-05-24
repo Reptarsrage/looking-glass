@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialGalleryState } from '../reducers/galleryReducer';
+import { galleryIdSelector } from './appSelectors';
 
 const getGalleryId = (_, props) => props.galleryId;
 
@@ -19,4 +20,22 @@ const currentSortSelector = createSelector(galleryByIdSelector, (gallery) => gal
 
 const currentFilterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentFilter);
 
-export { itemsInGallerySelector, galleryByIdSelector, galleriesSelector, currentSortSelector, currentFilterSelector };
+const savedScrollPositionSelector = createSelector(
+  [galleryIdSelector, galleriesStateSelector],
+  (galleryId, state) => state.byId[galleryId].savedScrollPosition
+);
+
+const savedScrollTopSelector = createSelector(
+  [galleryIdSelector, galleriesStateSelector],
+  (galleryId, state) => state.byId[galleryId].savedScrollTop
+);
+
+export {
+  itemsInGallerySelector,
+  galleryByIdSelector,
+  galleriesSelector,
+  currentSortSelector,
+  currentFilterSelector,
+  savedScrollPositionSelector,
+  savedScrollTopSelector,
+};

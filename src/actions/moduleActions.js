@@ -9,6 +9,7 @@ import {
   CLEAR_GALLERY,
   FILTER_CHANGE,
   UPDATE_FILTER,
+  SAVE_SCROLL_POSITION,
 } from './types';
 
 export const fetchModules = () => ({
@@ -36,6 +37,12 @@ export const searchChange = (moduleId, galleryId, query) => ({
 export const updateSearch = (galleryId, query) => ({
   type: UPDATE_SEARCH,
   payload: query,
+  meta: galleryId,
+});
+
+export const saveScrollPosition = (galleryId, scrollPosition, scrollTop) => ({
+  type: SAVE_SCROLL_POSITION,
+  payload: { scrollPosition, scrollTop },
   meta: galleryId,
 });
 

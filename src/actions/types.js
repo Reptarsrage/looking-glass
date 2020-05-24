@@ -35,6 +35,7 @@ export const {
   SORT_CHANGE,
   FILTER_CHANGE,
   UPDATE_FILTER,
+  SAVE_SCROLL_POSITION,
 } = actionTyper('module');
 
 export const {
