@@ -62,7 +62,8 @@ const lightTheme = createMuiTheme({
 
 const styles = (theme) => ({
   scroll: {
-    overflow: 'auto',
+    overflowX: 'hidden',
+    overflowY: 'scroll',
     '&::-webkit-scrollbar': {
       width: '10px',
       backgroundColor: 'transparent',
