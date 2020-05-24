@@ -65,7 +65,7 @@ const authReducer = (state = initialState, action, store = getStore()) =>
           const id = generateModuleId(module.id);
 
           // load from persistent store
-          draft.byId[id] = store.get(id, initialAuthState);
+          draft.byId[id] = initialAuthState; // store.get(id, initialAuthState);
           draft.allIds.push(id);
         });
 

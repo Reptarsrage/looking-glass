@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -24,9 +24,10 @@ import {
   oauthURLSelector,
   oauthURLFetchingSelector,
   oauthURLErrorSelector,
+  oauthURLSuccessSelector,
 } from '../selectors/authSelectors';
 
-const styles = theme => ({
+const styles = (theme) => ({
   main: {
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
@@ -65,24 +66,29 @@ const styles = theme => ({
   },
 });
 
-class OAuth extends Component {
-  constructor(props) {
-    super(props);
+const OAuth = ({
+  fetching,
+  success,
+  moduleId,
+  fetchOAuthURL,
+  authorize,
+  oauthURL,
+  classes,
+  oauthURLSuccess,
+  oauthURLFetching,
+  oauthURLError,
+  error,
+  galleryId,
+}) => {
+  const [modalFetching, setModalFetching] = useState(false);
 
-    this.state = {
-      modalFetching: false,
-    };
-  }
-
-  componentDidMount() {
-    const { fetching, success, moduleId, fetchOAuthURL } = this.props;
-
-    if (!fetching && !success) {
+  useEffect(() => {
+    if (!oauthURLFetching && !oauthURLSuccess) {
       fetchOAuthURL(moduleId);
     }
-  }
+  });
 
-  showOauthModal = authUrl => {
+  const showOauthModal = (authUrl) => {
     return new Promise((resolve, reject) => {
       // TODO: load these values from service
       const { state: expectedState } = qs.parse(authUrl);
@@ -97,12 +103,12 @@ class OAuth extends Component {
         },
       });
 
-      const handleRedirect = url => {
+      const handleRedirect = (url) => {
         const { query } = parse(url, true);
-        const { state, code, error } = query || {};
+        const { state, code, error: qError } = query || {};
 
-        if (error) {
-          reject(new Error(error));
+        if (qError) {
+          reject(new Error(qError));
         }
 
         if (state === expectedState && code) {
@@ -121,65 +127,58 @@ class OAuth extends Component {
     });
   };
 
-  handleSubmit = async () => {
-    const { authorize, moduleId, oauthURL } = this.props;
-
-    this.setState({ modalFetching: true });
+  const handleSubmit = async () => {
+    setModalFetching(true);
 
     try {
-      const accessToken = await this.showOauthModal(oauthURL);
+      const accessToken = await showOauthModal(oauthURL);
       authorize(moduleId, accessToken);
-      this.setState({ modalFetching: false });
-    } catch (error) {
-      this.setState({ modalFetching: false });
+      setModalFetching(false);
+    } catch (e) {
+      setModalFetching(false);
     }
   };
 
-  render() {
-    const { classes, oauthURLFetching, oauthURLError, fetching, error, success, moduleId, galleryId } = this.props;
-    const { modalFetching } = this.state;
-
-    if (success) {
-      // Redirect to whatever gallery the user was on before
-      return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
-    }
-
-    const isFetching = oauthURLFetching || modalFetching || fetching;
-    const isError = (oauthURLError || error) !== null; // TODO: get message out of error object
-
-    return (
-      <main className={classes.main}>
-        <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Authorize using OAuth2
-          </Typography>
-          {isError && (
-            <Typography align="center" color="error">
-              {JSON.stringify(oauthURLError || error)}
-            </Typography>
-          )}
-          <div className={classes.wrapper}>
-            <Button
-              type="button"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled={fetching}
-              onClick={this.handleSubmit}
-            >
-              Authorize
-            </Button>
-            {isFetching && <CircularProgress size={24} className={classes.progress} />}
-          </div>
-        </Paper>
-      </main>
-    );
+  if (success) {
+    // Redirect to whatever gallery the user was on before
+    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
   }
-}
+
+  const isFetching = oauthURLFetching || modalFetching || fetching;
+  const isError = (oauthURLError || error) !== null; // TODO: get message out of error object
+
+  return (
+    <main className={classes.main}>
+      <Paper className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Authorize using OAuth2
+        </Typography>
+        {isError && (
+          <Typography align="center" color="error">
+            {JSON.stringify(oauthURLError || error)}
+          </Typography>
+        )}
+        <div className={classes.wrapper}>
+          <Button
+            type="button"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            disabled={fetching}
+            onClick={handleSubmit}
+          >
+            Authorize
+          </Button>
+          {isFetching && <CircularProgress size={24} className={classes.progress} />}
+        </div>
+      </Paper>
+    </main>
+  );
+};
 
 OAuth.defaultProps = {
   error: null,
@@ -197,6 +196,7 @@ OAuth.propTypes = {
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   oauthURL: PropTypes.string,
+  oauthURLSuccess: PropTypes.bool.isRequired,
   oauthURLFetching: PropTypes.bool.isRequired,
   oauthURLError: PropTypes.object,
 };
@@ -208,6 +208,7 @@ const mapStateToProps = createStructuredSelector({
   error: errorSelector,
   oauthURLFetching: oauthURLFetchingSelector,
   oauthURLError: oauthURLErrorSelector,
+  oauthURLSuccess: oauthURLSuccessSelector,
   moduleId: moduleIdSelector,
   galleryId: galleryIdSelector,
 });

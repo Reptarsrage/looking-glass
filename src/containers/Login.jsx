@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -26,7 +26,7 @@ import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
 import * as authActions from '../actions/authActions';
 
-const styles = theme => ({
+const styles = (theme) => ({
   main: {
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
@@ -69,127 +69,113 @@ const styles = theme => ({
   },
 });
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
+const Login = ({ login, fetching, error, success, classes, moduleId, galleryId }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-    this.state = {
-      username: '',
-      password: '',
-      rememberMe: false,
-      showPassword: false,
-    };
-  }
-
-  handleClickShowPassword = () => {
-    this.setState(prevState => ({ showPassword: !prevState.showPassword }));
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
   };
 
-  handleRememberMeChange = event => {
-    this.setState({ rememberMe: event.target.checked });
+  const handleRememberMeChange = (event) => {
+    setRememberMe(event.target.checked);
   };
 
-  handleUsernameChange = event => {
-    this.setState({ username: event.target.value });
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
 
-  handlePasswordChange = event => {
-    this.setState({ password: event.target.value });
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
   };
 
-  handleSubmit = event => {
-    const { login, moduleId } = this.props;
-    const { username, password } = this.state;
-
+  const handleSubmit = (event) => {
     login(moduleId, username, password);
     event.preventDefault();
   };
 
-  render() {
-    const { fetching, error, success, classes, moduleId, galleryId } = this.props;
-    const { username, password, rememberMe, showPassword } = this.state;
-
-    if (success) {
-      // Redirect to whatever gallery the user was on before
-      return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
-    }
-
-    return (
-      <main className={classes.main}>
-        <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          {error && <Typography align="center" color="error" />}
-          <form className={classes.form} onSubmit={this.handleSubmit}>
-            <FormControl margin="normal" required fullWidth disabled={fetching}>
-              <InputLabel htmlFor="username">Username</InputLabel>
-              <Input
-                id="username"
-                type="text"
-                name="username"
-                autoComplete="username"
-                autoFocus
-                value={username}
-                onChange={this.handleUsernameChange}
-              />
-            </FormControl>
-            <FormControl margin="normal" required fullWidth disabled={fetching} error={error !== null}>
-              <InputLabel htmlFor="password">Password</InputLabel>
-              <Input
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                autoComplete={showPassword ? 'off' : 'current-password'}
-                aria-describedby="component-error-text"
-                value={password}
-                onChange={this.handlePasswordChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton aria-label="Toggle password visibility" onClick={this.handleClickShowPassword}>
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              <FormHelperText id="component-error-text">
-                {error && 'An error occurred. Please check your username and password and try again.'}
-              </FormHelperText>
-            </FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value="remember"
-                  color="primary"
-                  checked={rememberMe}
-                  onChange={this.handleRememberMeChange}
-                  disabled={fetching}
-                />
-              }
-              label="Remember me"
-            />
-            <div className={classes.wrapper}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={fetching}
-              >
-                Sign in
-              </Button>
-              {fetching && <CircularProgress size={24} className={classes.progress} />}
-            </div>
-          </form>
-        </Paper>
-      </main>
-    );
+  if (success) {
+    // Redirect to whatever gallery the user was on before
+    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
   }
-}
+
+  return (
+    <main className={classes.main}>
+      <Paper className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        {error && <Typography align="center" color="error" />}
+        <form className={classes.form} onSubmit={handleSubmit}>
+          <FormControl margin="normal" required fullWidth disabled={fetching}>
+            <InputLabel htmlFor="username">Username</InputLabel>
+            <Input
+              id="username"
+              type="text"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              value={username}
+              onChange={handleUsernameChange}
+            />
+          </FormControl>
+          <FormControl margin="normal" required fullWidth disabled={fetching} error={error !== null}>
+            <InputLabel htmlFor="password">Password</InputLabel>
+            <Input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              autoComplete={showPassword ? 'off' : 'current-password'}
+              aria-describedby="component-error-text"
+              value={password}
+              onChange={handlePasswordChange}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton aria-label="Toggle password visibility" onClick={handleClickShowPassword}>
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            <FormHelperText id="component-error-text">
+              {error && 'An error occurred. Please check your username and password and try again.'}
+            </FormHelperText>
+          </FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                value="remember"
+                color="primary"
+                checked={rememberMe}
+                onChange={handleRememberMeChange}
+                disabled={fetching}
+              />
+            }
+            label="Remember me"
+          />
+          <div className={classes.wrapper}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              disabled={fetching}
+            >
+              Sign in
+            </Button>
+            {fetching && <CircularProgress size={24} className={classes.progress} />}
+          </div>
+        </form>
+      </Paper>
+    </main>
+  );
+};
 
 Login.defaultProps = {
   error: null,

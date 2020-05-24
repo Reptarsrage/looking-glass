@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -15,7 +15,6 @@ import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
 import * as path from 'path';
-import { animateScroll } from 'react-scroll';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
@@ -45,26 +44,15 @@ const styles = (theme) => ({
   },
 });
 
-class Home extends Component {
-  componentDidMount() {
-    const { fetching, success, fetchModules } = this.props;
-
-    // scroll to top
-    animateScroll.scrollToTop({
-      duration: 0,
-      delay: 0,
-      containerId: 'scroll-container',
-    });
-
+const Home = ({ classes, fetching, success, fetchModules, navigateToGallery, error, modules }) => {
+  useEffect(() => {
     // fetch modules
     if (!fetching && !success) {
       fetchModules();
     }
-  }
+  });
 
-  chooseFolder = () => {
-    const { navigateToGallery } = this.props;
-
+  const chooseFolder = () => {
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const galleryId = filePaths[0];
@@ -73,11 +61,9 @@ class Home extends Component {
     });
   };
 
-  renderModule = (moduleId) => <ModuleItem key={moduleId} moduleId={moduleId} />;
+  const renderModule = (moduleId) => <ModuleItem key={moduleId} moduleId={moduleId} />;
 
-  renderModules = () => {
-    const { fetching, error, modules } = this.props;
-
+  const renderModules = () => {
     if (fetching) {
       return <CircularProgress />;
     }
@@ -88,8 +74,8 @@ class Home extends Component {
 
     return (
       <List>
-        {modules.filter((id) => id !== FILE_SYSTEM_MODULE_ID).map(this.renderModule)}
-        <ListItem key="fs" button onClick={this.chooseFolder}>
+        {modules.filter((id) => id !== FILE_SYSTEM_MODULE_ID).map(renderModule)}
+        <ListItem key="fs" button onClick={chooseFolder}>
           <ListItemAvatar>
             <Avatar>
               <FolderIcon />
@@ -101,20 +87,16 @@ class Home extends Component {
     );
   };
 
-  render() {
-    const { classes } = this.props;
+  return (
+    <main className={classes.main}>
+      <Helmet>
+        <title>{productName}</title>
+      </Helmet>
 
-    return (
-      <main className={classes.main}>
-        <Helmet>
-          <title>{productName}</title>
-        </Helmet>
-
-        <Paper className={classes.paper}>{this.renderModules()}</Paper>
-      </main>
-    );
-  }
-}
+      <Paper className={classes.paper}>{renderModules()}</Paper>
+    </main>
+  );
+};
 
 Home.defaultProps = {
   error: null,

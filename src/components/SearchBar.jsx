@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { compose } from 'redux';
@@ -12,7 +12,7 @@ import { moduleIdSelector } from '../selectors/appSelectors';
 import { searchQuerySelector, searchGalleryIdSelector } from '../selectors/moduleSelectors';
 import * as moduleActions from '../actions/moduleActions';
 
-const styles = theme => ({
+const styles = (theme) => ({
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -54,38 +54,33 @@ const styles = theme => ({
   },
 });
 
-class SearchBar extends Component {
-  handleSearchChange = e => {
-    const { searchChange, moduleId, galleryId } = this.props;
+const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) => {
+  const handleSearchChange = (e) => {
     searchChange(moduleId, galleryId, e.target.value);
   };
 
-  render() {
-    const { classes, moduleId, galleryId, searchQuery } = this.props;
-
-    if (!moduleId || !galleryId) {
-      // TODO: render only when on default or search gallery
-      return null;
-    }
-
-    return (
-      <div className={classes.search}>
-        <div className={classes.searchIcon}>
-          <SearchIcon />
-        </div>
-        <InputBase
-          placeholder="Search…"
-          onChange={this.handleSearchChange}
-          value={searchQuery || ''}
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-        />
-      </div>
-    );
+  if (!moduleId || !galleryId) {
+    // TODO: render only when on default or search gallery
+    return null;
   }
-}
+
+  return (
+    <div className={classes.search}>
+      <div className={classes.searchIcon}>
+        <SearchIcon />
+      </div>
+      <InputBase
+        placeholder="Search…"
+        onChange={handleSearchChange}
+        value={searchQuery || ''}
+        classes={{
+          root: classes.inputRoot,
+          input: classes.inputInput,
+        }}
+      />
+    </div>
+  );
+};
 
 SearchBar.defaultProps = {
   moduleId: null,
