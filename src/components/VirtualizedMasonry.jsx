@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { useRef, memo, useState, useEffect, useMemo } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { animateScroll } from 'react-scroll';
@@ -15,118 +15,35 @@ const styles = () => ({
   },
 });
 
-class VirtualizedMasonry extends Component {
-  constructor(props) {
-    super(props);
+const VirtualizedMasonry = ({
+  columnCount,
+  items,
+  getHeightForItem,
+  width,
+  loadMoreThreshold,
+  loadMore,
+  getWidthForItem,
+  gutter,
+  classes,
+  overscan,
+}) => {
+  const calculateColumnItems = () => {
+    // Ensure each column has an entry
+    const colItems = [...Array(columnCount).keys()].map((id) => ({ height: 0, id, items: [] }));
 
-    // initialize state
-    this.state = {
-      columnItems: [],
-      scrollPosition: 0,
-      scrollTop: 0,
-      totalItems: 0,
-    };
-
-    // create ref
-    this.containerRef = createRef();
-
-    // update positions
-    const { columnCount, items, getHeightForItem } = props;
-    const updatedState = this.calculateColumnItems({ columnCount, items, getHeightForItem });
-    if (updatedState) {
-      this.state = { ...this.state, ...updatedState };
+    // Fill in column items
+    // Make sure to try and balance column heights in a deterministic way
+    for (let i = 0; i < items.length; i += 1) {
+      const itemId = items[i];
+      const minHeightColumn = colItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
+      minHeightColumn.items.push(itemId);
+      minHeightColumn.height += getHeightForItem(itemId);
     }
-  }
 
-  componentDidMount = () => {
-    // add event listeners (after done scrolling)
-    window.addEventListener('containerScroll', this.handleScroll);
+    return colItems;
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const { columnCount, loadMoreThreshold, overscan, gutter, width } = this.props;
-    const { scrollPosition, scrollTop, totalItems } = this.state;
-
-    return (
-      nextState.scrollPosition !== scrollPosition ||
-      nextState.scrollTop !== scrollTop ||
-      nextState.totalItems !== totalItems ||
-      nextProps.columnCount !== columnCount ||
-      nextProps.loadMoreThreshold !== loadMoreThreshold ||
-      nextProps.overscan !== overscan ||
-      nextProps.gutter !== gutter ||
-      nextProps.width !== width
-    );
-  }
-
-  componentDidUpdate(prevProps) {
-    const { columnCount, items, getHeightForItem, width } = this.props;
-    const { scrollPosition } = this.state;
-
-    // maintain relative scroll pos when resizing
-    if (prevProps.width !== width) {
-      const { current } = this.containerRef;
-      if (current) {
-        const rect = current.getBoundingClientRect();
-        if (rect) {
-          const whRatio = rect.height / rect.width;
-          const dHeight = (width * whRatio) / (prevProps.width * whRatio);
-          animateScroll.scrollTo(scrollPosition * dHeight, {
-            duration: 0,
-            delay: 0,
-            containerId: 'scroll-container',
-          });
-        }
-      }
-    }
-
-    // update positions
-    const updatedState = this.calculateColumnItems({ columnCount, items, getHeightForItem });
-    if (updatedState) {
-      this.setState({ ...updatedState });
-    }
-  }
-
-  componentWillUnmount = () => {
-    // remove event listeners
-    window.removeEventListener('containerScroll', this.handleScroll);
-  };
-
-  calculateColumnItems({ columnCount, items, getHeightForItem }) {
-    let { columnItems, totalItems } = this.state;
-    let requiresUpdate = false;
-
-    // ensure each column has an entry
-    if (columnItems.length !== columnCount) {
-      columnItems = [...Array(columnCount).keys()].map((id) => ({ height: 0, id, items: [] }));
-      requiresUpdate = true;
-      totalItems = 0;
-    }
-
-    // fill in column items with the missing indices
-    if (totalItems !== items.length) {
-      columnItems = columnItems.map((c) => ({ ...c, items: [...c.items] })); // deep copy
-      for (let i = totalItems; i < items.length; i += 1) {
-        const itemId = items[i];
-        const minHeightColumn = columnItems.reduce((prev, curr) => (prev.height < curr.height ? prev : curr));
-        minHeightColumn.items.push(itemId);
-        minHeightColumn.height += getHeightForItem(itemId);
-      }
-
-      totalItems = items.length;
-      requiresUpdate = true;
-    }
-
-    if (requiresUpdate) {
-      return { columnItems, totalItems };
-    }
-
-    return null;
-  }
-
-  getAdjustedDimensionsForItem = (itemId) => {
-    const { columnCount, gutter, width, getHeightForItem, getWidthForItem } = this.props;
-
+  const getAdjustedDimensionsForItem = (itemId) => {
     const columnWidth = width / columnCount - gutter;
     const itemHeight = getHeightForItem(itemId);
     const itemWidth = getWidthForItem(itemId);
@@ -137,9 +54,8 @@ class VirtualizedMasonry extends Component {
     return { height: calculatedHeight, width: calculatedWidth, left: calculatedLeft };
   };
 
-  handleScroll = (event) => {
-    const { loadMoreThreshold, loadMore } = this.props;
-    const { current } = this.containerRef;
+  const handleScroll = (event) => {
+    const { current } = containerRef;
     const scrollY = event.detail;
 
     if (current) {
@@ -149,7 +65,7 @@ class VirtualizedMasonry extends Component {
         // use them to set our current scroll position
         const scrollPosition = scrollY;
         const scrollTop = scrollY + rect.top;
-        this.setState({ scrollPosition, scrollTop });
+        setScrollPosition({ scrollPosition, scrollTop });
 
         // load more if over threshold
         if (Math.abs(scrollTop + rect.height - scrollPosition - window.innerHeight) <= loadMoreThreshold) {
@@ -159,11 +75,41 @@ class VirtualizedMasonry extends Component {
     }
   };
 
-  renderColumn = (columnItem) => {
-    const { columnCount, overscan, width } = this.props;
-    const { scrollPosition, scrollTop } = this.state;
+  const containerRef = useRef(null);
+  const [{ scrollTop, scrollPosition }, setScrollPosition] = useState({ scrollTop: 0, scrollPosition: 0 });
+  const [prevWidth, setPrevWidth] = useState(width);
+  const columnItems = useMemo(calculateColumnItems, [columnCount, items.length]);
+
+  useEffect(() => {
+    window.addEventListener('containerScroll', handleScroll);
+
+    // maintain relative scroll pos when resizing
+    if (prevWidth !== width) {
+      const { current } = containerRef;
+      if (current) {
+        const rect = current.getBoundingClientRect();
+        if (rect) {
+          const whRatio = rect.height / rect.width;
+          const dHeight = (width * whRatio) / (prevWidth * whRatio);
+          animateScroll.scrollTo(scrollPosition * dHeight, {
+            duration: 0,
+            delay: 0,
+            containerId: 'scroll-container',
+          });
+        }
+      }
+
+      setPrevWidth(width);
+    }
+
+    return () => {
+      window.removeEventListener('containerScroll', handleScroll);
+    };
+  });
+
+  const renderColumn = (columnItem) => {
     const { innerHeight } = window;
-    const { id, items } = columnItem;
+    const { id, items: colItems } = columnItem;
 
     // Don't start rendering columns until width is established
     if (width <= 0) {
@@ -173,9 +119,9 @@ class VirtualizedMasonry extends Component {
     return (
       <Virtualized
         key={id}
-        getDimensionsForItem={this.getAdjustedDimensionsForItem}
-        items={items}
-        length={items.length}
+        getDimensionsForItem={getAdjustedDimensionsForItem}
+        items={colItems}
+        length={colItems.length}
         innerHeight={innerHeight}
         overscan={overscan}
         scrollPosition={scrollPosition}
@@ -185,17 +131,12 @@ class VirtualizedMasonry extends Component {
     );
   };
 
-  render() {
-    const { classes } = this.props;
-    const { columnItems } = this.state;
-
-    return (
-      <div ref={this.containerRef} className={classes.columnContainer}>
-        {columnItems.map(this.renderColumn)}
-      </div>
-    );
-  }
-}
+  return (
+    <div ref={containerRef} className={classes.columnContainer}>
+      {columnItems.map(renderColumn)}
+    </div>
+  );
+};
 
 VirtualizedMasonry.defaultProps = {
   columnCount: 1,
@@ -223,4 +164,11 @@ VirtualizedMasonry.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(VirtualizedMasonry);
+const propsAreEqual = (prevProps, nextProps) =>
+  nextProps.columnCount === prevProps.columnCount &&
+  nextProps.loadMoreThreshold === prevProps.loadMoreThreshold &&
+  nextProps.overscan === prevProps.overscan &&
+  nextProps.gutter === prevProps.gutter &&
+  nextProps.width === prevProps.width;
+
+export default withStyles(styles)(memo(VirtualizedMasonry, propsAreEqual));
