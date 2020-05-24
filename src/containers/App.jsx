@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -88,22 +88,16 @@ const styles = (theme) => ({
   },
 });
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = ({ moduleId, children, darkTheme: useDarkTheme, classes, toggleDarkTheme, fullScreenIn }) => {
+  const dispatch = (detail) => window.dispatchEvent(new CustomEvent('containerScroll', { detail }));
+  const scrollCallback = _.throttle(dispatch, 200);
 
-    const dispatch = (detail) => window.dispatchEvent(new CustomEvent('containerScroll', { detail }));
-    this.scrollCallback = _.throttle(dispatch, 200);
-  }
-
-  handleScroll = (event) => {
+  const handleScroll = (event) => {
     const { scrollTop = 0 } = event.target || {};
-    this.scrollCallback(scrollTop);
+    scrollCallback(scrollTop);
   };
 
-  renderBackButton = () => {
-    const { moduleId } = this.props;
-
+  const renderBackButton = () => {
     if (!moduleId) {
       return null;
     }
@@ -111,44 +105,40 @@ class App extends Component {
     return <BackButton color="inherit" isFab={false} />;
   };
 
-  render() {
-    const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme, moduleId, fullScreenIn } = this.props;
-
-    return (
-      <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
-        <CssBaseline />
-        <AppBar
-          position="static"
-          color="default"
-          className={classes.appBar}
-          style={{ opacity: fullScreenIn ? '0' : '1' }}
-        >
-          <Toolbar>
-            {this.renderBackButton()}
-            <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-              Looking Glass
-            </Typography>
-            <SearchBar moduleId={moduleId} />
-            <div className={classes.grow} />
-            <div>
-              <IconButton color="inherit" onClick={toggleDarkTheme}>
-                {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
-              </IconButton>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Container
-          maxWidth={false}
-          id="scroll-container"
-          className={clsx(classes.grow, classes.scroll)}
-          onScroll={this.handleScroll}
-        >
-          {children}
-        </Container>
-      </MuiThemeProvider>
-    );
-  }
-}
+  return (
+    <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+      <CssBaseline />
+      <AppBar
+        position="static"
+        color="default"
+        className={classes.appBar}
+        style={{ opacity: fullScreenIn ? '0' : '1' }}
+      >
+        <Toolbar>
+          {renderBackButton()}
+          <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+            Looking Glass
+          </Typography>
+          <SearchBar moduleId={moduleId} />
+          <div className={classes.grow} />
+          <div>
+            <IconButton color="inherit" onClick={toggleDarkTheme}>
+              {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
+            </IconButton>
+          </div>
+        </Toolbar>
+      </AppBar>
+      <Container
+        maxWidth={false}
+        id="scroll-container"
+        className={clsx(classes.grow, classes.scroll)}
+        onScroll={handleScroll}
+      >
+        {children}
+      </Container>
+    </MuiThemeProvider>
+  );
+};
 
 App.defaultProps = {
   moduleId: null,
