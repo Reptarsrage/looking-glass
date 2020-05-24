@@ -20,6 +20,7 @@ import { darkThemeSelector, moduleIdSelector, fullScreenInSelector } from '../se
 import * as appActions from '../actions/appActions';
 import SearchBar from '../components/SearchBar';
 import BackButton from '../components/BackButton';
+import Progress from '../components/Progress';
 
 // https://material-ui.com/customization/palette/
 const darkTheme = createMuiTheme({
@@ -108,6 +109,7 @@ const App = ({ moduleId, children, darkTheme: useDarkTheme, classes, toggleDarkT
   return (
     <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
       <CssBaseline />
+      <Progress />
       <AppBar
         position="static"
         color="default"

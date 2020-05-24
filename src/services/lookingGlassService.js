@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { stringify } from 'qs';
 
 import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/constants';
+import { create } from './axiosInstance';
 
 export default class FileSystemService {
   config;
@@ -14,7 +14,7 @@ export default class FileSystemService {
 
     const baseURL = `http://${host}:${port}`;
     this.config = {};
-    this.instance = axios.create({
+    this.instance = create({
       baseURL,
     });
   }
