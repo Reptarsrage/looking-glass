@@ -55,7 +55,7 @@ const createWindow = async () => {
   if (isDev) {
     mainWindow.loadURL('http://localhost:4000');
   } else {
-    mainWindow.loadFile(path.resolve('./resources', 'dist', 'index.html'));
+    mainWindow.loadFile(path.resolve('./dist', 'index.html'));
   }
 
   // Emitted when the window is closed.

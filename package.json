@@ -31,7 +31,7 @@
     "build-main": "webpack -p --config ./webpack.main.config.js",
     "build-renderer": "webpack -p --config ./webpack.renderer.config.js",
     "build": "cross-env NODE_ENV=production concurrently \"yarn build-main\" \"yarn build-renderer\"",
-    "start": "electron .",
+    "start": "cross-env ELECTRON_IS_DEV=0 NODE_ENV=production electron .",
     "start-dev": "wait-on http://localhost:4000 && electron .",
     "dev-server": "webpack-dev-server --config ./webpack.renderer.config.js",
     "dev": "cross-env NODE_ENV=development concurrently -k \"yarn dev-server\" \"yarn start-dev\"",
