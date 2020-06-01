@@ -10,10 +10,11 @@ import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import TuneIcon from '@material-ui/icons/Tune';
 import Drawer from '@material-ui/core/Drawer';
-
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
+import { forceRenderItemsSelector } from '../selectors/modalSelectors';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
 import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
@@ -24,7 +25,7 @@ import Masonry from '../components/Masonry';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import FilterList from '../components/FilterList';
 import SelectedFilters from '../components/SelectedFilters';
-import FullScreenItemControls from '../components/FullScreenItemControls';
+import Modal from '../components/Modal';
 
 const styles = (theme) => ({
   floatedBottomRight: {
@@ -51,6 +52,9 @@ const styles = (theme) => ({
     marginRight: theme.spacing(1),
     color: theme.palette.text.secondary,
   },
+  masonryContainer: {
+    flex: '1 1 auto',
+  },
 });
 
 const Gallery = ({
@@ -67,6 +71,7 @@ const Gallery = ({
   fetchGallery,
   itemWidthSelectorFunc,
   itemHeightSelectorFunc,
+  forceRenderItems,
 }) => {
   const [showOverlayButtons, setShowOverlayButtons] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -98,11 +103,16 @@ const Gallery = ({
   };
 
   const handleScroll = (event) => {
-    const scrollY = event.detail;
-    if (scrollY >= overlayButtonThreshold && !showOverlayButtons) {
+    const { clientHeight, scrollTop, scrollHeight } = event.currentTarget;
+
+    if (scrollTop >= overlayButtonThreshold && !showOverlayButtons) {
       setShowOverlayButtons(true);
-    } else if (scrollY < overlayButtonThreshold && showOverlayButtons) {
+    } else if (scrollTop < overlayButtonThreshold && showOverlayButtons) {
       setShowOverlayButtons(false);
+    }
+
+    if (scrollHeight - scrollTop - clientHeight < clientHeight) {
+      loadMoreItems();
     }
   };
 
@@ -148,7 +158,7 @@ const Gallery = ({
   }
 
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
-  const { fetching, error, title } = gallery;
+  const { title } = gallery;
   return (
     <>
       <Helmet>
@@ -173,15 +183,17 @@ const Gallery = ({
 
       <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
 
-      <FullScreenItemControls />
+      <Modal />
 
       <Masonry
         items={items}
-        getItemHeight={getItemHeight}
-        getItemWidth={getItemWidth}
-        loading={fetching}
-        error={error !== null}
-        loadMore={loadMoreItems}
+        length={items.length}
+        columnCount={3}
+        getItemDimensions={(id) => ({ width: getItemWidth(id), height: getItemHeight(id) })}
+        initialScrollTop={0}
+        gutter={8}
+        onScroll={debounce(handleScroll, 200)}
+        forceRenderItems={forceRenderItems}
       />
     </>
   );
@@ -214,6 +226,7 @@ Gallery.propTypes = {
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
 
   // withStyles
   classes: PropTypes.object.isRequired,
@@ -231,6 +244,7 @@ const mapStateToProps = createStructuredSelector({
   isAuthenticated: isAuthenticatedSelector,
   itemHeightSelectorFunc: (state) => (itemId) => itemHeightSelector(state, { itemId }),
   itemWidthSelectorFunc: (state) => (itemId) => itemWidthSelector(state, { itemId }),
+  forceRenderItems: forceRenderItemsSelector,
 });
 
 const mapDispatchToProps = {

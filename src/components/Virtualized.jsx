@@ -1,93 +1,151 @@
-import React, { memo, useMemo } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import React, { memo, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import VirtualizedItem from './VirtualizedItem';
+import Item from './Item';
 
-const styles = () => ({
-  container: {
-    flex: '1 1 auto',
-    position: 'relative',
-  },
-});
+function findNearestItem(end, start, scrollTop, itemPositions, items) {
+  let low = start;
+  let high = end;
+
+  while (low <= high) {
+    const middle = low + Math.floor((high - low) / 2);
+    const itemTop = itemPositions[items[middle]].top;
+
+    if (itemTop === scrollTop) {
+      return middle;
+    }
+
+    if (itemTop < scrollTop) {
+      low = middle + 1;
+    } else if (itemTop > scrollTop) {
+      high = middle - 1;
+    }
+  }
+
+  if (low > 0) {
+    return low - 1;
+  }
+  return 0;
+}
+
+function computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem) {
+  if (width !== saved.width) {
+    saved.lastComputed = 0;
+    saved.computedById = {};
+    saved.width = width;
+  }
+
+  const bottom = scrollTop + height;
+  let top = gutter;
+  if (saved.lastComputed !== 0) {
+    const lastComputedItem = saved.computedById[items[saved.lastComputed - 1]];
+    top += lastComputedItem.top + lastComputedItem.height;
+  }
+
+  for (; saved.lastComputed < items.length && top <= bottom; saved.lastComputed += 1) {
+    const id = items[saved.lastComputed];
+    const dims = getAdjustedDimensionsForItem(id);
+    saved.computedById[id] = { ...dims, top, left: dims.left + left, id };
+    top += dims.height + gutter;
+  }
+}
+
+function computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem) {
+  let top = gutter;
+  if (saved.lastComputed !== 0) {
+    const lastComputedItem = saved.computedById[items[saved.lastComputed - 1]];
+    top += lastComputedItem.top + lastComputedItem.height;
+  }
+
+  for (; saved.lastComputed <= toPosition; saved.lastComputed += 1) {
+    const id = items[saved.lastComputed];
+    const dims = getAdjustedDimensionsForItem(id);
+    saved.computedById[id] = { ...dims, top, left: dims.left + left, id };
+    top += dims.height + gutter;
+  }
+}
 
 const Virtualized = ({
-  classes,
+  width,
+  height,
+  left,
+  getAdjustedDimensionsForItem,
   items,
-  innerHeight,
-  overscan,
-  scrollPosition,
   scrollTop,
   gutter,
-  width,
-  length,
-  getDimensionsForItem,
+  scrollDirection,
+  forceRenderItems,
 }) => {
-  const computeDimensions = () => {
-    const lookup = {};
-    let total = 0;
-    items.forEach((id) => {
-      const dims = getDimensionsForItem(id);
-      lookup[id] = { ...dims, top: total };
-      total += dims.height + gutter;
-    });
+  const saved = useRef({ computedById: {}, lastComputed: 0, width }).current;
+  computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem);
 
-    return [lookup, total];
-  };
+  const start = findNearestItem(saved.lastComputed - 1, 0, scrollTop, saved.computedById, items);
+  const end = findNearestItem(saved.lastComputed - 1, start, scrollTop + height, saved.computedById, items);
+  const more = forceRenderItems.filter(([, idx]) => idx < start || idx > end);
 
-  const [itemDimensions, totalHeight] = useMemo(computeDimensions, [width, length]);
-  return (
-    <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
-      {items.map((itemId) => (
-        <VirtualizedItem
-          key={itemId}
-          itemId={itemId}
-          innerHeight={innerHeight}
-          overscan={overscan}
-          scrollPosition={scrollPosition}
-          scrollTop={scrollTop}
-          width={itemDimensions[itemId].width}
-          top={itemDimensions[itemId].top}
-          height={itemDimensions[itemId].height}
-          left={itemDimensions[itemId].left}
-        />
-      ))}
-    </div>
-  );
-};
+  if (more.some(([id]) => !(id in saved.computedById))) {
+    const toPosition = Math.max(...more.map(([, idx]) => idx));
+    computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem);
+  }
 
-Virtualized.defaultProps = {
-  gutter: 8,
-  innerHeight: 0,
-  overscan: 0,
-  scrollPosition: 0,
-  scrollTop: 0,
-  width: 0,
+  return items
+    .slice(start, end + 1)
+    .concat(more.map(([id]) => id))
+    .map((id) => saved.computedById[id])
+    .map((item) => (
+      <Item
+        key={item.id}
+        itemId={item.id}
+        scrollDirection={scrollDirection}
+        style={{
+          position: 'absolute',
+          width: `${item.width}px`,
+          top: `${item.top}px`,
+          height: `${item.height}px`,
+          left: `${item.left}px`,
+        }}
+      />
+    ));
 };
 
 Virtualized.propTypes = {
-  // required
-  getDimensionsForItem: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  length: PropTypes.number.isRequired,
-
-  // optional
-  innerHeight: PropTypes.number,
-  overscan: PropTypes.number,
-  scrollPosition: PropTypes.number,
-  scrollTop: PropTypes.number,
-  width: PropTypes.number,
-  gutter: PropTypes.number,
-
-  // from withStyles
-  classes: PropTypes.object.isRequired,
+  left: PropTypes.number.isRequired,
+  getAdjustedDimensionsForItem: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  scrollTop: PropTypes.number.isRequired,
+  gutter: PropTypes.number.isRequired,
+  scrollDirection: PropTypes.number.isRequired,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])))
+    .isRequired,
 };
 
-const propsAreEqual = (prevProps, nextProps) =>
-  nextProps.scrollPosition === prevProps.scrollPosition &&
-  nextProps.scrollTop === prevProps.scrollTop &&
-  nextProps.length === prevProps.length &&
-  nextProps.overscan === prevProps.overscan &&
-  nextProps.width === prevProps.width;
+function forceRenderItemsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
 
-export default withStyles(styles)(memo(Virtualized, propsAreEqual));
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i][1] !== b[i][1]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function areEqual(nextProps, prevProps) {
+  return (
+    nextProps.length === prevProps.length &&
+    nextProps.scrollTop === prevProps.scrollTop &&
+    nextProps.width === prevProps.width &&
+    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
+    nextProps.gutter === prevProps.gutter &&
+    nextProps.columnNumber === prevProps.columnNumber &&
+    nextProps.left === prevProps.left &&
+    nextProps.height === prevProps.height
+  );
+}
+
+export default memo(Virtualized, areEqual);

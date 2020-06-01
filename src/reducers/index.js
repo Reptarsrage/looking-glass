@@ -10,6 +10,7 @@ import sortReducer from './sortReducer';
 import breadcrumbReducer from './breadcrumbReducer';
 import filterSectionReducer from './filterSectionReducer';
 import filterReducer from './filterReducer';
+import modalReducer from './modalReducer';
 
 const rootReducer = (history, asyncReducers) =>
   combineReducers({
@@ -23,6 +24,7 @@ const rootReducer = (history, asyncReducers) =>
     breadcrumb: breadcrumbReducer,
     filterSection: filterSectionReducer,
     filter: filterReducer,
+    modal: modalReducer,
     ...asyncReducers,
   });
 

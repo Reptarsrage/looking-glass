@@ -1,53 +1,51 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { motion } from 'framer-motion';
+import clsx from 'clsx';
 
 const styles = () => ({
   image: {
-    width: 'auto',
-    height: '100%',
     maxWidth: '100%',
-    maxHeight: 'inherit',
-    position: 'relative',
-    objectFit: 'contain',
-  },
-  thumb: {
-    filter: 'blur(8px)',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    width: '100%',
-    height: '100%',
-    top: 0,
-    left: 0,
-    position: 'absolute',
+    maxHeight: '100%',
+    width: 'auto',
+    height: 'auto',
   },
 });
 
-const Image = ({ classes, src, thumb, width, height, title, ...other }) => (
-  <>
-    <div className={classes.thumb} style={{ backgroundImage: thumb ? `url("${thumb}") ` : undefined }} />
-    <img
-      className={classes.image}
+const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
+  const imageRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      imageRef.current.removeAttribute('src');
+    };
+  }, []);
+
+  return (
+    <motion.img
+      ref={imageRef}
+      className={clsx(classes.image, styleName)}
       src={src}
       alt={title}
-      width={`${width}px`}
-      height={`${height}px`}
+      width={width}
+      height={height}
       title={title}
       {...other}
     />
-  </>
-);
+  );
+};
 
 Image.defaultProps = {
   title: '',
-  thumb: null,
+  styleName: null,
 };
 
 Image.propTypes = {
   classes: PropTypes.object.isRequired,
   src: PropTypes.string.isRequired,
-  thumb: PropTypes.string,
   title: PropTypes.string,
+  styleName: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };

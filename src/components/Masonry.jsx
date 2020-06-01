@@ -1,74 +1,149 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, memo, useRef } from 'react';
 import PropTypes from 'prop-types';
-import ReactResizeDetector from 'react-resize-detector';
+import memoizeOne from 'memoize-one';
 
-import ErrorToast from './ErrorToast';
-import LoadingIndicator from './LoadingIndicator';
-import NoResults from './NoResults';
-import VirtualizedMasonry from './VirtualizedMasonry';
+import Virtualized from './Virtualized';
+import withScroll from '../hocs/WithScroll';
+import withResize from '../hocs/WithResize';
 
-const Masonry = ({ error, columnCount, items, loading, gutter, getItemHeight, getItemWidth, loadMore }) => {
-  const [message, setMessage] = useState(null);
-  const [open, setOpen] = useState(false);
+// memo?
+const calculateColumnWidth = memoizeOne((columnCount, width, gutter) => {
+  const sbSize = 10; // hard-coded in css
+  return (width - sbSize - (columnCount + 1) * gutter) / columnCount;
+});
 
-  useEffect(() => {
-    if (error && !message) {
-      setMessage('Error communicating with server');
-      setOpen(true);
+const getAdjustedItemDimensionsEqual = (next, prev) => {
+  const [id, columnCount, width, gutter] = next;
+  const [pid, pColumnCount, pWidth, pGutter] = prev;
+
+  return id === pid && columnCount === pColumnCount && width === pWidth && gutter === pGutter;
+};
+
+const getAdjustedItemDimensions = (id, columnCount, width, gutter, getItemDimensions) => {
+  const columnWidth = calculateColumnWidth(columnCount, width, gutter);
+  const { width: itemWidth, height: itemHeight } = getItemDimensions(id);
+  const calculatedWidth = Math.min(itemWidth, columnWidth);
+  const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth;
+  const calculatedLeft = (columnWidth - calculatedWidth) / 2.0;
+  return { height: calculatedHeight, width: calculatedWidth, left: calculatedLeft, id };
+};
+
+const Masonry = ({
+  items,
+  columnCount,
+  getItemDimensions,
+  width,
+  height,
+  scrollTop,
+  gutter,
+  scrollDirection,
+  forceRenderItems,
+}) => {
+  const savedColumnItems = useRef([]).current;
+  const { current: getAdjustedItemDimensionsMemo } = useRef(
+    memoizeOne(getAdjustedItemDimensions, getAdjustedItemDimensionsEqual)
+  );
+  const [columnItems, totalHeight] = useMemo(() => {
+    // Ensure each column has an entry
+    if (savedColumnItems.length > columnCount) {
+      while (savedColumnItems.length > 0) {
+        savedColumnItems.pop();
+      }
     }
-  });
 
-  const handleToastClosed = () => {
-    setOpen(false);
-  };
+    while (savedColumnItems.length < columnCount) {
+      savedColumnItems.push({ height: 0, id: savedColumnItems.length, items: [] });
+    }
 
-  if (items.length === 0 && loading) {
-    return <LoadingIndicator />;
-  }
+    const totalLength = savedColumnItems.reduce((acc, cur) => acc + cur.items.length, 0);
+    if (totalLength !== items.length) {
+      // Fill in column items
+      // Make sure to try and balance column heights in a deterministic way
+      for (let i = totalLength; i < items.length; i += 1) {
+        const itemId = items[i];
+        const dims = getAdjustedItemDimensionsMemo(itemId, columnCount, width, gutter, getItemDimensions); // prefer accuracy over cost
+        const minHeightColumn = savedColumnItems.reduce((prev, curr) => (prev.height <= curr.height ? prev : curr));
+        minHeightColumn.items.push(itemId);
+        minHeightColumn.height += dims.height;
+      }
+    }
+
+    // Calculate actual height for max column
+    const maxHeightColumn = savedColumnItems.reduce((a, b) => (a.height > b.height ? a : b));
+    const calculatedTotalHeight = maxHeightColumn.items.reduce((acc, cur) => {
+      const { height: adjHeight } = getAdjustedItemDimensionsMemo(cur, columnCount, width, gutter, getItemDimensions);
+      return acc + adjHeight;
+    }, 0);
+    return [savedColumnItems, calculatedTotalHeight];
+  }, [columnCount, items.length, width, gutter]);
 
   return (
-    <>
-      <ErrorToast message={message} onClose={handleToastClosed} open={open} />
-      {items.length === 0 ? (
-        <NoResults />
-      ) : (
-        <ReactResizeDetector handleWidth refreshMode="debounce" refreshRate={200}>
-          {({ width }) => (
-            <VirtualizedMasonry
-              items={items}
-              getHeightForItem={getItemHeight}
-              getWidthForItem={getItemWidth}
-              loadMore={loadMore}
-              columnCount={columnCount}
-              loadMoreThreshold={5000}
-              overscan={500}
-              gutter={gutter}
-              width={width}
-            />
-          )}
-        </ReactResizeDetector>
-      )}
-    </>
+    <div style={{ width: '100%', height: `${totalHeight}px` }}>
+      {columnItems.map((col, index) => {
+        const columnWidth = calculateColumnWidth(columnCount, width, gutter);
+        const forceRenderColumnItems = forceRenderItems
+          .map((id) => [id, col.items.indexOf(id)])
+          .filter((a) => a[1] >= 0);
+
+        return (
+          <Virtualized
+            key={col.id}
+            width={columnWidth}
+            height={height}
+            left={columnWidth * index + gutter * (index + 1)}
+            getAdjustedDimensionsForItem={(id) =>
+              getAdjustedItemDimensionsMemo(id, columnCount, width, gutter, getItemDimensions)
+            }
+            items={col.items}
+            scrollTop={scrollTop}
+            scrollDirection={scrollDirection}
+            gutter={gutter}
+            columnNumber={index}
+            length={col.items.length}
+            forceRenderItems={forceRenderColumnItems}
+          />
+        );
+      })}
+    </div>
   );
 };
 
-Masonry.defaultProps = {
-  columnCount: 3,
-  gutter: 8,
-};
-
 Masonry.propTypes = {
-  // required
-  error: PropTypes.bool.isRequired,
-  getItemHeight: PropTypes.func.isRequired,
-  getItemWidth: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  loading: PropTypes.bool.isRequired,
-  loadMore: PropTypes.func.isRequired,
-
-  // optional
-  columnCount: PropTypes.number,
-  gutter: PropTypes.number,
+  columnCount: PropTypes.number.isRequired,
+  getItemDimensions: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  scrollTop: PropTypes.number.isRequired,
+  gutter: PropTypes.number.isRequired,
+  scrollDirection: PropTypes.number.isRequired,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default Masonry;
+function forceRenderItemsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function areEqual(nextProps, prevProps) {
+  return (
+    nextProps.width === prevProps.width &&
+    nextProps.height === prevProps.height &&
+    nextProps.scrollTop === prevProps.scrollTop &&
+    nextProps.length === prevProps.length &&
+    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
+    nextProps.columnCount === prevProps.columnCount &&
+    nextProps.gutter === prevProps.gutter
+  );
+}
+
+export default withResize(withScroll(memo(Masonry, areEqual)));

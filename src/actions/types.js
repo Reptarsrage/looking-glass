@@ -11,15 +11,9 @@ const actionTyper = (prefix = '', separator = '/') => {
 
 export const { LOCATION_CHANGE } = actionTyper('@@router');
 
-export const {
-  TOGGLE_DARK_THEME,
-  UPDATE_SEARCH,
-  SET_CURRENT_GALLERY,
-  FULL_SCREEN_TRANSITION_IN,
-  FULL_SCREEN_TRANSITION_OUT,
-  FULL_SCREEN_TRANSITION_OVER,
-  FULL_SCREEN_ITEM_CHANGE,
-} = actionTyper('app');
+export const { TOGGLE_DARK_THEME, UPDATE_SEARCH, SET_CURRENT_GALLERY } = actionTyper('app');
+
+export const { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } = actionTyper('modal');
 
 export const {
   ADD_GALLERY,

@@ -10,8 +10,4 @@ const galleryIdSelector = createSelector(appState, (state) => state.currentGalle
 
 const darkThemeSelector = createSelector(appState, (state) => state.darkTheme);
 
-const fullScreenItemIdSelector = createSelector(appState, (state) => state.fullScreenItem);
-
-const fullScreenInSelector = createSelector(appState, (state) => state.fullScreenIn);
-
-export { moduleIdSelector, galleryIdSelector, darkThemeSelector, fullScreenItemIdSelector, fullScreenInSelector };
+export { moduleIdSelector, galleryIdSelector, darkThemeSelector };

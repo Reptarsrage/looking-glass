@@ -1,59 +1,18 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialItemState } from '../reducers/itemReducer';
-import { fullScreenItemIdSelector } from './appSelectors';
 
 const getItemId = (_, props) => props.itemId;
 
-const itemsStateSelector = (state) => state.item || initialState;
+export const itemsStateSelector = (state) => state.item || initialState;
 
-const itemsSelector = createSelector(itemsStateSelector, (state) => state.allIds);
+export const itemsSelector = createSelector(itemsStateSelector, (state) => state.allIds);
 
-const itemByIdSelector = createSelector(
+export const itemByIdSelector = createSelector(
   [itemsStateSelector, getItemId],
   (state, itemId) => state.byId[itemId] || initialItemState
 );
 
-const itemWidthSelector = createSelector(itemByIdSelector, (item) => item.width);
+export const itemWidthSelector = createSelector(itemByIdSelector, (item) => item.width);
 
-const itemHeightSelector = createSelector(itemByIdSelector, (item) => item.height);
-
-const fullScreenItemSelector = createSelector([itemsStateSelector, fullScreenItemIdSelector], (state, itemId) =>
-  itemId ? state.byId[itemId] : null
-);
-
-const prevItemSelector = createSelector([itemsStateSelector, fullScreenItemIdSelector], (state, itemId) => {
-  if (!itemId) {
-    return null;
-  }
-
-  const idx = state.allIds.indexOf(itemId);
-  if (idx <= 0) {
-    return false;
-  }
-
-  return state.allIds[idx - 1];
-});
-
-const nextItemSelector = createSelector([itemsStateSelector, fullScreenItemIdSelector], (state, itemId) => {
-  if (!itemId) {
-    return null;
-  }
-
-  const idx = state.allIds.indexOf(itemId);
-  if (idx >= state.allIds.length - 1) {
-    return false;
-  }
-
-  return state.allIds[idx + 1];
-});
-
-export {
-  itemsSelector,
-  itemByIdSelector,
-  itemWidthSelector,
-  itemHeightSelector,
-  fullScreenItemSelector,
-  prevItemSelector,
-  nextItemSelector,
-};
+export const itemHeightSelector = createSelector(itemByIdSelector, (item) => item.height);
