@@ -10,21 +10,17 @@ import Login from './containers/Login';
 import OAuth from './containers/OAuth';
 import About from './containers/About';
 import NotFound from './containers/NotFound';
-import WithTransition from './hocs/WithTransition';
 import WithRouteParameters from './hocs/WithRouteParameters';
 
 const Routes = () => (
   <App>
     <Switch>
-      <Route exact path="/" component={WithTransition(WithErrors(Home))} />
-      <Route path="/login/:moduleId" component={WithTransition(WithRouteParameters(WithErrors(Login)))} />
-      <Route path="/oauth/:moduleId" component={WithTransition(WithRouteParameters(WithErrors(OAuth)))} />
-      <Route
-        path="/gallery/:moduleId/:galleryId"
-        component={WithTransition(WithRouteParameters(WithErrors(Gallery)))}
-      />
-      <Route path="/about" component={WithTransition(WithErrors(About))} />
-      <Route path="*" component={WithTransition(WithErrors(NotFound))} />
+      <Route exact path="/" component={WithErrors(Home)} />
+      <Route path="/login/:moduleId" component={WithRouteParameters(WithErrors(Login))} />
+      <Route path="/oauth/:moduleId" component={WithRouteParameters(WithErrors(OAuth))} />
+      <Route path="/gallery/:moduleId/:galleryId" component={WithRouteParameters(WithErrors(Gallery))} />
+      <Route path="/about" component={WithErrors(About)} />
+      <Route path="*" component={WithErrors(NotFound)} />
     </Switch>
   </App>
 );
