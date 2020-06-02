@@ -48,6 +48,7 @@ const createWindow = async () => {
     height: bounds.height,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
   });
 
