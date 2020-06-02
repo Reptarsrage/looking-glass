@@ -17,10 +17,14 @@ const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
   const imageRef = useRef(null);
 
   useEffect(() => {
+    if (!imageRef.current.hasAttribute('src')) {
+      imageRef.current.setAttribute('src', src);
+    }
+
     return () => {
       imageRef.current.removeAttribute('src');
     };
-  }, []);
+  }, ['hot']);
 
   return (
     <motion.img

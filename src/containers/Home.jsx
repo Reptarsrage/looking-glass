@@ -14,20 +14,16 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
-import * as path from 'path';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
 import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
-import * as navigationActions from '../actions/navigationActions';
-import { successSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
+import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
 
 const styles = (theme) => ({
   main: {
-    width: 'auto',
-    display: 'block', // Fix IE 11 issue.
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
     [theme.breakpoints.up(800 + theme.spacing(3) * 2)]: {
@@ -44,19 +40,22 @@ const styles = (theme) => ({
   },
 });
 
-const Home = ({ classes, fetching, success, fetchModules, navigateToGallery, error, modules }) => {
+const Home = ({ classes, fetching, fetched, fetchModules, error, modules }) => {
   useEffect(() => {
     // fetch modules
-    if (!fetching && !success) {
+    if (!fetching && !fetched) {
       fetchModules();
     }
-  });
+  }, ['hot']);
 
   const chooseFolder = () => {
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
-        const galleryId = filePaths[0];
-        navigateToGallery(FILE_SYSTEM_MODULE_ID, galleryId, path.basename(galleryId));
+        // eslint-disable-next-line no-alert
+        alert('Not implemented!');
+        // TODO: Handle file system gallery navigation
+        // const galleryId = Buffer.from(filePaths[0]).toString('base64');
+        // navigateToGallery(FILE_SYSTEM_MODULE_ID, galleryId, path.basename(filePaths[0]));
       }
     });
   };
@@ -105,13 +104,12 @@ Home.defaultProps = {
 Home.propTypes = {
   // selectors
   modules: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
-  success: PropTypes.bool.isRequired,
+  fetched: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
 
   // actions
   fetchModules: PropTypes.func.isRequired,
-  navigateToGallery: PropTypes.func.isRequired,
 
   // withStyles
   classes: PropTypes.object.isRequired,
@@ -119,14 +117,13 @@ Home.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   modules: modulesSelector,
-  success: successSelector,
+  fetched: fetchedSelector,
   fetching: fetchingSelector,
   error: errorSelector,
 });
 
 const mapDispatchToProps = {
   fetchModules: moduleActions.fetchModules,
-  navigateToGallery: navigationActions.navigateToGallery,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Home);

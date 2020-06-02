@@ -1,16 +1,28 @@
 import { createSelector } from 'reselect';
 
-import { initialState } from '../reducers/breadcrumbReducer';
+import { galleryByIdSelector, galleriesStateSelector } from './gallerySelectors';
+import { generateBreadcrumbId } from '../reducers/constants';
 
-const getBreadcrumbId = (_, props) => props.breadcrumbId;
+export const breadcrumbsSelector = createSelector(
+  [galleryByIdSelector, galleriesStateSelector],
+  (currentGallery, state) => {
+    if (!currentGallery || !currentGallery.id) {
+      return [];
+    }
 
-const breadcrumbState = (state) => state.breadcrumb || initialState;
+    let gallery = currentGallery;
+    const breadcrumbs = [];
+    while (gallery && gallery.id) {
+      const { id: galleryId, moduleId, parentId, title } = gallery;
+      breadcrumbs.unshift({
+        id: generateBreadcrumbId(moduleId, galleryId),
+        title,
+        url: `/gallery/${moduleId}/${galleryId}`,
+      });
 
-const breadcrumbsSelector = createSelector(breadcrumbState, (state) => state.allIds);
+      gallery = (parentId && state.byId[parentId]) || null;
+    }
 
-const breadcrumbByIdSelector = createSelector(
-  [breadcrumbState, getBreadcrumbId],
-  (state, breadcrumbId) => state.byId[breadcrumbId]
+    return breadcrumbs;
+  }
 );
-
-export { breadcrumbsSelector, breadcrumbByIdSelector };

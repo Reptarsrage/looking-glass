@@ -29,7 +29,7 @@ function findNearestItem(end, start, scrollTop, itemPositions, items) {
 }
 
 function computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem) {
-  if (width !== saved.width) {
+  if (width !== saved.width || items.length < saved.lastComputed) {
     saved.lastComputed = 0;
     saved.computedById = {};
     saved.width = width;
@@ -121,6 +121,20 @@ Virtualized.propTypes = {
     .isRequired,
 };
 
+function itemsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function forceRenderItemsEqual(a, b) {
   if (a.length !== b.length) {
     return false;
@@ -137,14 +151,14 @@ function forceRenderItemsEqual(a, b) {
 
 function areEqual(nextProps, prevProps) {
   return (
-    nextProps.length === prevProps.length &&
     nextProps.scrollTop === prevProps.scrollTop &&
     nextProps.width === prevProps.width &&
-    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
     nextProps.gutter === prevProps.gutter &&
     nextProps.columnNumber === prevProps.columnNumber &&
     nextProps.left === prevProps.left &&
-    nextProps.height === prevProps.height
+    nextProps.height === prevProps.height &&
+    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
+    itemsEqual(nextProps.items, prevProps.items)
   );
 }
 

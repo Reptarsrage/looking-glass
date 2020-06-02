@@ -6,18 +6,18 @@ import { itemsSelector, itemsStateSelector } from './itemSelectors';
 
 const modalState = (state) => state.modal || initialState;
 
-const modalOpenSelector = createSelector(modalState, (state) => state.modalOpen);
+export const modalOpenSelector = createSelector(modalState, (state) => state.modalOpen);
 
-const modalItemIdSelector = createSelector(modalState, (state) => state.modalItemId);
+export const modalItemIdSelector = createSelector(modalState, (state) => state.modalItemId);
 
-const modalBoundsSelector = createSelector(modalState, (state) => state.modalBounds);
+export const modalBoundsSelector = createSelector(modalState, (state) => state.modalBounds);
 
-const modalItemSelector = createSelector(
+export const modalItemSelector = createSelector(
   [itemsStateSelector, modalItemIdSelector],
   (state, itemId) => state.byId[itemId] || initialItemState
 );
 
-const modalPrevSelector = createSelector([itemsSelector, modalItemIdSelector], (items, itemId) => {
+export const modalPrevSelector = createSelector([itemsSelector, modalItemIdSelector], (items, itemId) => {
   if (!itemId) {
     return null;
   }
@@ -30,7 +30,7 @@ const modalPrevSelector = createSelector([itemsSelector, modalItemIdSelector], (
   return items[idx - 1];
 });
 
-const modalNextSelector = createSelector([itemsSelector, modalItemIdSelector], (items, itemId) => {
+export const modalNextSelector = createSelector([itemsSelector, modalItemIdSelector], (items, itemId) => {
   if (!itemId) {
     return null;
   }
@@ -43,17 +43,7 @@ const modalNextSelector = createSelector([itemsSelector, modalItemIdSelector], (
   return items[idx + 1];
 });
 
-const forceRenderItemsSelector = createSelector(
+export const forceRenderItemsSelector = createSelector(
   [modalPrevSelector, modalItemIdSelector, modalNextSelector],
   (prev, current, next) => [prev, current, next].filter((id) => id !== null)
 );
-
-export {
-  modalOpenSelector,
-  modalItemIdSelector,
-  modalBoundsSelector,
-  modalNextSelector,
-  modalPrevSelector,
-  modalItemSelector,
-  forceRenderItemsSelector,
-};

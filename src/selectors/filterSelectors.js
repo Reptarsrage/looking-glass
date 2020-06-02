@@ -7,14 +7,13 @@ const getFilterId = (_, props) => props.filterId;
 const stateSelector = (state) => state.filter || initialState;
 
 /** All filters */
-const filtersSelector = createSelector(stateSelector, (state) => state.allIds);
+export const filtersSelector = createSelector(stateSelector, (state) => state.allIds);
 
 /** Specific filter */
-const filterByIdSelector = createSelector(
+export const filterByIdSelector = createSelector(
   [stateSelector, getFilterId],
   (state, filterId) => state.byId[filterId] || initialFilterState
 );
 
-const filterSiteIdSelector = createSelector(filterByIdSelector, (value) => value.siteId || undefined);
-
-export { filtersSelector, filterByIdSelector, filterSiteIdSelector };
+/** Site Id for a specific filter */
+export const filterSiteIdSelector = createSelector(filterByIdSelector, (value) => value.siteId || undefined);

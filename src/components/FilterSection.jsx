@@ -20,10 +20,10 @@ const styles = (theme) => ({
 });
 
 const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, onClick }) => {
-  const { fetching, success, error, values, name } = filterSection;
+  const { fetching, fetched, error, values, name } = filterSection;
 
   useEffect(() => {
-    if (!fetching && !success) {
+    if (!fetching && !fetched) {
       fetchFilters(filterSectionId);
     }
   });
@@ -36,7 +36,7 @@ const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, 
     return <span>Error!</span>;
   }
 
-  if (success && filterSection.values.length === 0) {
+  if (fetched && filterSection.values.length === 0) {
     return null;
   }
 
@@ -66,7 +66,7 @@ FilterSection.propTypes = {
     name: PropTypes.string.isRequired,
     values: PropTypes.arrayOf(PropTypes.string).isRequired,
     fetching: PropTypes.bool.isRequired,
-    success: PropTypes.bool.isRequired,
+    fetched: PropTypes.bool.isRequired,
     error: PropTypes.object,
   }).isRequired,
 

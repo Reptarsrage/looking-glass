@@ -8,8 +8,8 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router';
 
-import * as navigationActions from '../actions/navigationActions';
 import { moduleByIdSelector } from '../selectors/moduleSelectors';
 
 const styles = () => ({
@@ -29,13 +29,14 @@ const styles = () => ({
   },
 });
 
-const ModuleItem = ({ moduleId, module, navigateToGallery }) => {
-  const handleClick = () => {
-    navigateToGallery(moduleId, module.defaultGalleryId, module.title);
+const ModuleItem = ({ moduleId, module }) => {
+  const history = useHistory();
+  const go = () => {
+    history.push(`/gallery/${moduleId}/${module.defaultGalleryId}`);
   };
 
   return (
-    <ListItem button onClick={handleClick}>
+    <ListItem button onClick={go}>
       <ListItemAvatar>
         <Avatar alt={module.title} src={module.icon} />
       </ListItemAvatar>
@@ -55,17 +56,10 @@ ModuleItem.propTypes = {
     icon: PropTypes.string,
     defaultGalleryId: PropTypes.string.isRequired,
   }).isRequired,
-
-  // actions
-  navigateToGallery: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   module: moduleByIdSelector,
 });
 
-const mapDispatchToProps = {
-  navigateToGallery: navigationActions.navigateToGallery,
-};
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(ModuleItem);
+export default compose(connect(mapStateToProps), withStyles(styles))(ModuleItem);

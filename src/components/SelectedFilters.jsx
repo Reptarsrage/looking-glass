@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { currentFilterSelector } from '../selectors/gallerySelectors';
 import SelectedFilter from './SelectedFilter';
 
-const styles = theme => ({
+const styles = (theme) => ({
   filtersContainer: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -16,11 +16,11 @@ const styles = theme => ({
   },
 });
 
-const SelectedFilters = ({ moduleId, galleryId, currentFilter, classes }) => {
+const SelectedFilters = ({ galleryId, currentFilter, classes }) => {
   if (currentFilter) {
     return (
       <div className={classes.filtersContainer}>
-        <SelectedFilter filterId={currentFilter} moduleId={moduleId} galleryId={galleryId} />
+        <SelectedFilter filterId={currentFilter} galleryId={galleryId} />
       </div>
     );
   }
@@ -34,7 +34,6 @@ SelectedFilters.defaultProps = {
 
 SelectedFilters.propTypes = {
   // required
-  moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
 
   // withStyles

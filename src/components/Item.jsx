@@ -4,9 +4,10 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router';
 
 import { modalItemIdSelector } from '../selectors/modalSelectors';
-import { itemByIdSelector } from '../selectors/itemSelectors';
+import { itemByIdSelector, itemGalleryUrlSelector } from '../selectors/itemSelectors';
 import * as modalActions from '../actions/modalActions';
 import Image from './Image';
 import Video from './Video';
@@ -19,7 +20,18 @@ const styles = () => ({
   },
 });
 
-const Item = ({ classes, itemId, style, item, modalOpen, modalBoundsUpdate, modalItemId, modalSetItem }) => {
+const Item = ({
+  classes,
+  itemId,
+  style,
+  item,
+  modalOpen,
+  modalBoundsUpdate,
+  modalItemId,
+  modalSetItem,
+  itemGalleryUrl,
+}) => {
+  const history = useHistory();
   const itemRef = useRef(null);
   const [ignoreEffect, setIgnoreEffect] = useState(false);
 
@@ -45,6 +57,11 @@ const Item = ({ classes, itemId, style, item, modalOpen, modalBoundsUpdate, moda
 
   const handleClick = (event) => {
     event.preventDefault();
+
+    if (item.isGallery) {
+      history.push(itemGalleryUrl);
+      return;
+    }
 
     const { currentTarget } = event;
     const bounds = currentTarget.getBoundingClientRect();
@@ -93,21 +110,24 @@ const Item = ({ classes, itemId, style, item, modalOpen, modalBoundsUpdate, moda
 };
 
 Item.defaultProps = {
+  itemGalleryUrl: null,
   modalItemId: null,
   style: {},
 };
 
 Item.propTypes = {
+  itemGalleryUrl: PropTypes.string,
   modalItemId: PropTypes.string,
   itemId: PropTypes.string.isRequired,
   item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     title: PropTypes.string,
     description: PropTypes.string,
-    width: PropTypes.number,
-    height: PropTypes.number,
-    isVideo: PropTypes.bool,
-    isGallery: PropTypes.bool,
-    url: PropTypes.string,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+    isVideo: PropTypes.bool.isRequired,
+    isGallery: PropTypes.bool.isRequired,
+    url: PropTypes.string.isRequired,
     thumb: PropTypes.string,
   }).isRequired,
   style: PropTypes.object,
@@ -120,6 +140,7 @@ Item.propTypes = {
 const mapStateToProps = createStructuredSelector({
   item: itemByIdSelector,
   modalItemId: modalItemIdSelector,
+  itemGalleryUrl: itemGalleryUrlSelector,
 });
 
 const mapDispatchToProps = {
@@ -129,13 +150,15 @@ const mapDispatchToProps = {
 };
 
 function areEqual(nextProps, prevProps) {
+  const isModal = (p) => p.itemId === p.modalItemId;
+
   return (
+    nextProps.style.top === prevProps.style.top &&
+    isModal(nextProps) === isModal(prevProps) &&
     nextProps.style.width === prevProps.style.width &&
     nextProps.style.height === prevProps.style.height &&
-    nextProps.style.top === prevProps.style.top &&
     nextProps.style.left === prevProps.style.left &&
-    nextProps.itemId === prevProps.itemId &&
-    nextProps.isModal === prevProps.isModal
+    nextProps.itemId === prevProps.itemId
   );
 }
 

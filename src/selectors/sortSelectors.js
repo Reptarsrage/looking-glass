@@ -1,19 +1,19 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialSortState } from '../reducers/sortReducer';
-import { currentSortSelector } from './gallerySelectors';
-import { moduleByIdSelector, searchQuerySelector } from './moduleSelectors';
+import { currentSortSelector, currentSearchQuerySelector } from './gallerySelectors';
+import { moduleByIdSelector } from './moduleSelectors';
 
 const getValueId = (_, props) => props.valueId;
 
 const stateSelector = (state) => state.sort || initialState;
 
 /** All Values */
-const valuesSelector = createSelector(stateSelector, (state) => state.allIds);
+export const valuesSelector = createSelector(stateSelector, (state) => state.allIds);
 
 /** Specific Value */
-const valueByIdSelector = createSelector(
-  [stateSelector, getValueId, searchQuerySelector],
+export const valueByIdSelector = createSelector(
+  [stateSelector, getValueId, currentSearchQuerySelector],
   (state, valueId, searchQuery) => {
     const value = state.byId[valueId] || initialSortState;
     if (!value.values) {
@@ -35,11 +35,11 @@ const valueByIdSelector = createSelector(
 );
 
 /** Translate internal id to siteId */
-const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => value && value.siteId);
+export const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => value && value.siteId);
 
 /** All values for a given module */
-const moduleValuesSelector = createSelector(
-  [moduleByIdSelector, stateSelector, searchQuerySelector],
+export const moduleValuesSelector = createSelector(
+  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different sort values when searching
@@ -52,8 +52,8 @@ const moduleValuesSelector = createSelector(
 );
 
 /** Default value */
-const defaultSortValueSelector = createSelector(
-  [moduleByIdSelector, stateSelector, searchQuerySelector],
+export const defaultSortValueSelector = createSelector(
+  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different default sort value when searching
@@ -65,7 +65,8 @@ const defaultSortValueSelector = createSelector(
   }
 );
 
-const currentSortTextSelector = createSelector(
+/** Currently selected sort text */
+export const currentSortTextSelector = createSelector(
   [currentSortSelector, defaultSortValueSelector, stateSelector],
   (currentSort, defaultSort, state) => {
     const valueId = currentSort || defaultSort;
@@ -76,13 +77,3 @@ const currentSortTextSelector = createSelector(
     return null;
   }
 );
-
-export {
-  stateSelector,
-  valuesSelector,
-  valueByIdSelector,
-  valueSiteIdSelector,
-  moduleValuesSelector,
-  defaultSortValueSelector,
-  currentSortTextSelector,
-};

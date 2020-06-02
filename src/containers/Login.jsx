@@ -22,8 +22,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
-import { successSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
+import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
 import * as authActions from '../actions/authActions';
 
 const styles = (theme) => ({
@@ -69,7 +68,7 @@ const styles = (theme) => ({
   },
 });
 
-const Login = ({ login, fetching, error, success, classes, moduleId, galleryId }) => {
+const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -96,7 +95,7 @@ const Login = ({ login, fetching, error, success, classes, moduleId, galleryId }
     event.preventDefault();
   };
 
-  if (success) {
+  if (fetched) {
     // Redirect to whatever gallery the user was on before
     return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
   }
@@ -186,18 +185,16 @@ Login.propTypes = {
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   login: PropTypes.func.isRequired,
-  success: PropTypes.bool.isRequired,
+  fetched: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   classes: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({
-  success: successSelector,
+  fetched: fetchedSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-  moduleId: moduleIdSelector,
-  galleryId: galleryIdSelector,
 });
 
 const mapDispatchToProps = {

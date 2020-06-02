@@ -11,10 +11,11 @@ export const initialState = {
 export const initialFilterState = {
   id: null,
   siteId: null,
+  filterSectionId: null,
   name: null,
 };
 
-const addFilterForSection = (draft, filterSectionId, filter) => {
+const addFiltersForSection = (draft, filterSectionId, filter) => {
   // generate moduleId
   const filterId = generateFilterId(filterSectionId, filter.id);
 
@@ -25,6 +26,7 @@ const addFilterForSection = (draft, filterSectionId, filter) => {
     ...filter,
     siteId: filter.id,
     id: filterId,
+    filterSectionId,
   };
 };
 
@@ -35,7 +37,10 @@ const filterReducer = (state = initialState, action) =>
     switch (type) {
       case FETCH_FILTERS_SUCCESS: {
         // add filters for modules
-        payload.forEach((filter) => addFilterForSection(draft, meta, filter));
+        const filterSectionId = meta;
+        payload.forEach((filter) => addFiltersForSection(draft, filterSectionId, filter));
+
+        // TODO: add file system filter options
         break;
       }
       default:

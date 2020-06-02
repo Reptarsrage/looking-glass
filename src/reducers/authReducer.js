@@ -12,16 +12,16 @@ import {
 } from './constants';
 import {
   LOGIN_SUCCESS,
-  LOGIN_ERROR,
+  LOGIN_FAILURE,
   LOGIN,
   FETCH_OATH_URL,
-  FETCH_OATH_URL_ERROR,
+  FETCH_OATH_URL_FAILURE,
   FETCH_OATH_URL_SUCCESS,
   AUTHORIZE,
   AUTHORIZE_SUCCESS,
-  AUTHORIZE_ERROR,
+  AUTHORIZE_FAILURE,
   REFRESH_SUCCESS,
-  REFRESH_ERROR,
+  REFRESH_FAILURE,
   FETCH_MODULES_SUCCESS,
 } from '../actions/types';
 
@@ -54,7 +54,7 @@ export const initialAuthState = {
 const authReducer = (state = initialState, action, store = getStore()) =>
   produce(state, (draft) => {
     const { type, payload, meta } = action || {};
-    const { moduleId } = meta || {};
+    const moduleId = meta;
 
     switch (type) {
       case FETCH_MODULES_SUCCESS: {
@@ -84,7 +84,7 @@ const authReducer = (state = initialState, action, store = getStore()) =>
         draft.byId[moduleId].oauth.url = payload;
         break;
       }
-      case FETCH_OATH_URL_ERROR: {
+      case FETCH_OATH_URL_FAILURE: {
         handleAsyncError(state.byId[moduleId].oauth, draft.byId[moduleId].oauth, payload);
         break;
       }
@@ -111,9 +111,9 @@ const authReducer = (state = initialState, action, store = getStore()) =>
         store.set(moduleId, draft.byId[moduleId]);
         break;
       }
-      case REFRESH_ERROR:
-      case AUTHORIZE_ERROR:
-      case LOGIN_ERROR: {
+      case REFRESH_FAILURE:
+      case AUTHORIZE_FAILURE:
+      case LOGIN_FAILURE: {
         handleAsyncError(state.byId[moduleId], draft.byId[moduleId], payload);
         break;
       }

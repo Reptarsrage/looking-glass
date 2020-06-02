@@ -15,10 +15,9 @@ import { parse } from 'url';
 import { remote } from 'electron';
 import qs from 'qs';
 
-import { moduleIdSelector, galleryIdSelector } from '../selectors/appSelectors';
 import * as authActions from '../actions/authActions';
 import {
-  successSelector,
+  fetchedSelector,
   fetchingSelector,
   errorSelector,
   oauthURLSelector,
@@ -68,7 +67,7 @@ const styles = (theme) => ({
 
 const OAuth = ({
   fetching,
-  success,
+  fetched,
   moduleId,
   fetchOAuthURL,
   authorize,
@@ -139,7 +138,7 @@ const OAuth = ({
     }
   };
 
-  if (success) {
+  if (fetched) {
     // Redirect to whatever gallery the user was on before
     return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
   }
@@ -192,7 +191,7 @@ OAuth.propTypes = {
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
-  success: PropTypes.bool.isRequired,
+  fetched: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   oauthURL: PropTypes.string,
@@ -203,14 +202,12 @@ OAuth.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   oauthURL: oauthURLSelector,
-  success: successSelector,
+  fetched: fetchedSelector,
   fetching: fetchingSelector,
   error: errorSelector,
   oauthURLFetching: oauthURLFetchingSelector,
   oauthURLError: oauthURLErrorSelector,
   oauthURLSuccess: oauthURLSuccessSelector,
-  moduleId: moduleIdSelector,
-  galleryId: galleryIdSelector,
 });
 
 const mapDispatchToProps = {

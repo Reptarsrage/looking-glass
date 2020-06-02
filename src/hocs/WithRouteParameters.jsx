@@ -1,24 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useParams } from 'react-router';
 
-const WithRouteParameters = Component => {
-  const Sub = props => {
-    const { match } = props;
-    const { params } = match;
-    return <Component {...props} {...params} />;
-  };
+const withRouteParameters = (Component) => (props) => <Component {...props} {...useParams()} />;
 
-  Sub.propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.object.isRequired,
-    }).isRequired,
-  };
-
-  return Sub;
-};
-
-WithRouteParameters.propTypes = {
-  Component: PropTypes.element,
-};
-
-export default WithRouteParameters;
+export default withRouteParameters;

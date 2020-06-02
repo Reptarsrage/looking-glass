@@ -1,6 +1,6 @@
 import produce from 'immer';
 
-import { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR, FETCH_MODULES_SUCCESS } from '../actions/types';
+import { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_FAILURE, FETCH_MODULES_SUCCESS } from '../actions/types';
 import {
   generateFilterId,
   generateFilterSectionId,
@@ -19,6 +19,7 @@ export const initialState = {
 export const initialFilterSectionState = {
   id: null,
   siteId: null,
+  moduleId: null,
   name: null,
   description: null,
   values: [],
@@ -38,6 +39,7 @@ const addFilterSectionForModule = (draft, module) => {
       ...filterSection,
       siteId: filterSection.id,
       id,
+      moduleId,
     };
   });
 };
@@ -52,12 +54,10 @@ const filterSectionReducer = (state = initialState, action) =>
 
         // add filter sections for modules
         modules.forEach((module) => addFilterSectionForModule(draft, module));
-
-        // TODO: add file system filter sections
         break;
       }
       case FETCH_FILTERS: {
-        const filterSectionId = payload;
+        const filterSectionId = meta;
         handleAsyncFetch(state.byId[filterSectionId], draft.byId[filterSectionId]);
         break;
       }
@@ -69,7 +69,7 @@ const filterSectionReducer = (state = initialState, action) =>
           .map(({ id }) => generateFilterId(filterSectionId, id));
         break;
       }
-      case FETCH_FILTERS_ERROR: {
+      case FETCH_FILTERS_FAILURE: {
         const filterSectionId = meta;
         handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload);
         break;

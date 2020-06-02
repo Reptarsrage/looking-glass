@@ -1,13 +1,8 @@
 import React from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import Link from '@material-ui/core/Link';
 import { withStyles } from '@material-ui/core/styles';
-
-import * as navigationActions from '../actions/navigationActions';
-import { breadcrumbByIdSelector } from '../selectors/breadcrumbSelectors';
+import { useHistory } from 'react-router';
 
 const styles = () => ({
   link: {
@@ -15,10 +10,14 @@ const styles = () => ({
   },
 });
 
-const BreadcrumbItem = ({ breadcrumbId, breadcrumb, classes, navigateToBreadcrumb }) => {
-  const { title } = breadcrumb;
+const BreadcrumbItem = ({ title, classes, url }) => {
+  const history = useHistory();
   const handleClick = () => {
-    navigateToBreadcrumb(breadcrumbId);
+    if (history.location.pathname === url) {
+      // TODO: SCroll to top maybe?
+    } else {
+      history.push(url);
+    }
   };
 
   return (
@@ -30,29 +29,11 @@ const BreadcrumbItem = ({ breadcrumbId, breadcrumb, classes, navigateToBreadcrum
 
 BreadcrumbItem.propTypes = {
   // required
-  breadcrumbId: PropTypes.string.isRequired,
-
-  // actions
-  navigateToBreadcrumb: PropTypes.func.isRequired,
-
-  // selectors
-  breadcrumb: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    moduleId: PropTypes.string.isRequired,
-    galleryId: PropTypes.string.isRequired,
-  }).isRequired,
+  title: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
 
   // withStyles
   classes: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  breadcrumb: breadcrumbByIdSelector,
-});
-
-const mapDispatchToProps = {
-  navigateToBreadcrumb: navigationActions.navigateToBreadcrumb,
-};
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(BreadcrumbItem);
+export default withStyles(styles)(BreadcrumbItem);

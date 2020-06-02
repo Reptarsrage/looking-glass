@@ -20,11 +20,11 @@ const withResize = (WrappedComponent) => (props) => {
     return () => {
       resizeObserver.unobserve(containerElt);
     };
-  }, []);
+  }, ['hot']);
 
   return (
     <div ref={containerRef} style={{ overflow: 'visible', flex: '1 1 auto' }}>
-      {width && <WrappedComponent {...props} width={width} height={height} />}
+      {width && height && <WrappedComponent {...props} width={width} height={height} />}
     </div>
   );
 };

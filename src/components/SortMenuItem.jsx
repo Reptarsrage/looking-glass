@@ -26,7 +26,7 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
   const ariaId = `${valueId}-nested-sort-menu`;
   const hasNestedValues = nestedValues.length > 0;
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     if (hasNestedValues) {
       setAnchorEl(event.currentTarget);
     } else {
@@ -34,7 +34,7 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
     }
   };
 
-  const handleClose = id => {
+  const handleClose = (id) => {
     setAnchorEl(null);
     onClick(id);
   };
@@ -63,7 +63,7 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
           }}
         >
           <List>
-            {nestedValues.map(nestedValueId => (
+            {nestedValues.map((nestedValueId) => (
               <NestedSortMenuItem
                 key={nestedValueId}
                 onClick={() => handleClose(nestedValueId)}

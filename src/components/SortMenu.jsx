@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import SortIcon from '@material-ui/icons/Sort';
 
-import * as moduleActions from '../actions/moduleActions';
+import * as galleryActions from '../actions/galleryActions';
 import { moduleValuesSelector, currentSortTextSelector } from '../selectors/sortSelectors';
 import SortMenuItem from './SortMenuItem';
 
@@ -30,7 +30,7 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, curr
 
   const handleClose = (valueId) => {
     if (valueId) {
-      sortChange(moduleId, galleryId, valueId);
+      sortChange(galleryId, valueId);
     }
 
     setAnchorEl(null);
@@ -98,7 +98,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  sortChange: moduleActions.sortChange,
+  sortChange: galleryActions.sortChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SortMenu);

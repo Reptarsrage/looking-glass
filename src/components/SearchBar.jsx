@@ -8,9 +8,8 @@ import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { moduleIdSelector } from '../selectors/appSelectors';
-import { searchQuerySelector, searchGalleryIdSelector } from '../selectors/moduleSelectors';
-import * as moduleActions from '../actions/moduleActions';
+import { currentSearchQuerySelector } from '../selectors/gallerySelectors';
+import * as galleryActions from '../actions/galleryActions';
 
 const styles = (theme) => ({
   search: {
@@ -24,7 +23,6 @@ const styles = (theme) => ({
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
       width: 'auto',
     },
   },
@@ -56,11 +54,10 @@ const styles = (theme) => ({
 
 const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) => {
   const handleSearchChange = (e) => {
-    searchChange(moduleId, galleryId, e.target.value);
+    searchChange(galleryId, e.target.value);
   };
 
   if (!moduleId || !galleryId) {
-    // TODO: render only when on default or search gallery
     return null;
   }
 
@@ -89,21 +86,26 @@ SearchBar.defaultProps = {
 };
 
 SearchBar.propTypes = {
-  searchChange: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
+  // required
   moduleId: PropTypes.string,
   galleryId: PropTypes.string,
+
+  // actions
+  searchChange: PropTypes.func.isRequired,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
+
+  // selectors
   searchQuery: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
-  moduleId: moduleIdSelector,
-  galleryId: searchGalleryIdSelector,
-  searchQuery: searchQuerySelector,
+  searchQuery: currentSearchQuerySelector,
 });
 
 const mapDispatchToProps = {
-  searchChange: moduleActions.searchChange,
+  searchChange: galleryActions.searchChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SearchBar);

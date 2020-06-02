@@ -12,12 +12,11 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
-import { withRouter } from 'react-router';
+import { useRouteMatch } from 'react-router';
 
-import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
+import { darkThemeSelector } from '../selectors/appSelectors';
 import { modalOpenSelector } from '../selectors/modalSelectors';
 import * as appActions from '../actions/appActions';
-import SearchBar from '../components/SearchBar';
 import BackButton from '../components/BackButton';
 import Progress from '../components/Progress';
 
@@ -66,6 +65,9 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  grow: {
+    flexGrow: '1',
+  },
   appBar: {
     zIndex: theme.zIndex.drawer + 3,
     transition: theme.transitions.create('opacity'),
@@ -78,14 +80,11 @@ const styles = (theme) => ({
   },
 });
 
-const App = ({ moduleId, children, darkTheme: useDarkTheme, classes, toggleDarkTheme, modalOpen }) => {
-  const renderBackButton = () => {
-    if (!moduleId) {
-      return null;
-    }
-
-    return <BackButton color="inherit" isFab={false} />;
-  };
+const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) => {
+  const match = useRouteMatch({
+    path: '/',
+    exact: true,
+  });
 
   return (
     <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
@@ -93,11 +92,10 @@ const App = ({ moduleId, children, darkTheme: useDarkTheme, classes, toggleDarkT
       <Progress />
       <AppBar position="static" color="default" className={classes.appBar} style={{ opacity: modalOpen ? '0' : '1' }}>
         <Toolbar>
-          {renderBackButton()}
+          {match ? null : <BackButton color="inherit" isFab={false} />}
           <Typography className={classes.title} variant="h6" color="inherit" noWrap>
             Looking Glass
           </Typography>
-          <SearchBar moduleId={moduleId} />
           <div className={classes.grow} />
           <div>
             <IconButton color="inherit" onClick={toggleDarkTheme}>
@@ -114,22 +112,19 @@ const App = ({ moduleId, children, darkTheme: useDarkTheme, classes, toggleDarkT
 };
 
 App.defaultProps = {
-  moduleId: null,
   modalOpen: false,
 };
 
 App.propTypes = {
   toggleDarkTheme: PropTypes.func.isRequired,
   children: PropTypes.element.isRequired,
-  darkTheme: PropTypes.bool.isRequired,
+  useDarkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
-  moduleId: PropTypes.string,
   modalOpen: PropTypes.bool,
 };
 
 const mapStateToProps = createStructuredSelector({
-  darkTheme: darkThemeSelector,
-  moduleId: moduleIdSelector,
+  useDarkTheme: darkThemeSelector,
   modalOpen: modalOpenSelector,
 });
 
@@ -137,4 +132,4 @@ const mapDispatchToProps = {
   toggleDarkTheme: appActions.toggleDarkTheme,
 };
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App);

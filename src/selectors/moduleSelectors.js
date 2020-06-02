@@ -6,44 +6,27 @@ const getModuleId = (_, props) => props.moduleId;
 
 const moduleStateSelector = (state) => state.module || initialState;
 
-const galleryStateSelector = (state) => state.gallery || initialState;
+/** All modules */
+export const modulesSelector = createSelector(moduleStateSelector, (state) => state.allIds);
 
-const modulesSelector = createSelector(moduleStateSelector, (state) => state.allIds);
-
-const moduleByIdSelector = createSelector(
+/** Specific module */
+export const moduleByIdSelector = createSelector(
   moduleStateSelector,
   getModuleId,
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
 
-const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, (module) => module.siteId);
+/** Have modules been fetched? */
+export const fetchedSelector = createSelector(moduleStateSelector, (state) => state.fetched);
 
-const searchGalleryIdSelector = createSelector(moduleByIdSelector, (module) => module.searchGalleryId);
+/** Are modules currently fetching? */
+export const fetchingSelector = createSelector(moduleStateSelector, (state) => state.fetching);
 
-const defaultGalleryIdSelector = createSelector(moduleByIdSelector, (module) => module.defaultGalleryId);
+/** Did we encounter an error while fetching modules? */
+export const errorSelector = createSelector(moduleStateSelector, (state) => state.error);
 
-const successSelector = createSelector(moduleStateSelector, (state) => state.success);
+/** Filter values configured for module */
+export const filterBySelector = createSelector(moduleByIdSelector, (module) => module.filterBy);
 
-const fetchingSelector = createSelector(moduleStateSelector, (state) => state.fetching);
-
-const errorSelector = createSelector(moduleStateSelector, (state) => state.error);
-
-const filterBySelector = createSelector(moduleByIdSelector, (module) => module.filterBy);
-
-const searchQuerySelector = createSelector(
-  [searchGalleryIdSelector, galleryStateSelector],
-  (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
-);
-
-export {
-  modulesSelector,
-  moduleByIdSelector,
-  successSelector,
-  fetchingSelector,
-  errorSelector,
-  moduleByIdSiteIdSelector,
-  searchQuerySelector,
-  filterBySelector,
-  searchGalleryIdSelector,
-  defaultGalleryIdSelector,
-};
+/** Sort values configured for module */
+export const sortBySelector = createSelector(moduleByIdSelector, (module) => module.sortBy);

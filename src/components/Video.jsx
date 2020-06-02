@@ -17,13 +17,19 @@ const Video = ({ classes, src, thumb, width, height, title, styleName, ...other 
   const videoRef = useRef(null);
 
   useEffect(() => {
+    if (!videoRef.current.querySelector('source').hasAttribute('src')) {
+      videoRef.current.pause();
+      videoRef.current.querySelector('source').setAttribute('src', src);
+      videoRef.current.load();
+    }
+
     return () => {
       // based on https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element/40419032
       videoRef.current.pause();
       videoRef.current.querySelector('source').removeAttribute('src');
       videoRef.current.load();
     };
-  }, []);
+  }, ['hot']);
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption

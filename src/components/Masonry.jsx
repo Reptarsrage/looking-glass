@@ -44,19 +44,30 @@ const Masonry = ({
     memoizeOne(getAdjustedItemDimensions, getAdjustedItemDimensionsEqual)
   );
   const [columnItems, totalHeight] = useMemo(() => {
-    // Ensure each column has an entry
+    // If column count changed, reset everything
     if (savedColumnItems.length > columnCount) {
       while (savedColumnItems.length > 0) {
         savedColumnItems.pop();
       }
     }
 
+    // Ensure each column has an entry
     while (savedColumnItems.length < columnCount) {
       savedColumnItems.push({ height: 0, id: savedColumnItems.length, items: [] });
     }
 
-    const totalLength = savedColumnItems.reduce((acc, cur) => acc + cur.items.length, 0);
+    // Ensure columns are filled with items
+    let totalLength = savedColumnItems.reduce((acc, cur) => acc + cur.items.length, 0);
     if (totalLength !== items.length) {
+      // Reset if items has completely changed
+      if (items.length < totalLength) {
+        totalLength = 0;
+        savedColumnItems.forEach((savedColumnItem) => {
+          savedColumnItem.height = 0;
+          savedColumnItem.items = [];
+        });
+      }
+
       // Fill in column items
       // Make sure to try and balance column heights in a deterministic way
       for (let i = totalLength; i < items.length; i += 1) {
@@ -75,7 +86,7 @@ const Masonry = ({
       return acc + adjHeight;
     }, 0);
     return [savedColumnItems, calculatedTotalHeight];
-  }, [columnCount, items.length, width, gutter]);
+  }, [columnCount, items, width, gutter]);
 
   return (
     <div style={{ width: '100%', height: `${totalHeight}px` }}>
@@ -94,12 +105,11 @@ const Masonry = ({
             getAdjustedDimensionsForItem={(id) =>
               getAdjustedItemDimensionsMemo(id, columnCount, width, gutter, getItemDimensions)
             }
-            items={col.items}
+            items={[...col.items]}
             scrollTop={scrollTop}
             scrollDirection={scrollDirection}
             gutter={gutter}
             columnNumber={index}
-            length={col.items.length}
             forceRenderItems={forceRenderColumnItems}
           />
         );
@@ -120,7 +130,7 @@ Masonry.propTypes = {
   forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-function forceRenderItemsEqual(a, b) {
+function itemsEqual(a, b) {
   if (a.length !== b.length) {
     return false;
   }
@@ -136,13 +146,13 @@ function forceRenderItemsEqual(a, b) {
 
 function areEqual(nextProps, prevProps) {
   return (
+    nextProps.scrollTop === prevProps.scrollTop &&
     nextProps.width === prevProps.width &&
     nextProps.height === prevProps.height &&
-    nextProps.scrollTop === prevProps.scrollTop &&
-    nextProps.length === prevProps.length &&
-    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
     nextProps.columnCount === prevProps.columnCount &&
-    nextProps.gutter === prevProps.gutter
+    nextProps.gutter === prevProps.gutter &&
+    itemsEqual(nextProps.items, prevProps.items) &&
+    itemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems)
   );
 }
 

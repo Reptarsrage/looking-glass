@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import PropTypes from 'prop-types';
+import ReactRouterPropTypes from 'react-router-prop-types';
 import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import Button from '@material-ui/core/Button';
+import { withRouter } from 'react-router';
 
-import * as navigationActions from '../actions/navigationActions';
-
-const WithErrors = (WrappedComponent) =>
-  class ErrorBoundary extends Component {
+// See https://reactjs.org/docs/error-boundaries.html
+const withErrorBoundary = (WrappedComponent) => {
+  class WithErrorBoundary extends Component {
     static propTypes = {
       // actions
-      navigateHome: PropTypes.func.isRequired,
+      history: ReactRouterPropTypes.history.isRequired,
     };
 
     constructor() {
@@ -32,14 +30,14 @@ const WithErrors = (WrappedComponent) =>
     }
 
     handleClick = () => {
-      const { navigateHome } = this.props;
+      const { history } = this.props;
       this.setState({ error: null, errorInfo: null });
-      navigateHome();
+      history.push('/');
     };
 
     render() {
       const { error, errorInfo } = this.state;
-      const { navigateHome, ...rest } = this.props;
+      const { history, ...rest } = this.props;
 
       return (
         <>
@@ -63,10 +61,9 @@ const WithErrors = (WrappedComponent) =>
         </>
       );
     }
-  };
+  }
 
-const mapDispatchToProps = {
-  navigateHome: navigationActions.navigateHome,
+  return withRouter(WithErrorBoundary);
 };
 
-export default compose(connect(null, mapDispatchToProps), WithErrors);
+export default withErrorBoundary;

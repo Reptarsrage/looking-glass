@@ -11,7 +11,7 @@ function FilterList({ filterSections, onClick }) {
   return (
     <>
       {filterSections
-        .map(filterSectionId => (
+        .map((filterSectionId) => (
           <FilterSection key={filterSectionId} onClick={onClick} filterSectionId={filterSectionId} />
         ))
         .reduce((p, c) => [...p, <Divider key={`${c.key}-divider`} />, c], [])}

@@ -1,6 +1,6 @@
 import { stringify } from 'qs';
 
-import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/constants';
+import { DEFAULT_GALLERY_ID } from '../reducers/constants';
 import { create } from './axiosInstance';
 
 export default class FileSystemService {
@@ -41,7 +41,7 @@ export default class FileSystemService {
 
   fetchImages = async (moduleId, galleryId, accessToken, offset, count, after, query, sort, filter) => {
     const params = { offset, count, after, query, sort, filter };
-    if (galleryId !== DEFAULT_GALLERY_ID && galleryId !== SEARCH_GALLERY_ID) {
+    if (galleryId !== DEFAULT_GALLERY_ID) {
       params.galleryId = galleryId;
     }
 

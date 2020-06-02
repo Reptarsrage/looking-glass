@@ -11,6 +11,7 @@ export const initialState = {
 export const initialSortState = {
   id: null,
   siteId: null,
+  moduleId: null,
   name: null,
   fullText: null,
   values: [],
@@ -34,6 +35,7 @@ const addSortForModule = (draft, module) => {
           ...initialSortState,
           ...nestedSortValue,
           siteId: nestedSortValue.id,
+          moduleId,
           id: nestedId,
           fullText: `${sortValue.name} (${nestedSortValue.name})`,
         };
@@ -49,6 +51,7 @@ const addSortForModule = (draft, module) => {
       values:
         sortValue.values && sortValue.values.map((nestedSortValue) => generateSortId(moduleId, nestedSortValue.id)),
       siteId: sortValue.id,
+      moduleId,
       id,
     };
   });

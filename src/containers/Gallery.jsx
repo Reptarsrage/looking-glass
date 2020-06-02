@@ -17,23 +17,18 @@ import { productName } from '../../package.json';
 import { forceRenderItemsSelector } from '../selectors/modalSelectors';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
-import { itemWidthSelector, itemHeightSelector } from '../selectors/itemSelectors';
-import * as moduleActions from '../actions/moduleActions';
+import { itemDimensionsSelector } from '../selectors/itemSelectors';
+import * as galleryActions from '../actions/galleryActions';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SortMenu from '../components/SortMenu';
 import Masonry from '../components/Masonry';
-import ScrollToTopButton from '../components/ScrollToTopButton';
 import FilterList from '../components/FilterList';
 import SelectedFilters from '../components/SelectedFilters';
 import Modal from '../components/Modal';
+import LoadingIndicator from '../components/LoadingIndicator';
+import SearchBar from '../components/SearchBar';
 
 const styles = (theme) => ({
-  floatedBottomRight: {
-    position: 'fixed',
-    bottom: '10px',
-    right: '10px',
-    zIndex: theme.zIndex.drawer - 1,
-  },
   grow: {
     flexGrow: '1',
   },
@@ -69,12 +64,13 @@ const Gallery = ({
   filterChange,
   overlayButtonThreshold,
   fetchGallery,
-  itemWidthSelectorFunc,
-  itemHeightSelectorFunc,
+  itemDimensionsSelectorFunc,
   forceRenderItems,
+  saveScrollPosition,
 }) => {
   const [showOverlayButtons, setShowOverlayButtons] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery;
 
   useEffect(() => {
     // set event listeners
@@ -95,7 +91,7 @@ const Gallery = ({
 
   const handleFilterClick = (filterId) => {
     setDrawerOpen(false);
-    filterChange(moduleId, galleryId, filterId);
+    filterChange(galleryId, filterId);
   };
 
   const handleOpenDrawerClick = () => {
@@ -114,42 +110,33 @@ const Gallery = ({
     if (scrollHeight - scrollTop - clientHeight < clientHeight) {
       loadMoreItems();
     }
+
+    // save position for later
+    saveScrollPosition(galleryId, scrollTop);
   };
 
   const fetchInitialItems = () => {
-    const { fetching, success } = gallery;
-
     // Abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
       return;
     }
 
     // Check if first page is available and not already fetched, and fetch it
-    if (!fetching && !success) {
-      fetchGallery(moduleId, galleryId);
+    if (!fetching && !fetched && !error) {
+      fetchGallery(galleryId);
     }
   };
 
   const loadMoreItems = () => {
-    const { hasNext, fetching } = gallery;
-
     // Abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
       return;
     }
 
     // Check if next page is available, and fetch it
-    if (hasNext && !fetching) {
-      fetchGallery(moduleId, galleryId);
+    if (hasNext && !fetching && !error) {
+      fetchGallery(galleryId);
     }
-  };
-
-  const getItemHeight = (itemId) => {
-    return itemHeightSelectorFunc(itemId);
-  };
-
-  const getItemWidth = (itemId) => {
-    return itemWidthSelectorFunc(itemId);
   };
 
   // Redirect to authenticate
@@ -158,7 +145,6 @@ const Gallery = ({
   }
 
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
-  const { title } = gallery;
   return (
     <>
       <Helmet>
@@ -170,7 +156,11 @@ const Gallery = ({
       </Drawer>
 
       <Toolbar variant="dense">
-        <Breadcrumbs />
+        <Breadcrumbs galleryId={galleryId} />
+      </Toolbar>
+
+      <Toolbar variant="dense">
+        <SearchBar moduleId={moduleId} galleryId={galleryId} />
         <div className={classes.grow} />
         <SortMenu moduleId={moduleId} galleryId={galleryId} />
         <Button onClick={handleOpenDrawerClick}>
@@ -179,22 +169,25 @@ const Gallery = ({
         </Button>
       </Toolbar>
 
-      <SelectedFilters moduleId={moduleId} galleryId={galleryId} />
-
-      <div className={classes.floatedBottomRight}>{showOverlayButtons ? <ScrollToTopButton /> : null}</div>
+      <SelectedFilters galleryId={galleryId} />
 
       <Modal />
 
-      <Masonry
-        items={items}
-        length={items.length}
-        columnCount={3}
-        getItemDimensions={(id) => ({ width: getItemWidth(id), height: getItemHeight(id) })}
-        initialScrollTop={0}
-        gutter={8}
-        onScroll={debounce(handleScroll, 200)}
-        forceRenderItems={forceRenderItems}
-      />
+      {fetching && !fetched && <LoadingIndicator />}
+
+      {fetched && (
+        <Masonry
+          key={galleryId}
+          items={items}
+          length={items.length}
+          columnCount={3}
+          getItemDimensions={itemDimensionsSelectorFunc}
+          initialScrollTop={savedScrollPosition}
+          gutter={8}
+          onScroll={debounce(handleScroll, 200)}
+          forceRenderItems={forceRenderItems}
+        />
+      )}
     </>
   );
 };
@@ -214,15 +207,15 @@ Gallery.propTypes = {
 
   // selectors
   gallery: PropTypes.shape({
-    hasNext: PropTypes.bool,
-    fetching: PropTypes.bool,
-    success: PropTypes.bool,
+    hasNext: PropTypes.bool.isRequired,
+    fetching: PropTypes.bool.isRequired,
+    fetched: PropTypes.bool.isRequired,
     error: PropTypes.object,
-    title: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    savedScrollPosition: PropTypes.number.isRequired,
   }).isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  itemHeightSelectorFunc: PropTypes.func.isRequired,
-  itemWidthSelectorFunc: PropTypes.func.isRequired,
+  itemDimensionsSelectorFunc: PropTypes.func.isRequired,
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
@@ -234,6 +227,7 @@ Gallery.propTypes = {
   // actions
   fetchGallery: PropTypes.func.isRequired,
   filterChange: PropTypes.func.isRequired,
+  saveScrollPosition: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -242,14 +236,14 @@ const mapStateToProps = createStructuredSelector({
   requiresAuth: requiresAuthSelector,
   authUrl: authUrlSelector,
   isAuthenticated: isAuthenticatedSelector,
-  itemHeightSelectorFunc: (state) => (itemId) => itemHeightSelector(state, { itemId }),
-  itemWidthSelectorFunc: (state) => (itemId) => itemWidthSelector(state, { itemId }),
+  itemDimensionsSelectorFunc: (state) => (itemId) => itemDimensionsSelector(state, { itemId }),
   forceRenderItems: forceRenderItemsSelector,
 });
 
 const mapDispatchToProps = {
-  fetchGallery: moduleActions.fetchGallery,
-  filterChange: moduleActions.filterChange,
+  fetchGallery: galleryActions.fetchGallery,
+  filterChange: galleryActions.filterChange,
+  saveScrollPosition: galleryActions.saveScrollPosition,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery);

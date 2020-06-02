@@ -1,13 +1,10 @@
 import React from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-
-import * as navigationActions from '../actions/navigationActions';
+import { useHistory } from 'react-router';
 
 const styles = (theme) => ({
   fab: {
@@ -19,7 +16,12 @@ const styles = (theme) => ({
   },
 });
 
-const BackButton = ({ color, classes, isFab, navigateBack }) => {
+const BackButton = ({ color, classes, isFab }) => {
+  const history = useHistory();
+  const navigateBack = () => {
+    history.goBack();
+  };
+
   if (isFab) {
     return (
       <Fab color={color} aria-label="Back" className={isFab ? classes.fab : classes.iconButton} onClick={navigateBack}>
@@ -52,13 +54,6 @@ BackButton.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-
-  // actions
-  navigateBack: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = {
-  navigateBack: navigationActions.navigateBack,
-};
-
-export default compose(connect(null, mapDispatchToProps), withStyles(styles))(BackButton);
+export default withStyles(styles)(BackButton);
