@@ -75,10 +75,17 @@ const variants = {
 
 const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, modalSetItem }) => {
   const [direction, setDirection] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+
+  const handleAnimationEnd = () => {
+    setLeaving(false);
+  };
+
   const swipeConfidenceThreshold = 10000;
   const swipePower = (offset, velocity) => Math.abs(offset) * velocity;
 
   const paginate = (id, newDirection) => {
+    setLeaving(true);
     setDirection(newDirection);
     modalSetItem(id);
   };
@@ -111,7 +118,7 @@ const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, mod
 
   return (
     <div className={classes.slideShow}>
-      <AnimatePresence initial={false} custom={direction}>
+      <AnimatePresence initial={false} custom={direction} onExitComplete={handleAnimationEnd}>
         {item.isVideo ? (
           <Video
             {...commonProps}
@@ -123,6 +130,7 @@ const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, mod
             controls
             autoPlay
             loop
+            muted={leaving}
           />
         ) : (
           <Image {...commonProps} src={item.url} title={item.title} width={item.width} height={item.height} />
