@@ -35,7 +35,7 @@ let mainWindow;
 
 const createWindow = async () => {
   // Install dev tools
-  if (process.env.NODE_ENV === 'development') {
+  if (isDev) {
     await installExtensions();
   }
 
