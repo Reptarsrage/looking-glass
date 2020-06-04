@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialSortState } from '../reducers/sortReducer';
-import { currentSortSelector, currentSearchQuerySelector } from './gallerySelectors';
+import { currentSearchQuerySelector } from './gallerySelectors';
 import { moduleByIdSelector } from './moduleSelectors';
 
 const getValueId = (_, props) => props.valueId;
@@ -55,25 +55,14 @@ export const moduleValuesSelector = createSelector(
 export const defaultSortValueSelector = createSelector(
   [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
+    let sortVals = sortState.allIds.filter((id) => sortState.byId[id].moduleId === module.id);
     if (searchQuery) {
       // different default sort value when searching
-      return module.sortBy.filter((id) => sortState.byId[id].availableInSearch && sortState.byId[id].default)[0];
+      sortVals = sortVals.filter((id) => sortState.byId[id].availableInSearch);
+    } else {
+      sortVals = sortVals.filter((id) => !sortState.byId[id].exclusiveToSearch);
     }
 
-    // different default sort value when not searching
-    return module.sortBy.filter((id) => !sortState.byId[id].exclusiveToSearch && sortState.byId[id].default)[0];
-  }
-);
-
-/** Currently selected sort text */
-export const currentSortTextSelector = createSelector(
-  [currentSortSelector, defaultSortValueSelector, stateSelector],
-  (currentSort, defaultSort, state) => {
-    const valueId = currentSort || defaultSort;
-    if (valueId) {
-      return state.byId[valueId].fullText || state.byId[valueId].name;
-    }
-
-    return null;
+    return sortVals.find((id) => sortState.byId[id].default);
   }
 );

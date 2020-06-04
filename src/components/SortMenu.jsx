@@ -11,7 +11,7 @@ import { withStyles } from '@material-ui/core/styles';
 import SortIcon from '@material-ui/icons/Sort';
 
 import * as galleryActions from '../actions/galleryActions';
-import { moduleValuesSelector, currentSortTextSelector } from '../selectors/sortSelectors';
+import { moduleValuesSelector } from '../selectors/sortSelectors';
 import SortMenuItem from './SortMenuItem';
 
 const styles = (theme) => ({
@@ -21,7 +21,7 @@ const styles = (theme) => ({
   },
 });
 
-function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, currentSortText }) {
+function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
@@ -37,7 +37,7 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, curr
   };
 
   // nothing to display
-  if (!sortByValues || !currentSortText) {
+  if (!sortByValues) {
     return null;
   }
 
@@ -72,10 +72,6 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, curr
   );
 }
 
-SortMenu.defaultProps = {
-  currentSortText: null,
-};
-
 SortMenu.propTypes = {
   // required
   galleryId: PropTypes.string.isRequired,
@@ -83,7 +79,6 @@ SortMenu.propTypes = {
 
   // selectors
   sortByValues: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentSortText: PropTypes.string,
 
   // actions
   sortChange: PropTypes.func.isRequired,
@@ -94,7 +89,6 @@ SortMenu.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   sortByValues: moduleValuesSelector,
-  currentSortText: currentSortTextSelector,
 });
 
 const mapDispatchToProps = {
