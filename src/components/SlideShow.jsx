@@ -120,7 +120,6 @@ const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, mod
             title={item.title}
             width={item.width}
             height={item.height}
-            muted
             controls
             autoPlay
             loop
