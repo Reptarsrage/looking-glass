@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { extname } from 'path';
+import { motion } from 'framer-motion';
 import clsx from 'clsx';
 
 const styles = () => ({
@@ -33,7 +34,7 @@ const Video = ({ classes, src, thumb, width, height, title, styleName, ...other 
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption
-    <video
+    <motion.video
       ref={videoRef}
       className={clsx(classes.video, styleName)}
       width={width}
@@ -42,8 +43,8 @@ const Video = ({ classes, src, thumb, width, height, title, styleName, ...other 
       poster={thumb}
       {...other}
     >
-      <source src={src} type={`video/${extname(src).slice(1).split('?')[0]}`} />
-    </video>
+      <source src={src} type={`video/${extname(src).slice(1).split('?')[0] || 'mp4'}`} />
+    </motion.video>
   );
 };
 
