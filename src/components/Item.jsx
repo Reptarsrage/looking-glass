@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import CollectionsIcon from '@material-ui/icons/Collections';
 import { useHistory } from 'react-router';
 
 import { modalItemIdSelector } from '../selectors/modalSelectors';
@@ -12,10 +13,22 @@ import * as modalActions from '../actions/modalActions';
 import Image from './Image';
 import Video from './Video';
 
-const styles = () => ({
+const styles = (theme) => ({
   item: {
+    position: 'relative',
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    padding: theme.spacing(1),
+    background: 'rgba(0, 0, 0, 0.32)',
+    borderRadius: '50%',
+    display: 'flex',
+    justifyVontent: 'center',
     alignItems: 'center',
   },
 });
@@ -88,7 +101,7 @@ const Item = ({
       width={item.width}
       height={item.height}
       muted
-      controls
+      controls={false}
       autoPlay
       loop
     />
@@ -104,6 +117,11 @@ const Item = ({
       onKeyPress={() => {}}
       tabIndex="0"
     >
+      {item.isGallery ? (
+        <div className={classes.icon}>
+          <CollectionsIcon />
+        </div>
+      ) : null}
       {item.isVideo ? renderVideo() : renderImage()}
     </div>
   );
