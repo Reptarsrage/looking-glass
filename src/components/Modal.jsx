@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 
 import {
@@ -16,6 +17,7 @@ import {
   modalPrevSelector,
   modalOpenSelector,
   modalBoundsSelector,
+  modalItemSelector,
 } from '../selectors/modalSelectors';
 import * as modalActions from '../actions/modalActions';
 import SlideShow from './SlideShow';
@@ -41,9 +43,18 @@ const styles = (theme) => ({
     position: 'fixed',
     zIndex: theme.zIndex.drawer + 3,
   },
+  caption: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: '100px',
+    background: 'linear-gradient(#000, transparent)',
+    zIndex: theme.zIndex.drawer + 4,
+    padding: theme.spacing(1),
+  },
 });
 
-const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose }) => {
+const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose, modalItem }) => {
   const handleAnimationComplete = () => {
     if (!modalOpen) {
       modalClear();
@@ -67,6 +78,15 @@ const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose }) => {
 
   return (
     <>
+      <Fade in={modalOpen}>
+        <div className={classes.caption}>
+          <Typography variant="h4">{modalItem.title}</Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {modalItem.description}
+          </Typography>
+        </div>
+      </Fade>
+
       <Fade in={modalOpen}>
         <div className={classes.backdrop} />
       </Fade>
@@ -99,6 +119,10 @@ Modal.defaultProps = {
 };
 
 Modal.propTypes = {
+  modalItem: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+  }).isRequired,
   modalOpen: PropTypes.bool.isRequired,
   modalBounds: PropTypes.shape({
     top: PropTypes.number.isRequired,
@@ -112,6 +136,7 @@ Modal.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
+  modalItem: modalItemSelector,
   modalItemId: modalItemIdSelector,
   modalNext: modalNextSelector,
   modalPrev: modalPrevSelector,
