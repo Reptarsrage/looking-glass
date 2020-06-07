@@ -1,6 +1,6 @@
 import produce from 'immer';
 
-import { FETCH_FILTERS_SUCCESS } from '../actions/types';
+import { FETCH_FILTERS_SUCCESS, FETCH_GALLERY_SUCCESS } from '../actions/types';
 import { generateFilterId } from './constants';
 
 export const initialState = {
@@ -41,6 +41,16 @@ const filterReducer = (state = initialState, action) =>
         payload.forEach((filter) => addFiltersForSection(draft, filterSectionId, filter));
 
         // TODO: add file system filter options
+        break;
+      }
+      case FETCH_GALLERY_SUCCESS: {
+        const gallery = payload;
+        const { items } = gallery;
+
+        // add item filters
+        items.forEach((item) => {
+          item.filters.forEach(({ filterId, ...filter }) => addFiltersForSection(draft, filterId, filter));
+        });
         break;
       }
       default:

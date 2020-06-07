@@ -1,6 +1,6 @@
 import produce from 'immer';
 
-import { generateItemId } from './constants';
+import { generateItemId, generateFilterId } from './constants';
 import { FETCH_GALLERY_SUCCESS, CLEAR_GALLERY } from '../actions/types';
 
 export const initialState = {
@@ -20,6 +20,7 @@ export const initialItemState = {
   isGallery: false,
   url: null,
   thumb: null,
+  filters: [],
 };
 
 const addItem = (draft, galleryId, item) => {
@@ -35,6 +36,9 @@ const addItem = (draft, galleryId, item) => {
   // generate ids
   const itemId = generateItemId(galleryId, item.id);
 
+  // Translate filters
+  const filters = item.filters.map(({ filterId, id }) => generateFilterId(filterId, id));
+
   // if item does not exist
   if (!(itemId in draft.byId)) {
     // add item
@@ -44,6 +48,7 @@ const addItem = (draft, galleryId, item) => {
       siteId: item.id,
       id: itemId,
       galleryId,
+      filters,
     };
   }
 };

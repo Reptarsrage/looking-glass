@@ -47,3 +47,8 @@ export const forceRenderItemsSelector = createSelector(
   [modalPrevSelector, modalItemIdSelector, modalNextSelector],
   (prev, current, next) => [prev, current, next].filter((id) => id !== null)
 );
+
+export const modalItemHasFiltersSelector = createSelector(
+  modalItemSelector,
+  (item) => (item && item.filters && item.filters.length > 0) || false
+);

@@ -14,6 +14,7 @@ import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
+import { supportsSortingSelector, supportsFilteringSelector } from '../selectors/moduleSelectors';
 import { forceRenderItemsSelector } from '../selectors/modalSelectors';
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
 import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
@@ -67,6 +68,8 @@ const Gallery = ({
   itemDimensionsSelectorFunc,
   forceRenderItems,
   saveScrollPosition,
+  supportsFiltering,
+  supportsSorting,
 }) => {
   const [showOverlayButtons, setShowOverlayButtons] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -162,16 +165,18 @@ const Gallery = ({
       <Toolbar variant="dense">
         <SearchBar moduleId={moduleId} galleryId={galleryId} />
         <div className={classes.grow} />
-        <SortMenu moduleId={moduleId} galleryId={galleryId} />
-        <Button onClick={handleOpenDrawerClick}>
-          <TuneIcon className={classes.extendedIcon} />
-          <Typography color="textSecondary">Filter</Typography>
-        </Button>
+        {supportsSorting && <SortMenu moduleId={moduleId} galleryId={galleryId} />}
+        {supportsFiltering && (
+          <Button onClick={handleOpenDrawerClick}>
+            <TuneIcon className={classes.extendedIcon} />
+            <Typography color="textSecondary">Filter</Typography>
+          </Button>
+        )}
       </Toolbar>
 
       <SelectedFilters galleryId={galleryId} />
 
-      <Modal />
+      <Modal moduleId={moduleId} />
 
       {fetching && !fetched && <LoadingIndicator />}
 
@@ -219,6 +224,8 @@ Gallery.propTypes = {
   requiresAuth: PropTypes.bool.isRequired,
   authUrl: PropTypes.string,
   isAuthenticated: PropTypes.bool.isRequired,
+  supportsSorting: PropTypes.bool.isRequired,
+  supportsFiltering: PropTypes.bool.isRequired,
   forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
 
   // withStyles
@@ -238,6 +245,8 @@ const mapStateToProps = createStructuredSelector({
   isAuthenticated: isAuthenticatedSelector,
   itemDimensionsSelectorFunc: (state) => (itemId) => itemDimensionsSelector(state, { itemId }),
   forceRenderItems: forceRenderItemsSelector,
+  supportsSorting: supportsSortingSelector,
+  supportsFiltering: supportsFilteringSelector,
 });
 
 const mapDispatchToProps = {

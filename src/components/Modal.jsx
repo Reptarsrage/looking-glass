@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { compose } from 'redux';
@@ -8,8 +8,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
 import CloseIcon from '@material-ui/icons/Close';
+import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
+import Backdrop from '@material-ui/core/Backdrop';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import clsx from 'clsx';
+import { useHistory } from 'react-router';
 
 import {
   modalItemIdSelector,
@@ -18,9 +24,13 @@ import {
   modalOpenSelector,
   modalBoundsSelector,
   modalItemSelector,
+  modalItemHasFiltersSelector,
 } from '../selectors/modalSelectors';
+import { defaultGalleryIdSelector } from '../selectors/moduleSelectors';
 import * as modalActions from '../actions/modalActions';
+import * as galleryActions from '../actions/galleryActions';
 import SlideShow from './SlideShow';
+import FilterValue from './FilterValue';
 
 const styles = (theme) => ({
   modal: {
@@ -43,6 +53,9 @@ const styles = (theme) => ({
     position: 'fixed',
     zIndex: theme.zIndex.drawer + 3,
   },
+  menuButton: {
+    top: '116px',
+  },
   caption: {
     position: 'fixed',
     top: 0,
@@ -54,7 +67,21 @@ const styles = (theme) => ({
   },
 });
 
-const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose, modalItem }) => {
+const Modal = ({
+  classes,
+  modalOpen,
+  modalBounds,
+  modalClear,
+  modalClose,
+  modalItem,
+  filterChange,
+  moduleId,
+  defaultGalleryId,
+  modalItemHasFilters,
+}) => {
+  const [open, setOpen] = useState(false);
+  const history = useHistory();
+
   const handleAnimationComplete = () => {
     if (!modalOpen) {
       modalClear();
@@ -63,6 +90,21 @@ const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose, modalI
 
   const close = () => {
     modalClose();
+  };
+
+  const drawerOpen = () => {
+    setOpen(true);
+  };
+
+  const drawerClose = (filterId) => {
+    setOpen(false);
+
+    // TODO: Something better than this
+    if (filterId) {
+      modalClose();
+      filterChange(defaultGalleryId, filterId);
+      history.push(`/gallery/${moduleId}/${defaultGalleryId}`);
+    }
   };
 
   let initial = false;
@@ -87,9 +129,7 @@ const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose, modalI
         </div>
       </Fade>
 
-      <Fade in={modalOpen}>
-        <div className={classes.backdrop} />
-      </Fade>
+      <Backdrop className={classes.backdrop} open={modalOpen} />
 
       <Zoom in={modalOpen}>
         <Fab color="default" aria-label="Close" className={classes.button} onClick={close}>
@@ -97,19 +137,39 @@ const Modal = ({ classes, modalOpen, modalBounds, modalClear, modalClose, modalI
         </Fab>
       </Zoom>
 
-      <AnimatePresence onExitComplete={handleAnimationComplete}>
-        {modalOpen && (
-          <motion.div
-            initial={initial}
-            animate={{ top: 0, left: 0, width: '100%', height: '100%' }}
-            exit={initial}
-            transition={{ duration: 0.2 }}
-            className={classes.modal}
-          >
-            <SlideShow />
-          </motion.div>
+      {modalItemHasFilters && (
+        <Zoom in={modalOpen}>
+          <Fab color="default" className={clsx(classes.button, classes.menuButton)} onClick={drawerOpen}>
+            <MenuIcon />
+          </Fab>
+        </Zoom>
+      )}
+
+      <Drawer anchor="right" open={open} onClose={() => drawerClose()}>
+        {modalItemHasFilters && (
+          <List>
+            {modalItem.filters.map((filterId) => (
+              <FilterValue key={filterId} filterId={filterId} onClick={drawerClose} />
+            ))}
+          </List>
         )}
-      </AnimatePresence>
+      </Drawer>
+
+      {modalItem && modalItem.id && (
+        <AnimatePresence onExitComplete={handleAnimationComplete}>
+          {modalOpen && (
+            <motion.div
+              initial={initial}
+              animate={{ top: 0, left: 0, width: '100%', height: '100%' }}
+              exit={initial}
+              transition={{ duration: 0.2 }}
+              className={classes.modal}
+            >
+              <SlideShow />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </>
   );
 };
@@ -119,9 +179,13 @@ Modal.defaultProps = {
 };
 
 Modal.propTypes = {
+  moduleId: PropTypes.string.isRequired,
   modalItem: PropTypes.shape({
+    id: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
+    galleryId: PropTypes.string,
+    filters: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   modalOpen: PropTypes.bool.isRequired,
   modalBounds: PropTypes.shape({
@@ -130,8 +194,11 @@ Modal.propTypes = {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
   }),
+  modalItemHasFilters: PropTypes.bool.isRequired,
+  defaultGalleryId: PropTypes.string.isRequired,
   modalClear: PropTypes.func.isRequired,
   modalClose: PropTypes.func.isRequired,
+  filterChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
 
@@ -142,11 +209,14 @@ const mapStateToProps = createStructuredSelector({
   modalPrev: modalPrevSelector,
   modalOpen: modalOpenSelector,
   modalBounds: modalBoundsSelector,
+  defaultGalleryId: defaultGalleryIdSelector,
+  modalItemHasFilters: modalItemHasFiltersSelector,
 });
 
 const mapDispatchToProps = {
   modalClear: modalActions.modalClear,
   modalClose: modalActions.modalClose,
+  filterChange: galleryActions.filterChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Modal);

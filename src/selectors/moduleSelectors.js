@@ -30,3 +30,18 @@ export const filterBySelector = createSelector(moduleByIdSelector, (module) => m
 
 /** Sort values configured for module */
 export const sortBySelector = createSelector(moduleByIdSelector, (module) => module.sortBy);
+
+/** Default gallery for this module */
+export const defaultGalleryIdSelector = createSelector(moduleByIdSelector, (module) => module.defaultGalleryId);
+
+/** Module supports sorting */
+export const supportsSortingSelector = createSelector(
+  moduleByIdSelector,
+  (module) => (module.sortBy && module.sortBy.length > 0) || false
+);
+
+/** Module supports filtering */
+export const supportsFilteringSelector = createSelector(
+  moduleByIdSelector,
+  (module) => (module.filterBy && module.filterBy.length > 0) || false
+);
