@@ -1,4 +1,3 @@
-import 'react-hot-loader';
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -20,3 +19,16 @@ render(
   </Provider>,
   document.getElementById('root')
 );
+
+if (module.hot) {
+  module.hot.accept('./Routes', () => {
+    render(
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <Routes />
+        </ConnectedRouter>
+      </Provider>,
+      document.getElementById('root')
+    );
+  });
+}

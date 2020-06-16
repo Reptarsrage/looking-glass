@@ -65,9 +65,6 @@ module.exports = () => {
     resolve: {
       extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
       modules: ['node_modules'],
-      alias: {
-        'react-dom': isDev ? '@hot-loader/react-dom' : 'react-dom',
-      },
     },
     plugins: [
       new HardSourceWebpackPlugin(),

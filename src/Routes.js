@@ -1,6 +1,5 @@
 import React from 'react';
 import { Switch, Route } from 'react-router';
-import { hot } from 'react-hot-loader/root';
 
 import App from './containers/App';
 import Home from './containers/Home';
@@ -25,4 +24,4 @@ const Routes = () => (
   </App>
 );
 
-export default hot(Routes);
+export default Routes;

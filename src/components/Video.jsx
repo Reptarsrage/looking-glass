@@ -30,7 +30,7 @@ const Video = ({ classes, src, thumb, width, height, title, styleName, ...other 
       videoRef.current.querySelector('source').removeAttribute('src');
       videoRef.current.load();
     };
-  }, ['hot']);
+  }, []);
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption

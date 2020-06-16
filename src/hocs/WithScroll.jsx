@@ -47,7 +47,7 @@ const withScroll = (WrappedComponent) => {
       if (typeof initialScrollTop === 'number') {
         outerElt.scrollTop = initialScrollTop;
       }
-    }, ['hot']);
+    }, []);
 
     useEffect(() => {
       // Try and maintain relative scroll position when width resized

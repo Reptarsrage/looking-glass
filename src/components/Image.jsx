@@ -24,7 +24,7 @@ const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
     return () => {
       imageRef.current.removeAttribute('src');
     };
-  }, ['hot']);
+  }, []);
 
   return (
     <motion.img

@@ -46,7 +46,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules }) => {
     if (!fetching && !fetched) {
       fetchModules();
     }
-  }, ['hot']);
+  }, []);
 
   const chooseFolder = () => {
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
