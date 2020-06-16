@@ -110,7 +110,9 @@ const Gallery = ({
       setShowOverlayButtons(false);
     }
 
-    if (scrollHeight - scrollTop - clientHeight < clientHeight) {
+    const value = scrollHeight - scrollTop - clientHeight;
+    const threshold = Math.max(scrollHeight * 0.1, 1000);
+    if (value < threshold) {
       loadMoreItems();
     }
 
