@@ -15,12 +15,14 @@ import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
 import { Helmet } from 'react-helmet';
+import { useHistory } from 'react-router';
 
 import { productName } from '../../package.json';
 import ModuleItem from '../components/ModuleItem';
 import * as moduleActions from '../actions/moduleActions';
+import * as galleryActions from '../actions/galleryActions';
 import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
-import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants';
+import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from '../reducers/constants';
 
 const styles = (theme) => ({
   main: {
@@ -40,7 +42,9 @@ const styles = (theme) => ({
   },
 });
 
-const Home = ({ classes, fetching, fetched, fetchModules, error, modules }) => {
+const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFileSystemDirectory }) => {
+  const history = useHistory();
+
   useEffect(() => {
     // fetch modules
     if (!fetching && !fetched) {
@@ -51,11 +55,11 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules }) => {
   const chooseFolder = () => {
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
-        // eslint-disable-next-line no-alert
-        alert('Not implemented!');
-        // TODO: Handle file system gallery navigation
-        // const galleryId = Buffer.from(filePaths[0]).toString('base64');
-        // navigateToGallery(FILE_SYSTEM_MODULE_ID, galleryId, path.basename(filePaths[0]));
+        const directoryPath = filePaths[0];
+        setFileSystemDirectory(directoryPath);
+        const siteId = Buffer.from(directoryPath, 'utf-8').toString('base64');
+        const galleryId = generateGalleryId(FILE_SYSTEM_MODULE_ID, siteId);
+        history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`);
       }
     });
   };
@@ -110,6 +114,7 @@ Home.propTypes = {
 
   // actions
   fetchModules: PropTypes.func.isRequired,
+  setFileSystemDirectory: PropTypes.func.isRequired,
 
   // withStyles
   classes: PropTypes.object.isRequired,
@@ -124,6 +129,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = {
   fetchModules: moduleActions.fetchModules,
+  setFileSystemDirectory: galleryActions.setFileSystemDirectory,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Home);

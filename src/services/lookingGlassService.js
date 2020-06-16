@@ -3,7 +3,7 @@ import { stringify } from 'qs';
 import { DEFAULT_GALLERY_ID } from '../reducers/constants';
 import { create } from './axiosInstance';
 
-export default class FileSystemService {
+export default class LookingGlassService {
   config;
 
   instance;

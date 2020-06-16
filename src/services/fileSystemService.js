@@ -1,200 +1,68 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as crypto from 'crypto';
-import { promisify } from 'util';
-import { stringify } from 'qs';
-import { exec } from 'child_process';
-import imageSizeOfSync from 'image-size';
+import { basename, extname } from 'path';
 import { lookup } from 'mime-types';
+import { stringify } from 'qs';
 
-const imageSizeOf = promisify(imageSizeOfSync);
+import Crawler from './directoryCrawler';
 
 export default class FileSystemService {
-  port = process.env.SERVICE_PORT || 30002;
-
-  salt = null;
-
-  host = process.env.SERVICE_HOST || 'localhost';
-
   constructor() {
-    this.salt = this.genRandomString(6);
+    this.port = process.env.SERVICE_PORT || 30002;
+    this.host = process.env.SERVICE_HOST || 'localhost';
+    this.maxCacheSize = 100;
+    this.cacheItems = [];
+    this.cacheLookup = {};
   }
 
-  genRandomString = (length) =>
-    crypto
-      .randomBytes(Math.ceil(length / 2))
-      .toString('hex')
-      .slice(0, length);
+  cacheContains = (key) => key in this.cacheLookup;
 
-  sha512 = (s) => crypto.createHmac('sha1', this.salt).update(s).digest('base64');
+  getCache = (key) => this.cacheLookup[key];
 
-  fileCount = (dir) =>
-    fs
-      .readdirSync(dir)
-      .map((item) => `${dir}${path.sep}${item}`)
-      .map((file) => fs.lstatSync(file))
-      .filter((stat) => stat.isFile()).length;
-
-  dirCount = (dir) =>
-    fs
-      .readdirSync(dir)
-      .map((item) => `${dir}${path.sep}${item}`)
-      .map((file) => fs.lstatSync(file))
-      .filter((stat) => stat.isDirectory()).length;
-
-  videoSizeOf = (file) =>
-    new Promise((resolve, reject) =>
-      exec(
-        `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 "${file}"`,
-        (err, stdout) => {
-          if (err) {
-            console.warn(err, 'ffprobe error:');
-            reject(err);
-          }
-
-          const width = /width=(\d+)/.exec(stdout);
-          const height = /height=(\d+)/.exec(stdout);
-          resolve({
-            width: parseInt(width[1], 10),
-            height: parseInt(height[1], 10),
-          });
-        }
-      )
-    );
-
-  getThumbForFile = async (file) => {
-    try {
-      const mimeType = lookup(file);
-      if (mimeType.startsWith('image')) {
-        const dimensions = await imageSizeOf(file);
-        return {
-          url: `http://${this.host}:${this.port}/image?${stringify({ uri: file })}`,
-          thumb: null,
-          isVideo: false,
-          width: dimensions.width,
-          height: dimensions.height,
-        };
-      }
-
-      if (mimeType.startsWith('video')) {
-        const dimensions = await this.videoSizeOf(file);
-        return {
-          url: `http://${this.host}:${this.port}/video?${stringify({ uri: file })}`,
-          thumb: null,
-          isVideo: true,
-          width: dimensions.width,
-          height: dimensions.height,
-        };
-      }
-    } catch (err) {
-      console.warn(err, `Error determine image for file: ${file}`);
+  addCache = (key, value) => {
+    this.cacheLookup[key] = value;
+    if (this.cacheItems.push(key) > this.maxCacheSize) {
+      delete this.cacheLookup[this.cacheItems.shift()];
     }
-
-    return null;
   };
 
-  getThumbForDir = async (dir) => {
-    let retItem = null;
+  fetchImages = async (_moduleId, galleryId, _accessToken, offset) => {
     try {
-      const dirItems = fs.readdirSync(dir);
-      for (const item of dirItems) {
-        const file = `${dir}${path.sep}${item}`;
-        const stat = fs.statSync(file);
-        if (stat && stat.isFile) {
-          retItem = await this.getThumbForFile(file);
-          // Prefer images
-          if (retItem !== null && !retItem.isVideo) {
-            return retItem;
-          }
-        }
+      const dirPath = Buffer.from(galleryId, 'base64').toString('utf-8');
+      if (!this.cacheContains(dirPath)) {
+        this.addCache(dirPath, new Crawler(dirPath));
       }
-    } catch (err) {
-      console.warn(err, 'Error reading file');
-    }
 
-    console.warn('Unable to determine image for dir: ', dir);
-    return retItem;
-  };
+      const crawler = this.getCache(dirPath);
+      const pageNumber = Math.max(offset, 0);
+      const page = await crawler.getPage(pageNumber);
+      const data = {
+        items: page.map(({ file, width, height }) => {
+          const title = basename(file, extname(file));
+          const isVideo = lookup(file).startsWith('video');
+          const url = `http://${this.host}:${this.port}/${isVideo ? 'video' : 'image'}?${stringify({ uri: file })}`;
 
-  walk = async (dir, offset = 0, pageSize = 20) => {
-    const results = [];
+          return {
+            id: file,
+            title,
+            description: '',
+            width,
+            height,
+            url,
+            thumb: null,
+            isVideo,
+            isGallery: false,
+            filters: [],
+          };
+        }),
+        hasNext: page.length > 0,
+        count: page.length,
+        offset: pageNumber + 1,
+        after: null,
+      };
 
-    const dirCount = this.dirCount(dir);
-    let dirItems = fs.readdirSync(dir).map((item) => `${dir}${path.sep}${item}`);
-
-    // shuffle if contains directories
-    if (dirCount > 0) {
-      dirItems = dirItems.sort((a, b) => {
-        const aHash = this.sha512(a);
-        const bHash = this.sha512(b);
-        if (aHash === bHash) {
-          return 0;
-        }
-        if (aHash > bHash) {
-          return -1;
-        }
-        return 1;
-      });
-    }
-
-    await Promise.all(
-      dirItems.slice(offset, Math.min(offset + pageSize, dirItems.length)).map(async (itemPath) => {
-        const title = path.basename(itemPath, path.extname(itemPath));
-        const stat = fs.statSync(itemPath);
-        let result = null;
-        if (stat && stat.isDirectory()) {
-          const details = await this.getThumbForDir(itemPath);
-          const itemDirCount = this.dirCount(itemPath);
-          const itemFileCount = this.fileCount(itemPath);
-
-          result =
-            details === null
-              ? null
-              : {
-                  ...details,
-                  id: encodeURIComponent(itemPath),
-                  title,
-                  description: itemPath,
-                  isGallery: itemFileCount > 1 || itemDirCount > 0,
-                };
-        } else {
-          const details = await this.getThumbForFile(itemPath);
-          result =
-            details === null
-              ? null
-              : {
-                  ...details,
-                  id: this.sha512(itemPath),
-                  title,
-                  description: itemPath,
-                  isGallery: false,
-                };
-        }
-
-        if (result !== null) {
-          results.push(result);
-        }
-      })
-    );
-
-    return {
-      items: results,
-      hasNext: offset < dirItems.length,
-      count: results.length,
-      offset: offset + pageSize,
-    };
-  };
-
-  fetchImages = async (moduleId, galleryId, accessToken, offset) => {
-    try {
-      // NOTE: our location is the base64 encoded galleryId
-      const location = galleryId;
-      const pageSize = 20;
-      const data = await this.walk(location, offset, pageSize);
       return { data };
     } catch (err) {
       // Deal with the fact the chain failed
-      console.warn(err, 'Error crawling');
+      console.error('Error crawling', err);
       throw err;
     }
   };

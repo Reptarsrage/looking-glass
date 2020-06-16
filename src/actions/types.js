@@ -27,6 +27,7 @@ export const {
   UPDATE_FILTER,
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
+  SET_FILE_SYSTEM_DIRECTORY,
 } = actionTyper('gallery');
 
 export const { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } = actionTyper('module');

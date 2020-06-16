@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { basename } from 'path';
 
 import {
   DEFAULT_GALLERY_ID,
@@ -22,6 +23,7 @@ import {
   UPDATE_FILTER,
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
+  SET_FILE_SYSTEM_DIRECTORY,
 } from '../actions/types';
 
 export const initialState = {
@@ -181,6 +183,13 @@ const galleryReducer = (state = initialState, action) =>
         const galleryId = meta;
         const scrollPosition = payload;
         draft.byId[galleryId].savedScrollPosition = scrollPosition;
+        break;
+      }
+      case SET_FILE_SYSTEM_DIRECTORY: {
+        const directoryPath = payload;
+        const siteId = Buffer.from(directoryPath, 'utf-8').toString('base64');
+
+        addGallery(draft, FILE_SYSTEM_MODULE_ID, siteId, basename(directoryPath));
         break;
       }
       default:

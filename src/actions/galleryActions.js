@@ -10,6 +10,7 @@ import {
   UPDATE_FILTER,
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
+  SET_FILE_SYSTEM_DIRECTORY,
 } from './types';
 
 export const fetchGallery = (galleryId) => ({
@@ -74,4 +75,9 @@ export const updateFilter = (galleryId, filterId) => ({
   type: UPDATE_FILTER,
   payload: filterId,
   meta: galleryId,
+});
+
+export const setFileSystemDirectory = (directoryPath) => ({
+  type: SET_FILE_SYSTEM_DIRECTORY,
+  payload: directoryPath,
 });
