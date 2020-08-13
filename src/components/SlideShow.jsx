@@ -18,7 +18,7 @@ import {
   modalOpenSelector,
   modalItemSelector,
 } from '../selectors/modalSelectors';
-import Image from './Image';
+import Image from './ImageWithZoom';
 import Video from './Video';
 import * as modalActions from '../actions/modalActions';
 
@@ -73,7 +73,7 @@ const variants = {
   },
 };
 
-const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, modalSetItem }) => {
+const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, modalSetItem, animating }) => {
   const [direction, setDirection] = useState(0);
   const [leaving, setLeaving] = useState(false);
 
@@ -133,7 +133,14 @@ const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, mod
             muted={leaving}
           />
         ) : (
-          <Image {...commonProps} src={item.url} title={item.title} width={item.width} height={item.height} />
+          <Image
+            {...commonProps}
+            enableZoom={!animating && modalOpen}
+            src={item.url}
+            title={item.title}
+            width={item.width}
+            height={item.height}
+          />
         )}
       </AnimatePresence>
 
@@ -175,6 +182,7 @@ SlideShow.propTypes = {
   modalNext: PropTypes.string,
   modalPrev: PropTypes.string,
   modalOpen: PropTypes.bool.isRequired,
+  animating: PropTypes.bool.isRequired,
   modalSetItem: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };

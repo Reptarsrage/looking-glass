@@ -80,6 +80,7 @@ const Modal = ({
   modalItemHasFilters,
 }) => {
   const [open, setOpen] = useState(false);
+  const [animating, setAnimating] = useState(true);
   const history = useHistory();
 
   const handleAnimationComplete = () => {
@@ -105,6 +106,14 @@ const Modal = ({
       filterChange(defaultGalleryId, filterId);
       history.push(`/gallery/${moduleId}/${defaultGalleryId}`);
     }
+  };
+
+  const onAnimationStart = () => {
+    setAnimating(true);
+  };
+
+  const onAnimationComplete = () => {
+    setAnimating(false);
   };
 
   let initial = false;
@@ -163,9 +172,11 @@ const Modal = ({
               animate={{ top: 0, left: 0, width: '100%', height: '100%' }}
               exit={initial}
               transition={{ duration: 0.2 }}
+              onAnimationStart={onAnimationStart}
+              onAnimationComplete={onAnimationComplete}
               className={classes.modal}
             >
-              <SlideShow />
+              <SlideShow animating={animating} />
             </motion.div>
           )}
         </AnimatePresence>
