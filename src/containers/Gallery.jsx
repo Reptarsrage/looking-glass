@@ -139,7 +139,7 @@ const Gallery = ({
     }
 
     // Check if next page is available, and fetch it
-    if (hasNext && !fetching && !error) {
+    if (hasNext && !fetching) {
       fetchGallery(galleryId);
     }
   };
