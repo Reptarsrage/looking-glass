@@ -110,7 +110,6 @@ module.exports = class crawler {
 
   markComplete = (file, size) => {
     if (file === null) {
-      console.log(`DONE! ${this.resolved.length}`); // TODO: remove
       this.done = true;
       this.promiseResolve(this.resolve());
       return;
