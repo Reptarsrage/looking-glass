@@ -8,7 +8,7 @@ class MenuBuilder {
 
   buildContextMenu() {
     this.mainWindow.webContents.on('context-menu', (_, props) => {
-      const { mediaType } = props;
+      const { mediaType, selectionText, isEditable } = props;
       const win = this.mainWindow;
       let menuTpl = [];
 
@@ -64,9 +64,22 @@ class MenuBuilder {
             type: 'separator',
           },
         ];
+      } else if (isEditable) {
+        menuTpl = [
+          { role: 'undo' },
+          { role: 'redo' },
+          { type: 'separator' },
+          { role: 'cut' },
+          { role: 'copy' },
+          { role: 'paste' },
+        ];
+      } else if (selectionText && selectionText.trim() !== '') {
+        menuTpl = [{ role: 'copy' }];
       }
 
-      Menu.buildFromTemplate(menuTpl).popup(this.mainWindow);
+      if (menuTpl.length > 0) {
+        Menu.buildFromTemplate(menuTpl).popup(this.mainWindow);
+      }
     });
   }
 }
