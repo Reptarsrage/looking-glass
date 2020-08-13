@@ -24,8 +24,8 @@ const styles = (theme) => ({
 });
 
 const Progress = ({ classes }) => {
-  const duration = 3000;
-  const step = 10000 / Math.floor(duration);
+  let duration = progressTracker.estimateDuration();
+  let step = 10000 / Math.floor(duration);
 
   const [inProgress, setInProgress] = useState(false);
   const [error, setError] = useState(false);
@@ -34,6 +34,9 @@ const Progress = ({ classes }) => {
 
   useEffect(() => {
     progressTracker.onStart(() => {
+      duration = progressTracker.estimateDuration();
+      step = 10000 / Math.floor(duration);
+
       setError(false);
       setProgress(0);
       setInProgress(true);

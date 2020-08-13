@@ -17,6 +17,10 @@ export const progressTracker = {
   incCallbacks: [],
   doneCallbacks: [],
   errorCallbacks: [],
+  pastDurations: [3000],
+  estimateDuration() {
+    return this.pastDurations.reduce((sum, d) => sum + d, 0) / this.pastDurations.length;
+  },
   onStart(cb) {
     this.startCallbacks.push(cb);
   },
@@ -41,7 +45,14 @@ export const progressTracker = {
   inc(num) {
     this.incCallbacks.forEach((cb) => cb(num));
   },
-  done() {
+  done(duration) {
+    if (duration > 0) {
+      this.pastDurations.unshift(duration);
+      if (this.pastDurations.length > 10) {
+        this.pastDurations.pop();
+      }
+    }
+
     this.doneCallbacks.forEach((cb) => cb());
   },
   error() {
@@ -58,6 +69,7 @@ function loadProgressBar(axios) {
     axios.interceptors.request.use((config) => {
       requestsCounter += 1;
       progressTracker.start();
+      config.metadata = { startTime: new Date() };
       return config;
     });
   };
@@ -72,7 +84,8 @@ function loadProgressBar(axios) {
     const responseFunc = (response) => {
       requestsCounter -= 1;
       if (requestsCounter === 0) {
-        progressTracker.done();
+        const duration = new Date() - response.config.metadata.startTime;
+        progressTracker.done(duration);
       }
       return response;
     };
@@ -81,7 +94,7 @@ function loadProgressBar(axios) {
       requestsCounter -= 1;
       if (requestsCounter === 0) {
         progressTracker.error();
-        progressTracker.done();
+        progressTracker.done(-1);
       }
       return Promise.reject(error);
     };
