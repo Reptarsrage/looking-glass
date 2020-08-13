@@ -17,13 +17,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
 import * as authActions from '../actions/authActions';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const styles = (theme) => ({
   main: {
@@ -168,7 +168,7 @@ const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }
             >
               Sign in
             </Button>
-            {fetching && <CircularProgress size={24} className={classes.progress} />}
+            {fetching && <LoadingIndicator size={24} className={classes.progress} />}
           </div>
         </form>
       </Paper>

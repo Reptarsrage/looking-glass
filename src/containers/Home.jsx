@@ -9,7 +9,6 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -23,6 +22,7 @@ import * as moduleActions from '../actions/moduleActions';
 import * as galleryActions from '../actions/galleryActions';
 import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from '../reducers/constants';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const styles = (theme) => ({
   main: {
@@ -68,7 +68,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
 
   const renderModules = () => {
     if (fetching) {
-      return <CircularProgress />;
+      return <LoadingIndicator />;
     }
 
     if (error) {

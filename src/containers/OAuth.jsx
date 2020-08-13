@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { parse } from 'url';
 import { remote } from 'electron';
@@ -25,6 +24,7 @@ import {
   oauthURLErrorSelector,
   oauthURLSuccessSelector,
 } from '../selectors/authSelectors';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const styles = (theme) => ({
   main: {
@@ -172,7 +172,7 @@ const OAuth = ({
           >
             Authorize
           </Button>
-          {isFetching && <CircularProgress size={24} className={classes.progress} />}
+          {isFetching && <LoadingIndicator size={24} className={classes.progress} />}
         </div>
       </Paper>
     </main>
