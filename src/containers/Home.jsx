@@ -8,7 +8,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -26,6 +25,9 @@ import LoadingIndicator from '../components/LoadingIndicator';
 
 const styles = (theme) => ({
   main: {
+    overflow: 'auto',
+    flex: '1 1 auto',
+    display: 'flex',
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
     [theme.breakpoints.up(800 + theme.spacing(3) * 2)]: {
@@ -34,11 +36,17 @@ const styles = (theme) => ({
       marginRight: 'auto',
     },
   },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+  list: {
+    flex: '1 1 auto',
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '10px',
+      backgroundColor: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#d5d5d5',
+      borderRadius: '4px',
+    },
   },
 });
 
@@ -76,7 +84,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
     }
 
     return (
-      <List>
+      <List className={classes.list}>
         {modules.filter((id) => id !== FILE_SYSTEM_MODULE_ID).map(renderModule)}
         <ListItem key="fs" button onClick={chooseFolder}>
           <ListItemAvatar>
@@ -96,7 +104,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
         <title>{productName}</title>
       </Helmet>
 
-      <Paper className={classes.paper}>{renderModules()}</Paper>
+      {renderModules()}
     </main>
   );
 };

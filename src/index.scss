@@ -15,3 +15,8 @@ html {
 *:focus {
   outline: none;
 }
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}

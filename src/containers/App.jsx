@@ -64,6 +64,7 @@ const styles = (theme) => ({
     flex: '1 1 auto',
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'hidden',
   },
   grow: {
     flexGrow: '1',
