@@ -126,7 +126,7 @@
     "electron-dl": "^3.0.0",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^4.0.7",
-    "electron-store": "^5.1.1",
+    "electron-store": "^6.0.0",
     "electron-updater": "4.3.4",
     "history": "^4.10.1",
     "image-size": "^0.8.3",
