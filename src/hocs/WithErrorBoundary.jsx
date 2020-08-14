@@ -1,18 +1,11 @@
 import React, { Component } from 'react';
-import ReactRouterPropTypes from 'react-router-prop-types';
 import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import Button from '@material-ui/core/Button';
-import { withRouter } from 'react-router';
 
 // See https://reactjs.org/docs/error-boundaries.html
 const withErrorBoundary = (WrappedComponent) => {
   class WithErrorBoundary extends Component {
-    static propTypes = {
-      // actions
-      history: ReactRouterPropTypes.history.isRequired,
-    };
-
     constructor() {
       super();
 
@@ -30,14 +23,13 @@ const withErrorBoundary = (WrappedComponent) => {
     }
 
     handleClick = () => {
-      const { history } = this.props;
       this.setState({ error: null, errorInfo: null });
-      history.push('/');
+      window.location = '/';
     };
 
     render() {
       const { error, errorInfo } = this.state;
-      const { history, ...rest } = this.props;
+      const { ...rest } = this.props;
 
       return (
         <>
@@ -63,7 +55,7 @@ const withErrorBoundary = (WrappedComponent) => {
     }
   }
 
-  return withRouter(WithErrorBoundary);
+  return WithErrorBoundary;
 };
 
 export default withErrorBoundary;
