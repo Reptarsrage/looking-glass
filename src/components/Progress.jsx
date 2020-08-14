@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import { progressTracker } from '../services/axiosInstance';
+import progressTracker from '../services/progressTracker';
 
 const styles = (theme) => ({
   bar: {
@@ -25,7 +25,7 @@ const styles = (theme) => ({
 
 const Progress = ({ classes }) => {
   let duration = progressTracker.estimateDuration();
-  let step = 10000 / Math.floor(duration);
+  let step = 1000 / Math.floor(duration);
 
   const [inProgress, setInProgress] = useState(false);
   const [error, setError] = useState(false);
@@ -35,7 +35,7 @@ const Progress = ({ classes }) => {
   useEffect(() => {
     progressTracker.onStart(() => {
       duration = progressTracker.estimateDuration();
-      step = 10000 / Math.floor(duration);
+      step = 1000 / Math.floor(duration);
 
       setError(false);
       setProgress(0);
