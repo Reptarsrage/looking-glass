@@ -25,6 +25,7 @@ import {
   modalBoundsSelector,
   modalItemSelector,
   modalItemHasFiltersSelector,
+  itemFiltersEnabledSelector,
 } from '../selectors/modalSelectors';
 import { defaultGalleryIdSelector } from '../selectors/moduleSelectors';
 import * as modalActions from '../actions/modalActions';
@@ -80,6 +81,7 @@ const Modal = ({
   defaultGalleryId,
   fetchItemFilters,
   modalItemHasFilters,
+  itemFiltersEnabled,
 }) => {
   const [open, setOpen] = useState(false);
   const [animating, setAnimating] = useState(true);
@@ -96,8 +98,10 @@ const Modal = ({
   };
 
   const drawerOpen = () => {
-    // TODO: show pending, error, ect
-    fetchItemFilters(moduleId, modalItem.id);
+    if (itemFiltersEnabled) {
+      fetchItemFilters(moduleId, modalItem.id);
+    }
+
     setOpen(true);
   };
 
@@ -158,6 +162,7 @@ const Modal = ({
         </Zoom>
       )}
 
+      {/* TODO: split into shared section with pending/error/filtering ect */}
       <Drawer anchor="right" open={open} onClose={() => drawerClose()}>
         {modalItemHasFilters && (
           <List>
@@ -216,6 +221,7 @@ Modal.propTypes = {
   filterChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   fetchItemFilters: PropTypes.func.isRequired,
+  itemFiltersEnabled: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -227,6 +233,7 @@ const mapStateToProps = createStructuredSelector({
   modalBounds: modalBoundsSelector,
   defaultGalleryId: defaultGalleryIdSelector,
   modalItemHasFilters: modalItemHasFiltersSelector,
+  itemFiltersEnabled: itemFiltersEnabledSelector,
 });
 
 const mapDispatchToProps = {

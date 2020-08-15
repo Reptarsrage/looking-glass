@@ -12,6 +12,8 @@ export const modalItemIdSelector = createSelector(modalState, (state) => state.m
 
 export const modalBoundsSelector = createSelector(modalState, (state) => state.modalBounds);
 
+export const itemFiltersEnabledSelector = createSelector(modalState, (state) => state.itemFiltersEnabled);
+
 export const modalItemSelector = createSelector(
   [itemsStateSelector, modalItemIdSelector],
   (state, itemId) => state.byId[itemId] || initialItemState

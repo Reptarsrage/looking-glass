@@ -30,6 +30,7 @@ export const initialModuleState = {
   sortBy: [],
   filterBy: [],
   defaultGalleryId: null,
+  itemFiltersEnabled: false,
 };
 
 const addModule = (draft, module, actualModuleId) => {
