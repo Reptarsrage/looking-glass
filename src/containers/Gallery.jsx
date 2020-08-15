@@ -28,6 +28,7 @@ import SelectedFilters from '../components/SelectedFilters';
 import Modal from '../components/Modal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import SearchBar from '../components/SearchBar';
+import EndOfScrollToast from '../components/EndOfScrollToast';
 
 const styles = (theme) => ({
   grow: {
@@ -73,6 +74,7 @@ const Gallery = ({
 }) => {
   const [showOverlayButtons, setShowOverlayButtons] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false);
   const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery;
 
   useEffect(() => {
@@ -118,6 +120,11 @@ const Gallery = ({
 
     // save position for later
     saveScrollPosition(galleryId, scrollTop);
+
+    // Show end of the line toast
+    if (scrollTop + clientHeight >= scrollHeight - 10 && !hasNext) {
+      setShowEndOfScrollToast(true);
+    }
   };
 
   const fetchInitialItems = () => {
@@ -179,6 +186,8 @@ const Gallery = ({
       <SelectedFilters galleryId={galleryId} />
 
       <Modal moduleId={moduleId} />
+
+      <EndOfScrollToast open={showEndOfScrollToast} onClose={() => setShowEndOfScrollToast(false)} />
 
       {fetching && !fetched && <LoadingIndicator />}
 
