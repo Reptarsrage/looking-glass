@@ -45,3 +45,6 @@ export const supportsFilteringSelector = createSelector(
   moduleByIdSelector,
   (module) => (module.filterBy && module.filterBy.length > 0) || false
 );
+
+/** Module supports fetching filters for individual items */
+export const itemFiltersEnabledSelector = createSelector(moduleByIdSelector, (module) => module.itemFiltersEnabled);

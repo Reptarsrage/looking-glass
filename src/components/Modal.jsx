@@ -25,9 +25,8 @@ import {
   modalBoundsSelector,
   modalItemSelector,
   modalItemHasFiltersSelector,
-  itemFiltersEnabledSelector,
 } from '../selectors/modalSelectors';
-import { defaultGalleryIdSelector } from '../selectors/moduleSelectors';
+import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from '../selectors/moduleSelectors';
 import * as modalActions from '../actions/modalActions';
 import * as galleryActions from '../actions/galleryActions';
 import * as filterActions from '../actions/filterActions';
