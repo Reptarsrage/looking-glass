@@ -103,10 +103,13 @@ const itemReducer = (state = initialState, action) =>
         const { itemId, moduleId } = meta;
         const filters = payload;
 
+        // Remove duplicates (if any)
+        const uniqueFilters = filters.filter((f, idx) => filters.findIndex(({ id }) => id === f.id) === idx);
+
         draft.byId[itemId].fetchingFilters = false;
         draft.byId[itemId].fetchedFilters = true;
         draft.byId[itemId].fetchFiltersError = null;
-        draft.byId[itemId].filters = filters.map(({ filterId, id }) => {
+        draft.byId[itemId].filters = uniqueFilters.map(({ filterId, id }) => {
           const filterSectionId = generateFilterSectionId(moduleId, filterId);
           return generateFilterId(filterSectionId, id);
         });
