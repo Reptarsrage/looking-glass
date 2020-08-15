@@ -1,7 +1,7 @@
 import produce from 'immer';
 
-import { FETCH_FILTERS_SUCCESS, FETCH_GALLERY_SUCCESS } from '../actions/types';
-import { generateFilterId } from './constants';
+import { FETCH_FILTERS_SUCCESS, FETCH_GALLERY_SUCCESS, FETCH_ITEM_FILTERS_SUCCESS } from '../actions/types';
+import { generateFilterId, generateFilterSectionId } from './constants';
 
 export const initialState = {
   byId: {},
@@ -20,14 +20,16 @@ const addFiltersForSection = (draft, filterSectionId, filter) => {
   const filterId = generateFilterId(filterSectionId, filter.id);
 
   // add filters
-  draft.allIds.push(filterId);
-  draft.byId[filterId] = {
-    ...initialFilterState,
-    ...filter,
-    siteId: filter.id,
-    id: filterId,
-    filterSectionId,
-  };
+  if (!(filterId in draft.byId)) {
+    draft.allIds.push(filterId);
+    draft.byId[filterId] = {
+      ...initialFilterState,
+      ...filter,
+      siteId: filter.id,
+      id: filterId,
+      filterSectionId,
+    };
+  }
 };
 
 const filterReducer = (state = initialState, action) =>
@@ -41,6 +43,18 @@ const filterReducer = (state = initialState, action) =>
         payload.forEach((filter) => addFiltersForSection(draft, filterSectionId, filter));
 
         // TODO: add file system filter options
+        break;
+      }
+      case FETCH_ITEM_FILTERS_SUCCESS: {
+        const { moduleId } = meta;
+        const filters = payload;
+
+        // add filters for modules
+        filters.forEach(({ filterId, ...filter }) => {
+          const filterSectionId = generateFilterSectionId(moduleId, filterId);
+          addFiltersForSection(draft, filterSectionId, filter);
+        });
+
         break;
       }
       case FETCH_GALLERY_SUCCESS: {

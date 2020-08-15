@@ -1,7 +1,13 @@
 import produce from 'immer';
 
-import { generateItemId, generateFilterId } from './constants';
-import { FETCH_GALLERY_SUCCESS, CLEAR_GALLERY } from '../actions/types';
+import { generateItemId, generateFilterId, generateFilterSectionId } from './constants';
+import {
+  FETCH_ITEM_FILTERS,
+  FETCH_ITEM_FILTERS_FAILURE,
+  FETCH_GALLERY_SUCCESS,
+  CLEAR_GALLERY,
+  FETCH_ITEM_FILTERS_SUCCESS,
+} from '../actions/types';
 
 export const initialState = {
   byId: {},
@@ -21,6 +27,9 @@ export const initialItemState = {
   url: null,
   thumb: null,
   filters: [],
+  fetchingFilters: false,
+  fetchedFilters: false,
+  fetchFiltersError: null,
 };
 
 const addItem = (draft, galleryId, item) => {
@@ -74,6 +83,34 @@ const itemReducer = (state = initialState, action) =>
 
         // add items
         items.forEach((item) => addItem(draft, galleryId, item));
+        break;
+      }
+      case FETCH_ITEM_FILTERS: {
+        const { itemId } = meta;
+        draft.byId[itemId].fetchingFilters = true;
+        draft.byId[itemId].fetchedFilters = false;
+        draft.byId[itemId].fetchFiltersError = null;
+        break;
+      }
+      case FETCH_ITEM_FILTERS_FAILURE: {
+        const { itemId } = meta;
+        draft.byId[itemId].fetchingFilters = false;
+        draft.byId[itemId].fetchedFilters = true;
+        draft.byId[itemId].fetchFiltersError = payload;
+        break;
+      }
+      case FETCH_ITEM_FILTERS_SUCCESS: {
+        const { itemId, moduleId } = meta;
+        const filters = payload;
+
+        draft.byId[itemId].fetchingFilters = false;
+        draft.byId[itemId].fetchedFilters = true;
+        draft.byId[itemId].fetchFiltersError = null;
+        draft.byId[itemId].filters = filters.map(({ filterId, id }) => {
+          const filterSectionId = generateFilterSectionId(moduleId, filterId);
+          return generateFilterId(filterSectionId, id);
+        });
+
         break;
       }
       default:

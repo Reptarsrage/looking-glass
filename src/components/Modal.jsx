@@ -29,6 +29,7 @@ import {
 import { defaultGalleryIdSelector } from '../selectors/moduleSelectors';
 import * as modalActions from '../actions/modalActions';
 import * as galleryActions from '../actions/galleryActions';
+import * as filterActions from '../actions/filterActions';
 import SlideShow from './SlideShow';
 import FilterValue from './FilterValue';
 
@@ -77,6 +78,7 @@ const Modal = ({
   filterChange,
   moduleId,
   defaultGalleryId,
+  fetchItemFilters,
   modalItemHasFilters,
 }) => {
   const [open, setOpen] = useState(false);
@@ -94,6 +96,8 @@ const Modal = ({
   };
 
   const drawerOpen = () => {
+    // TODO: show pending, error, ect
+    fetchItemFilters(moduleId, modalItem.id);
     setOpen(true);
   };
 
@@ -211,6 +215,7 @@ Modal.propTypes = {
   modalClose: PropTypes.func.isRequired,
   filterChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
+  fetchItemFilters: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -228,6 +233,7 @@ const mapDispatchToProps = {
   modalClear: modalActions.modalClear,
   modalClose: modalActions.modalClose,
   filterChange: galleryActions.filterChange,
+  fetchItemFilters: filterActions.fetchItemFilters,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Modal);

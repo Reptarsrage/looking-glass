@@ -65,4 +65,16 @@ export default class LookingGlassService {
     const url = `/${moduleId}/filters?${stringify(params)}`;
     return this.instance.get(url, config);
   };
+
+  fetchItemFilters = async (moduleId, itemId, accessToken) => {
+    const params = { itemId };
+
+    const config = {
+      ...this.config,
+      headers: { 'access-token': accessToken },
+    };
+
+    const url = `/${moduleId}/filters?${stringify(params)}`;
+    return this.instance.get(url, config);
+  };
 }

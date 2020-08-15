@@ -46,4 +46,11 @@ export const {
   AUTHORIZE_FAILURE,
 } = actionTyper('auth');
 
-export const { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_FAILURE } = actionTyper('filter');
+export const {
+  FETCH_FILTERS,
+  FETCH_FILTERS_SUCCESS,
+  FETCH_FILTERS_FAILURE,
+  FETCH_ITEM_FILTERS,
+  FETCH_ITEM_FILTERS_SUCCESS,
+  FETCH_ITEM_FILTERS_FAILURE,
+} = actionTyper('filter');

@@ -34,3 +34,12 @@ export const itemGalleryUrlSelector = createSelector([itemByIdSelector, gallerie
   const itemGalleryId = generateGalleryId(moduleId, siteId);
   return `/gallery/${moduleId}/${itemGalleryId}`;
 });
+
+/** Item filters are pending */
+export const itemFetchingFilters = createSelector(itemByIdSelector, (item) => item.fetchingFilters);
+
+/** Item filters are pending */
+export const itemFetchedFilters = createSelector(itemByIdSelector, (item) => item.fetchedFilters);
+
+/** Item filters are pending */
+export const itemFetchFiltersError = createSelector(itemByIdSelector, (item) => item.fetchFiltersError);
