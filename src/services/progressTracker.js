@@ -8,9 +8,7 @@ class ProgressTrackerInstance {
   }
 
   estimateDuration() {
-    const est = this.pastDurations.reduce((sum, d) => sum + d, 0) / this.pastDurations.length;
-    console.log('ESTIMATE: ', est);
-    return est;
+    return this.pastDurations.reduce((sum, d) => sum + d, 0) / this.pastDurations.length;
   }
 
   onStart(cb) {
