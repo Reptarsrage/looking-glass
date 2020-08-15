@@ -37,7 +37,6 @@ const ImageWithZoom = ({
 
   const imageRef = useRef(null);
   const refState = useRef({
-    transparentSpaceFiller: null,
     previousEvent: null,
     dragging: false,
     x: 0,
@@ -62,8 +61,7 @@ const ImageWithZoom = ({
     }
 
     const img = imageRef.current;
-    const { transparentSpaceFiller } = refState;
-    if (img.src === transparentSpaceFiller) {
+    if (img.style.objectPosition === '-99999px -99999px') {
       return undefined;
     }
 
@@ -99,16 +97,12 @@ const ImageWithZoom = ({
     img.style.backgroundImage = `url("${img.src}")`;
     img.style.backgroundSize = `${bw}px ${bh}px`;
     img.style.backgroundPosition = `${x}px ${y}px`;
-    img.src = `data:image/svg+xml;base64,${window.btoa(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${img.naturalWidth}" height="${img.naturalHeight}"></svg>`
-    )}`;
-
-    refState.transparentSpaceFiller = img.src;
+    img.style.objectPosition = '-99999px -99999px';
 
     return () => {
       img.style.backgroundImage = originalProperties.backgroundImage;
       img.style.backgroundRepeat = originalProperties.backgroundRepeat;
-      img.src = originalProperties.src;
+      img.style.objectPosition = 'unset';
     };
   }, [enableZoom]);
 
@@ -255,6 +249,7 @@ const ImageWithZoom = ({
       className={clsx(classes.image, styleName)}
       role="presentation"
       src={src}
+      data-download={src}
       alt={title}
       width={width}
       height={height}
