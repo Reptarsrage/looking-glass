@@ -7,7 +7,7 @@ import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { withStyles } from '@material-ui/core/styles';
 
-import { filterSectionByIdSelector } from '../selectors/filterSectionSelectors';
+import { filterSectionByIdSelector, filterSectionValuesSearchSelector } from '../selectors/filterSectionSelectors';
 import * as filterActions from '../actions/filterActions';
 import FilterValue from './FilterValue';
 import LoadingIndicator from './LoadingIndicator';
@@ -19,8 +19,8 @@ const styles = (theme) => ({
   },
 });
 
-const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, onClick }) => {
-  const { fetching, fetched, error, values, name } = filterSection;
+const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, onClick, filterValues }) => {
+  const { fetching, fetched, error, name } = filterSection;
 
   useEffect(() => {
     if (!fetching && !fetched) {
@@ -36,13 +36,13 @@ const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, 
     return <span>Error!</span>;
   }
 
-  if (fetched && filterSection.values.length === 0) {
+  if (fetched && filterValues.length === 0) {
     return null;
   }
 
   return (
     <List className={classes.root} subheader={<ListSubheader>{name}</ListSubheader>}>
-      {values.map((filterId) => (
+      {filterValues.map((filterId) => (
         <FilterValue key={filterId} filterId={filterId} onClick={onClick} />
       ))}
     </List>
@@ -51,6 +51,7 @@ const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, 
 
 FilterSection.defaultProps = {
   onClick: null,
+  search: null,
 };
 
 FilterSection.propTypes = {
@@ -58,13 +59,15 @@ FilterSection.propTypes = {
   filterSectionId: PropTypes.string.isRequired,
 
   // Optional
+  // eslint-disable-next-line react/no-unused-prop-types
+  search: PropTypes.string,
   onClick: PropTypes.func,
 
   // Selectors
+  filterValues: PropTypes.arrayOf(PropTypes.string).isRequired,
   filterSection: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    values: PropTypes.arrayOf(PropTypes.string).isRequired,
     fetching: PropTypes.bool.isRequired,
     fetched: PropTypes.bool.isRequired,
     error: PropTypes.object,
@@ -79,6 +82,7 @@ FilterSection.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   filterSection: filterSectionByIdSelector,
+  filterValues: filterSectionValuesSearchSelector,
 });
 
 const mapDispatchToProps = {

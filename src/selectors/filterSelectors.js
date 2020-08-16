@@ -4,7 +4,7 @@ import { initialState, initialFilterState } from '../reducers/filterReducer';
 
 const getFilterId = (_, props) => props.filterId;
 
-const stateSelector = (state) => state.filter || initialState;
+export const stateSelector = (state) => state.filter || initialState;
 
 /** All filters */
 export const filtersSelector = createSelector(stateSelector, (state) => state.allIds);
