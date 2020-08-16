@@ -13,7 +13,6 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
 import clsx from 'clsx';
 import { useHistory } from 'react-router';
 
@@ -29,9 +28,8 @@ import {
 import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from '../selectors/moduleSelectors';
 import * as modalActions from '../actions/modalActions';
 import * as galleryActions from '../actions/galleryActions';
-import * as filterActions from '../actions/filterActions';
 import SlideShow from './SlideShow';
-import FilterValue from './FilterValue';
+import ItemFilters from './ItemFilters';
 
 const styles = (theme) => ({
   modal: {
@@ -66,6 +64,12 @@ const styles = (theme) => ({
     zIndex: theme.zIndex.drawer + 4,
     padding: theme.spacing(1),
   },
+  desc: {
+    display: '-webkit-box',
+    linellamp: 2,
+    boxOrient: 'vertical',
+    overflow: 'hidden',
+  },
 });
 
 const Modal = ({
@@ -78,7 +82,6 @@ const Modal = ({
   filterChange,
   moduleId,
   defaultGalleryId,
-  fetchItemFilters,
   modalItemHasFilters,
   itemFiltersEnabled,
 }) => {
@@ -97,10 +100,6 @@ const Modal = ({
   };
 
   const drawerOpen = () => {
-    if (itemFiltersEnabled) {
-      fetchItemFilters(moduleId, modalItem.id);
-    }
-
     setOpen(true);
   };
 
@@ -134,12 +133,13 @@ const Modal = ({
     };
   }
 
+  const renderFilters = itemFiltersEnabled || modalItemHasFilters;
   return (
     <>
       <Fade in={modalOpen}>
         <div className={classes.caption}>
           <Typography variant="h4">{modalItem.title}</Typography>
-          <Typography variant="subtitle1" color="textSecondary">
+          <Typography variant="subtitle1" color="textSecondary" className={classes.desc}>
             {modalItem.description}
           </Typography>
         </div>
@@ -153,7 +153,7 @@ const Modal = ({
         </Fab>
       </Zoom>
 
-      {modalItemHasFilters && (
+      {renderFilters && (
         <Zoom in={modalOpen}>
           <Fab color="default" className={clsx(classes.button, classes.menuButton)} onClick={drawerOpen}>
             <MenuIcon />
@@ -161,15 +161,8 @@ const Modal = ({
         </Zoom>
       )}
 
-      {/* TODO: split into shared section with pending/error/filtering ect */}
       <Drawer anchor="right" open={open} onClose={() => drawerClose()}>
-        {modalItemHasFilters && (
-          <List>
-            {modalItem.filters.map((filterId) => (
-              <FilterValue key={filterId} filterId={filterId} onClick={drawerClose} />
-            ))}
-          </List>
-        )}
+        <ItemFilters moduleId={moduleId} itemId={modalItem.id} onClick={drawerClose} />
       </Drawer>
 
       {modalItem && modalItem.id && (
@@ -219,7 +212,6 @@ Modal.propTypes = {
   modalClose: PropTypes.func.isRequired,
   filterChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
-  fetchItemFilters: PropTypes.func.isRequired,
   itemFiltersEnabled: PropTypes.bool.isRequired,
 };
 
@@ -239,7 +231,6 @@ const mapDispatchToProps = {
   modalClear: modalActions.modalClear,
   modalClose: modalActions.modalClose,
   filterChange: galleryActions.filterChange,
-  fetchItemFilters: filterActions.fetchItemFilters,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Modal);

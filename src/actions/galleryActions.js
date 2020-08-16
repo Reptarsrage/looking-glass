@@ -23,10 +23,10 @@ export const clearGallery = (galleryId) => ({
   meta: galleryId,
 });
 
-export const fetchGallerySuccess = (galleryId, data) => ({
+export const fetchGallerySuccess = (moduleId, galleryId, data) => ({
   type: FETCH_GALLERY_SUCCESS,
   payload: data,
-  meta: galleryId,
+  meta: { moduleId, galleryId },
 });
 
 export const fetchGalleryFailure = (galleryId, error) => ({

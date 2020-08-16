@@ -32,7 +32,7 @@ export const initialItemState = {
   fetchFiltersError: null,
 };
 
-const addItem = (draft, galleryId, item) => {
+const addItem = (draft, galleryId, moduleId, item) => {
   // quick sanity check
   if (!item.width || !item.height || !item.url) {
     if (process.env.NODE_ENV === 'development') {
@@ -46,7 +46,15 @@ const addItem = (draft, galleryId, item) => {
   const itemId = generateItemId(galleryId, item.id);
 
   // Translate filters
-  const filters = item.filters.map(({ filterId, id }) => generateFilterId(filterId, id));
+  let filters = [];
+  item.filters.forEach(({ filterId, id }) => {
+    const filterSectionId = generateFilterSectionId(moduleId, filterId);
+    const toAdd = generateFilterId(filterSectionId, id);
+
+    if (filters.indexOf(toAdd) < 0) {
+      filters = [...filters, toAdd];
+    }
+  });
 
   // if item does not exist
   if (!(itemId in draft.byId)) {
@@ -68,7 +76,7 @@ const itemReducer = (state = initialState, action) =>
 
     switch (type) {
       case CLEAR_GALLERY: {
-        const galleryId = meta;
+        const { galleryId } = meta;
 
         // remove items
         const galleryItemsToRemove = state.allIds.filter((id) => state.byId[id].galleryId === galleryId);
@@ -77,12 +85,12 @@ const itemReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_GALLERY_SUCCESS: {
-        const galleryId = meta;
+        const { galleryId, moduleId } = meta;
         const gallery = payload;
         const { items } = gallery;
 
         // add items
-        items.forEach((item) => addItem(draft, galleryId, item));
+        items.forEach((item) => addItem(draft, galleryId, moduleId, item));
         break;
       }
       case FETCH_ITEM_FILTERS: {
@@ -103,15 +111,17 @@ const itemReducer = (state = initialState, action) =>
         const { itemId, moduleId } = meta;
         const filters = payload;
 
-        // Remove duplicates (if any)
-        const uniqueFilters = filters.filter((f, idx) => filters.findIndex(({ id }) => id === f.id) === idx);
-
         draft.byId[itemId].fetchingFilters = false;
         draft.byId[itemId].fetchedFilters = true;
         draft.byId[itemId].fetchFiltersError = null;
-        draft.byId[itemId].filters = uniqueFilters.map(({ filterId, id }) => {
+        filters.forEach(({ filterId, id }) => {
           const filterSectionId = generateFilterSectionId(moduleId, filterId);
-          return generateFilterId(filterSectionId, id);
+          const toAdd = generateFilterId(filterSectionId, id);
+          const values = draft.byId[itemId].filters;
+
+          if (values.indexOf(toAdd) < 0) {
+            draft.byId[itemId].filters = [...draft.byId[itemId].filters, toAdd];
+          }
         });
 
         break;

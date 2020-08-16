@@ -102,7 +102,7 @@ function* handleFetchGallery(action) {
       filter
     );
 
-    yield put(fetchGallerySuccess(galleryId, data));
+    yield put(fetchGallerySuccess(moduleId, galleryId, data));
   } catch (error) {
     console.error(error, 'Error fetching gallery');
     yield put(fetchGalleryFailure(galleryId, error));

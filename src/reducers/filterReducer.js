@@ -58,13 +58,18 @@ const filterReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_GALLERY_SUCCESS: {
+        const { moduleId } = meta;
         const gallery = payload;
         const { items } = gallery;
 
         // add item filters
         items.forEach((item) => {
-          item.filters.forEach(({ filterId, ...filter }) => addFiltersForSection(draft, filterId, filter));
+          item.filters.forEach(({ filterId, ...filter }) => {
+            const filterSectionId = generateFilterSectionId(moduleId, filterId);
+            addFiltersForSection(draft, filterSectionId, filter);
+          });
         });
+
         break;
       }
       default:

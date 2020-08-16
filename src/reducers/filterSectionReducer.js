@@ -1,6 +1,13 @@
 import produce from 'immer';
 
-import { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_FAILURE, FETCH_MODULES_SUCCESS } from '../actions/types';
+import {
+  FETCH_FILTERS,
+  FETCH_FILTERS_SUCCESS,
+  FETCH_FILTERS_FAILURE,
+  FETCH_MODULES_SUCCESS,
+  FETCH_ITEM_FILTERS_SUCCESS,
+  FETCH_GALLERY_SUCCESS,
+} from '../actions/types';
 import {
   generateFilterId,
   generateFilterSectionId,
@@ -61,17 +68,60 @@ const filterSectionReducer = (state = initialState, action) =>
         handleAsyncFetch(state.byId[filterSectionId], draft.byId[filterSectionId]);
         break;
       }
+      case FETCH_ITEM_FILTERS_SUCCESS: {
+        const { moduleId } = meta;
+        const filters = payload;
+
+        // add filters for modules
+        filters.forEach(({ filterId, id }) => {
+          const filterSectionId = generateFilterSectionId(moduleId, filterId);
+          const toAdd = generateFilterId(filterSectionId, id);
+          const { values } = draft.byId[filterSectionId];
+          if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
+            draft.byId[filterSectionId].values = [...values, toAdd];
+          }
+        });
+
+        break;
+      }
       case FETCH_FILTERS_SUCCESS: {
         const filterSectionId = meta;
         handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId]);
-        draft.byId[filterSectionId].values = payload
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map(({ id }) => generateFilterId(filterSectionId, id));
+
+        payload.forEach(({ id }) => {
+          const toAdd = generateFilterId(filterSectionId, id);
+          const { values } = draft.byId[filterSectionId];
+          if (values.indexOf(toAdd) < 0) {
+            draft.byId[filterSectionId].values = [...values, toAdd];
+          }
+        });
+
         break;
       }
       case FETCH_FILTERS_FAILURE: {
         const filterSectionId = meta;
         handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload);
+        break;
+      }
+      case FETCH_GALLERY_SUCCESS: {
+        const { moduleId } = meta;
+        const gallery = payload;
+        const { items } = gallery;
+
+        // add item filters
+        items.forEach((item) => {
+          item.filters.forEach(({ filterId, id }) => {
+            const filterSectionId = generateFilterSectionId(moduleId, filterId);
+            const toAdd = generateFilterId(filterSectionId, id);
+            if (filterSectionId in draft.byId) {
+              const { values } = draft.byId[filterSectionId];
+              if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
+                draft.byId[filterSectionId].values = [...values, toAdd];
+              }
+            }
+          });
+        });
+
         break;
       }
       default:

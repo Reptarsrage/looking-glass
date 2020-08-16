@@ -91,7 +91,7 @@ const galleryReducer = (state = initialState, action) =>
         break;
       }
       case FETCH_GALLERY_SUCCESS: {
-        const galleryId = meta;
+        const { galleryId } = meta;
         const gallery = payload;
         const { items, ...galleryState } = gallery;
         const { moduleId } = draft.byId[galleryId];

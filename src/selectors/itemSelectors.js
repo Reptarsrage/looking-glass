@@ -3,6 +3,8 @@ import { createSelector } from 'reselect';
 import { initialState, initialItemState } from '../reducers/itemReducer';
 import { generateGalleryId } from '../reducers/constants';
 import { galleriesStateSelector } from './gallerySelectors';
+import { filterSectionByIdSelector } from './filterSectionSelectors';
+import { stateSelector as filterStateSelector } from './filterSelectors';
 
 const getItemId = (_, props) => props.itemId;
 
@@ -36,10 +38,33 @@ export const itemGalleryUrlSelector = createSelector([itemByIdSelector, gallerie
 });
 
 /** Item filters are pending */
-export const itemFetchingFilters = createSelector(itemByIdSelector, (item) => item.fetchingFilters);
+export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchingFilters);
 
-/** Item filters are pending */
-export const itemFetchedFilters = createSelector(itemByIdSelector, (item) => item.fetchedFilters);
+/** Item filters are fetched */
+export const itemFetchedFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchedFilters);
 
-/** Item filters are pending */
-export const itemFetchFiltersError = createSelector(itemByIdSelector, (item) => item.fetchFiltersError);
+/** Item filters error */
+export const itemFetchFiltersErrorSelector = createSelector(itemByIdSelector, (item) => item.fetchFiltersError);
+
+/** Item filters */
+export const itemFiltersSelector = createSelector(itemByIdSelector, (item) => item.filters);
+
+/** Item filters by section */
+export const itemFiltersSectionSelector = createSelector(
+  [itemByIdSelector, filterStateSelector, filterSectionByIdSelector],
+  (item, filterState, filterSection) => {
+    const values = item.filters.filter((id) => {
+      if (id in filterState.byId) {
+        return filterState.byId[id].filterSectionId === filterSection.id;
+      }
+
+      console.warn('Filter not found', id);
+      return false;
+    });
+
+    return {
+      ...filterSection,
+      values,
+    };
+  }
+);
