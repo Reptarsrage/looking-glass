@@ -50,7 +50,7 @@ const styles = (theme) => ({
     top: '16px',
     right: '16px',
     position: 'fixed',
-    zIndex: theme.zIndex.drawer + 3,
+    zIndex: theme.zIndex.drawer + 5,
   },
   menuButton: {
     top: '116px',
@@ -59,7 +59,7 @@ const styles = (theme) => ({
     position: 'fixed',
     top: 0,
     left: 0,
-    right: '100px',
+    right: 0,
     background: 'linear-gradient(#000, transparent)',
     zIndex: theme.zIndex.drawer + 4,
     padding: theme.spacing(1),
