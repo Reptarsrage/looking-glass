@@ -64,7 +64,13 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes }) {
       >
         <List>
           {sortByValues.map((valueId) => (
-            <SortMenuItem key={valueId} valueId={valueId} onClick={handleClose} />
+            <SortMenuItem
+              key={valueId}
+              moduleId={moduleId}
+              galleryId={galleryId}
+              valueId={valueId}
+              onClick={handleClose}
+            />
           ))}
         </List>
       </Popover>

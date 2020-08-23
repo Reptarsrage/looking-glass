@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialSortState } from '../reducers/sortReducer';
-import { currentSearchQuerySelector } from './gallerySelectors';
+import { currentSearchQuerySelector, currentSortSelector } from './gallerySelectors';
 import { moduleByIdSelector } from './moduleSelectors';
 
 const getValueId = (_, props) => props.valueId;
@@ -63,6 +63,30 @@ export const defaultSortValueSelector = createSelector(
       sortVals = sortVals.filter((id) => !sortState.byId[id].exclusiveToSearch);
     }
 
-    return sortVals.find((id) => sortState.byId[id].default);
+    // Check un-nested first
+    const defaultValueId = sortVals.find((id) => sortState.byId[id].default);
+    if (!defaultValueId) {
+      for (const sortVal of sortVals) {
+        const nestedDefaultValueId = (sortState.byId[sortVal].values || []).find((id) => sortState.byId[id].default);
+        if (nestedDefaultValueId) {
+          return nestedDefaultValueId;
+        }
+      }
+    }
+
+    return defaultValueId;
+  }
+);
+
+export const valueIsCurrentlySelectedSelector = createSelector(
+  [defaultSortValueSelector, currentSortSelector, valueByIdSelector],
+  (defaultValue, currentlySelectedValue, thisValue) => {
+    if (currentlySelectedValue) {
+      return (
+        thisValue.id === currentlySelectedValue || (thisValue.values || []).some((id) => id === currentlySelectedValue)
+      );
+    }
+
+    return thisValue.id === defaultValue || (thisValue.values || []).some(({ id }) => id === defaultValue);
   }
 );
