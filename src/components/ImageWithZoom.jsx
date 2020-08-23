@@ -5,11 +5,18 @@ import { motion } from 'framer-motion';
 import clsx from 'clsx';
 
 const styles = () => ({
+  container: {
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
   image: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    width: 'auto',
-    height: 'auto',
+    objectFit: 'contain',
+    width: '100%',
+    height: '100%',
+    transformOrigin: '0px 0px',
+    transform: 'translate(0, 0) scale(1)',
   },
 });
 const ImageWithZoom = ({
@@ -27,12 +34,9 @@ const ImageWithZoom = ({
   initialY,
   ...other
 }) => {
-  const [measuredWidth, setMeasuredWidth] = useState(0);
-  const [measuredHeight, setMeasuredHeight] = useState(0);
-  const [bgWidth, setBgWidth] = useState(0);
-  const [bgHeight, setBgHeight] = useState(0);
-  const [bgPosX, setBgPosX] = useState(0);
-  const [bgPosY, setBgPosY] = useState(0);
+  const [scale, setScale] = useState(0);
+  const [translateX, setTranslateX] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
   const [isDragging, setIsDragging] = useState(0);
 
   const imageRef = useRef(null);
@@ -41,6 +45,8 @@ const ImageWithZoom = ({
     dragging: false,
     x: 0,
     y: 0,
+    w: 0,
+    h: 0,
   }).current;
 
   // Effect to unload image from memory
@@ -56,53 +62,33 @@ const ImageWithZoom = ({
 
   // Effect to bootstrap zooming
   useEffect(() => {
+    const img = imageRef.current;
     if (!enableZoom) {
       return undefined;
     }
 
-    const img = imageRef.current;
-    if (img.style.objectPosition === '-99999px -99999px') {
-      return undefined;
-    }
-
-    // Save original
-    const originalProperties = {
-      backgroundImage: img.style.backgroundImage,
-      backgroundRepeat: img.style.backgroundRepeat,
-      src: img.src,
-    };
-
-    // Calculate styles and position
-    const initial = Math.max(initialZoom, 1);
+    // calculate initial dimensions
     const computedStyle = window.getComputedStyle(img, null);
     const w = parseInt(computedStyle.width, 10);
     const h = parseInt(computedStyle.height, 10);
-    const bw = w * initial;
-    const bh = h * initial;
-    const x = -(bw - w) * initialX;
-    const y = -(bh - h) * initialY;
 
-    setMeasuredWidth(w);
-    setMeasuredHeight(h);
-    setBgWidth(bw);
-    setBgHeight(bh);
-    setBgPosX(x);
-    setBgPosY(y);
+    // Set state
+    setScale(1);
+    setTranslateX(0);
+    setTranslateY(0);
 
-    refState.x = x;
-    refState.y = y;
-
-    // Set src to background
-    img.style.backgroundRepeat = 'no-repeat';
-    img.style.backgroundImage = `url("${img.src}")`;
-    img.style.backgroundSize = `${bw}px ${bh}px`;
-    img.style.backgroundPosition = `${x}px ${y}px`;
-    img.style.objectPosition = '-99999px -99999px';
+    // Set non-state properties
+    refState.x = 0;
+    refState.y = 0;
+    refState.w = w;
+    refState.h = h;
+    refState.scale = 1;
 
     return () => {
-      img.style.backgroundImage = originalProperties.backgroundImage;
-      img.style.backgroundRepeat = originalProperties.backgroundRepeat;
-      img.style.objectPosition = 'unset';
+      setScale(1);
+      setTranslateX(0);
+      setTranslateY(0);
+      setIsDragging(false);
     };
   }, [enableZoom]);
 
@@ -112,66 +98,50 @@ const ImageWithZoom = ({
       return;
     }
 
+    // determine if zooming in or out
     let deltaY = 0;
     if (event.deltaY) {
-      // FireFox 17+ (IE9+, Chrome 31+?)
       deltaY = event.deltaY;
     } else if (event.wheelDelta) {
       deltaY = -event.wheelDelta;
     }
 
-    // As far as I know, there is no good cross-browser way to get the cursor position relative to the event target.
-    // We have to calculate the target element's position relative to the document, and subtrack that from the
-    // cursor's position relative to the document.
+    // calculate zoom point
     const rect = img.getBoundingClientRect();
-    const offsetX = event.pageX - rect.left - window.pageXOffset;
-    const offsetY = event.pageY - rect.top - window.pageYOffset;
+    let offsetX = event.pageX - rect.left - window.pageXOffset;
+    let offsetY = event.pageY - rect.top - window.pageYOffset;
+    offsetX /= scale;
+    offsetY /= scale;
+    const xs = (offsetX - translateX) / scale;
+    const ys = (offsetY - translateY) / scale;
 
-    // Record the offset between the bg edge and cursor:
-    const bgCursorX = offsetX - bgPosX;
-    const bgCursorY = offsetY - bgPosY;
+    // get scroll direction & set zoom level
+    let newScale = deltaY <= 0 ? scale * 1.2 : scale / 1.2;
 
-    // Use the previous offset to get the percent offset between the bg edge and cursor:
-    const bgRatioX = bgCursorX / bgWidth;
-    const bgRatioY = bgCursorY / bgHeight;
+    // reverse the offset amount with the new scale
+    let newTranslateX = offsetX - xs * newScale;
+    let newTranslateY = offsetY - ys * newScale;
 
-    // Update the bg size:
-    let x = bgPosX;
-    let y = bgPosY;
-    let bh = bgHeight;
-    let bw = bgWidth;
-
-    if (deltaY < 0) {
-      bw += bw * zoom;
-      bh += bh * zoom;
-    } else {
-      bw -= bw * zoom;
-      bh -= bh * zoom;
+    // cap zoom
+    if (newScale < 1) {
+      newScale = 1;
+      newTranslateX = 0;
+      newTranslateY = 0;
     }
 
-    if (maxZoom) {
-      bw = Math.min(measuredWidth * maxZoom, bw);
-      bh = Math.min(measuredHeight * maxZoom, bh);
-    }
+    // cap xy tranlation
+    newTranslateX = Math.min(newTranslateX, 0);
+    newTranslateY = Math.min(newTranslateY, 0);
 
-    // Take the percent offset and apply it to the new size:
-    x = offsetX - bw * bgRatioX;
-    y = offsetY - bh * bgRatioY;
+    // update state
+    setScale(newScale);
+    setTranslateX(newTranslateX);
+    setTranslateY(newTranslateY);
 
-    // Prevent zooming out beyond the starting size
-    if (bw <= measuredWidth || bh <= measuredHeight) {
-      // reset
-      bw = measuredWidth;
-      bh = measuredHeight;
-      x = y = 0;
-    }
-
-    setBgWidth(bw);
-    setBgHeight(bh);
-    setBgPosX(x);
-    setBgPosY(y);
-    refState.x = x;
-    refState.y = y;
+    // update non-state
+    refState.x = newTranslateX;
+    refState.y = newTranslateY;
+    refState.scale = newScale;
   };
 
   const handleMouseUp = (event) => {
@@ -188,8 +158,8 @@ const ImageWithZoom = ({
   };
 
   const handleMouseDown = (event) => {
-    const { dragging, x, y } = refState;
-    const zoomedIn = y !== 0 || x !== 0;
+    const { dragging } = refState;
+    const zoomedIn = scale !== 1;
     if (!dragging && zoomedIn) {
       refState.previousEvent = { pageX: event.pageX, pageY: event.pageY };
       refState.dragging = true;
@@ -200,37 +170,45 @@ const ImageWithZoom = ({
   };
 
   const handleMouseMove = (event) => {
-    const { previousEvent, dragging, x, y } = refState;
+    const { previousEvent, dragging, x, y, w, h } = refState;
     if (dragging) {
       event.preventDefault();
       event.stopPropagation();
 
       refState.x = x + event.pageX - previousEvent.pageX;
       refState.y = y + event.pageY - previousEvent.pageY;
-      setBgPosX(refState.x);
-      setBgPosY(refState.y);
+
+      // cap xy tranlation to original bounds
+      const newWidth = w * scale;
+      const newHeight = h * scale;
+      const right = refState.x + newWidth;
+      const bottom = refState.y + newHeight;
+      if (right < w) {
+        refState.x = w - newWidth;
+      } else {
+        refState.x = Math.min(refState.x, 0);
+      }
+
+      if (bottom < h) {
+        refState.y = h - newHeight;
+      } else {
+        refState.y = Math.min(refState.y, 0);
+      }
+
+      setTranslateX(refState.x);
+      setTranslateY(refState.y);
+
       refState.previousEvent = { pageX: event.pageX, pageY: event.pageY };
     }
   };
 
-  let x = bgPosX;
-  let y = bgPosY;
-  if (x > 0) {
-    x = 0;
-  } else if (x < measuredWidth - bgWidth) {
-    x = measuredWidth - bgWidth;
-  }
-
-  if (y > 0) {
-    y = 0;
-  } else if (y < measuredHeight - bgHeight) {
-    y = measuredHeight - bgHeight;
-  }
-
-  const zoomedIn = y !== 0 || x !== 0;
-  let style = {
-    backgroundSize: `${bgWidth}px ${bgHeight}px`,
-    backgroundPosition: `${x}px ${y}px`,
+  const zoomedIn = scale !== 1;
+  const style = {
+    originX: 0,
+    originY: 0,
+    translateX,
+    translateY,
+    scale,
   };
 
   if (isDragging) {
@@ -239,27 +217,28 @@ const ImageWithZoom = ({
     style.cursor = 'grab';
   }
 
-  if (other.style) {
-    style = { ...style, ...other.style };
+  const otherProps = { ...other };
+  if (zoomedIn) {
+    otherProps.drag = undefined; // Disable dragging when zoomed
   }
 
   return (
-    <motion.img
-      ref={imageRef}
-      className={clsx(classes.image, styleName)}
-      role="presentation"
-      src={src}
-      data-download={src}
-      alt={title}
-      width={width}
-      height={height}
-      title={title}
-      onWheel={handleWheel}
-      onMouseDown={handleMouseDown}
-      {...other}
-      style={style}
-      drag={enableZoom && zoomedIn ? '' : other.drag}
-    />
+    <motion.div className={clsx(classes.container, styleName)} {...otherProps}>
+      <motion.img
+        ref={imageRef}
+        className={classes.image}
+        role="presentation"
+        src={src}
+        alt={title}
+        width={width}
+        height={height}
+        title={title}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        style={style}
+        draggable={zoomedIn}
+      />
+    </motion.div>
   );
 };
 
