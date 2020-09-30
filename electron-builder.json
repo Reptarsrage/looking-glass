@@ -12,7 +12,7 @@
     "target": ["dmg"]
   },
   "win": {
-    "target": ["msi"]
+    "target": ["nsis"]
   },
 
   "linux": {
