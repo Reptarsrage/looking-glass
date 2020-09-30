@@ -2,7 +2,6 @@ require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
-const autoprefixer = require('autoprefixer');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -51,13 +50,6 @@ module.exports = () => {
               },
             },
             {
-              loader: 'postcss-loader',
-              options: {
-                plugins: [autoprefixer()],
-                sourceMap: isDev,
-              },
-            },
-            {
               loader: 'sass-loader',
               options: {
                 sassOptions: {
@@ -73,9 +65,6 @@ module.exports = () => {
     resolve: {
       extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
       modules: ['node_modules'],
-      alias: {
-        'react-dom': isDev ? '@hot-loader/react-dom' : 'react-dom',
-      },
     },
     plugins: [
       new HardSourceWebpackPlugin(),

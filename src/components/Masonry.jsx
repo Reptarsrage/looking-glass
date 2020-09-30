@@ -1,163 +1,159 @@
-import React, { Component } from 'react';
-import Box from '@material-ui/core/Box';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useMemo, memo, useRef } from 'react';
 import PropTypes from 'prop-types';
+import memoizeOne from 'memoize-one';
 
-import ErrorToast from './ErrorToast';
-import LoadingIndicator from './LoadingIndicator';
-import MasonryItem from './MasonryItem';
-import NoResults from './NoResults';
-import VirtualizedMasonry from './VirtualizedMasonry';
+import Virtualized from './Virtualized';
+import withScroll from '../hocs/WithScroll';
+import withResize from '../hocs/WithResize';
 
-const styles = theme => ({
-  container: {
-    alignItems: 'stretch',
-    display: 'flex',
-    flexWrap: 'nowrap',
-    justifyContent: 'space-evenly',
-    padding: theme.spacing(1),
-  },
-  masonryItemContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: '1 1 auto',
-    justifyContent: 'center',
-  },
+// memo?
+const calculateColumnWidth = memoizeOne((columnCount, width, gutter) => {
+  const sbSize = 10; // hard-coded in css
+  return (width - sbSize - (columnCount + 1) * gutter) / columnCount;
 });
 
-class Masonry extends Component {
-  constructor() {
-    super();
+const getAdjustedItemDimensionsEqual = (next, prev) => {
+  const [id, columnCount, width, gutter] = next;
+  const [pid, pColumnCount, pWidth, pGutter] = prev;
 
-    this.state = {
-      message: null,
-      open: false,
-    };
-  }
+  return id === pid && columnCount === pColumnCount && width === pWidth && gutter === pGutter;
+};
 
-  static getDerivedStateFromProps(props, state) {
-    // TODO: Find a way to update based on multiple errors
-    if (props.error && !state.message) {
-      return {
-        message: `Error communicating with server`,
-        open: true,
-      };
+const getAdjustedItemDimensions = (id, columnCount, width, gutter, getItemDimensions) => {
+  const columnWidth = calculateColumnWidth(columnCount, width, gutter);
+  const { width: itemWidth, height: itemHeight } = getItemDimensions(id);
+  const calculatedWidth = Math.min(itemWidth, columnWidth);
+  const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth;
+  const calculatedLeft = (columnWidth - calculatedWidth) / 2.0;
+  return { height: calculatedHeight, width: calculatedWidth, left: calculatedLeft, id };
+};
+
+const Masonry = ({
+  items,
+  columnCount,
+  getItemDimensions,
+  width,
+  height,
+  scrollTop,
+  gutter,
+  scrollDirection,
+  forceRenderItems,
+}) => {
+  const savedColumnItems = useRef([]).current;
+  const { current: getAdjustedItemDimensionsMemo } = useRef(
+    memoizeOne(getAdjustedItemDimensions, getAdjustedItemDimensionsEqual)
+  );
+  const [columnItems, totalHeight] = useMemo(() => {
+    // If column count changed, reset everything
+    if (savedColumnItems.length > columnCount) {
+      while (savedColumnItems.length > 0) {
+        savedColumnItems.pop();
+      }
     }
 
-    // Return null to indicate no change to state.
-    return null;
-  }
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  loadMore = () => {
-    const { galleryId, loading, loadMore, moduleId } = this.props;
-    if (!loading) {
-      loadMore(moduleId, galleryId);
-    }
-  };
-
-  isLoaded = index => {
-    const { items } = this.props;
-    return index < items.length;
-  };
-
-  getItemWidth = index => {
-    const { getItemWidth, items } = this.props;
-    if (!this.isLoaded(index)) {
-      return 0;
+    // Ensure each column has an entry
+    while (savedColumnItems.length < columnCount) {
+      savedColumnItems.push({ height: 0, id: savedColumnItems.length, items: [] });
     }
 
-    return getItemWidth(items[index]);
-  };
+    // Ensure columns are filled with items
+    let totalLength = savedColumnItems.reduce((acc, cur) => acc + cur.items.length, 0);
+    if (totalLength !== items.length) {
+      // Reset if items has completely changed
+      if (items.length < totalLength) {
+        totalLength = 0;
+        savedColumnItems.forEach((savedColumnItem) => {
+          savedColumnItem.height = 0;
+          savedColumnItem.items = [];
+        });
+      }
 
-  getItemHeight = index => {
-    const { getItemHeight, items } = this.props;
-    if (!this.isLoaded(index)) {
-      return 0;
+      // Fill in column items
+      // Make sure to try and balance column heights in a deterministic way
+      for (let i = totalLength; i < items.length; i += 1) {
+        const itemId = items[i];
+        const dims = getAdjustedItemDimensionsMemo(itemId, columnCount, width, gutter, getItemDimensions); // prefer accuracy over cost
+        const minHeightColumn = savedColumnItems.reduce((prev, curr) => (prev.height <= curr.height ? prev : curr));
+        minHeightColumn.items.push(itemId);
+        minHeightColumn.height += dims.height;
+      }
     }
 
-    return getItemHeight(items[index]);
-  };
+    // Calculate actual height for max column
+    const maxHeightColumn = savedColumnItems.reduce((a, b) => (a.height > b.height ? a : b));
+    const calculatedTotalHeight = maxHeightColumn.items.reduce((acc, cur) => {
+      const { height: adjHeight } = getAdjustedItemDimensionsMemo(cur, columnCount, width, gutter, getItemDimensions);
+      return acc + adjHeight;
+    }, 0);
+    return [savedColumnItems, calculatedTotalHeight];
+  }, [columnCount, items, width, gutter]);
 
-  renderItem = index => {
-    const { classes, galleryId, gutter, items, moduleId, onItemClick } = this.props;
+  return (
+    <div style={{ width: '100%', height: `${totalHeight}px` }}>
+      {columnItems.map((col, index) => {
+        const columnWidth = calculateColumnWidth(columnCount, width, gutter);
+        const forceRenderColumnItems = forceRenderItems
+          .map((id) => [id, col.items.indexOf(id)])
+          .filter((a) => a[1] >= 0);
 
-    if (!this.isLoaded(index)) {
-      return null;
-    }
-
-    return (
-      <Box className={classes.masonryItemContainer} style={{ padding: `${gutter}px` }}>
-        <MasonryItem
-          moduleId={moduleId}
-          galleryId={galleryId}
-          itemId={items[index]}
-          onClick={onItemClick}
-          gutter={gutter}
-        />
-      </Box>
-    );
-  };
-
-  render() {
-    const { columnCount, gutter, items, loading, moduleId, galleryId } = this.props;
-    const { message, open } = this.state;
-
-    if (items.length === 0 && loading) {
-      return <LoadingIndicator />;
-    }
-
-    return (
-      <>
-        <ErrorToast message={message} onClose={this.handleClose} open={open} />
-        {items.length === 0 ? (
-          <NoResults />
-        ) : (
-          <VirtualizedMasonry
-            columnCount={columnCount}
-            getHeightForItem={this.getItemHeight}
-            getWidthForItem={this.getItemWidth}
+        return (
+          <Virtualized
+            key={col.id}
+            width={columnWidth}
+            height={height}
+            left={columnWidth * index + gutter * (index + 1)}
+            getAdjustedDimensionsForItem={(id) =>
+              getAdjustedItemDimensionsMemo(id, columnCount, width, gutter, getItemDimensions)
+            }
+            items={[...col.items]}
+            scrollTop={scrollTop}
+            scrollDirection={scrollDirection}
             gutter={gutter}
-            isLoading={loading}
-            length={items.length}
-            loadMore={this.loadMore}
-            loadMoreThreshold={5000}
-            overscan={500}
-            renderItem={this.renderItem}
-            pathKey={`${moduleId}/${galleryId}`}
+            columnNumber={index}
+            forceRenderItems={forceRenderColumnItems}
           />
-        )}
-      </>
-    );
-  }
-}
-
-Masonry.defaultProps = {
-  columnCount: 3,
-  gutter: 8,
+        );
+      })}
+    </div>
+  );
 };
 
 Masonry.propTypes = {
-  // required
-  error: PropTypes.bool.isRequired,
-  galleryId: PropTypes.string.isRequired,
-  getItemHeight: PropTypes.func.isRequired,
-  getItemWidth: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  loading: PropTypes.bool.isRequired,
-  loadMore: PropTypes.func.isRequired,
-  moduleId: PropTypes.string.isRequired,
-  onItemClick: PropTypes.func.isRequired,
-
-  // optional
-  columnCount: PropTypes.number,
-  gutter: PropTypes.number,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
+  columnCount: PropTypes.number.isRequired,
+  getItemDimensions: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  scrollTop: PropTypes.number.isRequired,
+  gutter: PropTypes.number.isRequired,
+  scrollDirection: PropTypes.number.isRequired,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default withStyles(styles)(Masonry);
+function itemsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function areEqual(nextProps, prevProps) {
+  return (
+    nextProps.scrollTop === prevProps.scrollTop &&
+    nextProps.width === prevProps.width &&
+    nextProps.height === prevProps.height &&
+    nextProps.columnCount === prevProps.columnCount &&
+    nextProps.gutter === prevProps.gutter &&
+    itemsEqual(nextProps.items, prevProps.items) &&
+    itemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems)
+  );
+}
+
+export default withResize(withScroll(memo(Masonry, areEqual)));

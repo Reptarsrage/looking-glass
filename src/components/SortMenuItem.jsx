@@ -8,25 +8,30 @@ import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
+import CheckIcon from '@material-ui/icons/Check';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { valueByIdSelector } from '../selectors/sortSelectors';
+import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors';
 import NestedSortMenuItem from './NestedSortMenuItem';
 
 const styles = () => ({
   icon: {
     justifyContent: 'flex-end',
   },
+  secondIcon: {
+    marginLeft: '-20px',
+  },
 });
 
-const SortMenuItem = ({ classes, value, valueId, onClick }) => {
+const SortMenuItem = ({ classes, value, valueId, onClick, valueIsCurrentlySelected, galleryId, moduleId }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const nestedValues = value.values || [];
   const ariaId = `${valueId}-nested-sort-menu`;
   const hasNestedValues = nestedValues.length > 0;
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     if (hasNestedValues) {
       setAnchorEl(event.currentTarget);
     } else {
@@ -34,7 +39,7 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
     }
   };
 
-  const handleClose = id => {
+  const handleClose = (id) => {
     setAnchorEl(null);
     onClick(id);
   };
@@ -42,8 +47,14 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
   return (
     <ListItem button onClick={handleClick}>
       <ListItemText primary={value.name} />
-      {hasNestedValues && (
+      {valueIsCurrentlySelected && (
         <ListItemIcon className={classes.icon}>
+          <CheckIcon color="primary" />
+        </ListItemIcon>
+      )}
+
+      {hasNestedValues && (
+        <ListItemIcon className={clsx(classes.icon, valueIsCurrentlySelected ? classes.secondIcon : undefined)}>
           <ChevronRightIcon />
         </ListItemIcon>
       )}
@@ -63,11 +74,13 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
           }}
         >
           <List>
-            {nestedValues.map(nestedValueId => (
+            {nestedValues.map((nestedValueId) => (
               <NestedSortMenuItem
                 key={nestedValueId}
                 onClick={() => handleClose(nestedValueId)}
                 valueId={nestedValueId}
+                moduleId={moduleId}
+                galleryId={galleryId}
               />
             ))}
           </List>
@@ -79,10 +92,13 @@ const SortMenuItem = ({ classes, value, valueId, onClick }) => {
 
 SortMenuItem.propTypes = {
   // required
+  galleryId: PropTypes.string.isRequired,
+  moduleId: PropTypes.string.isRequired,
   valueId: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 
   // selectors
+  valueIsCurrentlySelected: PropTypes.bool.isRequired,
   value: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -95,6 +111,7 @@ SortMenuItem.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   value: valueByIdSelector,
+  valueIsCurrentlySelected: valueIsCurrentlySelectedSelector,
 });
 
 export default compose(connect(mapStateToProps), withStyles(styles))(SortMenuItem);

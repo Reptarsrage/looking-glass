@@ -1,6 +1,13 @@
 import produce from 'immer';
 
-import { FETCH_FILTERS, FETCH_FILTERS_SUCCESS, FETCH_FILTERS_ERROR, FETCH_MODULES_SUCCESS } from '../actions/types';
+import {
+  FETCH_FILTERS,
+  FETCH_FILTERS_SUCCESS,
+  FETCH_FILTERS_FAILURE,
+  FETCH_MODULES_SUCCESS,
+  FETCH_ITEM_FILTERS_SUCCESS,
+  FETCH_GALLERY_SUCCESS,
+} from '../actions/types';
 import {
   generateFilterId,
   generateFilterSectionId,
@@ -19,6 +26,7 @@ export const initialState = {
 export const initialFilterSectionState = {
   id: null,
   siteId: null,
+  moduleId: null,
   name: null,
   description: null,
   values: [],
@@ -30,7 +38,7 @@ const addFilterSectionForModule = (draft, module) => {
   const moduleId = generateModuleId(module.id);
 
   // add filter sections
-  module.filterBy.forEach(filterSection => {
+  module.filterBy.forEach((filterSection) => {
     const id = generateFilterSectionId(moduleId, filterSection.id);
     draft.allIds.push(id);
     draft.byId[id] = {
@@ -38,12 +46,13 @@ const addFilterSectionForModule = (draft, module) => {
       ...filterSection,
       siteId: filterSection.id,
       id,
+      moduleId,
     };
   });
 };
 
 const filterSectionReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload, meta } = action || {};
 
     switch (type) {
@@ -51,27 +60,68 @@ const filterSectionReducer = (state = initialState, action) =>
         const modules = payload;
 
         // add filter sections for modules
-        modules.forEach(module => addFilterSectionForModule(draft, module));
-
-        // TODO: add file system filter sections
+        modules.forEach((module) => addFilterSectionForModule(draft, module));
         break;
       }
       case FETCH_FILTERS: {
-        const filterSectionId = payload;
+        const filterSectionId = meta;
         handleAsyncFetch(state.byId[filterSectionId], draft.byId[filterSectionId]);
+        break;
+      }
+      case FETCH_ITEM_FILTERS_SUCCESS: {
+        const { moduleId } = meta;
+        const filters = payload;
+
+        // add filters for modules
+        filters.forEach(({ filterId, id }) => {
+          const filterSectionId = generateFilterSectionId(moduleId, filterId);
+          const toAdd = generateFilterId(filterSectionId, id);
+          const { values } = draft.byId[filterSectionId];
+          if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
+            draft.byId[filterSectionId].values = [...values, toAdd];
+          }
+        });
+
         break;
       }
       case FETCH_FILTERS_SUCCESS: {
         const filterSectionId = meta;
         handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId]);
-        draft.byId[filterSectionId].values = payload
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map(({ id }) => generateFilterId(filterSectionId, id));
+
+        payload.forEach(({ id }) => {
+          const toAdd = generateFilterId(filterSectionId, id);
+          const { values } = draft.byId[filterSectionId];
+          if (values.indexOf(toAdd) < 0) {
+            draft.byId[filterSectionId].values = [...values, toAdd];
+          }
+        });
+
         break;
       }
-      case FETCH_FILTERS_ERROR: {
+      case FETCH_FILTERS_FAILURE: {
         const filterSectionId = meta;
         handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload);
+        break;
+      }
+      case FETCH_GALLERY_SUCCESS: {
+        const { moduleId } = meta;
+        const gallery = payload;
+        const { items } = gallery;
+
+        // add item filters
+        items.forEach((item) => {
+          item.filters.forEach(({ filterId, id }) => {
+            const filterSectionId = generateFilterSectionId(moduleId, filterId);
+            const toAdd = generateFilterId(filterSectionId, id);
+            if (filterSectionId in draft.byId) {
+              const { values } = draft.byId[filterSectionId];
+              if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
+                draft.byId[filterSectionId].values = [...values, toAdd];
+              }
+            }
+          });
+        });
+
         break;
       }
       default:

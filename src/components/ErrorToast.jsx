@@ -8,7 +8,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-const styles = theme => ({
+const styles = (theme) => ({
   close: {
     padding: theme.spacing(0.5),
   },

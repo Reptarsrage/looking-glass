@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
@@ -54,4 +54,6 @@ const mapStateToProps = createStructuredSelector({
   filter: filterByIdSelector,
 });
 
-export default compose(connect(mapStateToProps), withStyles(styles))(FilterValue);
+const areEqual = (prevProps, nextProps) => prevProps.filterId === nextProps.filterId;
+
+export default compose(connect(mapStateToProps), withStyles(styles))(memo(FilterValue, areEqual));

@@ -1,19 +1,19 @@
 import { createSelector } from 'reselect';
 
 import { initialState, initialSortState } from '../reducers/sortReducer';
-import { currentSortSelector } from './gallerySelectors';
-import { moduleByIdSelector, searchQuerySelector } from './moduleSelectors';
+import { currentSearchQuerySelector, currentSortSelector } from './gallerySelectors';
+import { moduleByIdSelector } from './moduleSelectors';
 
 const getValueId = (_, props) => props.valueId;
 
-const stateSelector = state => state.sort || initialState;
+const stateSelector = (state) => state.sort || initialState;
 
 /** All Values */
-const valuesSelector = createSelector(stateSelector, state => state.allIds);
+export const valuesSelector = createSelector(stateSelector, (state) => state.allIds);
 
 /** Specific Value */
-const valueByIdSelector = createSelector(
-  [stateSelector, getValueId, searchQuerySelector],
+export const valueByIdSelector = createSelector(
+  [stateSelector, getValueId, currentSearchQuerySelector],
   (state, valueId, searchQuery) => {
     const value = state.byId[valueId] || initialSortState;
     if (!value.values) {
@@ -23,66 +23,70 @@ const valueByIdSelector = createSelector(
     if (searchQuery) {
       return {
         ...value,
-        values: value.values.filter(id => state.byId[id].availableInSearch),
+        values: value.values.filter((id) => state.byId[id].availableInSearch),
       };
     }
 
     return {
       ...value,
-      values: value.values.filter(id => !state.byId[id].exclusiveToSearch),
+      values: value.values.filter((id) => !state.byId[id].exclusiveToSearch),
     };
   }
 );
 
 /** Translate internal id to siteId */
-const valueSiteIdSelector = createSelector(valueByIdSelector, value => value && value.siteId);
+export const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => value && value.siteId);
 
 /** All values for a given module */
-const moduleValuesSelector = createSelector(
-  [moduleByIdSelector, stateSelector, searchQuerySelector],
+export const moduleValuesSelector = createSelector(
+  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different sort values when searching
-      return module.sortBy.filter(id => sortState.byId[id].availableInSearch);
+      return module.sortBy.filter((id) => sortState.byId[id].availableInSearch);
     }
 
     // different sort values when not searching
-    return module.sortBy.filter(id => !sortState.byId[id].exclusiveToSearch);
+    return module.sortBy.filter((id) => !sortState.byId[id].exclusiveToSearch);
   }
 );
 
 /** Default value */
-const defaultSortValueSelector = createSelector(
-  [moduleByIdSelector, stateSelector, searchQuerySelector],
+export const defaultSortValueSelector = createSelector(
+  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
+    let sortVals = sortState.allIds.filter((id) => sortState.byId[id].moduleId === module.id);
     if (searchQuery) {
       // different default sort value when searching
-      return module.sortBy.filter(id => sortState.byId[id].availableInSearch && sortState.byId[id].default)[0];
+      sortVals = sortVals.filter((id) => sortState.byId[id].availableInSearch);
+    } else {
+      sortVals = sortVals.filter((id) => !sortState.byId[id].exclusiveToSearch);
     }
 
-    // different default sort value when not searching
-    return module.sortBy.filter(id => !sortState.byId[id].exclusiveToSearch && sortState.byId[id].default)[0];
+    // Check un-nested first
+    const defaultValueId = sortVals.find((id) => sortState.byId[id].default);
+    if (!defaultValueId) {
+      for (const sortVal of sortVals) {
+        const nestedDefaultValueId = (sortState.byId[sortVal].values || []).find((id) => sortState.byId[id].default);
+        if (nestedDefaultValueId) {
+          return nestedDefaultValueId;
+        }
+      }
+    }
+
+    return defaultValueId;
   }
 );
 
-const currentSortTextSelector = createSelector(
-  [currentSortSelector, defaultSortValueSelector, stateSelector],
-  (currentSort, defaultSort, state) => {
-    const valueId = currentSort || defaultSort;
-    if (valueId) {
-      return state.byId[valueId].fullText || state.byId[valueId].name;
+export const valueIsCurrentlySelectedSelector = createSelector(
+  [defaultSortValueSelector, currentSortSelector, valueByIdSelector],
+  (defaultValue, currentlySelectedValue, thisValue) => {
+    if (currentlySelectedValue) {
+      return (
+        thisValue.id === currentlySelectedValue || (thisValue.values || []).some((id) => id === currentlySelectedValue)
+      );
     }
 
-    return null;
+    return thisValue.id === defaultValue || (thisValue.values || []).some(({ id }) => id === defaultValue);
   }
 );
-
-export {
-  stateSelector,
-  valuesSelector,
-  valueByIdSelector,
-  valueSiteIdSelector,
-  moduleValuesSelector,
-  defaultSortValueSelector,
-  currentSortTextSelector,
-};

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { stringify } from 'qs';
 
-import { DEFAULT_GALLERY_ID, SEARCH_GALLERY_ID } from '../reducers/constants';
+import { DEFAULT_GALLERY_ID } from '../reducers/constants';
+import { create } from './axiosInstance';
 
-export default class FileSystemService {
+export default class LookingGlassService {
   config;
 
   instance;
@@ -14,7 +14,7 @@ export default class FileSystemService {
 
     const baseURL = `http://${host}:${port}`;
     this.config = {};
-    this.instance = axios.create({
+    this.instance = create({
       baseURL,
     });
   }
@@ -23,7 +23,7 @@ export default class FileSystemService {
     return this.instance.get('/', this.config);
   };
 
-  getOauthURL = async moduleId => {
+  getOauthURL = async (moduleId) => {
     return this.instance.get(`/${moduleId}/oauth`, this.config);
   };
 
@@ -41,7 +41,7 @@ export default class FileSystemService {
 
   fetchImages = async (moduleId, galleryId, accessToken, offset, count, after, query, sort, filter) => {
     const params = { offset, count, after, query, sort, filter };
-    if (galleryId !== DEFAULT_GALLERY_ID && galleryId !== SEARCH_GALLERY_ID) {
+    if (galleryId !== DEFAULT_GALLERY_ID) {
       params.galleryId = galleryId;
     }
 
@@ -56,6 +56,18 @@ export default class FileSystemService {
 
   fetchFilters = async (moduleId, filterSectionId, accessToken) => {
     const params = { filter: filterSectionId };
+
+    const config = {
+      ...this.config,
+      headers: { 'access-token': accessToken },
+    };
+
+    const url = `/${moduleId}/filters?${stringify(params)}`;
+    return this.instance.get(url, config);
+  };
+
+  fetchItemFilters = async (moduleId, itemId, accessToken) => {
+    const params = { itemId };
 
     const config = {
       ...this.config,

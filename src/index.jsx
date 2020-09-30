@@ -7,6 +7,7 @@ import './index.scss';
 import Routes from './Routes';
 import { configureStore, history } from './store/configureStore';
 import rootSaga from './sagas';
+import './titleBar';
 
 const store = configureStore();
 store.runSaga(rootSaga);
@@ -19,3 +20,16 @@ render(
   </Provider>,
   document.getElementById('root')
 );
+
+if (module.hot) {
+  module.hot.accept('./Routes', () => {
+    render(
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <Routes />
+        </ConnectedRouter>
+      </Provider>,
+      document.getElementById('root')
+    );
+  });
+}

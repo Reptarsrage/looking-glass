@@ -4,9 +4,10 @@ const fs = require('fs');
 const qs = require('qs');
 const mime = require('mime-types');
 const log = require('electron-log');
+const getPort = require('get-port');
 
-const createServer = () => {
-  const port = 30002; // TODO: choose a better port
+const createServer = async () => {
+  const port = await getPort();
   const server = http.createServer((req, res) => {
     try {
       // parse URL
@@ -61,6 +62,11 @@ const createServer = () => {
   server.on('listening', () => log.info(`Local web server listening on port ${port}`));
   server.on('close', () => log.info('Local web server closing'));
   server.listen(port);
+
+  return {
+    server,
+    port,
+  };
 };
 
 module.exports = createServer;

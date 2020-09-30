@@ -8,7 +8,7 @@ html {
 #root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
 }
 
 /* Disables annoying outlining of containers on focus */
@@ -16,9 +16,11 @@ html {
   outline: none;
 }
 
-/* Disables scrolling on page */
-.stopScroll {
-  margin: 0;
-  height: 100%;
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.container-after-titlebar {
   overflow: hidden;
 }

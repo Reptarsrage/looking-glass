@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { compose } from 'redux';
@@ -8,11 +8,10 @@ import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { moduleIdSelector } from '../selectors/appSelectors';
-import { searchQuerySelector, searchGalleryIdSelector } from '../selectors/moduleSelectors';
-import * as moduleActions from '../actions/moduleActions';
+import { currentSearchQuerySelector } from '../selectors/gallerySelectors';
+import * as galleryActions from '../actions/galleryActions';
 
-const styles = theme => ({
+const styles = (theme) => ({
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -24,7 +23,6 @@ const styles = theme => ({
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
       width: 'auto',
     },
   },
@@ -54,38 +52,32 @@ const styles = theme => ({
   },
 });
 
-class SearchBar extends Component {
-  handleSearchChange = e => {
-    const { searchChange, moduleId, galleryId } = this.props;
-    searchChange(moduleId, galleryId, e.target.value);
+const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) => {
+  const handleSearchChange = (e) => {
+    searchChange(galleryId, e.target.value);
   };
 
-  render() {
-    const { classes, moduleId, galleryId, searchQuery } = this.props;
-
-    if (!moduleId || !galleryId) {
-      // TODO: render only when on default or search gallery
-      return null;
-    }
-
-    return (
-      <div className={classes.search}>
-        <div className={classes.searchIcon}>
-          <SearchIcon />
-        </div>
-        <InputBase
-          placeholder="Search…"
-          onChange={this.handleSearchChange}
-          value={searchQuery || ''}
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-        />
-      </div>
-    );
+  if (!moduleId || !galleryId) {
+    return null;
   }
-}
+
+  return (
+    <div className={classes.search}>
+      <div className={classes.searchIcon}>
+        <SearchIcon />
+      </div>
+      <InputBase
+        placeholder="Search…"
+        onChange={handleSearchChange}
+        value={searchQuery || ''}
+        classes={{
+          root: classes.inputRoot,
+          input: classes.inputInput,
+        }}
+      />
+    </div>
+  );
+};
 
 SearchBar.defaultProps = {
   moduleId: null,
@@ -94,21 +86,26 @@ SearchBar.defaultProps = {
 };
 
 SearchBar.propTypes = {
-  searchChange: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
+  // required
   moduleId: PropTypes.string,
   galleryId: PropTypes.string,
+
+  // actions
+  searchChange: PropTypes.func.isRequired,
+
+  // withStyles
+  classes: PropTypes.object.isRequired,
+
+  // selectors
   searchQuery: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
-  moduleId: moduleIdSelector,
-  galleryId: searchGalleryIdSelector,
-  searchQuery: searchQuerySelector,
+  searchQuery: currentSearchQuerySelector,
 });
 
 const mapDispatchToProps = {
-  searchChange: moduleActions.searchChange,
+  searchChange: galleryActions.searchChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SearchBar);

@@ -11,6 +11,7 @@ export const initialState = {
 export const initialSortState = {
   id: null,
   siteId: null,
+  moduleId: null,
   name: null,
   fullText: null,
   values: [],
@@ -24,16 +25,17 @@ const addSortForModule = (draft, module) => {
   const moduleId = generateModuleId(module.id);
 
   // add sort values
-  module.sortBy.forEach(sortValue => {
+  module.sortBy.forEach((sortValue) => {
     // add nested values
     if (sortValue.values) {
-      sortValue.values.forEach(nestedSortValue => {
+      sortValue.values.forEach((nestedSortValue) => {
         const nestedId = generateSortId(moduleId, nestedSortValue.id);
         draft.allIds.push(nestedId);
         draft.byId[nestedId] = {
           ...initialSortState,
           ...nestedSortValue,
           siteId: nestedSortValue.id,
+          moduleId,
           id: nestedId,
           fullText: `${sortValue.name} (${nestedSortValue.name})`,
         };
@@ -46,15 +48,17 @@ const addSortForModule = (draft, module) => {
     draft.byId[id] = {
       ...initialSortState,
       ...sortValue,
-      values: sortValue.values && sortValue.values.map(nestedSortValue => generateSortId(moduleId, nestedSortValue.id)),
+      values:
+        sortValue.values && sortValue.values.map((nestedSortValue) => generateSortId(moduleId, nestedSortValue.id)),
       siteId: sortValue.id,
+      moduleId,
       id,
     };
   });
 };
 
 const sortReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload } = action || {};
 
     switch (type) {
@@ -62,7 +66,7 @@ const sortReducer = (state = initialState, action) =>
         const modules = payload;
 
         // add sort options for modules
-        modules.forEach(module => addSortForModule(draft, module));
+        modules.forEach((module) => addSortForModule(draft, module));
 
         // TODO: add file system sort options
         break;

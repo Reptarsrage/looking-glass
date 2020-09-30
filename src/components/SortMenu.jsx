@@ -10,34 +10,34 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import SortIcon from '@material-ui/icons/Sort';
 
-import * as moduleActions from '../actions/moduleActions';
-import { moduleValuesSelector, currentSortTextSelector } from '../selectors/sortSelectors';
+import * as galleryActions from '../actions/galleryActions';
+import { moduleValuesSelector } from '../selectors/sortSelectors';
 import SortMenuItem from './SortMenuItem';
 
-const styles = theme => ({
+const styles = (theme) => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
     color: theme.palette.text.secondary,
   },
 });
 
-function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, currentSortText }) {
+function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = valueId => {
+  const handleClose = (valueId) => {
     if (valueId) {
-      sortChange(moduleId, galleryId, valueId);
+      sortChange(galleryId, valueId);
     }
 
     setAnchorEl(null);
   };
 
   // nothing to display
-  if (!sortByValues || !currentSortText) {
+  if (!sortByValues) {
     return null;
   }
 
@@ -63,18 +63,20 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes, curr
         }}
       >
         <List>
-          {sortByValues.map(valueId => (
-            <SortMenuItem key={valueId} valueId={valueId} onClick={handleClose} />
+          {sortByValues.map((valueId) => (
+            <SortMenuItem
+              key={valueId}
+              moduleId={moduleId}
+              galleryId={galleryId}
+              valueId={valueId}
+              onClick={handleClose}
+            />
           ))}
         </List>
       </Popover>
     </>
   );
 }
-
-SortMenu.defaultProps = {
-  currentSortText: null,
-};
 
 SortMenu.propTypes = {
   // required
@@ -83,7 +85,6 @@ SortMenu.propTypes = {
 
   // selectors
   sortByValues: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentSortText: PropTypes.string,
 
   // actions
   sortChange: PropTypes.func.isRequired,
@@ -94,11 +95,10 @@ SortMenu.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   sortByValues: moduleValuesSelector,
-  currentSortText: currentSortTextSelector,
 });
 
 const mapDispatchToProps = {
-  sortChange: moduleActions.sortChange,
+  sortChange: galleryActions.sortChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SortMenu);

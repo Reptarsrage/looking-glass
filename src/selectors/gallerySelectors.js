@@ -4,19 +4,31 @@ import { initialState, initialGalleryState } from '../reducers/galleryReducer';
 
 const getGalleryId = (_, props) => props.galleryId;
 
-const galleriesStateSelector = state => state.gallery || initialState;
+export const galleriesStateSelector = (state) => state.gallery || initialState;
 
-const galleryByIdSelector = createSelector(
+/** Specific gallery */
+export const galleryByIdSelector = createSelector(
   [galleriesStateSelector, getGalleryId],
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 );
 
-const galleriesSelector = createSelector(galleriesStateSelector, state => state.allIds);
+/** All galleries */
+export const galleriesSelector = createSelector(galleriesStateSelector, (state) => state.allIds);
 
-const itemsInGallerySelector = createSelector(galleryByIdSelector, gallery => gallery.items);
+/** All gallery items */
+export const itemsInGallerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.items);
 
-const currentSortSelector = createSelector(galleryByIdSelector, gallery => gallery.currentSort);
+/** Gallery search query value */
+export const currentSearchQuerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.searchQuery);
 
-const currentFilterSelector = createSelector(galleryByIdSelector, gallery => gallery.currentFilter);
+/** Gallery sort value */
+export const currentSortSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentSort);
 
-export { itemsInGallerySelector, galleryByIdSelector, galleriesSelector, currentSortSelector, currentFilterSelector };
+/** Gallery filter value  */
+export const currentFilterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentFilter);
+
+/** Gallery saved scroll position */
+export const savedScrollPositionSelector = createSelector(
+  galleryByIdSelector,
+  (gallery) => gallery.savedScrollPosition
+);

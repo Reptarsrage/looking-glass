@@ -1,118 +1,165 @@
-import React, { PureComponent } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import _ from 'lodash';
+import React, { memo, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import Positioner from './positioner';
+import Item from './Item';
 
-const styles = () => ({
-  container: {
-    display: 'flex',
-    flex: '1 1 auto',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  item: {
-    display: 'flex',
-    position: 'absolute',
-    width: '100%',
-  },
-  itemInner: {
-    display: 'flex',
-    flex: '1 1 auto',
-    position: 'relative',
-  },
-});
+function findNearestItem(end, start, scrollTop, itemPositions, items) {
+  let low = start;
+  let high = end;
 
-class Virtualized extends PureComponent {
-  constructor(props) {
-    super(props);
+  while (low <= high) {
+    const middle = low + Math.floor((high - low) / 2);
+    const itemTop = itemPositions[items[middle]].top;
 
-    this.positioner = new Positioner();
-    this.getHeightForItemMemoizer = _.memoize(props.getHeightForItem);
+    if (itemTop === scrollTop) {
+      return middle;
+    }
 
-    this.state = {
-      totalHeight: this.update(),
-    };
-  }
-
-  componentDidUpdate(prevProps) {
-    const { length: prevLength, width: prevWidth } = prevProps;
-    const { length, width } = this.props;
-    if (length !== prevLength || width !== prevWidth) {
-      const totalHeight = this.update();
-      this.setState({ totalHeight });
+    if (itemTop < scrollTop) {
+      low = middle + 1;
+    } else if (itemTop > scrollTop) {
+      high = middle - 1;
     }
   }
 
-  update = () => {
-    const { items } = this.props;
-    this.getHeightForItemMemoizer.cache = new _.memoize.Cache();
-    this.positioner.updatePositions(items.map(id => ({ height: this.getHeightForItemMemoizer(id), id })));
-    return this.positioner.getTotalHeight();
-  };
+  if (low > 0) {
+    return low - 1;
+  }
+  return 0;
+}
 
-  renderItem = i => {
-    const { classes, innerHeight, overscan, renderItem, scrollPosition, scrollTop } = this.props;
+function computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem) {
+  if (width !== saved.width || items.length < saved.lastComputed) {
+    saved.lastComputed = 0;
+    saved.computedById = {};
+    saved.width = width;
+  }
 
-    const itemTop = this.positioner.getPositionForItem(i);
-    const itemHeight = this.getHeightForItemMemoizer(i);
-    const itemBottom = itemTop + itemHeight;
-    const windowBottom = scrollPosition + innerHeight - scrollTop + overscan;
-    const windowTop = scrollPosition - scrollTop - overscan;
+  const bottom = scrollTop + height;
+  let top = gutter;
+  if (saved.lastComputed !== 0) {
+    const lastComputedItem = saved.computedById[items[saved.lastComputed - 1]];
+    top += lastComputedItem.top + lastComputedItem.height;
+  }
 
-    if (
-      (itemTop >= windowTop && itemTop <= windowBottom) || // top of item is on screen
-      (itemBottom >= windowTop && itemBottom <= windowBottom) || // bottom of item is on screen
-      (itemTop <= windowTop && itemBottom >= windowBottom) // item is larger than screen, middle is on screen
-    ) {
-      return (
-        <div className={classes.item} key={i} style={{ height: `${itemHeight}px`, top: `${itemTop}px` }}>
-          <div className={classes.itemInner}>{renderItem(i)}</div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  render() {
-    const { classes, items } = this.props;
-    const { totalHeight } = this.state;
-
-    return (
-      <div className={classes.container} style={{ minHeight: `${totalHeight}px` }}>
-        {items.map(this.renderItem)}
-      </div>
-    );
+  for (; saved.lastComputed < items.length && top <= bottom; saved.lastComputed += 1) {
+    const id = items[saved.lastComputed];
+    const dims = getAdjustedDimensionsForItem(id);
+    saved.computedById[id] = { ...dims, top, left: dims.left + left, id };
+    top += dims.height + gutter;
   }
 }
 
-Virtualized.defaultProps = {
-  innerHeight: 0,
-  overscan: 0,
-  scrollPosition: 0,
-  scrollTop: 0,
-  width: 0,
+function computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem) {
+  let top = gutter;
+  if (saved.lastComputed !== 0) {
+    const lastComputedItem = saved.computedById[items[saved.lastComputed - 1]];
+    top += lastComputedItem.top + lastComputedItem.height;
+  }
+
+  for (; saved.lastComputed <= toPosition; saved.lastComputed += 1) {
+    const id = items[saved.lastComputed];
+    const dims = getAdjustedDimensionsForItem(id);
+    saved.computedById[id] = { ...dims, top, left: dims.left + left, id };
+    top += dims.height + gutter;
+  }
+}
+
+const Virtualized = ({
+  width,
+  height,
+  left,
+  getAdjustedDimensionsForItem,
+  items,
+  scrollTop,
+  gutter,
+  scrollDirection,
+  forceRenderItems,
+}) => {
+  const saved = useRef({ computedById: {}, lastComputed: 0, width }).current;
+  computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem);
+
+  const start = findNearestItem(saved.lastComputed - 1, 0, scrollTop, saved.computedById, items);
+  const end = findNearestItem(saved.lastComputed - 1, start, scrollTop + height, saved.computedById, items);
+  const more = forceRenderItems.filter(([, idx]) => idx < start || idx > end);
+
+  if (more.some(([id]) => !(id in saved.computedById))) {
+    const toPosition = Math.max(...more.map(([, idx]) => idx));
+    computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem);
+  }
+
+  return items
+    .slice(start, end + 1)
+    .concat(more.map(([id]) => id))
+    .map((id) => saved.computedById[id])
+    .map((item) => (
+      <Item
+        key={item.id}
+        itemId={item.id}
+        scrollDirection={scrollDirection}
+        style={{
+          position: 'absolute',
+          width: `${item.width}px`,
+          top: `${item.top}px`,
+          height: `${item.height}px`,
+          left: `${item.left}px`,
+        }}
+      />
+    ));
 };
 
 Virtualized.propTypes = {
-  // required
-  getHeightForItem: PropTypes.func.isRequired,
-  items: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
-  length: PropTypes.number.isRequired,
-  renderItem: PropTypes.func.isRequired,
-
-  // optional
-  innerHeight: PropTypes.number,
-  overscan: PropTypes.number,
-  scrollPosition: PropTypes.number,
-  scrollTop: PropTypes.number,
-  width: PropTypes.number,
-
-  // from withStyles
-  classes: PropTypes.object.isRequired,
+  items: PropTypes.arrayOf(PropTypes.string).isRequired,
+  left: PropTypes.number.isRequired,
+  getAdjustedDimensionsForItem: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  scrollTop: PropTypes.number.isRequired,
+  gutter: PropTypes.number.isRequired,
+  scrollDirection: PropTypes.number.isRequired,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])))
+    .isRequired,
 };
 
-export default withStyles(styles)(Virtualized);
+function itemsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function forceRenderItemsEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i][1] !== b[i][1]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function areEqual(nextProps, prevProps) {
+  return (
+    nextProps.scrollTop === prevProps.scrollTop &&
+    nextProps.width === prevProps.width &&
+    nextProps.gutter === prevProps.gutter &&
+    nextProps.columnNumber === prevProps.columnNumber &&
+    nextProps.left === prevProps.left &&
+    nextProps.height === prevProps.height &&
+    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
+    itemsEqual(nextProps.items, prevProps.items)
+  );
+}
+
+export default memo(Virtualized, areEqual);

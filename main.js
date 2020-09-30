@@ -4,9 +4,13 @@ const isDev = require('electron-is-dev');
 const path = require('path');
 const log = require('electron-log');
 const { autoUpdater } = require('electron-updater');
+const qs = require('querystring');
 
 const MenuBuilder = require('./menu');
 const createLocalWebServer = require('./localWebServer');
+
+// Web Server
+let localWebServer;
 
 // Auto updater
 class AppUpdater {
@@ -33,9 +37,9 @@ app.allowRendererProcessReuse = true;
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-const createWindow = async () => {
+const createWindow = async (port) => {
   // Install dev tools
-  if (process.env.NODE_ENV === 'development') {
+  if (isDev) {
     await installExtensions();
   }
 
@@ -46,16 +50,19 @@ const createWindow = async () => {
     title: app.name,
     width: bounds.width,
     height: bounds.height,
+    titleBarStyle: 'hidden',
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
   });
 
   // Load the url (or file)
   if (isDev) {
-    mainWindow.loadURL('http://localhost:4000');
+    mainWindow.loadURL(`http://localhost:4000?${qs.stringify({ port })}`);
   } else {
-    mainWindow.loadFile(path.resolve('./resources', 'dist', 'index.html'));
+    mainWindow.loadFile(path.resolve('./dist', 'index.html'), { query: { port } });
   }
 
   // Emitted when the window is closed.
@@ -85,7 +92,12 @@ const createWindow = async () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  await createWindow();
+  // Start a web server to serve up local media files
+  const { server, port } = await createLocalWebServer();
+  localWebServer = server;
+
+  // Create the window
+  await createWindow(port);
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
@@ -112,10 +124,8 @@ app.on('activate', async () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-// Start a web server to serve up local media files
-const server = createLocalWebServer();
 app.on('before-quit', () => {
-  if (server.listening) {
-    server.close();
+  if (localWebServer && localWebServer.listening) {
+    localWebServer.close();
   }
 });

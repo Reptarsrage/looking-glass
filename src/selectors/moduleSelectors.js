@@ -4,46 +4,47 @@ import { initialState, initialModuleState } from '../reducers/moduleReducer';
 
 const getModuleId = (_, props) => props.moduleId;
 
-const moduleStateSelector = state => state.module || initialState;
+const moduleStateSelector = (state) => state.module || initialState;
 
-const galleryStateSelector = state => state.gallery || initialState;
+/** All modules */
+export const modulesSelector = createSelector(moduleStateSelector, (state) => state.allIds);
 
-const modulesSelector = createSelector(moduleStateSelector, state => state.allIds);
-
-const moduleByIdSelector = createSelector(
+/** Specific module */
+export const moduleByIdSelector = createSelector(
   moduleStateSelector,
   getModuleId,
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 );
 
-const moduleByIdSiteIdSelector = createSelector(moduleByIdSelector, module => module.siteId);
+/** Have modules been fetched? */
+export const fetchedSelector = createSelector(moduleStateSelector, (state) => state.fetched);
 
-const searchGalleryIdSelector = createSelector(moduleByIdSelector, module => module.searchGalleryId);
+/** Are modules currently fetching? */
+export const fetchingSelector = createSelector(moduleStateSelector, (state) => state.fetching);
 
-const defaultGalleryIdSelector = createSelector(moduleByIdSelector, module => module.defaultGalleryId);
+/** Did we encounter an error while fetching modules? */
+export const errorSelector = createSelector(moduleStateSelector, (state) => state.error);
 
-const successSelector = createSelector(moduleStateSelector, state => state.success);
+/** Filter values configured for module */
+export const filterBySelector = createSelector(moduleByIdSelector, (module) => module.filterBy);
 
-const fetchingSelector = createSelector(moduleStateSelector, state => state.fetching);
+/** Sort values configured for module */
+export const sortBySelector = createSelector(moduleByIdSelector, (module) => module.sortBy);
 
-const errorSelector = createSelector(moduleStateSelector, state => state.error);
+/** Default gallery for this module */
+export const defaultGalleryIdSelector = createSelector(moduleByIdSelector, (module) => module.defaultGalleryId);
 
-const filterBySelector = createSelector(moduleByIdSelector, module => module.filterBy);
-
-const searchQuerySelector = createSelector(
-  [searchGalleryIdSelector, galleryStateSelector],
-  (searchGalleryId, state) => searchGalleryId && state.byId[searchGalleryId].searchQuery
+/** Module supports sorting */
+export const supportsSortingSelector = createSelector(
+  moduleByIdSelector,
+  (module) => (module.sortBy && module.sortBy.length > 0) || false
 );
 
-export {
-  modulesSelector,
+/** Module supports filtering */
+export const supportsFilteringSelector = createSelector(
   moduleByIdSelector,
-  successSelector,
-  fetchingSelector,
-  errorSelector,
-  moduleByIdSiteIdSelector,
-  searchQuerySelector,
-  filterBySelector,
-  searchGalleryIdSelector,
-  defaultGalleryIdSelector,
-};
+  (module) => (module.filterBy && module.filterBy.length > 0) || false
+);
+
+/** Module supports fetching filters for individual items */
+export const itemFiltersEnabledSelector = createSelector(moduleByIdSelector, (module) => module.itemFiltersEnabled);

@@ -7,20 +7,20 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 
 import { filterByIdSelector } from '../selectors/filterSelectors';
-import * as moduleActions from '../actions/moduleActions';
+import * as galleryActions from '../actions/galleryActions';
 
-const styles = theme => ({
+const styles = (theme) => ({
   filterItem: {
     margin: theme.spacing(0.5),
   },
 });
 
-const SelectedFilter = ({ filterChange, moduleId, galleryId, filter, classes }) => (
+const SelectedFilter = ({ filterChange, galleryId, filter, classes }) => (
   <Chip
     className={classes.filterItem}
     color="primary"
     label={filter.name}
-    onDelete={() => filterChange(moduleId, galleryId, null)}
+    onDelete={() => filterChange(galleryId, null)}
   />
 );
 
@@ -28,7 +28,6 @@ SelectedFilter.propTypes = {
   // required
   // eslint-disable-next-line react/no-unused-prop-types
   filterId: PropTypes.string.isRequired,
-  moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
 
   // withStyles
@@ -48,7 +47,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = {
-  filterChange: moduleActions.filterChange,
+  filterChange: galleryActions.filterChange,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SelectedFilter);

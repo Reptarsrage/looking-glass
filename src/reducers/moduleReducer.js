@@ -1,6 +1,6 @@
 import produce from 'immer';
 
-import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_ERROR } from '../actions/types';
+import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } from '../actions/types';
 import {
   DEFAULT_GALLERY_ID,
   FILE_SYSTEM_MODULE_ID,
@@ -10,7 +10,6 @@ import {
   handleAsyncFetch,
   handleAsyncSuccess,
   initialAsyncState,
-  SEARCH_GALLERY_ID,
   generateSortId,
   generateFilterSectionId,
 } from './constants';
@@ -31,7 +30,7 @@ export const initialModuleState = {
   sortBy: [],
   filterBy: [],
   defaultGalleryId: null,
-  searchGalleryId: null,
+  itemFiltersEnabled: false,
 };
 
 const addModule = (draft, module, actualModuleId) => {
@@ -53,13 +52,12 @@ const addModule = (draft, module, actualModuleId) => {
       sortBy: sortValues,
       filterBy: filterSections,
       defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
-      searchGalleryId: generateGalleryId(moduleId, SEARCH_GALLERY_ID),
     };
   }
 };
 
 const moduleReducer = (state = initialState, action) =>
-  produce(state, draft => {
+  produce(state, (draft) => {
     const { type, payload } = action || {};
 
     switch (type) {
@@ -72,7 +70,7 @@ const moduleReducer = (state = initialState, action) =>
         handleAsyncSuccess(state, draft);
 
         // add modules
-        modules.forEach(module => addModule(draft, module));
+        modules.forEach((module) => addModule(draft, module));
 
         // add file system module
         addModule(
@@ -89,7 +87,7 @@ const moduleReducer = (state = initialState, action) =>
 
         break;
       }
-      case FETCH_MODULES_ERROR: {
+      case FETCH_MODULES_FAILURE: {
         handleAsyncError(state, draft, payload);
         break;
       }

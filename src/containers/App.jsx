@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,13 +12,15 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
-import { withRouter } from 'react-router';
-import clsx from 'clsx';
+import { useRouteMatch } from 'react-router';
+import { Color } from 'custom-electron-titlebar';
 
-import { darkThemeSelector, moduleIdSelector } from '../selectors/appSelectors';
+import { darkThemeSelector } from '../selectors/appSelectors';
+import { modalOpenSelector } from '../selectors/modalSelectors';
 import * as appActions from '../actions/appActions';
-import SearchBar from '../components/SearchBar';
 import BackButton from '../components/BackButton';
+import Progress from '../components/Progress';
+import titleBar from '../titleBar';
 
 // https://material-ui.com/customization/palette/
 const darkTheme = createMuiTheme({
@@ -59,23 +61,19 @@ const lightTheme = createMuiTheme({
   },
 });
 
-const styles = theme => ({
-  scroll: {
-    overflow: 'auto',
-    '&::-webkit-scrollbar': {
-      width: '10px',
-      backgroundColor: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#d5d5d5',
-      borderRadius: '4px',
-    },
+const styles = (theme) => ({
+  container: {
+    flex: '1 1 auto',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
   },
   grow: {
-    flexGrow: 1,
+    flexGrow: '1',
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 3,
+    transition: theme.transitions.create('opacity'),
   },
   title: {
     display: 'none',
@@ -85,74 +83,62 @@ const styles = theme => ({
   },
 });
 
-class App extends Component {
-  handleScroll = event => {
-    window.dispatchEvent(new CustomEvent('continerScroll', { detail: event.target.scrollTop }));
-  };
+const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) => {
+  const match = useRouteMatch({
+    path: '/',
+    exact: true,
+  });
 
-  renderBackButton = () => {
-    const { moduleId } = this.props;
+  useEffect(() => {
+    const theme = useDarkTheme ? darkTheme : lightTheme;
+    console.log('updateBackground', theme.palette.background.default);
+    titleBar.updateBackground(Color.fromHex(theme.palette.background.default));
+  }, [useDarkTheme]);
 
-    if (!moduleId) {
-      return null;
-    }
-
-    return <BackButton color="inherit" isFab={false} />;
-  };
-
-  render() {
-    const { children, darkTheme: useDarkTheme, classes, toggleDarkTheme, moduleId } = this.props;
-
-    return (
-      <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
-        <CssBaseline />
-        <AppBar position="static" color="default" className={classes.appBar}>
-          <Toolbar>
-            {this.renderBackButton()}
-            <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-              Looking Glass
-            </Typography>
-            <SearchBar moduleId={moduleId} />
-            <div className={classes.grow} />
-            <div>
-              <IconButton color="inherit" onClick={toggleDarkTheme}>
-                {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
-              </IconButton>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Container
-          maxWidth={false}
-          id="scroll-container"
-          className={clsx(classes.grow, classes.scroll)}
-          onScroll={this.handleScroll}
-        >
-          {children}
-        </Container>
-      </MuiThemeProvider>
-    );
-  }
-}
+  return (
+    <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+      <CssBaseline />
+      <Progress />
+      <AppBar position="static" color="default" className={classes.appBar} style={{ opacity: modalOpen ? '0' : '1' }}>
+        <Toolbar>
+          {match ? null : <BackButton color="inherit" isFab={false} />}
+          <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+            Looking Glass
+          </Typography>
+          <div className={classes.grow} />
+          <div>
+            <IconButton color="inherit" onClick={toggleDarkTheme}>
+              {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
+            </IconButton>
+          </div>
+        </Toolbar>
+      </AppBar>
+      <Container maxWidth={false} className={classes.container}>
+        {children}
+      </Container>
+    </MuiThemeProvider>
+  );
+};
 
 App.defaultProps = {
-  moduleId: null,
+  modalOpen: false,
 };
 
 App.propTypes = {
   toggleDarkTheme: PropTypes.func.isRequired,
   children: PropTypes.element.isRequired,
-  darkTheme: PropTypes.bool.isRequired,
+  useDarkTheme: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
-  moduleId: PropTypes.string,
+  modalOpen: PropTypes.bool,
 };
 
 const mapStateToProps = createStructuredSelector({
-  darkTheme: darkThemeSelector,
-  moduleId: moduleIdSelector,
+  useDarkTheme: darkThemeSelector,
+  modalOpen: modalOpenSelector,
 });
 
 const mapDispatchToProps = {
   toggleDarkTheme: appActions.toggleDarkTheme,
 };
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App);
