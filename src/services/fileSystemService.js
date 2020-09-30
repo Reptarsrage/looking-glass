@@ -1,13 +1,19 @@
 import { basename, extname } from 'path';
 import { lookup } from 'mime-types';
-import { stringify } from 'qs';
+import { stringify, parse } from 'qs';
 
 import Crawler from './directoryCrawler';
 
 export default class FileSystemService {
   constructor() {
-    this.port = process.env.SERVICE_PORT || 30002;
-    this.host = process.env.SERVICE_HOST || 'localhost';
+    let queryString = global.location.search;
+    if (queryString.startsWith('?')) {
+      queryString = queryString.substring(1);
+    }
+
+    const queryParams = parse(queryString);
+    this.port = queryParams.port;
+    this.host = 'localhost';
     this.maxCacheSize = 100;
     this.cacheItems = [];
     this.cacheLookup = {};
