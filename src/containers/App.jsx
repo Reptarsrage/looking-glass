@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,12 +13,14 @@ import Container from '@material-ui/core/Container';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import { useRouteMatch } from 'react-router';
+import { Color } from 'custom-electron-titlebar';
 
 import { darkThemeSelector } from '../selectors/appSelectors';
 import { modalOpenSelector } from '../selectors/modalSelectors';
 import * as appActions from '../actions/appActions';
 import BackButton from '../components/BackButton';
 import Progress from '../components/Progress';
+import titleBar from '../titleBar';
 
 // https://material-ui.com/customization/palette/
 const darkTheme = createMuiTheme({
@@ -86,6 +88,12 @@ const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) =>
     path: '/',
     exact: true,
   });
+
+  useEffect(() => {
+    const theme = useDarkTheme ? darkTheme : lightTheme;
+    console.log('updateBackground', theme.palette.background.default);
+    titleBar.updateBackground(Color.fromHex(theme.palette.background.default));
+  }, [useDarkTheme]);
 
   return (
     <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>

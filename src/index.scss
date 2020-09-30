@@ -8,7 +8,7 @@ html {
 #root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
 }
 
 /* Disables annoying outlining of containers on focus */
@@ -19,4 +19,8 @@ html {
 .list {
   display: flex;
   flex-wrap: wrap;
+}
+
+.container-after-titlebar {
+  overflow: hidden;
 }

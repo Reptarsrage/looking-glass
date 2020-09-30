@@ -12,7 +12,6 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import FolderIcon from '@material-ui/icons/Folder';
 import { remote } from 'electron';
-import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router';
 
 import { productName } from '../../package.json';
@@ -22,6 +21,7 @@ import * as galleryActions from '../actions/galleryActions';
 import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors';
 import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from '../reducers/constants';
 import LoadingIndicator from '../components/LoadingIndicator';
+import titleBar from '../titleBar';
 
 const styles = (theme) => ({
   main: {
@@ -58,6 +58,9 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
     if (!fetching && !fetched) {
       fetchModules();
     }
+
+    // Set window title
+    titleBar.updateTitle(productName);
   }, []);
 
   const chooseFolder = () => {
@@ -98,15 +101,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
     );
   };
 
-  return (
-    <main className={classes.main}>
-      <Helmet>
-        <title>{productName}</title>
-      </Helmet>
-
-      {renderModules()}
-    </main>
-  );
+  return <main className={classes.main}>{renderModules()}</main>;
 };
 
 Home.defaultProps = {

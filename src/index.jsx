@@ -7,6 +7,7 @@ import './index.scss';
 import Routes from './Routes';
 import { configureStore, history } from './store/configureStore';
 import rootSaga from './sagas';
+import './titleBar';
 
 const store = configureStore();
 store.runSaga(rootSaga);

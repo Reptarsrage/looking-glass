@@ -32,7 +32,7 @@ const styles = (theme) => ({
     alignItems: 'center',
   },
   button: {
-    top: '50%',
+    top: 'calc(50% + 30px)', // titleBar height
     position: 'fixed',
     transform: 'translate(0, -50%)',
     zIndex: theme.zIndex.drawer + 3,
@@ -99,7 +99,7 @@ const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, mod
     animate: 'center',
     exit: 'exit',
     transition: {
-      x: { type: 'spring', stiffness: 300, damping: 200 },
+      x: { type: 'spring', damping: 25, mass: 1.25, stiffness: 200 },
       opacity: { duration: 0.2 },
     },
     drag: 'x',

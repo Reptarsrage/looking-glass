@@ -11,7 +11,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import TuneIcon from '@material-ui/icons/Tune';
 import Drawer from '@material-ui/core/Drawer';
 import { debounce } from 'lodash';
-import { Helmet } from 'react-helmet';
 
 import { productName } from '../../package.json';
 import { supportsSortingSelector, supportsFilteringSelector } from '../selectors/moduleSelectors';
@@ -29,6 +28,7 @@ import Modal from '../components/Modal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import SearchBar from '../components/SearchBar';
 import EndOfScrollToast from '../components/EndOfScrollToast';
+import titleBar from '../titleBar';
 
 const styles = (theme) => ({
   grow: {
@@ -83,6 +83,9 @@ const Gallery = ({
 
     // fetch images
     fetchInitialItems();
+
+    // Set window title
+    titleBar.updateTitle(`${productName} - ${title}`);
 
     return () => {
       // remove event listeners from componentDidMount
@@ -159,10 +162,6 @@ const Gallery = ({
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
   return (
     <>
-      <Helmet>
-        <title>{`${productName} - ${title}`}</title>
-      </Helmet>
-
       <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={handleDrawerClose}>
         <FilterList moduleId={moduleId} onClick={handleFilterClick} />
       </Drawer>

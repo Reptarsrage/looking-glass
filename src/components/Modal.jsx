@@ -33,6 +33,7 @@ import ItemFilters from './ItemFilters';
 
 const styles = (theme) => ({
   modal: {
+    top: '30px', // titleBar height
     position: 'fixed',
     zIndex: theme.zIndex.drawer + 2,
     background: 'transparent',
@@ -41,13 +42,13 @@ const styles = (theme) => ({
     position: 'fixed',
     height: '100%',
     width: '100%',
-    top: 0,
+    top: '30px', // titleBar height
     left: 0,
     zIndex: theme.zIndex.drawer + 1,
     background: 'rgba(0,0,0,1)',
   },
   button: {
-    top: '16px',
+    top: '46px', // 16 + titleBar height
     right: '16px',
     position: 'fixed',
     zIndex: theme.zIndex.drawer + 5,
@@ -57,7 +58,7 @@ const styles = (theme) => ({
   },
   caption: {
     position: 'fixed',
-    top: 0,
+    top: '30px', // titleBar height
     left: 0,
     right: 0,
     background: 'linear-gradient(#000, transparent)',

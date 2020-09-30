@@ -8,7 +8,7 @@ import progressTracker from '../services/progressTracker';
 const styles = (theme) => ({
   bar: {
     position: 'fixed',
-    top: '0px',
+    top: '30px', // titleBar height
     left: '0px',
     height: '2px',
     opacity: '1',

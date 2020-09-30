@@ -50,6 +50,8 @@ const createWindow = async (port) => {
     title: app.name,
     width: bounds.width,
     height: bounds.height,
+    titleBarStyle: 'hidden',
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
