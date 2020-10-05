@@ -41,13 +41,17 @@ export default class FileSystemService {
       const pageNumber = Math.max(offset, 0);
       const page = await crawler.getPage(pageNumber);
       const data = {
-        items: page.map(({ file, width, height }) => {
-          const title = basename(file, extname(file));
+        items: page.map(({ file, width, height, isFile, path }) => {
+          const title = isFile ? basename(file, extname(file)) : basename(path);
           const isVideo = lookup(file).startsWith('video');
+          const isGallery = !isFile;
           const url = `http://${this.host}:${this.port}/${isVideo ? 'video' : 'image'}?${stringify({ uri: file })}`;
+          if (!isFile) {
+            console.log(`${path} >>>>>> ${title}`);
+          }
 
           return {
-            id: file,
+            id: Buffer.from(path, 'utf-8').toString('base64'),
             title,
             description: '',
             width,
@@ -55,7 +59,7 @@ export default class FileSystemService {
             url,
             thumb: null,
             isVideo,
-            isGallery: false,
+            isGallery,
             filters: [],
           };
         }),

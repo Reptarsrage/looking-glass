@@ -1,6 +1,6 @@
 const PromisePool = require('@mixmaxhq/promise-pool');
 const fs = require('fs');
-const path = require('path');
+const pathModule = require('path');
 const mimeTypes = require('mime-types');
 const { promisify } = require('util');
 const imageSizeOfSync = require('image-size');
@@ -39,8 +39,10 @@ function videoSizeOf(fPath) {
 async function* getFiles(dirPath) {
   const dir = await fs.promises.opendir(dirPath);
   for await (const dirent of dir) {
-    if (dirent.isFile) {
-      yield path.join(dirPath, dirent.name);
+    if (dirent.isFile()) {
+      yield { path: pathModule.join(dirPath, dirent.name), isFile: true };
+    } else if (dirent.isDirectory()) {
+      yield { path: pathModule.join(dirPath, dirent.name), isFile: false };
     }
   }
 }
@@ -108,7 +110,7 @@ module.exports = class crawler {
 
   resolve = () => this.resolved.slice(this.start, this.end).map((file) => this.resolvedLookup[file]);
 
-  markComplete = (file, size) => {
+  markComplete = (file, size, isFile, path) => {
     if (file === null) {
       this.done = true;
       this.promiseResolve(this.resolve());
@@ -116,13 +118,25 @@ module.exports = class crawler {
     }
 
     this.resolved.push(file);
-    this.resolvedLookup[file] = { file, ...size };
+    this.resolvedLookup[file] = { file, isFile, path, ...size };
     if (this.resolved.length === this.end) {
       this.promiseResolve(this.resolve());
     }
   };
 
-  getDimensions = async (file) => {
+  getDimensions = async (item) => {
+    const { path, isFile } = item;
+    let file = path;
+
+    if (!isFile) {
+      file = await this.getThumbnailForDirectory(path);
+    }
+
+    // check if we were successful in finding a suitable file
+    if (!file) {
+      return;
+    }
+
     try {
       let size;
       const type = mimeTypes.lookup(file);
@@ -136,18 +150,49 @@ module.exports = class crawler {
         return;
       }
 
-      this.markComplete(file, size);
+      this.markComplete(file, size, isFile, path);
     } catch (err) {
       console.error('Error getting file dimensions', err);
     }
   };
 
   getDimensionsForDirectory = async () => {
-    for await (const file of getFiles(this.directory)) {
-      await this.pool.start(() => this.getDimensions(file));
+    for await (const item of getFiles(this.directory)) {
+      await this.pool.start(() => this.getDimensions(item));
     }
 
     await this.pool.flush();
     this.markComplete(null);
+  };
+
+  getThumbnailForDirectory = async (rootPath) => {
+    // search all directories recursively until a file that can be shown is found
+    const queue = [rootPath];
+    while (queue.length > 0) {
+      const dirPath = queue.shift();
+
+      try {
+        // loop over all directory items
+        const dir = await fs.promises.opendir(dirPath);
+        for await (const dirent of dir) {
+          // if file, check for correct type
+          if (dirent.isFile()) {
+            const type = mimeTypes.lookup(dirent.name);
+            if (type && (type.startsWith('image') || type.startsWith('video'))) {
+              return pathModule.join(dirPath, dirent.name);
+            }
+          }
+
+          // if directory, enqueue it
+          if (dirent.isDirectory()) {
+            queue.push(pathModule.join(dirPath, dirent.name));
+          }
+        }
+      } catch {
+        /* Expected for system volumes */
+      }
+    }
+
+    return null;
   };
 };
