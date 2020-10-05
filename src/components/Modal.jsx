@@ -13,8 +13,11 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import clsx from 'clsx';
 import { useHistory } from 'react-router';
+import { Button } from '@material-ui/core';
 
 import {
   modalItemIdSelector,
@@ -65,11 +68,14 @@ const styles = (theme) => ({
     zIndex: theme.zIndex.drawer + 4,
     padding: theme.spacing(1),
   },
-  desc: {
-    display: '-webkit-box',
-    linellamp: 2,
-    boxOrient: 'vertical',
-    overflow: 'hidden',
+  toggleCaption: {
+    position: 'fixed',
+    top: '30px', // titleBar height
+    left: 0,
+    background: 'rgba(0,0,0,1)',
+    color: '#fff',
+    zIndex: theme.zIndex.drawer + 5,
+    margin: theme.spacing(1),
   },
 });
 
@@ -88,6 +94,7 @@ const Modal = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [animating, setAnimating] = useState(true);
+  const [showCaption, setShowCaption] = useState(true);
   const history = useHistory();
 
   const handleAnimationComplete = () => {
@@ -102,6 +109,10 @@ const Modal = ({
 
   const drawerOpen = () => {
     setOpen(true);
+  };
+
+  const toggleCaption = () => {
+    setShowCaption(!showCaption);
   };
 
   const drawerClose = (filterId) => {
@@ -137,14 +148,29 @@ const Modal = ({
   const renderFilters = itemFiltersEnabled || modalItemHasFilters;
   return (
     <>
-      <Fade in={modalOpen}>
-        <div className={classes.caption}>
-          <Typography variant="h4">{modalItem.title}</Typography>
-          <Typography variant="subtitle1" color="textSecondary" className={classes.desc}>
-            {modalItem.description}
-          </Typography>
-        </div>
-      </Fade>
+      {!showCaption && (
+        <Fade in={modalOpen}>
+          <div className={classes.toggleCaption}>
+            <Typography variant="h4">
+              <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>
+            </Typography>
+          </div>
+        </Fade>
+      )}
+
+      {showCaption && (
+        <Fade in={modalOpen}>
+          <div className={classes.caption}>
+            <Typography variant="h4">
+              <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>&nbsp;
+              {modalItem.title}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {modalItem.description}
+            </Typography>
+          </div>
+        </Fade>
+      )}
 
       <Backdrop className={classes.backdrop} open={modalOpen} />
 
@@ -171,7 +197,7 @@ const Modal = ({
           {modalOpen && (
             <motion.div
               initial={initial}
-              animate={{ top: 0, left: 0, width: '100%', height: '100%' }}
+              animate={{ top: '30px', left: 0, width: '100%', height: 'calc(100% - 30px)' }}
               exit={initial}
               transition={{ duration: 0.2 }}
               onAnimationStart={onAnimationStart}
