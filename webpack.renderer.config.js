@@ -40,7 +40,7 @@ module.exports = () => {
           ],
         },
         {
-          test: /\.(sa|sc|c)ss$/,
+          test: /\.css$/,
           use: [
             isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
@@ -49,21 +49,12 @@ module.exports = () => {
                 sourceMap: isDev,
               },
             },
-            {
-              loader: 'sass-loader',
-              options: {
-                sassOptions: {
-                  includePaths: ['./src'],
-                },
-                sourceMap: isDev,
-              },
-            },
           ],
         },
       ],
     },
     resolve: {
-      extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
+      extensions: ['.js', '.jsx', '.json', '.css'],
       modules: ['node_modules'],
     },
     plugins: [

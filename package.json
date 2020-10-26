@@ -20,11 +20,7 @@
   "keywords": [
     "electron",
     "react",
-    "redux",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "redux"
   ],
   "homepage": "https://github.com/reptarsrage/looking-glass#readme",
   "scripts": {
@@ -46,8 +42,8 @@
     "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
       "pretty-quick --staged"
     ],
-    "*.{css,scss}": [
-      "stylelint --ignore-path .eslintignore --syntax scss --fix"
+    "*.{css}": [
+      "stylelint --ignore-path .eslintignore --fix"
     ],
     "*.{html,md,yml}": [
       "pretty-quick --staged"
@@ -96,12 +92,10 @@
     "jest": "26.4.2",
     "lint-staged": "10.4.0",
     "mini-css-extract-plugin": "0.11.2",
-    "node-sass": "4.14.1",
     "prettier": "2.1.2",
     "pretty-quick": "3.0.2",
     "redux-mock-store": "1.5.4",
     "rimraf": "3.0.2",
-    "sass-loader": "10.0.2",
     "sinon": "9.1.0",
     "standard-version": "9.0.0",
     "style-loader": "1.2.1",
