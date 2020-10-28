@@ -1,13 +1,10 @@
-const actionTyper = (prefix = '', separator = '/') => {
-  return new Proxy(
+const actionTyper = (prefix = '', separator = '/') =>
+  new Proxy(
     {},
     {
-      get(target, name) {
-        return `${prefix}${separator}${name}`;
-      },
+      get: (_, name) => `${prefix}${separator}${name}`,
     }
   );
-};
 
 export const { LOCATION_CHANGE } = actionTyper('@@router');
 

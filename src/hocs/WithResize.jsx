@@ -5,8 +5,8 @@ const withResize = (WrappedComponent) => (props) => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 
-  const handleResize = (e) => {
-    const [elt] = e;
+  const handleResize = (event) => {
+    const [elt] = event;
     const { contentRect } = elt;
     setWidth(contentRect.width);
     setHeight(contentRect.height);
@@ -23,7 +23,7 @@ const withResize = (WrappedComponent) => (props) => {
   }, []);
 
   return (
-    <div ref={containerRef} style={{ overflow: 'visible', flex: '1 1 auto' }}>
+    <div ref={containerRef} style={{ flex: '1 1' }}>
       {width && height && <WrappedComponent {...props} width={width} height={height} />}
     </div>
   );

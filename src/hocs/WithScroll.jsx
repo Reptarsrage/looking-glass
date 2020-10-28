@@ -18,9 +18,7 @@ const styles = () => ({
 });
 
 const withScroll = (WrappedComponent) => {
-  const WithScroll = (props) => {
-    const { classes, initialScrollTop, width, height, onScroll, ...passThroughProps } = props;
-
+  const WithScroll = ({ classes, initialScrollTop, width, height, onScroll, ...passThroughProps }) => {
     const outerRef = useRef(null);
     const [scrollTop, setScrollTop] = useState(initialScrollTop || 0);
     const [scrollHeight, setScrollHeight] = useState(0);
