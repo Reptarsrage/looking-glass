@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router';
-import { compose } from 'redux';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import withStyles from '@material-ui/core/styles/withStyles';
-import { parse } from 'url';
-import { remote } from 'electron';
-import qs from 'qs';
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router'
+import { compose } from 'redux'
+import Avatar from '@material-ui/core/Avatar'
+import Button from '@material-ui/core/Button'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import withStyles from '@material-ui/core/styles/withStyles'
+import { parse } from 'url'
+import { remote } from 'electron'
+import qs from 'qs'
 
-import * as authActions from '../actions/authActions';
+import * as authActions from '../actions/authActions'
 import {
   fetchedSelector,
   fetchingSelector,
@@ -23,8 +23,8 @@ import {
   oauthURLFetchingSelector,
   oauthURLErrorSelector,
   oauthURLSuccessSelector,
-} from '../selectors/authSelectors';
-import LoadingIndicator from '../components/LoadingIndicator';
+} from '../selectors/authSelectors'
+import LoadingIndicator from '../components/LoadingIndicator'
 
 const styles = (theme) => ({
   main: {
@@ -63,7 +63,7 @@ const styles = (theme) => ({
     position: 'absolute',
     marginLeft: '-12px',
   },
-});
+})
 
 const OAuth = ({
   fetching,
@@ -79,18 +79,18 @@ const OAuth = ({
   error,
   galleryId,
 }) => {
-  const [modalFetching, setModalFetching] = useState(false);
+  const [modalFetching, setModalFetching] = useState(false)
 
   useEffect(() => {
     if (!oauthURLFetching && !oauthURLSuccess) {
-      fetchOAuthURL(moduleId);
+      fetchOAuthURL(moduleId)
     }
-  });
+  })
 
   const showOauthModal = (authUrl) => {
     return new Promise((resolve, reject) => {
       // TODO: load these values from service
-      const { state: expectedState } = qs.parse(authUrl);
+      const { state: expectedState } = qs.parse(authUrl)
       const authWindow = new remote.BrowserWindow({
         parent: remote.getCurrentWindow(),
         modal: true,
@@ -100,51 +100,51 @@ const OAuth = ({
         webPreferences: {
           devTools: false,
         },
-      });
+      })
 
       const handleRedirect = (url) => {
-        const { query } = parse(url, true);
-        const { state, code, error: qError } = query || {};
+        const { query } = parse(url, true)
+        const { state, code, error: qError } = query || {}
 
         if (qError) {
-          reject(new Error(qError));
+          reject(new Error(qError))
         }
 
         if (state === expectedState && code) {
-          authWindow.removeAllListeners('closed');
-          setImmediate(() => authWindow.close());
-          resolve(code);
+          authWindow.removeAllListeners('closed')
+          setImmediate(() => authWindow.close())
+          resolve(code)
         }
-      };
+      }
 
-      authWindow.on('closed', () => reject(new Error('Auth window was closed by user')));
-      authWindow.webContents.on('will-redirect', (_, newUrl) => handleRedirect(newUrl));
-      authWindow.webContents.on('will-navigate', (_, newUrl) => handleRedirect(newUrl));
+      authWindow.on('closed', () => reject(new Error('Auth window was closed by user')))
+      authWindow.webContents.on('will-redirect', (_, newUrl) => handleRedirect(newUrl))
+      authWindow.webContents.on('will-navigate', (_, newUrl) => handleRedirect(newUrl))
 
-      authWindow.loadURL(authUrl);
-      authWindow.show();
-    });
-  };
+      authWindow.loadURL(authUrl)
+      authWindow.show()
+    })
+  }
 
   const handleSubmit = async () => {
-    setModalFetching(true);
+    setModalFetching(true)
 
     try {
-      const accessToken = await showOauthModal(oauthURL);
-      authorize(moduleId, accessToken);
-      setModalFetching(false);
+      const accessToken = await showOauthModal(oauthURL)
+      authorize(moduleId, accessToken)
+      setModalFetching(false)
     } catch (e) {
-      setModalFetching(false);
+      setModalFetching(false)
     }
-  };
+  }
 
   if (fetched) {
     // Redirect to whatever gallery the user was on before
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
+    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
-  const isFetching = oauthURLFetching || modalFetching || fetching;
-  const isError = (oauthURLError || error) !== null; // TODO: get message out of error object
+  const isFetching = oauthURLFetching || modalFetching || fetching
+  const isError = (oauthURLError || error) !== null // TODO: get message out of error object
 
   return (
     <main className={classes.main}>
@@ -176,14 +176,14 @@ const OAuth = ({
         </div>
       </Paper>
     </main>
-  );
-};
+  )
+}
 
 OAuth.defaultProps = {
   error: null,
   oauthURLError: null,
   oauthURL: null,
-};
+}
 
 OAuth.propTypes = {
   authorize: PropTypes.func.isRequired,
@@ -198,7 +198,7 @@ OAuth.propTypes = {
   oauthURLSuccess: PropTypes.bool.isRequired,
   oauthURLFetching: PropTypes.bool.isRequired,
   oauthURLError: PropTypes.object,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   oauthURL: oauthURLSelector,
@@ -208,11 +208,11 @@ const mapStateToProps = createStructuredSelector({
   oauthURLFetching: oauthURLFetchingSelector,
   oauthURLError: oauthURLErrorSelector,
   oauthURLSuccess: oauthURLSuccessSelector,
-});
+})
 
 const mapDispatchToProps = {
   authorize: authActions.authorize,
   fetchOAuthURL: authActions.fetchOAuthURL,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth)

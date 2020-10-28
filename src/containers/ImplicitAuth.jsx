@@ -1,30 +1,30 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router';
+import React, { useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router'
 
-import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
-import * as authActions from '../actions/authActions';
-import LoadingIndicator from '../components/LoadingIndicator';
+import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
+import * as authActions from '../actions/authActions'
+import LoadingIndicator from '../components/LoadingIndicator'
 
 const ImplicitAuth = ({ login, fetching, error, fetched, moduleId, galleryId }) => {
   useEffect(() => {
     if (!fetching && !fetched) {
-      login(moduleId, '', '');
+      login(moduleId, '', '')
     }
-  }, [fetching, fetched, login, moduleId]);
+  }, [fetching, fetched, login, moduleId])
 
   if (fetched && !error) {
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
+    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
-  return <LoadingIndicator />;
-};
+  return <LoadingIndicator />
+}
 
 ImplicitAuth.defaultProps = {
   error: null,
-};
+}
 
 ImplicitAuth.propTypes = {
   moduleId: PropTypes.string.isRequired,
@@ -33,16 +33,16 @@ ImplicitAuth.propTypes = {
   fetched: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   fetched: fetchedSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-});
+})
 
 const mapDispatchToProps = {
   login: authActions.login,
-};
+}
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImplicitAuth);
+export default connect(mapStateToProps, mapDispatchToProps)(ImplicitAuth)

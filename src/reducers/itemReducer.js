@@ -1,18 +1,18 @@
-import produce from 'immer';
+import produce from 'immer'
 
-import { generateItemId, generateFilterId, generateFilterSectionId } from './constants';
+import { generateItemId, generateFilterId, generateFilterSectionId } from './constants'
 import {
   FETCH_ITEM_FILTERS,
   FETCH_ITEM_FILTERS_FAILURE,
   FETCH_GALLERY_SUCCESS,
   CLEAR_GALLERY,
   FETCH_ITEM_FILTERS_SUCCESS,
-} from '../actions/types';
+} from '../actions/types'
 
 export const initialState = {
   byId: {},
   allIds: [],
-};
+}
 
 export const initialItemState = {
   id: null,
@@ -30,105 +30,105 @@ export const initialItemState = {
   fetchingFilters: false,
   fetchedFilters: false,
   fetchFiltersError: null,
-};
+}
 
 const addItem = (draft, galleryId, moduleId, item) => {
   // quick sanity check
   if (!item.width || !item.height || !item.url) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('Invalid item', item);
+      console.error('Invalid item', item)
     }
 
-    return;
+    return
   }
 
   // generate ids
-  const itemId = generateItemId(galleryId, item.id);
+  const itemId = generateItemId(galleryId, item.id)
 
   // Translate filters
-  let filters = [];
+  let filters = []
   item.filters.forEach(({ filterId, id }) => {
-    const filterSectionId = generateFilterSectionId(moduleId, filterId);
-    const toAdd = generateFilterId(filterSectionId, id);
+    const filterSectionId = generateFilterSectionId(moduleId, filterId)
+    const toAdd = generateFilterId(filterSectionId, id)
 
     if (filters.indexOf(toAdd) < 0) {
-      filters = [...filters, toAdd];
+      filters = [...filters, toAdd]
     }
-  });
+  })
 
   // if item does not exist
   if (!(itemId in draft.byId)) {
     // add item
-    draft.allIds.push(itemId);
+    draft.allIds.push(itemId)
     draft.byId[itemId] = {
       ...item,
       siteId: item.id,
       id: itemId,
       galleryId,
       filters,
-    };
+    }
   }
-};
+}
 
 const itemReducer = (state = initialState, action) =>
   produce(state, (draft) => {
-    const { type, payload, meta } = action || {};
+    const { type, payload, meta } = action || {}
 
     switch (type) {
       case CLEAR_GALLERY: {
-        const { galleryId } = meta;
+        const { galleryId } = meta
 
         // remove items
-        const galleryItemsToRemove = state.allIds.filter((id) => state.byId[id].galleryId === galleryId);
-        draft.allIds = state.allIds.filter((id) => state.byId[id].galleryId !== galleryId);
-        galleryItemsToRemove.forEach((id) => delete draft.byId[id]);
-        break;
+        const galleryItemsToRemove = state.allIds.filter((id) => state.byId[id].galleryId === galleryId)
+        draft.allIds = state.allIds.filter((id) => state.byId[id].galleryId !== galleryId)
+        galleryItemsToRemove.forEach((id) => delete draft.byId[id])
+        break
       }
       case FETCH_GALLERY_SUCCESS: {
-        const { galleryId, moduleId } = meta;
-        const gallery = payload;
-        const { items } = gallery;
+        const { galleryId, moduleId } = meta
+        const gallery = payload
+        const { items } = gallery
 
         // add items
-        items.forEach((item) => addItem(draft, galleryId, moduleId, item));
-        break;
+        items.forEach((item) => addItem(draft, galleryId, moduleId, item))
+        break
       }
       case FETCH_ITEM_FILTERS: {
-        const { itemId } = meta;
-        draft.byId[itemId].fetchingFilters = true;
-        draft.byId[itemId].fetchedFilters = false;
-        draft.byId[itemId].fetchFiltersError = null;
-        break;
+        const { itemId } = meta
+        draft.byId[itemId].fetchingFilters = true
+        draft.byId[itemId].fetchedFilters = false
+        draft.byId[itemId].fetchFiltersError = null
+        break
       }
       case FETCH_ITEM_FILTERS_FAILURE: {
-        const { itemId } = meta;
-        draft.byId[itemId].fetchingFilters = false;
-        draft.byId[itemId].fetchedFilters = true;
-        draft.byId[itemId].fetchFiltersError = payload;
-        break;
+        const { itemId } = meta
+        draft.byId[itemId].fetchingFilters = false
+        draft.byId[itemId].fetchedFilters = true
+        draft.byId[itemId].fetchFiltersError = payload
+        break
       }
       case FETCH_ITEM_FILTERS_SUCCESS: {
-        const { itemId, moduleId } = meta;
-        const filters = payload;
+        const { itemId, moduleId } = meta
+        const filters = payload
 
-        draft.byId[itemId].fetchingFilters = false;
-        draft.byId[itemId].fetchedFilters = true;
-        draft.byId[itemId].fetchFiltersError = null;
+        draft.byId[itemId].fetchingFilters = false
+        draft.byId[itemId].fetchedFilters = true
+        draft.byId[itemId].fetchFiltersError = null
         filters.forEach(({ filterId, id }) => {
-          const filterSectionId = generateFilterSectionId(moduleId, filterId);
-          const toAdd = generateFilterId(filterSectionId, id);
-          const values = draft.byId[itemId].filters;
+          const filterSectionId = generateFilterSectionId(moduleId, filterId)
+          const toAdd = generateFilterId(filterSectionId, id)
+          const values = draft.byId[itemId].filters
 
           if (values.indexOf(toAdd) < 0) {
-            draft.byId[itemId].filters = [...draft.byId[itemId].filters, toAdd];
+            draft.byId[itemId].filters = [...draft.byId[itemId].filters, toAdd]
           }
-        });
+        })
 
-        break;
+        break
       }
       default:
-        break; // Nothing to do
+        break // Nothing to do
     }
-  });
+  })
 
-export default itemReducer;
+export default itemReducer

@@ -1,53 +1,57 @@
-import { basename, extname } from 'path';
-import { lookup } from 'mime-types';
-import { stringify, parse } from 'qs';
+import { basename, extname } from 'path'
+import { lookup } from 'mime-types'
+import { stringify, parse } from 'qs'
 
-import Crawler from './directoryCrawler';
+import Crawler from './directoryCrawler'
 
 export default class FileSystemService {
   constructor() {
-    let queryString = global.location.search;
+    let queryString = global.location.search
     if (queryString.startsWith('?')) {
-      queryString = queryString.substring(1);
+      queryString = queryString.substring(1)
     }
 
-    const queryParams = parse(queryString);
-    this.port = queryParams.port;
-    this.host = 'localhost';
-    this.maxCacheSize = 100;
-    this.cacheItems = [];
-    this.cacheLookup = {};
+    const queryParams = parse(queryString)
+    this.port = queryParams.port
+    this.host = 'localhost'
+    this.maxCacheSize = 100
+    this.cacheItems = []
+    this.cacheLookup = {}
   }
 
-  cacheContains = (key) => key in this.cacheLookup;
+  cacheContains = (key) => key in this.cacheLookup
 
-  getCache = (key) => this.cacheLookup[key];
+  getCache = (key) => this.cacheLookup[key]
 
   addCache = (key, value) => {
-    this.cacheLookup[key] = value;
+    this.cacheLookup[key] = value
     if (this.cacheItems.push(key) > this.maxCacheSize) {
-      delete this.cacheLookup[this.cacheItems.shift()];
+      delete this.cacheLookup[this.cacheItems.shift()]
     }
-  };
+  }
 
   fetchImages = async (_moduleId, galleryId, _accessToken, offset) => {
     try {
-      const dirPath = Buffer.from(galleryId, 'base64').toString('utf-8');
+      const dirPath = Buffer.from(galleryId, 'base64').toString('utf-8')
       if (!this.cacheContains(dirPath)) {
-        this.addCache(dirPath, new Crawler(dirPath));
+        this.addCache(dirPath, new Crawler(dirPath))
       }
 
-      const crawler = this.getCache(dirPath);
-      const pageNumber = Math.max(offset, 0);
-      const page = await crawler.getPage(pageNumber);
+      const crawler = this.getCache(dirPath)
+      const pageNumber = Math.max(offset, 0)
+      const page = await crawler.getPage(pageNumber)
       const data = {
-        items: page.map(({ file, width, height }) => {
-          const title = basename(file, extname(file));
-          const isVideo = lookup(file).startsWith('video');
-          const url = `http://${this.host}:${this.port}/${isVideo ? 'video' : 'image'}?${stringify({ uri: file })}`;
+        items: page.map(({ file, width, height, isFile, path }) => {
+          const title = isFile ? basename(file, extname(file)) : basename(path)
+          const isVideo = lookup(file).startsWith('video')
+          const isGallery = !isFile
+          const url = `http://${this.host}:${this.port}/${isVideo ? 'video' : 'image'}?${stringify({ uri: file })}`
+          if (!isFile) {
+            console.log(`${path} >>>>>> ${title}`)
+          }
 
           return {
-            id: file,
+            id: Buffer.from(path, 'utf-8').toString('base64'),
             title,
             description: '',
             width,
@@ -55,25 +59,25 @@ export default class FileSystemService {
             url,
             thumb: null,
             isVideo,
-            isGallery: false,
+            isGallery,
             filters: [],
-          };
+          }
         }),
         hasNext: page.length > 0,
         count: page.length,
         offset: pageNumber + 1,
         after: null,
-      };
+      }
 
-      return { data };
+      return { data }
     } catch (err) {
       // Deal with the fact the chain failed
-      console.error('Error crawling', err);
-      throw err;
+      console.error('Error crawling', err)
+      throw err
     }
-  };
+  }
 
   fetchFilters = async () => {
-    return { data: [] }; // TODO: Implement this
-  };
+    return { data: [] } // TODO: Implement this
+  }
 }

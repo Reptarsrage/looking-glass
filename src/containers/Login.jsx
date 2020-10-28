@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router';
-import { compose } from 'redux';
-import Avatar from '@material-ui/core/Avatar';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import withStyles from '@material-ui/core/styles/withStyles';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router'
+import { compose } from 'redux'
+import Avatar from '@material-ui/core/Avatar'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import Button from '@material-ui/core/Button'
+import FormControl from '@material-ui/core/FormControl'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import Input from '@material-ui/core/Input'
+import InputLabel from '@material-ui/core/InputLabel'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import IconButton from '@material-ui/core/IconButton'
+import withStyles from '@material-ui/core/styles/withStyles'
 
-import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors';
-import * as authActions from '../actions/authActions';
-import LoadingIndicator from '../components/LoadingIndicator';
+import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
+import * as authActions from '../actions/authActions'
+import LoadingIndicator from '../components/LoadingIndicator'
 
 const styles = (theme) => ({
   main: {
@@ -66,38 +66,38 @@ const styles = (theme) => ({
     position: 'absolute',
     marginLeft: '-12px',
   },
-});
+})
 
 const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleClickShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
+    setShowPassword((prev) => !prev)
+  }
 
   const handleRememberMeChange = (event) => {
-    setRememberMe(event.target.checked);
-  };
+    setRememberMe(event.target.checked)
+  }
 
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
+    setUsername(event.target.value)
+  }
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+    setPassword(event.target.value)
+  }
 
   const handleSubmit = (event) => {
-    login(moduleId, username, password);
-    event.preventDefault();
-  };
+    login(moduleId, username, password)
+    event.preventDefault()
+  }
 
   if (fetched) {
     // Redirect to whatever gallery the user was on before
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />;
+    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
   return (
@@ -173,13 +173,13 @@ const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }
         </form>
       </Paper>
     </main>
-  );
-};
+  )
+}
 
 Login.defaultProps = {
   error: null,
   classes: {},
-};
+}
 
 Login.propTypes = {
   moduleId: PropTypes.string.isRequired,
@@ -189,16 +189,16 @@ Login.propTypes = {
   fetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   classes: PropTypes.object,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   fetched: fetchedSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-});
+})
 
 const mapDispatchToProps = {
   login: authActions.login,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login)

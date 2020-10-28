@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useRef, useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = () => ({
   container: {
@@ -15,51 +15,49 @@ const styles = () => ({
       borderRadius: '4px',
     },
   },
-});
+})
 
 const withScroll = (WrappedComponent) => {
-  const WithScroll = (props) => {
-    const { classes, initialScrollTop, width, height, onScroll, ...passThroughProps } = props;
-
-    const outerRef = useRef(null);
-    const [scrollTop, setScrollTop] = useState(initialScrollTop || 0);
-    const [scrollHeight, setScrollHeight] = useState(0);
-    const [scrollDirection, setScrollDirection] = useState(1);
+  const WithScroll = ({ classes, initialScrollTop, width, height, onScroll, ...passThroughProps }) => {
+    const outerRef = useRef(null)
+    const [scrollTop, setScrollTop] = useState(initialScrollTop || 0)
+    const [scrollHeight, setScrollHeight] = useState(0)
+    const [scrollDirection, setScrollDirection] = useState(1)
 
     const handleScroll = (event) => {
-      const { clientHeight, scrollTop: cScrollTop, scrollHeight: cScrollHeight } = event.currentTarget;
+      const { clientHeight, scrollTop: cScrollTop, scrollHeight: cScrollHeight } = event.currentTarget
       if (cScrollTop === scrollTop) {
-        return;
+        return
       }
 
-      setScrollTop(Math.max(0, Math.min(cScrollTop, cScrollHeight - clientHeight)));
-      setScrollDirection(scrollTop < cScrollTop ? 1 : -1);
+      setScrollTop(Math.max(0, Math.min(cScrollTop, cScrollHeight - clientHeight)))
+      setScrollDirection(scrollTop < cScrollTop ? 1 : -1)
 
       // Callback
       if (onScroll) {
-        onScroll({ currentTarget: event.currentTarget });
+        onScroll({ currentTarget: event.currentTarget })
       }
-    };
+    }
 
     useEffect(() => {
       // Scroll to initial position on mount
-      const outerElt = outerRef.current;
+      const outerElt = outerRef.current
       if (typeof initialScrollTop === 'number') {
-        outerElt.scrollTop = initialScrollTop;
+        outerElt.scrollTop = initialScrollTop
       }
-    }, []);
+    }, [])
 
     useEffect(() => {
       // Try and maintain relative scroll position when width resized
-      const outerElt = outerRef.current;
+      const outerElt = outerRef.current
       if (scrollHeight > 0) {
-        const adjustedScrollTop = (scrollTop * outerElt.scrollHeight) / scrollHeight;
-        outerElt.scrollTop = adjustedScrollTop;
-        setScrollTop(adjustedScrollTop);
+        const adjustedScrollTop = (scrollTop * outerElt.scrollHeight) / scrollHeight
+        outerElt.scrollTop = adjustedScrollTop
+        setScrollTop(adjustedScrollTop)
       }
 
-      setScrollHeight(outerRef.current.scrollHeight);
-    }, [width]);
+      setScrollHeight(outerRef.current.scrollHeight)
+    }, [width])
 
     return (
       <div
@@ -76,8 +74,8 @@ const withScroll = (WrappedComponent) => {
           height={height}
         />
       </div>
-    );
-  };
+    )
+  }
 
   WithScroll.propTypes = {
     initialScrollTop: PropTypes.number.isRequired,
@@ -85,9 +83,9 @@ const withScroll = (WrappedComponent) => {
     height: PropTypes.number.isRequired,
     onScroll: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
-  };
+  }
 
-  return withStyles(styles)(WithScroll);
-};
+  return withStyles(styles)(WithScroll)
+}
 
-export default withScroll;
+export default withScroll

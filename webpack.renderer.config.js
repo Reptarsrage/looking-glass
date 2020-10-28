@@ -1,13 +1,13 @@
-require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin')
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = () => {
-  const isDev = process.env.NODE_ENV === 'development';
-  const outPath = path.join(__dirname, 'dist');
+  const isDev = process.env.NODE_ENV === 'development'
+  const outPath = path.join(__dirname, 'dist')
   return {
     performance: { hints: false },
     devServer: {
@@ -40,7 +40,7 @@ module.exports = () => {
           ],
         },
         {
-          test: /\.(sa|sc|c)ss$/,
+          test: /\.css$/,
           use: [
             isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
@@ -49,21 +49,12 @@ module.exports = () => {
                 sourceMap: isDev,
               },
             },
-            {
-              loader: 'sass-loader',
-              options: {
-                sassOptions: {
-                  includePaths: ['./src'],
-                },
-                sourceMap: isDev,
-              },
-            },
           ],
         },
       ],
     },
     resolve: {
-      extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
+      extensions: ['.js', '.jsx', '.json', '.css'],
       modules: ['node_modules'],
     },
     plugins: [
@@ -89,5 +80,5 @@ module.exports = () => {
         chunkFilename: isDev ? '[id].css' : '[id].[hash].css',
       }),
     ],
-  };
-};
+  }
+}

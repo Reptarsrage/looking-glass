@@ -1,12 +1,12 @@
-import produce from 'immer';
+import produce from 'immer'
 
-import { FETCH_MODULES_SUCCESS } from '../actions/types';
-import { generateSortId, generateModuleId } from './constants';
+import { FETCH_MODULES_SUCCESS } from '../actions/types'
+import { generateSortId, generateModuleId } from './constants'
 
 export const initialState = {
   byId: {},
   allIds: [],
-};
+}
 
 export const initialSortState = {
   id: null,
@@ -18,19 +18,19 @@ export const initialSortState = {
   default: false,
   availableInSearch: false,
   exclusiveToSearch: false,
-};
+}
 
 const addSortForModule = (draft, module) => {
   // generate moduleId
-  const moduleId = generateModuleId(module.id);
+  const moduleId = generateModuleId(module.id)
 
   // add sort values
   module.sortBy.forEach((sortValue) => {
     // add nested values
     if (sortValue.values) {
       sortValue.values.forEach((nestedSortValue) => {
-        const nestedId = generateSortId(moduleId, nestedSortValue.id);
-        draft.allIds.push(nestedId);
+        const nestedId = generateSortId(moduleId, nestedSortValue.id)
+        draft.allIds.push(nestedId)
         draft.byId[nestedId] = {
           ...initialSortState,
           ...nestedSortValue,
@@ -38,13 +38,13 @@ const addSortForModule = (draft, module) => {
           moduleId,
           id: nestedId,
           fullText: `${sortValue.name} (${nestedSortValue.name})`,
-        };
-      });
+        }
+      })
     }
 
     // add current one
-    const id = generateSortId(moduleId, sortValue.id);
-    draft.allIds.push(id);
+    const id = generateSortId(moduleId, sortValue.id)
+    draft.allIds.push(id)
     draft.byId[id] = {
       ...initialSortState,
       ...sortValue,
@@ -53,27 +53,27 @@ const addSortForModule = (draft, module) => {
       siteId: sortValue.id,
       moduleId,
       id,
-    };
-  });
-};
+    }
+  })
+}
 
 const sortReducer = (state = initialState, action) =>
   produce(state, (draft) => {
-    const { type, payload } = action || {};
+    const { type, payload } = action || {}
 
     switch (type) {
       case FETCH_MODULES_SUCCESS: {
-        const modules = payload;
+        const modules = payload
 
         // add sort options for modules
-        modules.forEach((module) => addSortForModule(draft, module));
+        modules.forEach((module) => addSortForModule(draft, module))
 
         // TODO: add file system sort options
-        break;
+        break
       }
       default:
-        break; // Nothing to do
+        break // Nothing to do
     }
-  });
+  })
 
-export default sortReducer;
+export default sortReducer

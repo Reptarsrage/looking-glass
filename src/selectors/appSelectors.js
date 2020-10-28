@@ -1,7 +1,7 @@
-import { createSelector } from 'reselect';
+import { createSelector } from 'reselect'
 
-import { initialState } from '../reducers/appReducer';
+import { initialState } from '../reducers/appReducer'
 
-const appState = (state) => state.app || initialState;
+const appState = (state) => state.app || initialState
 
-export const darkThemeSelector = createSelector(appState, (state) => state.darkTheme);
+export const darkThemeSelector = createSelector(appState, (state) => state.darkTheme)

@@ -1,6 +1,6 @@
-import produce from 'immer';
-import moment from 'moment';
-import Store from 'electron-store';
+import produce from 'immer'
+import moment from 'moment'
+import Store from 'electron-store'
 
 import {
   FILE_SYSTEM_MODULE_ID,
@@ -9,7 +9,7 @@ import {
   handleAsyncFetch,
   handleAsyncSuccess,
   initialAsyncState,
-} from './constants';
+} from './constants'
 import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -23,22 +23,22 @@ import {
   REFRESH_SUCCESS,
   REFRESH_FAILURE,
   FETCH_MODULES_SUCCESS,
-} from '../actions/types';
+} from '../actions/types'
 
 // Allow store to be passed via unit test
-let electronStore;
+let electronStore
 const getStore = () => {
   if (!electronStore) {
-    electronStore = new Store();
+    electronStore = new Store()
   }
 
-  return electronStore;
-};
+  return electronStore
+}
 
 export const initialState = {
   byId: {},
   allIds: [],
-};
+}
 
 export const initialAuthState = {
   accessToken: '',
@@ -49,78 +49,78 @@ export const initialAuthState = {
   refreshToken: '',
   expires: 0,
   ...initialAsyncState,
-};
+}
 
 const authReducer = (state = initialState, action, store = getStore()) =>
   produce(state, (draft) => {
-    const { type, payload, meta } = action || {};
-    const moduleId = meta;
+    const { type, payload, meta } = action || {}
+    const moduleId = meta
 
     switch (type) {
       case FETCH_MODULES_SUCCESS: {
-        const modules = payload;
+        const modules = payload
 
         modules.forEach((module) => {
           // generate id
-          const id = generateModuleId(module.id);
+          const id = generateModuleId(module.id)
 
           // load from persistent store
-          draft.byId[id] = store.get(id, initialAuthState);
-          draft.allIds.push(id);
-        });
+          draft.byId[id] = store.get(id, initialAuthState)
+          draft.allIds.push(id)
+        })
 
         // add file system
-        draft.byId[FILE_SYSTEM_MODULE_ID] = initialAuthState;
-        draft.allIds.push(FILE_SYSTEM_MODULE_ID);
+        draft.byId[FILE_SYSTEM_MODULE_ID] = initialAuthState
+        draft.allIds.push(FILE_SYSTEM_MODULE_ID)
 
-        break;
+        break
       }
       case FETCH_OATH_URL: {
-        handleAsyncFetch(state.byId[moduleId].oauth, draft.byId[moduleId].oauth);
-        break;
+        handleAsyncFetch(state.byId[moduleId].oauth, draft.byId[moduleId].oauth)
+        break
       }
       case FETCH_OATH_URL_SUCCESS: {
-        handleAsyncSuccess(state.byId[moduleId].oauth, draft.byId[moduleId].oauth);
-        draft.byId[moduleId].oauth.url = payload;
-        break;
+        handleAsyncSuccess(state.byId[moduleId].oauth, draft.byId[moduleId].oauth)
+        draft.byId[moduleId].oauth.url = payload
+        break
       }
       case FETCH_OATH_URL_FAILURE: {
-        handleAsyncError(state.byId[moduleId].oauth, draft.byId[moduleId].oauth, payload);
-        break;
+        handleAsyncError(state.byId[moduleId].oauth, draft.byId[moduleId].oauth, payload)
+        break
       }
       case AUTHORIZE:
       case LOGIN: {
-        handleAsyncFetch(state.byId[moduleId], draft.byId[moduleId]);
-        break;
+        handleAsyncFetch(state.byId[moduleId], draft.byId[moduleId])
+        break
       }
       case REFRESH_SUCCESS:
       case AUTHORIZE_SUCCESS:
       case LOGIN_SUCCESS: {
-        const { expiresIn } = payload;
-        const date = moment();
-        date.add(expiresIn, 'seconds');
+        const { expiresIn } = payload
+        const date = moment()
+        date.add(expiresIn, 'seconds')
 
-        handleAsyncSuccess(state.byId[moduleId], draft.byId[moduleId]);
+        handleAsyncSuccess(state.byId[moduleId], draft.byId[moduleId])
         draft.byId[moduleId] = {
           ...draft.byId[moduleId],
           ...payload,
           expires: date.valueOf(),
-        };
+        }
 
         // save to persistent store
-        store.set(moduleId, draft.byId[moduleId]);
-        break;
+        store.set(moduleId, draft.byId[moduleId])
+        break
       }
       case REFRESH_FAILURE:
       case AUTHORIZE_FAILURE:
       case LOGIN_FAILURE: {
-        handleAsyncError(state.byId[moduleId], draft.byId[moduleId], payload);
-        break;
+        handleAsyncError(state.byId[moduleId], draft.byId[moduleId], payload)
+        break
       }
       default:
         // Nothing to do
-        break;
+        break
     }
-  });
+  })
 
-export default authReducer;
+export default authReducer

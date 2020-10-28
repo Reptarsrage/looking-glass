@@ -1,50 +1,50 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, screen } = require('electron');
-const isDev = require('electron-is-dev');
-const path = require('path');
-const log = require('electron-log');
-const { autoUpdater } = require('electron-updater');
-const qs = require('querystring');
+const { app, BrowserWindow, screen } = require('electron')
+const isDev = require('electron-is-dev')
+const path = require('path')
+const log = require('electron-log')
+const { autoUpdater } = require('electron-updater')
+const qs = require('querystring')
 
-const MenuBuilder = require('./menu');
-const createLocalWebServer = require('./localWebServer');
+const MenuBuilder = require('./menu')
+const createLocalWebServer = require('./localWebServer')
 
 // Web Server
-let localWebServer;
+let localWebServer
 
 // Auto updater
 class AppUpdater {
   constructor() {
-    log.transports.file.level = 'debug';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
+    log.transports.file.level = 'debug'
+    autoUpdater.logger = log
+    autoUpdater.checkForUpdatesAndNotify()
   }
 }
 
 // Dev tools installer
 const installExtensions = async () => {
   // eslint-disable-next-line global-require
-  const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
-  const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS];
+  const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
+  const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]
 
-  return Promise.all(extensions.map(installExtension)).catch(console.log);
-};
+  return Promise.all(extensions.map(installExtension)).catch(console.log)
+}
 
 // Fix warning https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = true;
+app.allowRendererProcessReuse = true
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow
 
 const createWindow = async (port) => {
   // Install dev tools
   if (isDev) {
-    await installExtensions();
+    await installExtensions()
   }
 
   // Create the browser window.
-  const { bounds } = screen.getPrimaryDisplay();
+  const { bounds } = screen.getPrimaryDisplay()
   mainWindow = new BrowserWindow({
     show: false,
     title: app.name,
@@ -56,13 +56,13 @@ const createWindow = async (port) => {
       nodeIntegration: true,
       enableRemoteModule: true,
     },
-  });
+  })
 
   // Load the url (or file)
   if (isDev) {
-    mainWindow.loadURL(`http://localhost:4000?${qs.stringify({ port })}`);
+    mainWindow.loadURL(`http://localhost:4000?${qs.stringify({ port })}`)
   } else {
-    mainWindow.loadFile(path.resolve('./dist', 'index.html'), { query: { port } });
+    mainWindow.loadFile(path.resolve('./dist', 'index.html'), { query: { port } })
   }
 
   // Emitted when the window is closed.
@@ -70,62 +70,62 @@ const createWindow = async (port) => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null;
-  });
+    mainWindow = null
+  })
 
   // Configure Menu
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildContextMenu();
+  const menuBuilder = new MenuBuilder(mainWindow)
+  menuBuilder.buildContextMenu()
 
   // Wait until window is presentable to show
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+    mainWindow.show()
 
     // Open Dev Tools
     if (isDev) {
-      mainWindow.webContents.openDevTools();
+      mainWindow.webContents.openDevTools()
     }
-  });
-};
+  })
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
   // Start a web server to serve up local media files
-  const { server, port } = await createLocalWebServer();
-  localWebServer = server;
+  const { server, port } = await createLocalWebServer()
+  localWebServer = server
 
   // Create the window
-  await createWindow(port);
+  await createWindow(port)
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
-});
+  new AppUpdater()
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
-    app.quit();
+    app.quit()
   }
-});
+})
 
 app.on('activate', async () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    await createWindow();
+    await createWindow()
   }
-});
+})
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
 app.on('before-quit', () => {
   if (localWebServer && localWebServer.listening) {
-    localWebServer.close();
+    localWebServer.close()
   }
-});
+})

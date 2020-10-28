@@ -1,20 +1,20 @@
-import React from 'react';
-import Popover from '@material-ui/core/Popover';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
-import CheckIcon from '@material-ui/icons/Check';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import React from 'react'
+import Popover from '@material-ui/core/Popover'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import clsx from 'clsx'
+import { withStyles } from '@material-ui/core/styles'
+import CheckIcon from '@material-ui/icons/Check'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
-import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors';
-import NestedSortMenuItem from './NestedSortMenuItem';
+import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors'
+import NestedSortMenuItem from './NestedSortMenuItem'
 
 const styles = () => ({
   icon: {
@@ -23,26 +23,26 @@ const styles = () => ({
   secondIcon: {
     marginLeft: '-20px',
   },
-});
+})
 
 const SortMenuItem = ({ classes, value, valueId, onClick, valueIsCurrentlySelected, galleryId, moduleId }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const nestedValues = value.values || [];
-  const ariaId = `${valueId}-nested-sort-menu`;
-  const hasNestedValues = nestedValues.length > 0;
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const nestedValues = value.values || []
+  const ariaId = `${valueId}-nested-sort-menu`
+  const hasNestedValues = nestedValues.length > 0
 
   const handleClick = (event) => {
     if (hasNestedValues) {
-      setAnchorEl(event.currentTarget);
+      setAnchorEl(event.currentTarget)
     } else {
-      onClick(valueId);
+      onClick(valueId)
     }
-  };
+  }
 
   const handleClose = (id) => {
-    setAnchorEl(null);
-    onClick(id);
-  };
+    setAnchorEl(null)
+    onClick(id)
+  }
 
   return (
     <ListItem button onClick={handleClick}>
@@ -87,8 +87,8 @@ const SortMenuItem = ({ classes, value, valueId, onClick, valueIsCurrentlySelect
         </Popover>
       )}
     </ListItem>
-  );
-};
+  )
+}
 
 SortMenuItem.propTypes = {
   // required
@@ -107,11 +107,11 @@ SortMenuItem.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   value: valueByIdSelector,
   valueIsCurrentlySelected: valueIsCurrentlySelectedSelector,
-});
+})
 
-export default compose(connect(mapStateToProps), withStyles(styles))(SortMenuItem);
+export default compose(connect(mapStateToProps), withStyles(styles))(SortMenuItem)

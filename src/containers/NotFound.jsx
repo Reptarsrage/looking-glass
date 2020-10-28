@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import HomeIcon from '@material-ui/icons/Home';
-import { useHistory } from 'react-router';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
+import HomeIcon from '@material-ui/icons/Home'
+import { useHistory } from 'react-router'
 
 const styles = (theme) => ({
   button: {
@@ -16,13 +16,13 @@ const styles = (theme) => ({
   icon: {
     marginRight: theme.spacing(0.5),
   },
-});
+})
 
 const NotFound = ({ classes }) => {
-  const history = useHistory();
+  const history = useHistory()
   const go = () => {
-    history.push('/');
-  };
+    history.push('/')
+  }
 
   return (
     <>
@@ -36,12 +36,12 @@ const NotFound = ({ classes }) => {
         Nothing to see here
       </Typography>
     </>
-  );
-};
+  )
+}
 
 NotFound.propTypes = {
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(NotFound);
+export default withStyles(styles)(NotFound)

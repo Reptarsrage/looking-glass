@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
 
-import progressTracker from '../services/progressTracker';
+import progressTracker from '../services/progressTracker'
 
 const styles = (theme) => ({
   bar: {
@@ -21,60 +21,60 @@ const styles = (theme) => ({
   failed: {
     backgroundColor: theme.palette.error.main,
   },
-});
+})
 
 const Progress = ({ classes }) => {
-  let duration = progressTracker.estimateDuration();
-  let step = 1000 / Math.floor(duration);
+  let duration = progressTracker.estimateDuration()
+  let step = 1000 / Math.floor(duration)
 
-  const [inProgress, setInProgress] = useState(false);
-  const [error, setError] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [intervalId, setIntervalId] = useState(0);
+  const [inProgress, setInProgress] = useState(false)
+  const [error, setError] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [intervalId, setIntervalId] = useState(0)
 
   useEffect(() => {
     progressTracker.onStart(() => {
-      duration = progressTracker.estimateDuration();
-      step = 1000 / Math.floor(duration);
+      duration = progressTracker.estimateDuration()
+      step = 1000 / Math.floor(duration)
 
-      setError(false);
-      setProgress(0);
-      setInProgress(true);
+      setError(false)
+      setProgress(0)
+      setInProgress(true)
       setIntervalId(
         setInterval(() => {
-          setProgress((p) => Math.max(0, Math.min(100, p + step)));
+          setProgress((p) => Math.max(0, Math.min(100, p + step)))
         }, 100)
-      );
-    });
+      )
+    })
 
     progressTracker.onDone(() => {
-      setInProgress(false);
-      clearInterval(intervalId);
-    });
+      setInProgress(false)
+      clearInterval(intervalId)
+    })
 
     progressTracker.onError(() => {
-      setError(true);
-    });
+      setError(true)
+    })
 
     progressTracker.onInc((num) => {
-      setProgress(num * 100);
-    });
+      setProgress(num * 100)
+    })
 
     return () => {
-      progressTracker.removeEventListeners();
-    };
-  });
+      progressTracker.removeEventListeners()
+    }
+  })
 
   return (
     <div
       className={clsx(classes.bar, error ? classes.failed : undefined)}
       style={{ opacity: inProgress ? '1' : '0', width: `${progress}%` }}
     />
-  );
-};
+  )
+}
 
 Progress.propTypes = {
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(Progress);
+export default withStyles(styles)(Progress)

@@ -1,16 +1,16 @@
-import React from 'react';
-import { Switch, Route } from 'react-router';
+import React from 'react'
+import { Switch, Route } from 'react-router'
 
-import App from './containers/App';
-import Home from './containers/Home';
-import Gallery from './containers/Gallery';
-import Login from './containers/Login';
-import OAuth from './containers/OAuth';
-import ImplicitAuth from './containers/ImplicitAuth';
-import About from './containers/About';
-import NotFound from './containers/NotFound';
-import WithRouteParameters from './hocs/WithRouteParameters';
-import WithErrorBoundary from './hocs/WithErrorBoundary';
+import App from './containers/App'
+import Home from './containers/Home'
+import Gallery from './containers/Gallery'
+import Login from './containers/Login'
+import OAuth from './containers/OAuth'
+import ImplicitAuth from './containers/ImplicitAuth'
+import About from './containers/About'
+import NotFound from './containers/NotFound'
+import WithRouteParameters from './hocs/WithRouteParameters'
+import WithErrorBoundary from './hocs/WithErrorBoundary'
 
 const Routes = () => (
   <App>
@@ -24,6 +24,6 @@ const Routes = () => (
       <Route path="*" component={WithErrorBoundary(NotFound)} />
     </Switch>
   </App>
-);
+)
 
-export default Routes;
+export default Routes

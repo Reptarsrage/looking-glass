@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied'
+import Typography from '@material-ui/core/Typography'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = () => ({
   wrapper: {
@@ -19,7 +19,7 @@ const styles = () => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+})
 
 const NoResults = ({ classes }) => (
   <div className={classes.wrapper}>
@@ -34,10 +34,10 @@ const NoResults = ({ classes }) => (
       </Typography>
     </div>
   </div>
-);
+)
 
 NoResults.propTypes = {
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(NoResults);
+export default withStyles(styles)(NoResults)

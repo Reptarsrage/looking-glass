@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Chip from '@material-ui/core/Chip'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
 
-import { filterByIdSelector } from '../selectors/filterSelectors';
-import * as galleryActions from '../actions/galleryActions';
+import { filterByIdSelector } from '../selectors/filterSelectors'
+import * as galleryActions from '../actions/galleryActions'
 
 const styles = (theme) => ({
   filterItem: {
     margin: theme.spacing(0.5),
   },
-});
+})
 
 const SelectedFilter = ({ filterChange, galleryId, filter, classes }) => (
   <Chip
@@ -22,7 +22,7 @@ const SelectedFilter = ({ filterChange, galleryId, filter, classes }) => (
     label={filter.name}
     onDelete={() => filterChange(galleryId, null)}
   />
-);
+)
 
 SelectedFilter.propTypes = {
   // required
@@ -40,14 +40,14 @@ SelectedFilter.propTypes = {
 
   // actions
   filterChange: PropTypes.func.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   filter: filterByIdSelector,
-});
+})
 
 const mapDispatchToProps = {
   filterChange: galleryActions.filterChange,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SelectedFilter);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SelectedFilter)

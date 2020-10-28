@@ -1,35 +1,35 @@
-import React, { Component } from 'react';
-import Typography from '@material-ui/core/Typography';
-import HomeIcon from '@material-ui/icons/Home';
-import Button from '@material-ui/core/Button';
+import React, { Component } from 'react'
+import Typography from '@material-ui/core/Typography'
+import HomeIcon from '@material-ui/icons/Home'
+import Button from '@material-ui/core/Button'
 
 // See https://reactjs.org/docs/error-boundaries.html
 const withErrorBoundary = (WrappedComponent) => {
   class WithErrorBoundary extends Component {
     constructor() {
-      super();
+      super()
 
       this.state = {
         error: null,
         errorInfo: null,
-      };
+      }
     }
 
     componentDidCatch(error, errorInfo) {
       this.setState({
         error,
         errorInfo,
-      });
+      })
     }
 
     handleClick = () => {
-      this.setState({ error: null, errorInfo: null });
-      window.location = '/';
-    };
+      this.setState({ error: null, errorInfo: null })
+      window.location = '/'
+    }
 
     render() {
-      const { error, errorInfo } = this.state;
-      const { ...rest } = this.props;
+      const { error, errorInfo } = this.state
+      const { ...rest } = this.props
 
       return (
         <>
@@ -51,11 +51,11 @@ const withErrorBoundary = (WrappedComponent) => {
             <WrappedComponent {...rest} />
           )}
         </>
-      );
+      )
     }
   }
 
-  return WithErrorBoundary;
-};
+  return WithErrorBoundary
+}
 
-export default withErrorBoundary;
+export default withErrorBoundary

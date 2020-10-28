@@ -1,43 +1,43 @@
-import React, { useEffect } from 'react';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect } from 'react'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import List from '@material-ui/core/List'
+import ListSubheader from '@material-ui/core/ListSubheader'
+import { withStyles } from '@material-ui/core/styles'
 
-import { filterSectionByIdSelector, filterSectionValuesSearchSelector } from '../selectors/filterSectionSelectors';
-import * as filterActions from '../actions/filterActions';
-import FilterValue from './FilterValue';
-import LoadingIndicator from './LoadingIndicator';
+import { filterSectionByIdSelector, filterSectionValuesSearchSelector } from '../selectors/filterSectionSelectors'
+import * as filterActions from '../actions/filterActions'
+import FilterValue from './FilterValue'
+import LoadingIndicator from './LoadingIndicator'
 
 const styles = (theme) => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
-});
+})
 
 const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, onClick, filterValues }) => {
-  const { fetching, fetched, error, name } = filterSection;
+  const { fetching, fetched, error, name } = filterSection
 
   useEffect(() => {
     if (!fetching && !fetched) {
-      fetchFilters(filterSectionId);
+      fetchFilters(filterSectionId)
     }
-  });
+  })
 
   if (fetching) {
-    return <LoadingIndicator size={50} />;
+    return <LoadingIndicator size={50} />
   }
 
   if (error) {
-    return <span>Error!</span>;
+    return <span>Error!</span>
   }
 
   if (fetched && filterValues.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -46,13 +46,13 @@ const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, 
         <FilterValue key={filterId} filterId={filterId} onClick={onClick} />
       ))}
     </List>
-  );
-};
+  )
+}
 
 FilterSection.defaultProps = {
   onClick: null,
   search: null,
-};
+}
 
 FilterSection.propTypes = {
   // Required
@@ -78,15 +78,15 @@ FilterSection.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   filterSection: filterSectionByIdSelector,
   filterValues: filterSectionValuesSearchSelector,
-});
+})
 
 const mapDispatchToProps = {
   fetchFilters: filterActions.fetchFilters,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(FilterSection);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(FilterSection)
