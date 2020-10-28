@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router';
-import PropTypes from 'prop-types';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
-import TuneIcon from '@material-ui/icons/Tune';
-import Drawer from '@material-ui/core/Drawer';
-import { debounce } from 'lodash';
+import React, { useState, useEffect } from 'react'
+import { Redirect } from 'react-router'
+import PropTypes from 'prop-types'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
+import Toolbar from '@material-ui/core/Toolbar'
+import TuneIcon from '@material-ui/icons/Tune'
+import Drawer from '@material-ui/core/Drawer'
+import { debounce } from 'lodash'
 
-import { productName } from '../../package.json';
-import { supportsSortingSelector, supportsFilteringSelector } from '../selectors/moduleSelectors';
-import { forceRenderItemsSelector } from '../selectors/modalSelectors';
-import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors';
-import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors';
-import { itemDimensionsSelector } from '../selectors/itemSelectors';
-import * as galleryActions from '../actions/galleryActions';
-import Breadcrumbs from '../components/Breadcrumbs';
-import SortMenu from '../components/SortMenu';
-import Masonry from '../components/Masonry';
-import FilterList from '../components/FilterList';
-import SelectedFilters from '../components/SelectedFilters';
-import Modal from '../components/Modal';
-import LoadingIndicator from '../components/LoadingIndicator';
-import SearchBar from '../components/SearchBar';
-import EndOfScrollToast from '../components/EndOfScrollToast';
-import titleBar from '../titleBar';
+import { productName } from '../../package.json'
+import { supportsSortingSelector, supportsFilteringSelector } from '../selectors/moduleSelectors'
+import { forceRenderItemsSelector } from '../selectors/modalSelectors'
+import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors'
+import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors'
+import { itemDimensionsSelector } from '../selectors/itemSelectors'
+import * as galleryActions from '../actions/galleryActions'
+import Breadcrumbs from '../components/Breadcrumbs'
+import SortMenu from '../components/SortMenu'
+import Masonry from '../components/Masonry'
+import FilterList from '../components/FilterList'
+import SelectedFilters from '../components/SelectedFilters'
+import Modal from '../components/Modal'
+import LoadingIndicator from '../components/LoadingIndicator'
+import SearchBar from '../components/SearchBar'
+import EndOfScrollToast from '../components/EndOfScrollToast'
+import titleBar from '../titleBar'
 
 const styles = (theme) => ({
   grow: {
@@ -52,7 +52,7 @@ const styles = (theme) => ({
   masonryContainer: {
     flex: '1 1 auto',
   },
-});
+})
 
 const Gallery = ({
   items,
@@ -72,91 +72,91 @@ const Gallery = ({
   supportsFiltering,
   supportsSorting,
 }) => {
-  const [showOverlayButtons, setShowOverlayButtons] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false);
-  const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery;
+  const [showOverlayButtons, setShowOverlayButtons] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
+  const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery
 
   useEffect(() => {
     // set event listeners
-    window.addEventListener('containerScroll', handleScroll);
+    window.addEventListener('containerScroll', handleScroll)
 
     // fetch images
-    fetchInitialItems();
+    fetchInitialItems()
 
     // Set window title
-    titleBar.updateTitle(`${productName} - ${title}`);
+    titleBar.updateTitle(`${productName} - ${title}`)
 
     return () => {
       // remove event listeners from componentDidMount
-      window.removeEventListener('containerScroll', handleScroll);
-    };
-  });
+      window.removeEventListener('containerScroll', handleScroll)
+    }
+  })
 
   const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
+    setDrawerOpen(false)
+  }
 
   const handleFilterClick = (filterId) => {
-    setDrawerOpen(false);
-    filterChange(galleryId, filterId);
-  };
+    setDrawerOpen(false)
+    filterChange(galleryId, filterId)
+  }
 
   const handleOpenDrawerClick = () => {
-    setDrawerOpen(true);
-  };
+    setDrawerOpen(true)
+  }
 
   const handleScroll = (event) => {
-    const { clientHeight, scrollTop, scrollHeight } = event.currentTarget;
+    const { clientHeight, scrollTop, scrollHeight } = event.currentTarget
 
     if (scrollTop >= overlayButtonThreshold && !showOverlayButtons) {
-      setShowOverlayButtons(true);
+      setShowOverlayButtons(true)
     } else if (scrollTop < overlayButtonThreshold && showOverlayButtons) {
-      setShowOverlayButtons(false);
+      setShowOverlayButtons(false)
     }
 
-    const value = scrollHeight - scrollTop - clientHeight;
-    const threshold = Math.max(scrollHeight * 0.1, 1000);
+    const value = scrollHeight - scrollTop - clientHeight
+    const threshold = Math.max(scrollHeight * 0.1, 1000)
     if (value < threshold) {
-      loadMoreItems();
+      loadMoreItems()
     }
 
     // save position for later
-    saveScrollPosition(galleryId, scrollTop);
+    saveScrollPosition(galleryId, scrollTop)
 
     // Show end of the line toast
     if (scrollTop + clientHeight >= scrollHeight - 10 && !hasNext) {
-      setShowEndOfScrollToast(true);
+      setShowEndOfScrollToast(true)
     }
-  };
+  }
 
   const fetchInitialItems = () => {
     // Abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
-      return;
+      return
     }
 
     // Check if first page is available and not already fetched, and fetch it
     if (!fetching && !fetched && !error) {
-      fetchGallery(galleryId);
+      fetchGallery(galleryId)
     }
-  };
+  }
 
   const loadMoreItems = () => {
     // Abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
-      return;
+      return
     }
 
     // Check if next page is available, and fetch it
     if (hasNext && !fetching) {
-      fetchGallery(galleryId);
+      fetchGallery(galleryId)
     }
-  };
+  }
 
   // Redirect to authenticate
   if (requiresAuth && !isAuthenticated) {
-    return <Redirect to={authUrl} />;
+    return <Redirect to={authUrl} />
   }
 
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
@@ -204,13 +204,13 @@ const Gallery = ({
         />
       )}
     </>
-  );
-};
+  )
+}
 
 Gallery.defaultProps = {
   authUrl: null,
   overlayButtonThreshold: 25,
-};
+}
 
 Gallery.propTypes = {
   // required
@@ -245,7 +245,7 @@ Gallery.propTypes = {
   fetchGallery: PropTypes.func.isRequired,
   filterChange: PropTypes.func.isRequired,
   saveScrollPosition: PropTypes.func.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   gallery: galleryByIdSelector,
@@ -257,12 +257,12 @@ const mapStateToProps = createStructuredSelector({
   forceRenderItems: forceRenderItemsSelector,
   supportsSorting: supportsSortingSelector,
   supportsFiltering: supportsFilteringSelector,
-});
+})
 
 const mapDispatchToProps = {
   fetchGallery: galleryActions.fetchGallery,
   filterChange: galleryActions.filterChange,
   saveScrollPosition: galleryActions.saveScrollPosition,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery)

@@ -1,22 +1,22 @@
-import React from 'react';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { compose } from 'redux';
-import { withStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
+import React from 'react'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import { compose } from 'redux'
+import { withStyles } from '@material-ui/core/styles'
+import Divider from '@material-ui/core/Divider'
 
-import NoResults from './NoResults';
-import ItemFiltersSection from './ItemFiltersSection';
-import LoadingIndicator from './LoadingIndicator';
-import * as filterActions from '../actions/filterActions';
-import { itemFiltersEnabledSelector, filterBySelector } from '../selectors/moduleSelectors';
+import NoResults from './NoResults'
+import ItemFiltersSection from './ItemFiltersSection'
+import LoadingIndicator from './LoadingIndicator'
+import * as filterActions from '../actions/filterActions'
+import { itemFiltersEnabledSelector, filterBySelector } from '../selectors/moduleSelectors'
 import {
   itemFetchingFiltersSelector,
   itemFetchedFiltersSelector,
   itemFetchFiltersErrorSelector,
   itemFiltersSelector,
-} from '../selectors/itemSelectors';
+} from '../selectors/itemSelectors'
 
 const styles = () => ({
   spacer: {
@@ -25,7 +25,7 @@ const styles = () => ({
     display: 'flex',
     flexDirection: 'column',
   },
-});
+})
 
 const ItemFilters = ({
   classes,
@@ -42,16 +42,16 @@ const ItemFilters = ({
 }) => {
   React.useEffect(() => {
     if (itemFiltersEnabled && !fetched && !fetching) {
-      fetchItemFilters(moduleId, itemId);
+      fetchItemFilters(moduleId, itemId)
     }
-  }, []);
+  }, [])
 
   if (itemFiltersEnabled && fetching) {
     return (
       <div className={classes.spacer}>
         <LoadingIndicator />
       </div>
-    );
+    )
   }
 
   if (error || (fetched && filters.length === 0) || (!itemFiltersEnabled && filters.length === 0)) {
@@ -59,7 +59,7 @@ const ItemFilters = ({
       <div className={classes.spacer}>
         <NoResults />
       </div>
-    );
+    )
   }
 
   return (
@@ -75,8 +75,8 @@ const ItemFilters = ({
         ))
         .reduce((p, c) => [...p, <Divider key={`${c.key}-divider`} />, c], [])}
     </div>
-  );
-};
+  )
+}
 
 ItemFilters.defaultProps = {
   filters: [],
@@ -85,7 +85,7 @@ ItemFilters.defaultProps = {
   itemId: null,
   fetching: false,
   fetched: false,
-};
+}
 
 ItemFilters.propTypes = {
   // Required
@@ -108,7 +108,7 @@ ItemFilters.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   itemFiltersEnabled: itemFiltersEnabledSelector,
@@ -117,10 +117,10 @@ const mapStateToProps = createStructuredSelector({
   error: itemFetchFiltersErrorSelector,
   filters: itemFiltersSelector,
   filterSections: filterBySelector,
-});
+})
 
 const mapDispatchToProps = {
   fetchItemFilters: filterActions.fetchItemFilters,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(ItemFilters);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(ItemFilters)

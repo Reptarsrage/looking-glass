@@ -1,12 +1,12 @@
-import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import { withStyles } from '@material-ui/core/styles';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import CloseIcon from '@material-ui/icons/Close';
-import ErrorIcon from '@material-ui/icons/Error';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
+import React from 'react'
+import IconButton from '@material-ui/core/IconButton'
+import Snackbar from '@material-ui/core/Snackbar'
+import { withStyles } from '@material-ui/core/styles'
+import SnackbarContent from '@material-ui/core/SnackbarContent'
+import CloseIcon from '@material-ui/icons/Close'
+import ErrorIcon from '@material-ui/icons/Error'
+import clsx from 'clsx'
+import PropTypes from 'prop-types'
 
 const styles = (theme) => ({
   close: {
@@ -26,7 +26,7 @@ const styles = (theme) => ({
     alignItems: 'center',
     display: 'flex',
   },
-});
+})
 
 const ErrorToast = ({ classes, message, onClose, open }) => (
   <Snackbar
@@ -51,11 +51,11 @@ const ErrorToast = ({ classes, message, onClose, open }) => (
       ]}
     />
   </Snackbar>
-);
+)
 
 ErrorToast.defaultProps = {
   message: 'An error occurred',
-};
+}
 
 ErrorToast.propTypes = {
   // required
@@ -67,6 +67,6 @@ ErrorToast.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(ErrorToast);
+export default withStyles(styles)(ErrorToast)

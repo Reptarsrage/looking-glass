@@ -1,23 +1,23 @@
-import produce from 'immer';
+import produce from 'immer'
 
-import { TOGGLE_DARK_THEME } from '../actions/types';
+import { TOGGLE_DARK_THEME } from '../actions/types'
 
 export const initialState = {
   darkTheme: true,
-};
+}
 
 const authReducer = (state = initialState, action) =>
   produce(state, (draft) => {
-    const { type } = action || {};
+    const { type } = action || {}
     switch (type) {
       case TOGGLE_DARK_THEME: {
-        draft.darkTheme = !state.darkTheme;
-        break;
+        draft.darkTheme = !state.darkTheme
+        break
       }
       default:
         // Nothing to do
-        break;
+        break
     }
-  });
+  })
 
-export default authReducer;
+export default authReducer

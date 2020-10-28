@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
 
-import { currentFilterSelector } from '../selectors/gallerySelectors';
-import SelectedFilter from './SelectedFilter';
+import { currentFilterSelector } from '../selectors/gallerySelectors'
+import SelectedFilter from './SelectedFilter'
 
 const styles = (theme) => ({
   filtersContainer: {
@@ -14,7 +14,7 @@ const styles = (theme) => ({
     flexWrap: 'wrap',
     padding: theme.spacing(0.5),
   },
-});
+})
 
 const SelectedFilters = ({ galleryId, currentFilter, classes }) => {
   if (currentFilter) {
@@ -22,15 +22,15 @@ const SelectedFilters = ({ galleryId, currentFilter, classes }) => {
       <div className={classes.filtersContainer}>
         <SelectedFilter filterId={currentFilter} galleryId={galleryId} />
       </div>
-    );
+    )
   }
 
-  return null;
-};
+  return null
+}
 
 SelectedFilters.defaultProps = {
   currentFilter: null,
-};
+}
 
 SelectedFilters.propTypes = {
   // required
@@ -41,10 +41,10 @@ SelectedFilters.propTypes = {
 
   // selectors
   currentFilter: PropTypes.string,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   currentFilter: currentFilterSelector,
-});
+})
 
-export default compose(connect(mapStateToProps), withStyles(styles))(SelectedFilters);
+export default compose(connect(mapStateToProps), withStyles(styles))(SelectedFilters)

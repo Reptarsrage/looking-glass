@@ -1,13 +1,13 @@
-require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin')
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = () => {
-  const isDev = process.env.NODE_ENV === 'development';
-  const outPath = path.join(__dirname, 'dist');
+  const isDev = process.env.NODE_ENV === 'development'
+  const outPath = path.join(__dirname, 'dist')
   return {
     performance: { hints: false },
     devServer: {
@@ -80,5 +80,5 @@ module.exports = () => {
         chunkFilename: isDev ? '[id].css' : '[id].[hash].css',
       }),
     ],
-  };
-};
+  }
+}

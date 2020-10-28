@@ -1,15 +1,15 @@
-import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router';
+import { combineReducers } from 'redux'
+import { connectRouter } from 'connected-react-router'
 
-import appReducer from './appReducer';
-import authReducer from './authReducer';
-import moduleReducer from './moduleReducer';
-import galleryReducer from './galleryReducer';
-import itemReducer from './itemReducer';
-import sortReducer from './sortReducer';
-import filterSectionReducer from './filterSectionReducer';
-import filterReducer from './filterReducer';
-import modalReducer from './modalReducer';
+import appReducer from './appReducer'
+import authReducer from './authReducer'
+import moduleReducer from './moduleReducer'
+import galleryReducer from './galleryReducer'
+import itemReducer from './itemReducer'
+import sortReducer from './sortReducer'
+import filterSectionReducer from './filterSectionReducer'
+import filterReducer from './filterReducer'
+import modalReducer from './modalReducer'
 
 const rootReducer = (history, asyncReducers) =>
   combineReducers({
@@ -24,6 +24,6 @@ const rootReducer = (history, asyncReducers) =>
     filter: filterReducer,
     modal: modalReducer,
     ...asyncReducers,
-  });
+  })
 
-export default rootReducer;
+export default rootReducer

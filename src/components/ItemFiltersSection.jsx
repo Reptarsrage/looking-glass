@@ -1,25 +1,25 @@
-import React from 'react';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import List from '@material-ui/core/List'
+import ListSubheader from '@material-ui/core/ListSubheader'
+import { withStyles } from '@material-ui/core/styles'
 
-import FilterValue from './FilterValue';
-import { itemFiltersSectionSelector } from '../selectors/itemSelectors';
+import FilterValue from './FilterValue'
+import { itemFiltersSectionSelector } from '../selectors/itemSelectors'
 
 const styles = (theme) => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
-});
+})
 
 const ItemFilterSection = ({ filterSection, classes, onClick }) => {
   if (filterSection.values.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -28,13 +28,13 @@ const ItemFilterSection = ({ filterSection, classes, onClick }) => {
         <FilterValue key={filterId} filterId={filterId} onClick={onClick} />
       ))}
     </List>
-  );
-};
+  )
+}
 
 ItemFilterSection.defaultProps = {
   onClick: () => {},
   search: null,
-};
+}
 
 ItemFilterSection.propTypes = {
   // Required
@@ -57,10 +57,10 @@ ItemFilterSection.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   filterSection: itemFiltersSectionSelector,
-});
+})
 
-export default compose(connect(mapStateToProps), withStyles(styles))(ItemFilterSection);
+export default compose(connect(mapStateToProps), withStyles(styles))(ItemFilterSection)

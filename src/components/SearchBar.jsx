@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import InputBase from '@material-ui/core/InputBase';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import SearchIcon from '@material-ui/icons/Search';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import InputBase from '@material-ui/core/InputBase'
+import { fade } from '@material-ui/core/styles/colorManipulator'
+import SearchIcon from '@material-ui/icons/Search'
 
-import { currentSearchQuerySelector } from '../selectors/gallerySelectors';
-import * as galleryActions from '../actions/galleryActions';
+import { currentSearchQuerySelector } from '../selectors/gallerySelectors'
+import * as galleryActions from '../actions/galleryActions'
 
 const styles = (theme) => ({
   search: {
@@ -50,15 +50,15 @@ const styles = (theme) => ({
       width: 200,
     },
   },
-});
+})
 
 const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) => {
   const handleSearchChange = (e) => {
-    searchChange(galleryId, e.target.value);
-  };
+    searchChange(galleryId, e.target.value)
+  }
 
   if (!moduleId || !galleryId) {
-    return null;
+    return null
   }
 
   return (
@@ -76,14 +76,14 @@ const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) 
         }}
       />
     </div>
-  );
-};
+  )
+}
 
 SearchBar.defaultProps = {
   moduleId: null,
   galleryId: null,
   searchQuery: null,
-};
+}
 
 SearchBar.propTypes = {
   // required
@@ -98,14 +98,14 @@ SearchBar.propTypes = {
 
   // selectors
   searchQuery: PropTypes.string,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   searchQuery: currentSearchQuerySelector,
-});
+})
 
 const mapDispatchToProps = {
   searchChange: galleryActions.searchChange,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SearchBar);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SearchBar)

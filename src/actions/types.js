@@ -4,13 +4,13 @@ const actionTyper = (prefix = '', separator = '/') =>
     {
       get: (_, name) => `${prefix}${separator}${name}`,
     }
-  );
+  )
 
-export const { LOCATION_CHANGE } = actionTyper('@@router');
+export const { LOCATION_CHANGE } = actionTyper('@@router')
 
-export const { TOGGLE_DARK_THEME } = actionTyper('app');
+export const { TOGGLE_DARK_THEME } = actionTyper('app')
 
-export const { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } = actionTyper('modal');
+export const { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } = actionTyper('modal')
 
 export const {
   FETCH_GALLERY,
@@ -25,9 +25,9 @@ export const {
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
   SET_FILE_SYSTEM_DIRECTORY,
-} = actionTyper('gallery');
+} = actionTyper('gallery')
 
-export const { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } = actionTyper('module');
+export const { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } = actionTyper('module')
 
 export const {
   LOGIN,
@@ -41,7 +41,7 @@ export const {
   AUTHORIZE,
   AUTHORIZE_SUCCESS,
   AUTHORIZE_FAILURE,
-} = actionTyper('auth');
+} = actionTyper('auth')
 
 export const {
   FETCH_FILTERS,
@@ -50,4 +50,4 @@ export const {
   FETCH_ITEM_FILTERS,
   FETCH_ITEM_FILTERS_SUCCESS,
   FETCH_ITEM_FILTERS_FAILURE,
-} = actionTyper('filter');
+} = actionTyper('filter')

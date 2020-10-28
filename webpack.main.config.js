@@ -1,7 +1,7 @@
-require('webpack');
+require('webpack')
 
 module.exports = () => {
-  const outPath = __dirname;
+  const outPath = __dirname
   return {
     mode: 'production',
     target: 'electron-main',
@@ -30,5 +30,5 @@ module.exports = () => {
       extensions: ['.js', '.jsx', '.json'],
       modules: ['node_modules'],
     },
-  };
-};
+  }
+}

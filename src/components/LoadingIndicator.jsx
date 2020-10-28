@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = () => ({
   wrapper: {
@@ -16,18 +16,18 @@ const styles = () => ({
     height: '100%',
     width: '100%',
   },
-});
+})
 
 const LoadingIndicator = ({ classes, className, size }) => (
   <div className={className || classes.wrapper}>
     <CircularProgress size={size} />
   </div>
-);
+)
 
 LoadingIndicator.defaultProps = {
   size: 100,
   className: null,
-};
+}
 
 LoadingIndicator.propTypes = {
   // optional
@@ -36,6 +36,6 @@ LoadingIndicator.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(LoadingIndicator);
+export default withStyles(styles)(LoadingIndicator)

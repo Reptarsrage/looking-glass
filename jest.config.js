@@ -11,4 +11,4 @@ module.exports = {
   collectCoverage: false,
   collectCoverageFrom: ['<rootDir>/src/**/*.*'],
   testPathIgnorePatterns: ['/node_modules/', 'TestHelpers\\.js$'],
-};
+}

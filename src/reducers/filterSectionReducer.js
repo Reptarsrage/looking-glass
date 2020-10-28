@@ -1,4 +1,4 @@
-import produce from 'immer';
+import produce from 'immer'
 
 import {
   FETCH_FILTERS,
@@ -7,7 +7,7 @@ import {
   FETCH_MODULES_SUCCESS,
   FETCH_ITEM_FILTERS_SUCCESS,
   FETCH_GALLERY_SUCCESS,
-} from '../actions/types';
+} from '../actions/types'
 import {
   generateFilterId,
   generateFilterSectionId,
@@ -16,12 +16,12 @@ import {
   handleAsyncFetch,
   handleAsyncError,
   handleAsyncSuccess,
-} from './constants';
+} from './constants'
 
 export const initialState = {
   byId: {},
   allIds: [],
-};
+}
 
 export const initialFilterSectionState = {
   id: null,
@@ -31,102 +31,102 @@ export const initialFilterSectionState = {
   description: null,
   values: [],
   ...initialAsyncState,
-};
+}
 
 const addFilterSectionForModule = (draft, module) => {
   // generate moduleId
-  const moduleId = generateModuleId(module.id);
+  const moduleId = generateModuleId(module.id)
 
   // add filter sections
   module.filterBy.forEach((filterSection) => {
-    const id = generateFilterSectionId(moduleId, filterSection.id);
-    draft.allIds.push(id);
+    const id = generateFilterSectionId(moduleId, filterSection.id)
+    draft.allIds.push(id)
     draft.byId[id] = {
       ...initialFilterSectionState,
       ...filterSection,
       siteId: filterSection.id,
       id,
       moduleId,
-    };
-  });
-};
+    }
+  })
+}
 
 const filterSectionReducer = (state = initialState, action) =>
   produce(state, (draft) => {
-    const { type, payload, meta } = action || {};
+    const { type, payload, meta } = action || {}
 
     switch (type) {
       case FETCH_MODULES_SUCCESS: {
-        const modules = payload;
+        const modules = payload
 
         // add filter sections for modules
-        modules.forEach((module) => addFilterSectionForModule(draft, module));
-        break;
+        modules.forEach((module) => addFilterSectionForModule(draft, module))
+        break
       }
       case FETCH_FILTERS: {
-        const filterSectionId = meta;
-        handleAsyncFetch(state.byId[filterSectionId], draft.byId[filterSectionId]);
-        break;
+        const filterSectionId = meta
+        handleAsyncFetch(state.byId[filterSectionId], draft.byId[filterSectionId])
+        break
       }
       case FETCH_ITEM_FILTERS_SUCCESS: {
-        const { moduleId } = meta;
-        const filters = payload;
+        const { moduleId } = meta
+        const filters = payload
 
         // add filters for modules
         filters.forEach(({ filterId, id }) => {
-          const filterSectionId = generateFilterSectionId(moduleId, filterId);
-          const toAdd = generateFilterId(filterSectionId, id);
-          const { values } = draft.byId[filterSectionId];
+          const filterSectionId = generateFilterSectionId(moduleId, filterId)
+          const toAdd = generateFilterId(filterSectionId, id)
+          const { values } = draft.byId[filterSectionId]
           if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
-            draft.byId[filterSectionId].values = [...values, toAdd];
+            draft.byId[filterSectionId].values = [...values, toAdd]
           }
-        });
+        })
 
-        break;
+        break
       }
       case FETCH_FILTERS_SUCCESS: {
-        const filterSectionId = meta;
-        handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId]);
+        const filterSectionId = meta
+        handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId])
 
         payload.forEach(({ id }) => {
-          const toAdd = generateFilterId(filterSectionId, id);
-          const { values } = draft.byId[filterSectionId];
+          const toAdd = generateFilterId(filterSectionId, id)
+          const { values } = draft.byId[filterSectionId]
           if (values.indexOf(toAdd) < 0) {
-            draft.byId[filterSectionId].values = [...values, toAdd];
+            draft.byId[filterSectionId].values = [...values, toAdd]
           }
-        });
+        })
 
-        break;
+        break
       }
       case FETCH_FILTERS_FAILURE: {
-        const filterSectionId = meta;
-        handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload);
-        break;
+        const filterSectionId = meta
+        handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload)
+        break
       }
       case FETCH_GALLERY_SUCCESS: {
-        const { moduleId } = meta;
-        const gallery = payload;
-        const { items } = gallery;
+        const { moduleId } = meta
+        const gallery = payload
+        const { items } = gallery
 
         // add item filters
         items.forEach((item) => {
           item.filters.forEach(({ filterId, id }) => {
-            const filterSectionId = generateFilterSectionId(moduleId, filterId);
-            const toAdd = generateFilterId(filterSectionId, id);
+            const filterSectionId = generateFilterSectionId(moduleId, filterId)
+            const toAdd = generateFilterId(filterSectionId, id)
             if (filterSectionId in draft.byId) {
-              const { values } = draft.byId[filterSectionId];
+              const { values } = draft.byId[filterSectionId]
               if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
-                draft.byId[filterSectionId].values = [...values, toAdd];
+                draft.byId[filterSectionId].values = [...values, toAdd]
               }
             }
-          });
-        });
+          })
+        })
 
-        break;
+        break
       }
       default:
-        break; // Nothing to do
+        break // Nothing to do
     }
-  });
+  })
 
-export default filterSectionReducer;
+export default filterSectionReducer

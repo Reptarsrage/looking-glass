@@ -1,17 +1,17 @@
-import React, { useEffect, useRef, useState, memo } from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import CollectionsIcon from '@material-ui/icons/Collections';
-import { useHistory } from 'react-router';
+import React, { useEffect, useRef, useState, memo } from 'react'
+import PropTypes from 'prop-types'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
+import CollectionsIcon from '@material-ui/icons/Collections'
+import { useHistory } from 'react-router'
 
-import { modalItemIdSelector } from '../selectors/modalSelectors';
-import { itemByIdSelector, itemGalleryUrlSelector } from '../selectors/itemSelectors';
-import * as modalActions from '../actions/modalActions';
-import Image from './Image';
-import Video from './Video';
+import { modalItemIdSelector } from '../selectors/modalSelectors'
+import { itemByIdSelector, itemGalleryUrlSelector } from '../selectors/itemSelectors'
+import * as modalActions from '../actions/modalActions'
+import Image from './Image'
+import Video from './Video'
 
 const styles = (theme) => ({
   item: {
@@ -31,7 +31,7 @@ const styles = (theme) => ({
     justifyVontent: 'center',
     alignItems: 'center',
   },
-});
+})
 
 const Item = ({
   classes,
@@ -44,54 +44,54 @@ const Item = ({
   modalSetItem,
   itemGalleryUrl,
 }) => {
-  const history = useHistory();
-  const itemRef = useRef(null);
-  const [ignoreEffect, setIgnoreEffect] = useState(false);
+  const history = useHistory()
+  const itemRef = useRef(null)
+  const [ignoreEffect, setIgnoreEffect] = useState(false)
 
   useEffect(() => {
     if (ignoreEffect) {
-      setIgnoreEffect(false);
-      return;
+      setIgnoreEffect(false)
+      return
     }
 
     if (modalItemId === itemId) {
-      itemRef.current.scrollIntoView();
-      const bounds = itemRef.current.getBoundingClientRect();
+      itemRef.current.scrollIntoView()
+      const bounds = itemRef.current.getBoundingClientRect()
       const initialBounds = {
         top: bounds.top,
         left: bounds.left,
         width: bounds.width,
         height: bounds.height,
-      };
+      }
 
-      modalBoundsUpdate(initialBounds);
+      modalBoundsUpdate(initialBounds)
     }
-  }, [modalItemId]);
+  }, [modalItemId])
 
   const handleClick = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     if (item.isGallery) {
-      history.push(itemGalleryUrl);
-      return;
+      history.push(itemGalleryUrl)
+      return
     }
 
-    const { currentTarget } = event;
-    const bounds = currentTarget.getBoundingClientRect();
+    const { currentTarget } = event
+    const bounds = currentTarget.getBoundingClientRect()
     const initialBounds = {
       top: bounds.top,
       left: bounds.left,
       width: bounds.width,
       height: bounds.height,
-    };
+    }
 
-    setIgnoreEffect(true);
-    modalBoundsUpdate(initialBounds);
-    modalSetItem(itemId);
-    modalOpen();
-  };
+    setIgnoreEffect(true)
+    modalBoundsUpdate(initialBounds)
+    modalSetItem(itemId)
+    modalOpen()
+  }
 
-  const renderImage = () => <Image src={item.url} title={item.title} width={item.width} height={item.height} />;
+  const renderImage = () => <Image src={item.url} title={item.title} width={item.width} height={item.height} />
 
   const renderVideo = () => (
     <Video
@@ -105,7 +105,7 @@ const Item = ({
       autoPlay
       loop
     />
-  );
+  )
 
   return (
     <div
@@ -124,14 +124,14 @@ const Item = ({
       ) : null}
       {item.isVideo ? renderVideo() : renderImage()}
     </div>
-  );
-};
+  )
+}
 
 Item.defaultProps = {
   itemGalleryUrl: null,
   modalItemId: null,
   style: {},
-};
+}
 
 Item.propTypes = {
   itemGalleryUrl: PropTypes.string,
@@ -153,22 +153,22 @@ Item.propTypes = {
   modalBoundsUpdate: PropTypes.func.isRequired,
   modalSetItem: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   item: itemByIdSelector,
   modalItemId: modalItemIdSelector,
   itemGalleryUrl: itemGalleryUrlSelector,
-});
+})
 
 const mapDispatchToProps = {
   modalOpen: modalActions.modalOpen,
   modalBoundsUpdate: modalActions.modalBoundsUpdate,
   modalSetItem: modalActions.modalSetItem,
-};
+}
 
 function areEqual(nextProps, prevProps) {
-  const isModal = (p) => p.itemId === p.modalItemId;
+  const isModal = (p) => p.itemId === p.modalItemId
 
   return (
     nextProps.style.top === prevProps.style.top &&
@@ -177,7 +177,7 @@ function areEqual(nextProps, prevProps) {
     nextProps.style.height === prevProps.style.height &&
     nextProps.style.left === prevProps.style.left &&
     nextProps.itemId === prevProps.itemId
-  );
+  )
 }
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(memo(Item, areEqual));
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(memo(Item, areEqual))

@@ -1,47 +1,47 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Popover from '@material-ui/core/Popover';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import SortIcon from '@material-ui/icons/Sort';
+import React from 'react'
+import Button from '@material-ui/core/Button'
+import Popover from '@material-ui/core/Popover'
+import List from '@material-ui/core/List'
+import Typography from '@material-ui/core/Typography'
+import { compose } from 'redux'
+import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
+import SortIcon from '@material-ui/icons/Sort'
 
-import * as galleryActions from '../actions/galleryActions';
-import { moduleValuesSelector } from '../selectors/sortSelectors';
-import SortMenuItem from './SortMenuItem';
+import * as galleryActions from '../actions/galleryActions'
+import { moduleValuesSelector } from '../selectors/sortSelectors'
+import SortMenuItem from './SortMenuItem'
 
 const styles = (theme) => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
     color: theme.palette.text.secondary,
   },
-});
+})
 
 function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null)
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = (valueId) => {
     if (valueId) {
-      sortChange(galleryId, valueId);
+      sortChange(galleryId, valueId)
     }
 
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   // nothing to display
   if (!sortByValues) {
-    return null;
+    return null
   }
 
-  const ariaId = `${moduleId}-sort-menu`;
+  const ariaId = `${moduleId}-sort-menu`
   return (
     <>
       <Button aria-controls={ariaId} aria-haspopup="true" onClick={handleClick}>
@@ -75,7 +75,7 @@ function SortMenu({ sortByValues, moduleId, sortChange, galleryId, classes }) {
         </List>
       </Popover>
     </>
-  );
+  )
 }
 
 SortMenu.propTypes = {
@@ -91,14 +91,14 @@ SortMenu.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   sortByValues: moduleValuesSelector,
-});
+})
 
 const mapDispatchToProps = {
   sortChange: galleryActions.sortChange,
-};
+}
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SortMenu);
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SortMenu)

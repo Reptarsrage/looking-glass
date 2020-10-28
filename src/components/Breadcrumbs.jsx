@@ -1,16 +1,16 @@
-import React from 'react';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link from '@material-ui/core/Link';
-import HomeIcon from '@material-ui/icons/Home';
-import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import { compose } from 'redux';
-import { useHistory } from 'react-router';
+import React from 'react'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
+import Link from '@material-ui/core/Link'
+import HomeIcon from '@material-ui/icons/Home'
+import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
+import { compose } from 'redux'
+import { useHistory } from 'react-router'
 
-import { breadcrumbsSelector } from '../selectors/breadcrumbSelectors';
-import BreadcrumbItem from './BreadcrumbItem';
+import { breadcrumbsSelector } from '../selectors/breadcrumbSelectors'
+import BreadcrumbItem from './BreadcrumbItem'
 
 const styles = (theme) => ({
   link: {
@@ -22,13 +22,13 @@ const styles = (theme) => ({
     width: 20,
     height: 20,
   },
-});
+})
 
 const CustomBreadcrumbs = ({ breadcrumbs, classes }) => {
-  const history = useHistory();
+  const history = useHistory()
   const navigateHome = () => {
-    history.push('/');
-  };
+    history.push('/')
+  }
 
   return (
     <Breadcrumbs maxItems={3} aria-label="Breadcrumb">
@@ -40,8 +40,8 @@ const CustomBreadcrumbs = ({ breadcrumbs, classes }) => {
         <BreadcrumbItem key={id} title={title} url={url} />
       ))}
     </Breadcrumbs>
-  );
-};
+  )
+}
 
 CustomBreadcrumbs.propTypes = {
   // required
@@ -59,10 +59,10 @@ CustomBreadcrumbs.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   breadcrumbs: breadcrumbsSelector,
-});
+})
 
-export default compose(connect(mapStateToProps), withStyles(styles))(CustomBreadcrumbs);
+export default compose(connect(mapStateToProps), withStyles(styles))(CustomBreadcrumbs)

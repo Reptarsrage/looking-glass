@@ -1,21 +1,21 @@
-import React from 'react';
-import { compose } from 'redux';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import CheckIcon from '@material-ui/icons/Check';
-import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import { compose } from 'redux'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import CheckIcon from '@material-ui/icons/Check'
+import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
 
-import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors';
+import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors'
 
 const styles = () => ({
   icon: {
     justifyContent: 'flex-end',
   },
-});
+})
 
 const NestedSortMenuItem = ({ classes, value, onClick, valueIsCurrentlySelected }) => (
   <ListItem button onClick={onClick}>
@@ -26,7 +26,7 @@ const NestedSortMenuItem = ({ classes, value, onClick, valueIsCurrentlySelected 
       </ListItemIcon>
     )}
   </ListItem>
-);
+)
 
 NestedSortMenuItem.propTypes = {
   // required
@@ -44,11 +44,11 @@ NestedSortMenuItem.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = createStructuredSelector({
   value: valueByIdSelector,
   valueIsCurrentlySelected: valueIsCurrentlySelectedSelector,
-});
+})
 
-export default compose(connect(mapStateToProps), withStyles(styles))(NestedSortMenuItem);
+export default compose(connect(mapStateToProps), withStyles(styles))(NestedSortMenuItem)

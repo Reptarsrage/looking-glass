@@ -1,12 +1,12 @@
-import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import { withStyles } from '@material-ui/core/styles';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import CloseIcon from '@material-ui/icons/Close';
-import InfoIcon from '@material-ui/icons/Info';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
+import React from 'react'
+import IconButton from '@material-ui/core/IconButton'
+import Snackbar from '@material-ui/core/Snackbar'
+import { withStyles } from '@material-ui/core/styles'
+import SnackbarContent from '@material-ui/core/SnackbarContent'
+import CloseIcon from '@material-ui/icons/Close'
+import InfoIcon from '@material-ui/icons/Info'
+import clsx from 'clsx'
+import PropTypes from 'prop-types'
 
 const styles = (theme) => ({
   close: {
@@ -27,7 +27,7 @@ const styles = (theme) => ({
     alignItems: 'center',
     display: 'flex',
   },
-});
+})
 
 const EndOfScrollToast = ({ classes, message, onClose, open }) => (
   <Snackbar
@@ -52,11 +52,11 @@ const EndOfScrollToast = ({ classes, message, onClose, open }) => (
       ]}
     />
   </Snackbar>
-);
+)
 
 EndOfScrollToast.defaultProps = {
   message: "You've reached the end!",
-};
+}
 
 EndOfScrollToast.propTypes = {
   // required
@@ -68,6 +68,6 @@ EndOfScrollToast.propTypes = {
 
   // withStyles
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(EndOfScrollToast);
+export default withStyles(styles)(EndOfScrollToast)
