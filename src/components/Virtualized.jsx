@@ -56,7 +56,12 @@ function findNearestItem(start, end, target, itemPositions, items) {
  * @param {*} getItemDimensions Function that takes an item ID and returns dimensions for the item
  */
 function computePositions(items, left, gutter, height, scrollTop, width, saved, getItemDimensions) {
-  if (width !== saved.width || items.length <= saved.lastComputedIdx) {
+  // if width has changed, or items have changed (besides growing, which is ok)
+  if (
+    width !== saved.width ||
+    items.length <= saved.lastComputedIdx ||
+    items.slice(0, saved.lastComputedIdx + 1).some((id) => !(id in saved.computedById))
+  ) {
     saved.lastComputedIdx = -1;
     saved.computedById = {};
     saved.width = width;
@@ -137,9 +142,13 @@ const Virtualized = ({
     computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem);
   }
 
-  return items
+  // Collect all items to render
+  const itemsToRender = items
     .slice(start, end + 1) // take everything in the visible window
-    .concat(forceRenderItems) // add in requested items
+    .concat(forceRenderItems); // add in requested items
+
+  return itemsToRender
+    .filter((id, idx) => itemsToRender.indexOf(id) === idx) // distinct
     .map((id) => saved.computedById[id]) // look up the dimensions, and render each item
     .map((item) => (
       <ChildComponent
@@ -194,20 +203,6 @@ function itemsEqual(a, b) {
   return true;
 }
 
-function forceRenderItemsEqual(a, b) {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  for (let i = 0; i < a.length; i += 1) {
-    if (a[i][1] !== b[i][1]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 function areEqual(nextProps, prevProps) {
   return (
     nextProps.scrollTop === prevProps.scrollTop &&
@@ -216,7 +211,7 @@ function areEqual(nextProps, prevProps) {
     nextProps.columnNumber === prevProps.columnNumber &&
     nextProps.left === prevProps.left &&
     nextProps.height === prevProps.height &&
-    forceRenderItemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
+    itemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems) &&
     itemsEqual(nextProps.items, prevProps.items)
   );
 }
