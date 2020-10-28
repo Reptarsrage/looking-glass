@@ -92,9 +92,7 @@ const Masonry = ({
     <div style={{ width: '100%', height: `${totalHeight}px` }}>
       {columnItems.map((col, index) => {
         const columnWidth = calculateColumnWidth(columnCount, width, gutter);
-        const forceRenderColumnItems = forceRenderItems
-          .map((id) => [id, col.items.indexOf(id)])
-          .filter((a) => a[1] >= 0);
+        const forceRenderColumnItems = forceRenderItems.filter((id) => col.items.indexOf(id) >= 0);
 
         return (
           <Virtualized

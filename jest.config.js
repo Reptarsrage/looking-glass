@@ -8,6 +8,7 @@ module.exports = {
   transform: {
     '.jsx?$': 'babel-jest',
   },
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: ['<rootDir>/src/**/*.*'],
+  testPathIgnorePatterns: ['/node_modules/', 'TestHelpers\\.js$'],
 };

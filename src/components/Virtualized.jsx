@@ -3,65 +3,103 @@ import PropTypes from 'prop-types';
 
 import Item from './Item';
 
-function findNearestItem(end, start, scrollTop, itemPositions, items) {
+/**
+ * Performs a binary search on the items to find the closest item to the target.
+ *
+ * @param {*} start The lower bound when searching the items array
+ * @param {*} end The upper bound when searching the items array
+ * @param {*} target The container's current scroll position
+ * @param {*} itemPositions A collection of all previously computed positions
+ * @param {*} items Array of item IDs
+ */
+function findNearestItem(start, end, target, itemPositions, items) {
+  if (start === end) {
+    return start;
+  }
+
   let low = start;
   let high = end;
-
   while (low <= high) {
     const middle = low + Math.floor((high - low) / 2);
-    const itemTop = itemPositions[items[middle]].top;
+    const { top, height } = itemPositions[items[middle]];
+    const bottom = top + height;
 
-    if (itemTop === scrollTop) {
+    if (top <= target && bottom >= target) {
       return middle;
     }
 
-    if (itemTop < scrollTop) {
-      low = middle + 1;
-    } else if (itemTop > scrollTop) {
+    if (top > target) {
       high = middle - 1;
+    } else {
+      low = middle + 1;
     }
   }
 
-  if (low > 0) {
+  if (low > start) {
     return low - 1;
   }
-  return 0;
+
+  return start;
 }
 
-function computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem) {
-  if (width !== saved.width || items.length < saved.lastComputed) {
-    saved.lastComputed = 0;
+/**
+ * Computes positions for all items on screen (or above).
+ *
+ * @param {*} items Array of item IDs
+ * @param {*} left The left offset to apply to item positions
+ * @param {*} gutter The space between items
+ * @param {*} height The container height
+ * @param {*} scrollTop The container's current scroll position
+ * @param {*} width The container's width
+ * @param {*} saved A collection of all previously computed positions
+ * @param {*} getItemDimensions Function that takes an item ID and returns dimensions for the item
+ */
+function computePositions(items, left, gutter, height, scrollTop, width, saved, getItemDimensions) {
+  if (width !== saved.width || items.length <= saved.lastComputedIdx) {
+    saved.lastComputedIdx = -1;
     saved.computedById = {};
     saved.width = width;
   }
 
   const bottom = scrollTop + height;
   let top = gutter;
-  if (saved.lastComputed !== 0) {
-    const lastComputedItem = saved.computedById[items[saved.lastComputed - 1]];
+  if (saved.lastComputedIdx >= 0) {
+    const lastComputedItem = saved.computedById[items[saved.lastComputedIdx]];
     top += lastComputedItem.top + lastComputedItem.height;
   }
 
-  for (; saved.lastComputed < items.length && top <= bottom; saved.lastComputed += 1) {
-    const id = items[saved.lastComputed];
-    const dims = getAdjustedDimensionsForItem(id);
+  for (let position = saved.lastComputedIdx + 1; position < items.length && top < bottom; position += 1) {
+    const id = items[position];
+    const dims = getItemDimensions(id);
     saved.computedById[id] = { ...dims, top, left: dims.left + left, id };
     top += dims.height + gutter;
+    saved.lastComputedIdx = position;
   }
 }
 
-function computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem) {
+/**
+ * Computes positions for all items up to the given position.
+ *
+ * @param {*} items Array of item IDs
+ * @param {*} left The left offset to apply to item positions
+ * @param {*} gutter The space between items
+ * @param {*} saved A collection of all previously computed positions
+ * @param {*} toPosition The upper bound on item positions to compute
+ * @param {*} getItemDimensions Function that takes an item ID and returns dimensions for the item
+ */
+function computeUpToPosition(items, left, gutter, saved, toPosition, getItemDimensions) {
   let top = gutter;
-  if (saved.lastComputed !== 0) {
-    const lastComputedItem = saved.computedById[items[saved.lastComputed - 1]];
+  if (saved.lastComputedIdx >= 0) {
+    const lastComputedItem = saved.computedById[items[saved.lastComputedIdx]];
     top += lastComputedItem.top + lastComputedItem.height;
   }
 
-  for (; saved.lastComputed <= toPosition; saved.lastComputed += 1) {
-    const id = items[saved.lastComputed];
-    const dims = getAdjustedDimensionsForItem(id);
+  for (let position = saved.lastComputedIdx + 1; position <= toPosition; position += 1) {
+    const id = items[position];
+    const dims = getItemDimensions(id);
     saved.computedById[id] = { ...dims, top, left: dims.left + left, id };
     top += dims.height + gutter;
+    saved.lastComputedIdx = position;
   }
 }
 
@@ -75,25 +113,35 @@ const Virtualized = ({
   gutter,
   scrollDirection,
   forceRenderItems,
+  ChildComponent,
 }) => {
-  const saved = useRef({ computedById: {}, lastComputed: 0, width }).current;
+  const saved = useRef({
+    computedById: {
+      /* width, height, top, left, id */
+    },
+    lastComputedIdx: -1,
+    width,
+  }).current;
+
+  // Compute positions for items in or above the current window
   computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem);
 
-  const start = findNearestItem(saved.lastComputed - 1, 0, scrollTop, saved.computedById, items);
-  const end = findNearestItem(saved.lastComputed - 1, start, scrollTop + height, saved.computedById, items);
-  const more = forceRenderItems.filter(([, idx]) => idx < start || idx > end);
+  // Calculate range of visible items
+  const start = findNearestItem(0, saved.lastComputedIdx, scrollTop, saved.computedById, items);
+  const end = findNearestItem(start, saved.lastComputedIdx, scrollTop + height, saved.computedById, items);
 
-  if (more.some(([id]) => !(id in saved.computedById))) {
-    const toPosition = Math.max(...more.map(([, idx]) => idx));
+  // Check if we've been requested to render any additional items outside of the visible window
+  if (forceRenderItems.some(([id]) => !(id in saved.computedById))) {
+    const toPosition = Math.max(...forceRenderItems.map((id) => items.indexOf(id)));
     computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem);
   }
 
   return items
-    .slice(start, end + 1)
-    .concat(more.map(([id]) => id))
-    .map((id) => saved.computedById[id])
+    .slice(start, end + 1) // take everything in the visible window
+    .concat(forceRenderItems) // add in requested items
+    .map((id) => saved.computedById[id]) // look up the dimensions, and render each item
     .map((item) => (
-      <Item
+      <ChildComponent
         key={item.id}
         itemId={item.id}
         scrollDirection={scrollDirection}
@@ -108,7 +156,12 @@ const Virtualized = ({
     ));
 };
 
+Virtualized.defaultProps = {
+  ChildComponent: Item,
+};
+
 Virtualized.propTypes = {
+  ChildComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
   left: PropTypes.number.isRequired,
   getAdjustedDimensionsForItem: PropTypes.func.isRequired,
@@ -117,8 +170,7 @@ Virtualized.propTypes = {
   scrollTop: PropTypes.number.isRequired,
   gutter: PropTypes.number.isRequired,
   scrollDirection: PropTypes.number.isRequired,
-  forceRenderItems: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])))
-    .isRequired,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
 };
 
 function itemsEqual(a, b) {
