@@ -1,5 +1,6 @@
 import React, { memo, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { isValidElementType } from 'react-is';
 
 import Item from './Item';
 
@@ -161,7 +162,13 @@ Virtualized.defaultProps = {
 };
 
 Virtualized.propTypes = {
-  ChildComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  ChildComponent: (props, propName) => {
+    if (props[propName] && !isValidElementType(props[propName])) {
+      return new Error(`Invalid prop 'component' supplied to 'Virtualized': the prop is not a valid React component`);
+    }
+
+    return undefined;
+  },
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
   left: PropTypes.number.isRequired,
   getAdjustedDimensionsForItem: PropTypes.func.isRequired,
