@@ -19,19 +19,20 @@ const styles = () => ({
 
 const withScroll = (WrappedComponent) => {
   const WithScroll = ({ classes, initialScrollTop, width, height, onScroll, ...passThroughProps }) => {
-    const outerRef = useRef(null)
+    const scrollContainerRef = useRef(null)
     const [scrollTop, setScrollTop] = useState(initialScrollTop || 0)
-    const [scrollHeight, setScrollHeight] = useState(0)
     const [scrollDirection, setScrollDirection] = useState(1)
 
     const handleScroll = (event) => {
-      const { clientHeight, scrollTop: cScrollTop, scrollHeight: cScrollHeight } = event.currentTarget
-      if (cScrollTop === scrollTop) {
+      const { clientHeight, scrollTop: targetScrollTop, scrollHeight: targetScrollHeight } = event.currentTarget
+      if (targetScrollTop === scrollTop) {
         return
       }
 
-      setScrollTop(Math.max(0, Math.min(cScrollTop, cScrollHeight - clientHeight)))
-      setScrollDirection(scrollTop < cScrollTop ? 1 : -1)
+      const newScrollTop = Math.max(0, Math.min(targetScrollTop, targetScrollHeight - clientHeight))
+
+      setScrollTop(newScrollTop)
+      setScrollDirection(scrollTop < targetScrollTop ? 1 : -1)
 
       // Callback
       if (onScroll) {
@@ -41,27 +42,15 @@ const withScroll = (WrappedComponent) => {
 
     useEffect(() => {
       // Scroll to initial position on mount
-      const outerElt = outerRef.current
+      const outerElt = scrollContainerRef.current
       if (typeof initialScrollTop === 'number') {
         outerElt.scrollTop = initialScrollTop
       }
-    }, [])
-
-    useEffect(() => {
-      // Try and maintain relative scroll position when width resized
-      const outerElt = outerRef.current
-      if (scrollHeight > 0) {
-        const adjustedScrollTop = (scrollTop * outerElt.scrollHeight) / scrollHeight
-        outerElt.scrollTop = adjustedScrollTop
-        setScrollTop(adjustedScrollTop)
-      }
-
-      setScrollHeight(outerRef.current.scrollHeight)
-    }, [width])
+    }, [initialScrollTop])
 
     return (
       <div
-        ref={outerRef}
+        ref={scrollContainerRef}
         className={classes.container}
         style={{ width: `${width}px`, height: `${height}px` }}
         onScroll={handleScroll}

@@ -18,7 +18,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -50,7 +50,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -80,7 +80,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -111,7 +111,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -142,7 +142,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -174,7 +174,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -204,7 +204,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -235,7 +235,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: [],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -265,7 +265,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: ['4'],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -295,7 +295,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: ['4', '5'],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -325,7 +325,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: ['4', '5'],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
@@ -357,7 +357,7 @@ describe('<Virtualized />', () => {
       gutter: 10,
       scrollDirection: 1,
       forceRenderItems: ['4'],
-      ChildComponent: ({ itemId }) => <div data-testid={itemId} />,
+      ChildComponent: ({ itemId, style }) => <div data-testid={itemId} style={style} />,
     }
 
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
