@@ -12,7 +12,6 @@ import TuneIcon from '@material-ui/icons/Tune'
 import Drawer from '@material-ui/core/Drawer'
 import { debounce } from 'lodash'
 
-import { productName } from '../../package.json'
 import { supportsSortingSelector, supportsFilteringSelector } from '../selectors/moduleSelectors'
 import { forceRenderItemsSelector } from '../selectors/modalSelectors'
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors'
@@ -85,7 +84,7 @@ const Gallery = ({
     fetchInitialItems()
 
     // Set window title
-    titleBar.updateTitle(`${productName} - ${title}`)
+    titleBar.updateTitle(`'The Looking-Glass' - ${title}`)
 
     return () => {
       // remove event listeners from componentDidMount

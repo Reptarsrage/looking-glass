@@ -2,7 +2,7 @@ module.exports = {
   roots: ['<rootDir>/src'],
   collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/**/*.d.ts'],
   setupFilesAfterEnv: ['<rootDir>/test-setup.js'],
-  testMatch: ['<rootDir>/src/**/*.{spec,test}.{js,jsx}'],
+  testMatch: ['**/__tests__/**/*.{spec,test}.{js,jsx}'],
   transform: {
     '^.+\\.(js|jsx|mjs|cjs)$': '<rootDir>/node_modules/babel-jest',
   },
@@ -11,4 +11,5 @@ module.exports = {
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['web.js', 'js', 'json', 'web.jsx', 'jsx', 'node'],
+  resetMocks: true,
 }

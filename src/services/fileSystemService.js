@@ -46,9 +46,6 @@ export default class FileSystemService {
           const isVideo = lookup(file).startsWith('video')
           const isGallery = !isFile
           const url = `http://${this.host}:${this.port}/${isVideo ? 'video' : 'image'}?${stringify({ uri: file })}`
-          if (!isFile) {
-            console.log(`${path} >>>>>> ${title}`)
-          }
 
           return {
             id: Buffer.from(path, 'utf-8').toString('base64'),

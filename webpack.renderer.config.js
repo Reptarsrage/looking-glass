@@ -1,84 +1,115 @@
-require('webpack')
+const webpack = require('webpack')
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin')
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-module.exports = () => {
-  const isDev = process.env.NODE_ENV === 'development'
-  const outPath = path.join(__dirname, 'dist')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+
+module.exports = (webpackEnv) => {
+  const isProduction = webpackEnv.production
+  const isDevelopment = !isProduction
+
+  const outputPath = path.join(__dirname, 'dist')
+  const srcPath = path.join(__dirname, 'src')
+  const entryPath = path.join(srcPath, 'index.jsx')
+  const nodeModulesPath = path.join(__dirname, 'node_modules')
+
   return {
-    performance: { hints: false },
+    mode: isDevelopment ? 'development' : 'production',
+    devtool: isDevelopment ? 'cheap-module-source-map' : false,
+    entry: entryPath,
+    output: {
+      path: outputPath,
+      filename: isDevelopment ? 'bundle.js' : '[name].[contenthash:8].js',
+      chunkFilename: isDevelopment ? '[name].chunk.js' : '[name].[contenthash:8].chunk.js',
+    },
     devServer: {
-      contentBase: outPath,
+      contentBase: outputPath,
+      hot: true,
+      open: false,
       host: '0.0.0.0',
       port: 4000,
-      hot: true,
     },
     target: 'electron-renderer',
-    entry: './src/index.jsx',
-    // TODO: Issue with default source maps, see https://github.com/webpack/webpack/issues/3165
-    devtool: isDev ? 'inline-source-map' : 'source-map',
-    output: {
-      path: outPath,
-      filename: 'app.[hash].js',
-      chunkFilename: '[name].[chunkhash].js',
+    resolve: {
+      extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json'],
+      modules: [nodeModulesPath],
+    },
+    optimization: {
+      minimize: isProduction,
+      minimizer: [new TerserPlugin({ extractComments: false }), new OptimizeCSSAssetsPlugin()],
     },
     module: {
       rules: [
         {
-          test: /\.jsx?$/,
-          exclude: /node_modules/,
-          use: [
+          oneOf: [
             {
+              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+              loader: 'url-loader',
+              options: {
+                name: '[name].[hash:8].[ext]',
+              },
+            },
+            {
+              test: /\.(js|mjs|jsx|ts|tsx)$/,
+              include: srcPath,
               loader: 'babel-loader',
               options: {
                 cacheDirectory: true,
+                cacheCompression: false,
+                compact: isProduction,
+                plugins: [isDevelopment && 'react-refresh/babel'].filter(Boolean),
               },
             },
-          ],
-        },
-        {
-          test: /\.css$/,
-          use: [
-            isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
-              loader: 'css-loader',
+              test: /\.css$/,
+              use: [
+                isDevelopment && 'style-loader',
+                isProduction && {
+                  loader: MiniCssExtractPlugin.loader,
+                },
+                {
+                  loader: 'css-loader',
+                },
+                {
+                  loader: 'postcss-loader',
+                  options: {
+                    sourceMap: isDevelopment,
+                  },
+                },
+              ].filter(Boolean),
+            },
+            {
+              loader: 'file-loader',
+              exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
               options: {
-                sourceMap: isDev,
+                name: '[name].[hash:8].[ext]',
               },
             },
           ],
         },
       ],
     },
-    resolve: {
-      extensions: ['.js', '.jsx', '.json', '.css'],
-      modules: ['node_modules'],
-    },
     plugins: [
-      new HardSourceWebpackPlugin(),
       new HtmlWebpackPlugin({
-        template: './src/index.html',
+        template: path.join(srcPath, 'index.html'),
+        minify: isProduction,
       }),
-      new CspHtmlWebpackPlugin(
-        {
-          'base-uri': "'self'",
-          'script-src': isDev ? ["'self'", "'unsafe-inline'", "'unsafe-eval'"] : "'self'",
-          'style-src': ["'self'", "'unsafe-inline'"],
-        },
-        {
-          nonceEnabled: {
-            'script-src': false,
-            'style-src': false,
-          },
-        }
-      ),
-      new MiniCssExtractPlugin({
-        filename: isDev ? '[name].css' : '[name].[hash].css',
-        chunkFilename: isDev ? '[id].css' : '[id].[hash].css',
-      }),
-    ],
+      isProduction &&
+        new MiniCssExtractPlugin({
+          filename: '[name].[contenthash:8].css',
+          chunkFilename: '[name].[contenthash:8].chunk.css',
+        }),
+      isDevelopment &&
+        new ESLintPlugin({
+          context: srcPath,
+          cwd: srcPath,
+        }),
+      isDevelopment && new webpack.HotModuleReplacementPlugin(),
+      isDevelopment && new ReactRefreshWebpackPlugin(),
+    ].filter(Boolean),
   }
 }

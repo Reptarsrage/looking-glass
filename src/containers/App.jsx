@@ -88,7 +88,6 @@ const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) =>
 
   useEffect(() => {
     const theme = useDarkTheme ? darkTheme : lightTheme
-    console.log('updateBackground', theme.palette.background.default)
     titleBar.updateBackground(Color.fromHex(theme.palette.background.default))
   }, [useDarkTheme])
 

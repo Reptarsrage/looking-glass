@@ -24,30 +24,25 @@
   ],
   "homepage": "https://github.com/reptarsrage/looking-glass#readme",
   "scripts": {
-    "build-main": "webpack -p --config ./webpack.main.config.js",
-    "build-renderer": "webpack -p --config ./webpack.renderer.config.js",
+    "build-main": "webpack --env production --config ./webpack.main.config.js",
+    "build-renderer": "webpack --env production --config ./webpack.renderer.config.js",
     "build": "cross-env NODE_ENV=production concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "start": "cross-env ELECTRON_IS_DEV=0 NODE_ENV=production electron .",
     "start-dev": "wait-on http://localhost:4000 && electron .",
-    "dev-server": "webpack-dev-server --config ./webpack.renderer.config.js",
+    "dev-server": "webpack serve --env development --config ./webpack.renderer.config.js",
     "dev": "cross-env NODE_ENV=development ELECTRON_IS_DEV=1 concurrently -k \"yarn dev-server\" \"yarn start-dev\"",
     "dist": "rimraf ./release && electron-builder",
     "release": "standard-version",
-    "lint": "eslint --cache --format=pretty",
-    "test": "jest"
+    "lint": "eslint --cache --format=pretty src",
+    "test": "jest",
+    "clean": "rimraf dist release main.prod.js"
   },
   "lint-staged": {
     "*.{js,jsx}": [
       "eslint --cache --format=pretty"
     ],
-    "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
-      "pretty-quick --staged"
-    ],
-    "*.{css}": [
-      "stylelint --ignore-path .eslintignore --fix"
-    ],
-    "*.{html,md,yml}": [
-      "pretty-quick --staged"
+    "*.{html,md,yml,json,css}": [
+      "prettier --ignore-path .eslintignore --write"
     ]
   },
   "husky": {
@@ -59,9 +54,12 @@
   "devDependencies": {
     "@babel/core": "7.12.3",
     "@babel/plugin-proposal-class-properties": "7.12.1",
+    "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "7.12.1",
+    "@babel/runtime": "^7.12.1",
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@testing-library/dom": "7.26.4",
     "@testing-library/jest-dom": "5.11.5",
     "@testing-library/react": "11.1.0",
@@ -71,7 +69,6 @@
     "babel-loader": "8.1.0",
     "concurrently": "5.3.0",
     "cross-env": "7.0.2",
-    "csp-html-webpack-plugin": "4.0.0",
     "css-loader": "5.0.0",
     "cz-conventional-changelog": "3.3.0",
     "electron": "10.1.5",
@@ -88,28 +85,35 @@
     "eslint-plugin-prettier": "3.1.4",
     "eslint-plugin-react": "7.21.5",
     "eslint-plugin-react-hooks": "4.2.0",
+    "eslint-plugin-testing-library": "^3.10.0",
+    "eslint-webpack-plugin": "^2.1.0",
+    "file-loader": "^6.2.0",
     "hard-source-webpack-plugin": "0.13.1",
-    "html-webpack-plugin": "4.5.0",
+    "html-webpack-plugin": "^4.5.0",
     "husky": "4.3.0",
     "jest": "26.6.2",
     "lint-staged": "10.5.1",
-    "mini-css-extract-plugin": "1.2.1",
+    "mini-css-extract-plugin": "^1.2.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
+    "postcss": "^8.1.4",
+    "postcss-flexbugs-fixes": "^5.0.0",
+    "postcss-loader": "^4.0.4",
+    "postcss-normalize": "^9.0.0",
+    "postcss-preset-env": "^6.7.0",
     "prettier": "2.1.2",
-    "pretty-quick": "3.1.0",
+    "react-refresh": "^0.9.0",
     "redux-mock-store": "1.5.4",
     "rimraf": "3.0.2",
     "standard-version": "9.0.0",
-    "style-loader": "2.0.0",
-    "stylelint": "13.7.2",
-    "stylelint-config-prettier": "8.0.2",
-    "stylelint-config-standard": "20.0.0",
+    "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "^5.0.3",
+    "url-loader": "^4.1.1",
     "wait-on": "5.2.0",
-    "webpack": "4.44.2",
-    "webpack-cli": "3.3.12",
+    "webpack": "5.3.2",
+    "webpack-cli": "4.1.0",
     "webpack-dev-server": "3.11.0"
   },
   "dependencies": {
-    "@babel/preset-env": "^7.12.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@mixmaxhq/promise-pool": "^2.0.0",
@@ -141,11 +145,10 @@
     "uuid": "^8.3.1"
   },
   "devEngines": {
-    "node": ">=13.x",
-    "npm": ">=6.x",
+    "node": ">=15.x",
     "yarn": ">=1.x"
   },
-  "browserslist": "electron 9.0",
+  "browserslist": "electron 10.0",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

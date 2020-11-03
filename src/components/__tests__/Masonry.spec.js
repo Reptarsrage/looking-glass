@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 
+// eslint-disable-next-line jest/no-mocks-import
 import './__mocks__/ResizeObserver'
 import { render } from './componentTestHelpers'
 import { JustMasonry } from '../Masonry'

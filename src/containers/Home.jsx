@@ -14,7 +14,6 @@ import FolderIcon from '@material-ui/icons/Folder'
 import { remote } from 'electron'
 import { useNavigate } from '@reach/router'
 
-import { productName } from '../../package.json'
 import ModuleItem from '../components/ModuleItem'
 import * as moduleActions from '../actions/moduleActions'
 import * as galleryActions from '../actions/galleryActions'
@@ -60,7 +59,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
     }
 
     // Set window title
-    titleBar.updateTitle(productName)
+    titleBar.updateTitle('The Looking-Glass')
   }, [])
 
   const chooseFolder = () => {

@@ -1,34 +1,40 @@
 require('webpack')
+const path = require('path')
 
-module.exports = () => {
+const TerserPlugin = require('terser-webpack-plugin')
+
+module.exports = (webpackEnv) => {
+  const isProduction = webpackEnv.production
+  const isDevelopment = !isProduction
+
   const outPath = __dirname
+  const entryPath = path.join(__dirname, 'main.js')
+
   return {
-    mode: 'production',
+    mode: isDevelopment ? 'development' : 'production',
     target: 'electron-main',
-    entry: './main.js',
+    entry: entryPath,
     output: {
       path: outPath,
       filename: 'main.prod.js',
     },
+    optimization: {
+      minimize: isProduction,
+      minimizer: [new TerserPlugin({ extractComments: false })],
+    },
     module: {
       rules: [
         {
-          test: /\.jsx?$/,
+          test: /\.(js|mjs|jsx|ts|tsx)$/,
+          loader: 'babel-loader',
           exclude: /node_modules/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                cacheDirectory: true,
-              },
-            },
-          ],
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+            compact: isProduction,
+          },
         },
       ],
-    },
-    resolve: {
-      extensions: ['.js', '.jsx', '.json'],
-      modules: ['node_modules'],
     },
   }
 }
