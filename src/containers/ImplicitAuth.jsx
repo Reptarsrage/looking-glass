@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router'
+import { Redirect } from '@reach/router'
 
 import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
 import * as authActions from '../actions/authActions'

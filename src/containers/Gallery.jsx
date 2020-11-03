@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect } from 'react-router'
+import { Redirect } from '@reach/router'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { createStructuredSelector } from 'reselect'

@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
 import Brightness2Icon from '@material-ui/icons/Brightness2'
 import WbSunnyIcon from '@material-ui/icons/WbSunny'
-import { useRouteMatch } from 'react-router'
+import { useMatch } from '@reach/router'
 import { Color } from 'custom-electron-titlebar'
 
 import { darkThemeSelector } from '../selectors/appSelectors'
@@ -84,10 +84,7 @@ const styles = (theme) => ({
 })
 
 const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) => {
-  const match = useRouteMatch({
-    path: '/',
-    exact: true,
-  })
+  const match = useMatch('/')
 
   useEffect(() => {
     const theme = useDarkTheme ? darkTheme : lightTheme

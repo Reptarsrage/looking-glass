@@ -1,15 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import HomeIcon from '@material-ui/icons/Home'
-import { useHistory } from 'react-router'
+import { Link } from '@reach/router'
 
 const styles = (theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
   body: {
     margin: theme.spacing(1),
   },
@@ -19,18 +15,13 @@ const styles = (theme) => ({
 })
 
 const NotFound = ({ classes }) => {
-  const history = useHistory()
-  const go = () => {
-    history.push('/')
-  }
-
   return (
     <>
       <Typography variant="h1">Not Found</Typography>
       <Typography>
-        <Button variant="contained" color="default" className={classes.button} onClick={go}>
+        <Link>
           <HomeIcon className={classes.icon} /> Home
-        </Button>
+        </Link>
       </Typography>
       <Typography className={classes.body} variant="subtitle2">
         Nothing to see here

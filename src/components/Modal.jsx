@@ -16,7 +16,7 @@ import Drawer from '@material-ui/core/Drawer'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import clsx from 'clsx'
-import { useHistory } from 'react-router'
+import { useNavigate } from '@reach/router'
 import { Button } from '@material-ui/core'
 
 import {
@@ -95,7 +95,7 @@ const Modal = ({
   const [open, setOpen] = useState(false)
   const [animating, setAnimating] = useState(true)
   const [showCaption, setShowCaption] = useState(true)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleAnimationComplete = () => {
     if (!modalOpen) {
@@ -122,7 +122,7 @@ const Modal = ({
     if (filterId) {
       modalClose()
       filterChange(defaultGalleryId, filterId)
-      history.push(`/gallery/${moduleId}/${defaultGalleryId}`)
+      navigate(`/gallery/${moduleId}/${defaultGalleryId}`)
     }
   }
 

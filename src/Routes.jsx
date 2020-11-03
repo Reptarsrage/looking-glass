@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, Route } from 'react-router'
+import { Router, Location } from '@reach/router'
 
 import App from './containers/App'
 import Home from './containers/Home'
@@ -7,23 +7,27 @@ import Gallery from './containers/Gallery'
 import Login from './containers/Login'
 import OAuth from './containers/OAuth'
 import ImplicitAuth from './containers/ImplicitAuth'
-import About from './containers/About'
 import NotFound from './containers/NotFound'
-import WithRouteParameters from './hocs/WithRouteParameters'
-import WithErrorBoundary from './hocs/WithErrorBoundary'
+import withErrorBoundary from './hocs/WithErrorBoundary'
 
 const Routes = () => (
-  <App>
-    <Switch>
-      <Route exact path="/" component={WithErrorBoundary(Home)} />
-      <Route path="/login/:moduleId/:galleryId" component={WithErrorBoundary(WithRouteParameters(Login))} />
-      <Route path="/oauth/:moduleId/:galleryId" component={WithErrorBoundary(WithRouteParameters(OAuth))} />
-      <Route path="/implicit/:moduleId/:galleryId" component={WithErrorBoundary(WithRouteParameters(ImplicitAuth))} />
-      <Route path="/gallery/:moduleId/:galleryId" component={WithErrorBoundary(WithRouteParameters(Gallery))} />
-      <Route path="/about" component={WithErrorBoundary(About)} />
-      <Route path="*" component={WithErrorBoundary(NotFound)} />
-    </Switch>
-  </App>
+  <Location>
+    {({ location }) => (
+      <App>
+        <Router
+          location={location}
+          style={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', overflow: 'hidden' }}
+        >
+          <Home path="/" />
+          <Login path="/login/:moduleId/:galleryId" />
+          <OAuth path="/oauth/:moduleId/:galleryId" />
+          <ImplicitAuth path="/implicit/:moduleId/:galleryId" />
+          <Gallery path="/gallery/:moduleId/:galleryId" />
+          <NotFound default />
+        </Router>
+      </App>
+    )}
+  </Location>
 )
 
-export default Routes
+export default withErrorBoundary(Routes)
