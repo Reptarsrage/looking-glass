@@ -5,7 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const ESLintPlugin = require('eslint-webpack-plugin')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 module.exports = (webpackEnv) => {
@@ -102,11 +101,6 @@ module.exports = (webpackEnv) => {
         new MiniCssExtractPlugin({
           filename: '[name].[contenthash:8].css',
           chunkFilename: '[name].[contenthash:8].chunk.css',
-        }),
-      isDevelopment &&
-        new ESLintPlugin({
-          context: srcPath,
-          cwd: srcPath,
         }),
       isDevelopment && new webpack.HotModuleReplacementPlugin(),
       isDevelopment && new ReactRefreshWebpackPlugin(),
