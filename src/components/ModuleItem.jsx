@@ -8,7 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
-import { Link } from '@reach/router'
+import { useHistory } from 'react-router-dom'
 
 import { moduleByIdSelector } from '../selectors/moduleSelectors'
 
@@ -29,14 +29,21 @@ const styles = () => ({
   },
 })
 
-const ModuleItem = ({ moduleId, module }) => (
-  <ListItem button component={Link} to={`/gallery/${moduleId}/${module.defaultGalleryId}`}>
-    <ListItemAvatar>
-      <Avatar alt={module.title} src={module.icon} />
-    </ListItemAvatar>
-    <ListItemText primary={module.title} secondary={module.description} />
-  </ListItem>
-)
+const ModuleItem = ({ moduleId, module }) => {
+  const history = useHistory()
+  const onClick = () => {
+    history.push(`/gallery/${moduleId}/${module.defaultGalleryId}`)
+  }
+
+  return (
+    <ListItem button onClick={onClick}>
+      <ListItemAvatar>
+        <Avatar alt={module.title} src={module.icon} />
+      </ListItemAvatar>
+      <ListItemText primary={module.title} secondary={module.description} />
+    </ListItem>
+  )
+}
 
 ModuleItem.propTypes = {
   // required

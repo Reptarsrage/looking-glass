@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect } from '@reach/router'
+import { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { createStructuredSelector } from 'reselect'
@@ -28,6 +28,7 @@ import LoadingIndicator from '../components/LoadingIndicator'
 import SearchBar from '../components/SearchBar'
 import EndOfScrollToast from '../components/EndOfScrollToast'
 import titleBar from '../titleBar'
+import withRouteParams from '../hocs/WithRouteParams'
 
 const styles = (theme) => ({
   grow: {
@@ -264,4 +265,4 @@ const mapDispatchToProps = {
   saveScrollPosition: galleryActions.saveScrollPosition,
 }
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery)
+export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery))

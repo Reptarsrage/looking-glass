@@ -1,5 +1,5 @@
 import React from 'react'
-import { Router, Location } from '@reach/router'
+import { HashRouter, Route, Switch } from 'react-router-dom'
 
 import App from './containers/App'
 import Home from './containers/Home'
@@ -11,23 +11,35 @@ import NotFound from './containers/NotFound'
 import withErrorBoundary from './hocs/WithErrorBoundary'
 
 const Routes = () => (
-  <Location>
-    {({ location }) => (
-      <App>
-        <Router
-          location={location}
-          style={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', overflow: 'hidden' }}
-        >
-          <Home path="/" />
-          <Login path="/login/:moduleId/:galleryId" />
-          <OAuth path="/oauth/:moduleId/:galleryId" />
-          <ImplicitAuth path="/implicit/:moduleId/:galleryId" />
-          <Gallery path="/gallery/:moduleId/:galleryId" />
-          <NotFound default />
-        </Router>
-      </App>
-    )}
-  </Location>
+  <HashRouter>
+    <App>
+      <Switch>
+        <Route exact path="/">
+          <Home />
+        </Route>
+
+        <Route path="/login/:moduleId/:galleryId">
+          <Login />
+        </Route>
+
+        <Route path="/oauth/:moduleId/:galleryId">
+          <OAuth />
+        </Route>
+
+        <Route path="/implicit/:moduleId/:galleryId">
+          <ImplicitAuth />
+        </Route>
+
+        <Route path="/gallery/:moduleId/:galleryId">
+          <Gallery />
+        </Route>
+
+        <Route path="*">
+          <NotFound />
+        </Route>
+      </Switch>
+    </App>
+  </HashRouter>
 )
 
 export default withErrorBoundary(Routes)

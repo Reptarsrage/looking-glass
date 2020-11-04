@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Link from '@material-ui/core/Link'
 import { withStyles } from '@material-ui/core/styles'
-import { useNavigate, useLocation } from '@reach/router'
+import { useHistory, useLocation } from 'react-router-dom'
 
 const styles = () => ({
   link: {
@@ -11,14 +11,14 @@ const styles = () => ({
 })
 
 const BreadcrumbItem = ({ title, classes, url }) => {
-  const navigate = useNavigate()
+  const history = useHistory()
   const location = useLocation()
 
   const handleClick = () => {
     if (location.pathname === url) {
-      // TODO: SCroll to top maybe?
+      // TODO: Scroll to top maybe?
     } else {
-      navigate(url)
+      history.push(url)
     }
   }
 

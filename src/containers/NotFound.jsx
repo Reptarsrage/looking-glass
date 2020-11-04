@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import HomeIcon from '@material-ui/icons/Home'
-import { Link } from '@reach/router'
+import { Link } from 'react-router-dom'
 
 const styles = (theme) => ({
   body: {

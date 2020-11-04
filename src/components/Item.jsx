@@ -5,7 +5,7 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import CollectionsIcon from '@material-ui/icons/Collections'
-import { useNavigate } from '@reach/router'
+import { useHistory } from 'react-router-dom'
 
 import { modalItemIdSelector } from '../selectors/modalSelectors'
 import { itemByIdSelector, itemGalleryUrlSelector } from '../selectors/itemSelectors'
@@ -44,7 +44,7 @@ const Item = ({
   modalSetItem,
   itemGalleryUrl,
 }) => {
-  const navigate = useNavigate()
+  const history = useHistory()
   const itemRef = useRef(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
 
@@ -72,7 +72,7 @@ const Item = ({
     event.preventDefault()
 
     if (item.isGallery) {
-      navigate(itemGalleryUrl)
+      history.push(itemGalleryUrl)
       return
     }
 

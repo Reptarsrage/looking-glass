@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import { compose } from 'redux'
-import { useNavigate } from '@reach/router'
+import { useHistory } from 'react-router-dom'
 
 import { breadcrumbsSelector } from '../selectors/breadcrumbSelectors'
 import BreadcrumbItem from './BreadcrumbItem'
@@ -25,9 +25,9 @@ const styles = (theme) => ({
 })
 
 const CustomBreadcrumbs = ({ breadcrumbs, classes }) => {
-  const navigate = useNavigate()
+  const history = useHistory()
   const navigateHome = () => {
-    navigate('/')
+    history.push('/')
   }
 
   return (

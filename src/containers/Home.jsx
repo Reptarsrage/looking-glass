@@ -12,7 +12,7 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
 import FolderIcon from '@material-ui/icons/Folder'
 import { remote } from 'electron'
-import { useNavigate } from '@reach/router'
+import { useHistory } from 'react-router-dom'
 
 import ModuleItem from '../components/ModuleItem'
 import * as moduleActions from '../actions/moduleActions'
@@ -50,7 +50,7 @@ const styles = (theme) => ({
 })
 
 const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFileSystemDirectory }) => {
-  const navigate = useNavigate()
+  const history = useHistory()
 
   useEffect(() => {
     // fetch modules
@@ -69,7 +69,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
         setFileSystemDirectory(directoryPath)
         const siteId = Buffer.from(directoryPath, 'utf-8').toString('base64')
         const galleryId = generateGalleryId(FILE_SYSTEM_MODULE_ID, siteId)
-        navigate(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
+        history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
       }
     })
   }

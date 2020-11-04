@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
-import { Redirect } from '@reach/router'
+import { Redirect } from 'react-router-dom'
 import { compose } from 'redux'
 import Avatar from '@material-ui/core/Avatar'
 import Visibility from '@material-ui/icons/Visibility'
@@ -24,6 +24,7 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
 import * as authActions from '../actions/authActions'
 import LoadingIndicator from '../components/LoadingIndicator'
+import withRouteParams from '../hocs/WithRouteParams'
 
 const styles = (theme) => ({
   main: {
@@ -201,4 +202,4 @@ const mapDispatchToProps = {
   login: authActions.login,
 }
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login)
+export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login))
