@@ -59,7 +59,7 @@ export function* handleRefresh(moduleId) {
  * Saga to handle user authentication
  * @param {*} action Dispatched action
  */
-function* handleLogin(action) {
+export function* handleLogin(action) {
   const { payload, meta } = action
   const moduleId = meta
 

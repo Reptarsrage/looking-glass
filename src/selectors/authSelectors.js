@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState } from '../reducers/authReducer'
+import { initialState, initialAuthState } from '../reducers/authReducer'
 import { moduleByIdSelector } from './moduleSelectors'
 
 const authState = (state) => state.auth || initialState
@@ -11,7 +11,7 @@ const getModuleId = (_, props) => props.moduleId
 
 export const authByModuleIdSelector = createSelector(
   [authState, getModuleId],
-  (state, moduleId) => state.byId[moduleId]
+  (state, moduleId) => state.byId[moduleId] || initialAuthState
 )
 
 export const fetchingSelector = createSelector(authByModuleIdSelector, (state) => state.fetching)

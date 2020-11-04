@@ -7,7 +7,7 @@ import { fetchModulesSuccess, fetchModulesFailure } from '../actions/moduleActio
 /**
  * Saga to handle fetching modules
  */
-function* handleFetchModules() {
+export function* handleFetchModules() {
   try {
     // Fetch modules
     const { data } = yield call(lookingGlassService.fetchModules)

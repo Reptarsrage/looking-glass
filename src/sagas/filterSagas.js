@@ -18,7 +18,7 @@ import {
  * Saga to handle fetching filters for an item
  * @param {*} action Dispatched action
  */
-function* handleFetchItemFilters(action) {
+export function* handleFetchItemFilters(action) {
   const { meta } = action
   const { itemId, moduleId } = meta
 
@@ -47,7 +47,7 @@ function* handleFetchItemFilters(action) {
  * Saga to handle fetching a section of filters
  * @param {*} action Dispatched action
  */
-function* handleFetchFilters(action) {
+export function* handleFetchFilters(action) {
   const { meta: filterSectionId } = action
 
   try {

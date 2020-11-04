@@ -32,7 +32,7 @@ import {
  * Saga to handle changes in sort value
  * @param {*} action Dispatched action
  */
-function* handleSortChange(action) {
+export function* handleSortChange(action) {
   const { meta: galleryId, payload: valueId } = action
 
   // Select info from the redux store
@@ -50,7 +50,7 @@ function* handleSortChange(action) {
  * Saga to handle changes in filter value
  * @param {*} action Dispatched action
  */
-function* handleFilterChange(action) {
+export function* handleFilterChange(action) {
   const { meta: galleryId, payload: filterId } = action
 
   // Select info from the redux store
@@ -68,7 +68,7 @@ function* handleFilterChange(action) {
  * Saga to handle changes in search query value
  * @param {*} action Dispatched action
  */
-function* handleSearchChange(action) {
+export function* handleSearchChange(action) {
   const { meta: galleryId, payload: searchQuery } = action
 
   // Select info from the redux store
@@ -94,7 +94,7 @@ function* handleSearchChange(action) {
  * Saga to handle fetching items
  * @param {*} action Dispatched action
  */
-function* handleFetchGallery(action) {
+export function* handleFetchGallery(action) {
   const { meta: galleryId } = action
 
   try {
