@@ -14,7 +14,6 @@ module.exports = (webpackEnv) => {
   const outputPath = path.join(__dirname, 'dist')
   const srcPath = path.join(__dirname, 'src')
   const entryPath = path.join(srcPath, 'index.jsx')
-  const nodeModulesPath = path.join(__dirname, 'node_modules')
 
   return {
     mode: isDevelopment ? 'development' : 'production',
@@ -35,7 +34,6 @@ module.exports = (webpackEnv) => {
     target: 'electron-renderer',
     resolve: {
       extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json'],
-      modules: [nodeModulesPath],
     },
     optimization: {
       minimize: isProduction,
