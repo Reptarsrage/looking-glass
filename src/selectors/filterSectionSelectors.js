@@ -18,6 +18,18 @@ export const filterSectionByIdSelector = createSelector(
   (state, filterSectionId) => state.byId[filterSectionId] || initialFilterSectionState
 )
 
+/** Filter section site ID */
+export const filterSectionSiteIdSelector = createSelector(
+  filterSectionByIdSelector,
+  (filterSection) => filterSection.siteId
+)
+
+/** Filter section module ID */
+export const filterSectionModuleIdSelector = createSelector(
+  filterSectionByIdSelector,
+  (filterSection) => filterSection.moduleId
+)
+
 export const filterSectionValuesSearchSelector = createSelector(
   [filterSectionByIdSelector, getSearch, filterStateSelector],
   (section, search, filterState) => {

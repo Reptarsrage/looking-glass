@@ -12,6 +12,18 @@ export const galleryByIdSelector = createSelector(
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 )
 
+/** Gallery module ID */
+export const galleryModuleIdSelector = createSelector(galleryByIdSelector, (gallery) => gallery.moduleId)
+
+/** Gallery site ID */
+export const gallerySiteIdSelector = createSelector(galleryByIdSelector, (gallery) => gallery.siteId)
+
+/** Gallery after */
+export const galleryAfterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.after)
+
+/** Gallery offset */
+export const galleryOffsetSelector = createSelector(galleryByIdSelector, (gallery) => gallery.offset)
+
 /** All galleries */
 export const galleriesSelector = createSelector(galleriesStateSelector, (state) => state.allIds)
 

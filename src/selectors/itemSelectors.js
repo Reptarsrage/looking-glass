@@ -19,6 +19,9 @@ export const itemByIdSelector = createSelector(
   (state, itemId) => state.byId[itemId] || initialItemState
 )
 
+/** Item siteId */
+export const itemSiteIdSelector = createSelector(itemByIdSelector, (item) => item.siteId)
+
 /** Item dimensions */
 export const itemDimensionsSelector = createSelector(itemByIdSelector, (item) => ({
   width: item.width,

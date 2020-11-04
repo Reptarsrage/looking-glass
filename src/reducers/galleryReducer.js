@@ -36,7 +36,6 @@ export const initialGalleryState = {
   siteId: null,
   moduleId: null,
   offset: 0,
-  count: 0,
   after: null,
   hasNext: true,
   searchQuery: null,
@@ -171,7 +170,6 @@ const galleryReducer = (state = initialState, action) =>
         // clear gallery
         draft.byId[galleryId].items = []
         draft.byId[galleryId].offset = 0
-        draft.byId[galleryId].count = 0
         draft.byId[galleryId].after = null
         draft.byId[galleryId].hasNext = true
         draft.byId[galleryId].savedScrollPosition = 0

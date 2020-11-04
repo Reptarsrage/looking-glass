@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
@@ -15,15 +15,8 @@ import { remote } from 'electron'
 import qs from 'qs'
 
 import * as authActions from '../actions/authActions'
-import {
-  fetchedSelector,
-  fetchingSelector,
-  errorSelector,
-  oauthURLSelector,
-  oauthURLFetchingSelector,
-  oauthURLErrorSelector,
-  oauthURLSuccessSelector,
-} from '../selectors/authSelectors'
+import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
+import { moduleOAuthUrlSelector } from '../selectors/moduleSelectors'
 import LoadingIndicator from '../components/LoadingIndicator'
 import withRouteParams from '../hocs/WithRouteParams'
 
@@ -66,27 +59,8 @@ const styles = (theme) => ({
   },
 })
 
-const OAuth = ({
-  fetching,
-  fetched,
-  moduleId,
-  fetchOAuthURL,
-  authorize,
-  oauthURL,
-  classes,
-  oauthURLSuccess,
-  oauthURLFetching,
-  oauthURLError,
-  error,
-  galleryId,
-}) => {
+const OAuth = ({ galleryId, fetching, fetched, moduleId, oAuthUrl, authorize, classes, error }) => {
   const [modalFetching, setModalFetching] = useState(false)
-
-  useEffect(() => {
-    if (!oauthURLFetching && !oauthURLSuccess) {
-      fetchOAuthURL(moduleId)
-    }
-  })
 
   const showOauthModal = (authUrl) => {
     return new Promise((resolve, reject) => {
@@ -131,7 +105,7 @@ const OAuth = ({
     setModalFetching(true)
 
     try {
-      const accessToken = await showOauthModal(oauthURL)
+      const accessToken = await showOauthModal(oAuthUrl)
       authorize(moduleId, accessToken)
       setModalFetching(false)
     } catch (e) {
@@ -144,8 +118,7 @@ const OAuth = ({
     return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
-  const isFetching = oauthURLFetching || modalFetching || fetching
-  const isError = (oauthURLError || error) !== null // TODO: get message out of error object
+  const isFetching = modalFetching || fetching
 
   return (
     <main className={classes.main}>
@@ -153,14 +126,17 @@ const OAuth = ({
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
+
         <Typography component="h1" variant="h5">
           Authorize using OAuth2
         </Typography>
-        {isError && (
+
+        {error && (
           <Typography align="center" color="error">
-            {JSON.stringify(oauthURLError || error)}
+            {JSON.stringify(error)}
           </Typography>
         )}
+
         <div className={classes.wrapper}>
           <Button
             type="button"
@@ -173,6 +149,7 @@ const OAuth = ({
           >
             Authorize
           </Button>
+
           {isFetching && <LoadingIndicator size={24} className={classes.progress} />}
         </div>
       </Paper>
@@ -182,38 +159,35 @@ const OAuth = ({
 
 OAuth.defaultProps = {
   error: null,
-  oauthURLError: null,
-  oauthURL: null,
 }
 
 OAuth.propTypes = {
-  authorize: PropTypes.func.isRequired,
-  fetchOAuthURL: PropTypes.func.isRequired,
+  // Route params
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
+
+  // withStyles
   classes: PropTypes.object.isRequired,
+
+  // Selectors
   fetched: PropTypes.bool.isRequired,
   fetching: PropTypes.bool.isRequired,
+  oAuthUrl: PropTypes.string.isRequired,
   error: PropTypes.object,
-  oauthURL: PropTypes.string,
-  oauthURLSuccess: PropTypes.bool.isRequired,
-  oauthURLFetching: PropTypes.bool.isRequired,
-  oauthURLError: PropTypes.object,
+
+  // Actions
+  authorize: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = createStructuredSelector({
-  oauthURL: oauthURLSelector,
+  oAuthUrl: moduleOAuthUrlSelector,
   fetched: fetchedSelector,
   fetching: fetchingSelector,
   error: errorSelector,
-  oauthURLFetching: oauthURLFetchingSelector,
-  oauthURLError: oauthURLErrorSelector,
-  oauthURLSuccess: oauthURLSuccessSelector,
 })
 
 const mapDispatchToProps = {
   authorize: authActions.authorize,
-  fetchOAuthURL: authActions.fetchOAuthURL,
 }
 
 export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth))

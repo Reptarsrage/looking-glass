@@ -26,6 +26,7 @@ export const initialModuleState = {
   title: null,
   description: null,
   authType: null,
+  oAuthUrl: null,
   icon: null,
   sortBy: [],
   filterBy: [],

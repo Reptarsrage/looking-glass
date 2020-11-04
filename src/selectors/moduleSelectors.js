@@ -16,6 +16,12 @@ export const moduleByIdSelector = createSelector(
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 )
 
+/** Module siteId */
+export const moduleSiteIdSelector = createSelector(moduleByIdSelector, (module) => module.siteId)
+
+/** Module OAuth URL */
+export const moduleOAuthUrlSelector = createSelector(moduleByIdSelector, (module) => module.oAuthUrl)
+
 /** Have modules been fetched? */
 export const fetchedSelector = createSelector(moduleStateSelector, (state) => state.fetched)
 

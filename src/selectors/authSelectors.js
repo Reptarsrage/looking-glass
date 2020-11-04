@@ -26,14 +26,6 @@ export const refreshTokenSelector = createSelector(authByModuleIdSelector, (stat
 
 export const expiresSelector = createSelector(authByModuleIdSelector, (state) => state.expires)
 
-export const oauthURLSelector = createSelector(authByModuleIdSelector, (state) => state.oauth.url)
-
-export const oauthURLSuccessSelector = createSelector(authByModuleIdSelector, (state) => state.oauth.fetched)
-
-export const oauthURLFetchingSelector = createSelector(authByModuleIdSelector, (state) => state.oauth.fetching)
-
-export const oauthURLErrorSelector = createSelector(authByModuleIdSelector, (state) => state.oauth.error)
-
 export const isAuthenticatedSelector = createSelector(authByModuleIdSelector, (state) => state.fetched)
 
 export const authUrlSelector = createSelector(

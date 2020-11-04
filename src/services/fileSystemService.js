@@ -1,10 +1,10 @@
 import { basename, extname } from 'path'
 import { lookup } from 'mime-types'
-import { stringify, parse } from 'qs'
+import { stringify, parse } from 'querystring'
 
 import Crawler from './directoryCrawler'
 
-export default class FileSystemService {
+class FileSystemService {
   constructor() {
     let queryString = global.location.search
     if (queryString.startsWith('?')) {
@@ -30,7 +30,7 @@ export default class FileSystemService {
     }
   }
 
-  fetchImages = async (_moduleId, galleryId, _accessToken, offset) => {
+  fetchItems = async (_moduleId, galleryId, _accessToken, offset) => {
     try {
       const dirPath = Buffer.from(galleryId, 'base64').toString('utf-8')
       if (!this.cacheContains(dirPath)) {
@@ -61,7 +61,6 @@ export default class FileSystemService {
           }
         }),
         hasNext: page.length > 0,
-        count: page.length,
         offset: pageNumber + 1,
         after: null,
       }
@@ -78,3 +77,5 @@ export default class FileSystemService {
     return { data: [] } // TODO: Implement this
   }
 }
+
+export default new FileSystemService()

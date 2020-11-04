@@ -14,12 +14,6 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
   LOGIN,
-  FETCH_OATH_URL,
-  FETCH_OATH_URL_FAILURE,
-  FETCH_OATH_URL_SUCCESS,
-  AUTHORIZE,
-  AUTHORIZE_SUCCESS,
-  AUTHORIZE_FAILURE,
   REFRESH_SUCCESS,
   REFRESH_FAILURE,
   FETCH_MODULES_SUCCESS,
@@ -42,10 +36,6 @@ export const initialState = {
 
 export const initialAuthState = {
   accessToken: '',
-  oauth: {
-    url: null,
-    ...initialAsyncState,
-  },
   refreshToken: '',
   expires: 0,
   ...initialAsyncState,
@@ -75,26 +65,11 @@ const authReducer = (state = initialState, action, store = getStore()) =>
 
         break
       }
-      case FETCH_OATH_URL: {
-        handleAsyncFetch(state.byId[moduleId].oauth, draft.byId[moduleId].oauth)
-        break
-      }
-      case FETCH_OATH_URL_SUCCESS: {
-        handleAsyncSuccess(state.byId[moduleId].oauth, draft.byId[moduleId].oauth)
-        draft.byId[moduleId].oauth.url = payload
-        break
-      }
-      case FETCH_OATH_URL_FAILURE: {
-        handleAsyncError(state.byId[moduleId].oauth, draft.byId[moduleId].oauth, payload)
-        break
-      }
-      case AUTHORIZE:
       case LOGIN: {
         handleAsyncFetch(state.byId[moduleId], draft.byId[moduleId])
         break
       }
       case REFRESH_SUCCESS:
-      case AUTHORIZE_SUCCESS:
       case LOGIN_SUCCESS: {
         const { expiresIn } = payload
         const date = moment()
@@ -112,7 +87,6 @@ const authReducer = (state = initialState, action, store = getStore()) =>
         break
       }
       case REFRESH_FAILURE:
-      case AUTHORIZE_FAILURE:
       case LOGIN_FAILURE: {
         handleAsyncError(state.byId[moduleId], draft.byId[moduleId], payload)
         break
