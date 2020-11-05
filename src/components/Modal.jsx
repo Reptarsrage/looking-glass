@@ -27,10 +27,10 @@ import {
   modalBoundsSelector,
   modalItemSelector,
   modalItemHasFiltersSelector,
-} from '../selectors/modalSelectors'
-import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from '../selectors/moduleSelectors'
-import * as modalActions from '../actions/modalActions'
-import * as galleryActions from '../actions/galleryActions'
+} from 'selectors/modalSelectors'
+import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from 'selectors/moduleSelectors'
+import * as modalActions from 'actions/modalActions'
+import * as galleryActions from 'actions/galleryActions'
 import SlideShow from './SlideShow'
 import ItemFilters from './ItemFilters'
 

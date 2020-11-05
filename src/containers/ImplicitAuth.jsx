@@ -4,10 +4,10 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
-import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
-import * as authActions from '../actions/authActions'
-import LoadingIndicator from '../components/LoadingIndicator'
-import withRouteParams from '../hocs/WithRouteParams'
+import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
+import * as authActions from 'actions/authActions'
+import LoadingIndicator from 'components/LoadingIndicator'
+import withRouteParams from 'hocs/WithRouteParams'
 
 const ImplicitAuth = ({ login, fetching, error, fetched, moduleId, galleryId }) => {
   useEffect(() => {

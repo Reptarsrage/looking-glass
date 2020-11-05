@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialAuthState } from '../reducers/authReducer'
+import { initialState, initialAuthState } from 'reducers/authReducer'
 import { moduleByIdSelector } from './moduleSelectors'
 
 const authState = (state) => state.auth || initialState

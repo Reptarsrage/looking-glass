@@ -1,13 +1,13 @@
 import produce from 'immer'
 
-import { generateItemId, generateFilterId, generateFilterSectionId } from './constants'
 import {
   FETCH_ITEM_FILTERS,
   FETCH_ITEM_FILTERS_FAILURE,
   FETCH_GALLERY_SUCCESS,
   CLEAR_GALLERY,
   FETCH_ITEM_FILTERS_SUCCESS,
-} from '../actions/types'
+} from 'actions/types'
+import { generateItemId, generateFilterId, generateFilterSectionId } from './constants'
 
 export const initialState = {
   byId: {},

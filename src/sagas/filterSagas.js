@@ -1,18 +1,18 @@
 import { put, call, takeEvery, select, all } from 'redux-saga/effects'
 
-import lookingGlassService from '../services/lookingGlassService'
-import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from '../actions/types'
-import { accessTokenSelector } from '../selectors/authSelectors'
-import { filterSectionSiteIdSelector, filterSectionModuleIdSelector } from '../selectors/filterSectionSelectors'
-import { itemSiteIdSelector } from '../selectors/itemSelectors'
-import { moduleSiteIdSelector } from '../selectors/moduleSelectors'
-import { handleRefresh } from './authSagas'
+import lookingGlassService from 'services/lookingGlassService'
+import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
+import { accessTokenSelector } from 'selectors/authSelectors'
+import { filterSectionSiteIdSelector, filterSectionModuleIdSelector } from 'selectors/filterSectionSelectors'
+import { itemSiteIdSelector } from 'selectors/itemSelectors'
+import { moduleSiteIdSelector } from 'selectors/moduleSelectors'
 import {
   fetchFiltersError,
   fetchFiltersSuccess,
   fetchItemFiltersError,
   fetchItemFiltersSuccess,
-} from '../actions/filterActions'
+} from 'actions/filterActions'
+import { handleRefresh } from './authSagas'
 
 /**
  * Saga to handle fetching filters for an item

@@ -1,6 +1,6 @@
 import produce from 'immer'
 
-import { FETCH_MODULES_SUCCESS } from '../actions/types'
+import { FETCH_MODULES_SUCCESS } from 'actions/types'
 import { generateSortId, generateModuleId } from './constants'
 
 export const initialState = {

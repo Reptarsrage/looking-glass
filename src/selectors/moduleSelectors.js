@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialModuleState } from '../reducers/moduleReducer'
+import { initialState, initialModuleState } from 'reducers/moduleReducer'
 
 const getModuleId = (_, props) => props.moduleId
 

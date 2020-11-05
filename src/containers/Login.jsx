@@ -21,10 +21,10 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import IconButton from '@material-ui/core/IconButton'
 import withStyles from '@material-ui/core/styles/withStyles'
 
-import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
-import * as authActions from '../actions/authActions'
-import LoadingIndicator from '../components/LoadingIndicator'
-import withRouteParams from '../hocs/WithRouteParams'
+import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
+import * as authActions from 'actions/authActions'
+import LoadingIndicator from 'components/LoadingIndicator'
+import withRouteParams from 'hocs/WithRouteParams'
 
 const styles = (theme) => ({
   main: {

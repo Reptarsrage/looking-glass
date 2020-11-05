@@ -1,6 +1,6 @@
 import produce from 'immer'
 
-import { TOGGLE_DARK_THEME } from '../actions/types'
+import { TOGGLE_DARK_THEME } from 'actions/types'
 
 export const initialState = {
   darkTheme: true,

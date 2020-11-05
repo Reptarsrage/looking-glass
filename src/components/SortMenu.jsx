@@ -10,8 +10,8 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import SortIcon from '@material-ui/icons/Sort'
 
-import * as galleryActions from '../actions/galleryActions'
-import { moduleValuesSelector } from '../selectors/sortSelectors'
+import * as galleryActions from 'actions/galleryActions'
+import { moduleValuesSelector } from 'selectors/sortSelectors'
 import SortMenuItem from './SortMenuItem'
 
 const styles = (theme) => ({

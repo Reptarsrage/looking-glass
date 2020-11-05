@@ -7,7 +7,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import { withStyles } from '@material-ui/core/styles'
 
-import { filterByIdSelector } from '../selectors/filterSelectors'
+import { filterByIdSelector } from 'selectors/filterSelectors'
 
 const styles = () => ({
   listItem: {

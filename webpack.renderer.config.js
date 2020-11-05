@@ -11,9 +11,9 @@ module.exports = (webpackEnv) => {
   const isProduction = webpackEnv.production
   const isDevelopment = !isProduction
 
-  const outputPath = path.join(__dirname, 'dist')
-  const srcPath = path.join(__dirname, 'src')
-  const entryPath = path.join(srcPath, 'index.jsx')
+  const outputPath = path.resolve(__dirname, 'dist')
+  const srcPath = path.resolve(__dirname, 'src')
+  const entryPath = path.resolve(srcPath, 'index.jsx')
 
   return {
     mode: isDevelopment ? 'development' : 'production',

@@ -1,6 +1,6 @@
 import produce from 'immer'
 
-import { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } from '../actions/types'
+import { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } from 'actions/types'
 
 export const initialState = {
   modalOpen: false,

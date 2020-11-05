@@ -2,18 +2,6 @@ import produce from 'immer'
 import { basename } from 'path'
 
 import {
-  DEFAULT_GALLERY_ID,
-  FILE_SYSTEM_MODULE_ID,
-  generateGalleryId,
-  generateModuleId,
-  handleAsyncError,
-  handleAsyncFetch,
-  initialAsyncState,
-  handleAsyncSuccess,
-  generateItemId,
-} from './constants'
-
-import {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_FAILURE,
@@ -24,7 +12,18 @@ import {
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
   SET_FILE_SYSTEM_DIRECTORY,
-} from '../actions/types'
+} from 'actions/types'
+import {
+  DEFAULT_GALLERY_ID,
+  FILE_SYSTEM_MODULE_ID,
+  generateGalleryId,
+  generateModuleId,
+  handleAsyncError,
+  handleAsyncFetch,
+  initialAsyncState,
+  handleAsyncSuccess,
+  generateItemId,
+} from './constants'
 
 export const initialState = {
   byId: {},

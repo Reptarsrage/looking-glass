@@ -30,9 +30,9 @@ describe('<Masonry />', () => {
     const { getByTestId } = render(<JustMasonry {...props} />)
 
     // assert
-    for (const key of props.items) {
+    props.items.forEach((key) => {
       expect(getByTestId(key)).toBeInTheDocument()
-    }
+    })
   })
 
   it('renders only visible items', () => {
@@ -58,14 +58,13 @@ describe('<Masonry />', () => {
     const { queryByTestId, getByTestId } = render(<JustMasonry {...props} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 6) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(0, 6).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(6).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after scroll', () => {
@@ -92,14 +91,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} scrollTop={224} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i > 5) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(6).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(0, 6).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after width resize', () => {
@@ -126,14 +124,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} width={192} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 6) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(0, 6).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(6).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after height resize', () => {
@@ -160,14 +157,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} height={115} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 3) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(0, 3).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(3).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after scrollBarSize changes', () => {
@@ -194,14 +190,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} scrollBarSize={20} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 6) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(0, 6).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(6).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after gutter changes', () => {
@@ -228,14 +223,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} gutter={7} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 6) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(0, 6).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(6).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after columnCount changes', () => {
@@ -262,14 +256,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} columnCount={4} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 8) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    props.items.slice(0, 8).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    props.items.slice(8).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it('renders only visible items after items change', () => {
@@ -297,14 +290,13 @@ describe('<Masonry />', () => {
     rerender(<JustMasonry {...props} items={newItems} />)
 
     // assert
-    for (let i = 0; i < newItems.length; i += 1) {
-      const key = newItems[i]
-      if (i < 6) {
-        expect(getByTestId(key)).toBeInTheDocument()
-      } else {
-        expect(queryByTestId(key)).not.toBeInTheDocument()
-      }
-    }
+    newItems.slice(0, 6).forEach((key) => {
+      expect(getByTestId(key)).toBeInTheDocument()
+    })
+
+    newItems.slice(6).forEach((key) => {
+      expect(queryByTestId(key)).not.toBeInTheDocument()
+    })
   })
 
   it("two instances don't conflict", () => {
@@ -330,13 +322,12 @@ describe('<Masonry />', () => {
     const { queryAllByTestId } = render(<JustMasonry {...props} height={116} />)
 
     // assert
-    for (let i = 0; i < props.items.length; i += 1) {
-      const key = props.items[i]
-      if (i < 6) {
-        expect(queryAllByTestId(key)).toHaveLength(2) // renders in both documents
-      } else {
-        expect(queryAllByTestId(key)).toHaveLength(1) // renders in one document
-      }
-    }
+    props.items.slice(0, 6).forEach((key) => {
+      expect(queryAllByTestId(key)).toHaveLength(2)
+    })
+
+    props.items.slice(6).forEach((key) => {
+      expect(queryAllByTestId(key)).toHaveLength(1)
+    })
   })
 })

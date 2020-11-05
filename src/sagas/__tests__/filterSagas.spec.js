@@ -1,12 +1,12 @@
 import { takeEvery } from 'redux-saga/effects'
 
-import lookingGlassService from '../../services/lookingGlassService'
-import * as filterActions from '../../actions/filterActions'
+import lookingGlassService from 'services/lookingGlassService'
+import * as filterActions from 'actions/filterActions'
+import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
 import watchFilterSagas, { handleFetchItemFilters, handleFetchFilters } from '../filterSagas'
 import { recordSaga } from './sagaTestHelpers'
-import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from '../../actions/types'
 
-jest.mock('../../services/lookingGlassService')
+jest.mock('services/lookingGlassService')
 
 it('should watch for all actions', async () => {
   // arrange & act

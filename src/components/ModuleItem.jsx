@@ -10,7 +10,7 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
-import { moduleByIdSelector } from '../selectors/moduleSelectors'
+import { moduleByIdSelector } from 'selectors/moduleSelectors'
 
 const styles = () => ({
   wrapper: {

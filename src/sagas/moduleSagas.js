@@ -1,8 +1,8 @@
 import { put, call, takeEvery } from 'redux-saga/effects'
 
-import lookingGlassService from '../services/lookingGlassService'
-import { FETCH_MODULES } from '../actions/types'
-import { fetchModulesSuccess, fetchModulesFailure } from '../actions/moduleActions'
+import lookingGlassService from 'services/lookingGlassService'
+import { FETCH_MODULES } from 'actions/types'
+import { fetchModulesSuccess, fetchModulesFailure } from 'actions/moduleActions'
 
 /**
  * Saga to handle fetching modules

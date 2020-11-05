@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 
-import progressTracker from '../services/progressTracker'
+import progressTracker from 'services/progressTracker'
 
 const styles = (theme) => ({
   bar: {

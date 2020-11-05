@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialFilterSectionState } from '../reducers/filterSectionReducer'
+import { initialState, initialFilterSectionState } from 'reducers/filterSectionReducer'
 import { stateSelector as filterStateSelector } from './filterSelectors'
 
 const getFilterSectionId = (_, props) => props.filterSectionId

@@ -1,11 +1,11 @@
 import { put, call, takeEvery, select } from 'redux-saga/effects'
 import moment from 'moment'
 
-import lookingGlassService from '../services/lookingGlassService'
-import { moduleSiteIdSelector } from '../selectors/moduleSelectors'
-import { expiresSelector, refreshTokenSelector } from '../selectors/authSelectors'
-import { loginSuccess, loginFailure, refreshSuccess, refreshFailure } from '../actions/authActions'
-import { LOGIN } from '../actions/types'
+import lookingGlassService from 'services/lookingGlassService'
+import { moduleSiteIdSelector } from 'selectors/moduleSelectors'
+import { expiresSelector, refreshTokenSelector } from 'selectors/authSelectors'
+import { loginSuccess, loginFailure, refreshSuccess, refreshFailure } from 'actions/authActions'
+import { LOGIN } from 'actions/types'
 
 /**
  * Helper to check if an access token needs refreshing

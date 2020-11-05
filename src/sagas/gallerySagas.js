@@ -1,9 +1,9 @@
 import { put, call, takeLatest, all, select, delay, cancelled, takeEvery } from 'redux-saga/effects'
 
-import lookingGlassService from '../services/lookingGlassService'
-import fileSystemService from '../services/fileSystemService'
-import { FETCH_GALLERY, FILTER_CHANGE, SORT_CHANGE, SEARCH_CHANGE } from '../actions/types'
-import { accessTokenSelector } from '../selectors/authSelectors'
+import lookingGlassService from 'services/lookingGlassService'
+import fileSystemService from 'services/fileSystemService'
+import { FETCH_GALLERY, FILTER_CHANGE, SORT_CHANGE, SEARCH_CHANGE } from 'actions/types'
+import { accessTokenSelector } from 'selectors/authSelectors'
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
@@ -12,12 +12,11 @@ import {
   currentSearchQuerySelector,
   galleryAfterSelector,
   galleryOffsetSelector,
-} from '../selectors/gallerySelectors'
-import { moduleSiteIdSelector, defaultGalleryIdSelector } from '../selectors/moduleSelectors'
-import { valueSiteIdSelector, defaultSortValueSelector } from '../selectors/sortSelectors'
-import { filterSiteIdSelector } from '../selectors/filterSelectors'
-import { handleRefresh } from './authSagas'
-import { FILE_SYSTEM_MODULE_ID } from '../reducers/constants'
+} from 'selectors/gallerySelectors'
+import { moduleSiteIdSelector, defaultGalleryIdSelector } from 'selectors/moduleSelectors'
+import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
+import { filterSiteIdSelector } from 'selectors/filterSelectors'
+import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import {
   fetchGallery,
   updateSort,
@@ -26,7 +25,8 @@ import {
   fetchGallerySuccess,
   fetchGalleryFailure,
   clearGallery,
-} from '../actions/galleryActions'
+} from 'actions/galleryActions'
+import { handleRefresh } from './authSagas'
 
 /**
  * Saga to handle changes in sort value

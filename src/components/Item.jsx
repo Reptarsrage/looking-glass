@@ -7,9 +7,9 @@ import { withStyles } from '@material-ui/core/styles'
 import CollectionsIcon from '@material-ui/icons/Collections'
 import { useHistory } from 'react-router-dom'
 
-import { modalItemIdSelector } from '../selectors/modalSelectors'
-import { itemByIdSelector, itemGalleryUrlSelector } from '../selectors/itemSelectors'
-import * as modalActions from '../actions/modalActions'
+import { modalItemIdSelector } from 'selectors/modalSelectors'
+import { itemByIdSelector, itemGalleryUrlSelector } from 'selectors/itemSelectors'
+import * as modalActions from 'actions/modalActions'
 import Image from './Image'
 import Video from './Video'
 

@@ -1,13 +1,13 @@
 import moment from 'moment'
 import { takeEvery } from 'redux-saga/effects'
 
-import lookingGlassService from '../../services/lookingGlassService'
-import * as authActions from '../../actions/authActions'
+import { LOGIN } from 'actions/types'
+import lookingGlassService from 'services/lookingGlassService'
+import * as authActions from 'actions/authActions'
 import watchAuthSagas, { handleLogin, handleRefresh } from '../authSagas'
 import { recordSaga } from './sagaTestHelpers'
-import { LOGIN } from '../../actions/types'
 
-jest.mock('../../services/lookingGlassService')
+jest.mock('services/lookingGlassService')
 
 it('should watch for all actions', async () => {
   const gen = watchAuthSagas()

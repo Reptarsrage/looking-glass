@@ -8,7 +8,7 @@ module.exports = (webpackEnv) => {
   const isDevelopment = !isProduction
 
   const outPath = __dirname
-  const entryPath = path.join(__dirname, 'main.js')
+  const entryPath = path.resolve(__dirname, 'main.js')
 
   return {
     mode: isDevelopment ? 'development' : 'production',

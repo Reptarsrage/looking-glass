@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import moize from 'moize'
 import { isValidElementType } from 'react-is'
 
+import withScroll from 'hocs/WithScroll'
+import withResize from 'hocs/WithResize'
 import Virtualized from './Virtualized'
-import withScroll from '../hocs/WithScroll'
-import withResize from '../hocs/WithResize'
 import Item from './Item'
 
 /**
@@ -115,11 +115,11 @@ export const setColumnItems = ({
     newColumnItemsCount = 0
 
     // Clear lookup table
-    for (const key in itemColumnLookup) {
+    Object.keys(itemColumnLookup).forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(itemColumnLookup, key)) {
         delete itemColumnLookup[key]
       }
-    }
+    })
 
     // Clear columns
     while (columns.length > 0) {

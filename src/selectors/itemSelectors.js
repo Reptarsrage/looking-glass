@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialItemState } from '../reducers/itemReducer'
-import { generateGalleryId } from '../reducers/constants'
+import { initialState, initialItemState } from 'reducers/itemReducer'
+import { generateGalleryId } from 'reducers/constants'
 import { galleriesStateSelector } from './gallerySelectors'
 import { filterSectionByIdSelector } from './filterSectionSelectors'
 import { stateSelector as filterStateSelector } from './filterSelectors'

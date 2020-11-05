@@ -3,6 +3,14 @@ import moment from 'moment'
 import Store from 'electron-store'
 
 import {
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+  LOGIN,
+  REFRESH_SUCCESS,
+  REFRESH_FAILURE,
+  FETCH_MODULES_SUCCESS,
+} from 'actions/types'
+import {
   FILE_SYSTEM_MODULE_ID,
   generateModuleId,
   handleAsyncError,
@@ -10,14 +18,6 @@ import {
   handleAsyncSuccess,
   initialAsyncState,
 } from './constants'
-import {
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
-  LOGIN,
-  REFRESH_SUCCESS,
-  REFRESH_FAILURE,
-  FETCH_MODULES_SUCCESS,
-} from '../actions/types'
 
 // Allow store to be passed via unit test
 let electronStore

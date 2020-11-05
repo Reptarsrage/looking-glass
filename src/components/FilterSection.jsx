@@ -7,8 +7,8 @@ import List from '@material-ui/core/List'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import { withStyles } from '@material-ui/core/styles'
 
-import { filterSectionByIdSelector, filterSectionValuesSearchSelector } from '../selectors/filterSectionSelectors'
-import * as filterActions from '../actions/filterActions'
+import { filterSectionByIdSelector, filterSectionValuesSearchSelector } from 'selectors/filterSectionSelectors'
+import * as filterActions from 'actions/filterActions'
 import FilterValue from './FilterValue'
 import LoadingIndicator from './LoadingIndicator'
 

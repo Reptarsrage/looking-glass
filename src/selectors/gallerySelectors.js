@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialGalleryState } from '../reducers/galleryReducer'
+import { initialState, initialGalleryState } from 'reducers/galleryReducer'
 
 const getGalleryId = (_, props) => props.galleryId
 

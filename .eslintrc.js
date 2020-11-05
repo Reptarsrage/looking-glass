@@ -20,6 +20,9 @@ module.exports = {
     react: {
       version: 'detect',
     },
+    'import/resolver': {
+      'babel-module': {},
+    },
   },
   rules: {
     // https://eslint.org/docs/rules/

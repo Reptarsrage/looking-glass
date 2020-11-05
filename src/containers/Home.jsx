@@ -14,12 +14,12 @@ import FolderIcon from '@material-ui/icons/Folder'
 import { remote } from 'electron'
 import { useHistory } from 'react-router-dom'
 
-import ModuleItem from '../components/ModuleItem'
-import * as moduleActions from '../actions/moduleActions'
-import * as galleryActions from '../actions/galleryActions'
-import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors'
-import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from '../reducers/constants'
-import LoadingIndicator from '../components/LoadingIndicator'
+import ModuleItem from 'components/ModuleItem'
+import * as moduleActions from 'actions/moduleActions'
+import * as galleryActions from 'actions/galleryActions'
+import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from 'selectors/moduleSelectors'
+import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from 'reducers/constants'
+import LoadingIndicator from 'components/LoadingIndicator'
 import titleBar from '../titleBar'
 
 const styles = (theme) => ({

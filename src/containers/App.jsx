@@ -15,11 +15,11 @@ import WbSunnyIcon from '@material-ui/icons/WbSunny'
 import { useRouteMatch } from 'react-router-dom'
 import { Color } from 'custom-electron-titlebar'
 
-import { darkThemeSelector } from '../selectors/appSelectors'
-import { modalOpenSelector } from '../selectors/modalSelectors'
-import * as appActions from '../actions/appActions'
-import BackButton from '../components/BackButton'
-import Progress from '../components/Progress'
+import { darkThemeSelector } from 'selectors/appSelectors'
+import { modalOpenSelector } from 'selectors/modalSelectors'
+import * as appActions from 'actions/appActions'
+import BackButton from 'components/BackButton'
+import Progress from 'components/Progress'
 import titleBar from '../titleBar'
 
 // https://material-ui.com/customization/palette/

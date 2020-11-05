@@ -8,8 +8,8 @@ import InputBase from '@material-ui/core/InputBase'
 import { fade } from '@material-ui/core/styles/colorManipulator'
 import SearchIcon from '@material-ui/icons/Search'
 
-import { currentSearchQuerySelector } from '../selectors/gallerySelectors'
-import * as galleryActions from '../actions/galleryActions'
+import { currentSearchQuerySelector } from 'selectors/gallerySelectors'
+import * as galleryActions from 'actions/galleryActions'
 
 const styles = (theme) => ({
   search: {

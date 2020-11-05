@@ -6,17 +6,17 @@ import { compose } from 'redux'
 import { withStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
 
-import NoResults from './NoResults'
-import ItemFiltersSection from './ItemFiltersSection'
-import LoadingIndicator from './LoadingIndicator'
-import * as filterActions from '../actions/filterActions'
-import { itemFiltersEnabledSelector, filterBySelector } from '../selectors/moduleSelectors'
+import * as filterActions from 'actions/filterActions'
+import { itemFiltersEnabledSelector, filterBySelector } from 'selectors/moduleSelectors'
 import {
   itemFetchingFiltersSelector,
   itemFetchedFiltersSelector,
   itemFetchFiltersErrorSelector,
   itemFiltersSelector,
-} from '../selectors/itemSelectors'
+} from 'selectors/itemSelectors'
+import NoResults from './NoResults'
+import ItemFiltersSection from './ItemFiltersSection'
+import LoadingIndicator from './LoadingIndicator'
 
 const styles = () => ({
   spacer: {

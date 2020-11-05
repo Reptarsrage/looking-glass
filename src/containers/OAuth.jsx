@@ -14,11 +14,11 @@ import { parse } from 'url'
 import { remote } from 'electron'
 import qs from 'qs'
 
-import * as authActions from '../actions/authActions'
-import { fetchedSelector, fetchingSelector, errorSelector } from '../selectors/authSelectors'
-import { moduleOAuthUrlSelector } from '../selectors/moduleSelectors'
-import LoadingIndicator from '../components/LoadingIndicator'
-import withRouteParams from '../hocs/WithRouteParams'
+import * as authActions from 'actions/authActions'
+import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
+import { moduleOAuthUrlSelector } from 'selectors/moduleSelectors'
+import LoadingIndicator from 'components/LoadingIndicator'
+import withRouteParams from 'hocs/WithRouteParams'
 
 const styles = (theme) => ({
   main: {

@@ -1,10 +1,9 @@
 import delayP from '@redux-saga/delay-p'
 import { put, call, select, cancelled, takeEvery, takeLatest } from 'redux-saga/effects'
 
-import { recordSaga } from './sagaTestHelpers'
-import lookingGlassService from '../../services/lookingGlassService'
-import fileSystemService from '../../services/fileSystemService'
-import * as galleryActions from '../../actions/galleryActions'
+import lookingGlassService from 'services/lookingGlassService'
+import fileSystemService from 'services/fileSystemService'
+import * as galleryActions from 'actions/galleryActions'
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
@@ -13,11 +12,13 @@ import {
   currentSearchQuerySelector,
   galleryAfterSelector,
   galleryOffsetSelector,
-} from '../../selectors/gallerySelectors'
-import { moduleSiteIdSelector, defaultGalleryIdSelector } from '../../selectors/moduleSelectors'
-import { valueSiteIdSelector, defaultSortValueSelector } from '../../selectors/sortSelectors'
-import { filterSiteIdSelector } from '../../selectors/filterSelectors'
-import { accessTokenSelector } from '../../selectors/authSelectors'
+} from 'selectors/gallerySelectors'
+import { moduleSiteIdSelector, defaultGalleryIdSelector } from 'selectors/moduleSelectors'
+import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
+import { filterSiteIdSelector } from 'selectors/filterSelectors'
+import { accessTokenSelector } from 'selectors/authSelectors'
+import { FETCH_GALLERY, FILTER_CHANGE, SORT_CHANGE, SEARCH_CHANGE } from 'actions/types'
+import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import watchGallerySagas, {
   handleSortChange,
   handleFilterChange,
@@ -25,11 +26,10 @@ import watchGallerySagas, {
   handleFetchGallery,
 } from '../gallerySagas'
 import { handleRefresh } from '../authSagas'
-import { FETCH_GALLERY, FILTER_CHANGE, SORT_CHANGE, SEARCH_CHANGE } from '../../actions/types'
-import { FILE_SYSTEM_MODULE_ID } from '../../reducers/constants'
+import { recordSaga } from './sagaTestHelpers'
 
-jest.mock('../../services/lookingGlassService')
-jest.mock('../../services/fileSystemService')
+jest.mock('services/lookingGlassService')
+jest.mock('services/fileSystemService')
 
 it('should watch for all actions', async () => {
   // arrange & act
