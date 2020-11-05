@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
-import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors'
+import { valueByIdSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 
 const styles = () => ({
   icon: {

@@ -7,7 +7,7 @@ import {
   FETCH_MODULES_SUCCESS,
   FETCH_ITEM_FILTERS_SUCCESS,
   FETCH_GALLERY_SUCCESS,
-} from '../actions/types'
+} from 'actions/types'
 import {
   generateFilterId,
   generateFilterSectionId,

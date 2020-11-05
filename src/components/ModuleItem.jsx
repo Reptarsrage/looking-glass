@@ -8,9 +8,9 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
-import { moduleByIdSelector } from '../selectors/moduleSelectors'
+import { moduleByIdSelector } from 'selectors/moduleSelectors'
 
 const styles = () => ({
   wrapper: {
@@ -31,12 +31,12 @@ const styles = () => ({
 
 const ModuleItem = ({ moduleId, module }) => {
   const history = useHistory()
-  const go = () => {
+  const onClick = () => {
     history.push(`/gallery/${moduleId}/${module.defaultGalleryId}`)
   }
 
   return (
-    <ListItem button onClick={go}>
+    <ListItem button onClick={onClick}>
       <ListItemAvatar>
         <Avatar alt={module.title} src={module.icon} />
       </ListItemAvatar>

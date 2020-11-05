@@ -1,18 +1,6 @@
 import Axios from 'axios'
 import progressTracker from './progressTracker'
 
-export const create = (options) => {
-  // Create new axios instance
-  const axios = Axios.create(options)
-  axios.CancelToken = Axios.CancelToken
-  axios.isCancel = Axios.isCancel
-
-  // Setup interceptors
-  loadProgressBar(axios)
-
-  return axios
-}
-
 function loadProgressBar(axios) {
   let requestsCounter = 0
 
@@ -58,4 +46,16 @@ function loadProgressBar(axios) {
   setupStartProgress()
   setupUpdateProgress()
   setupStopProgress()
+}
+
+export const create = (options) => {
+  // Create new axios instance
+  const axios = Axios.create(options)
+  axios.CancelToken = Axios.CancelToken
+  axios.isCancel = Axios.isCancel
+
+  // Setup interceptors
+  loadProgressBar(axios)
+
+  return axios
 }

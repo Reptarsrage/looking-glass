@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
-import { initialState } from '../reducers/modalReducer'
-import { initialState as initialItemState } from '../reducers/itemReducer'
+import { initialState } from 'reducers/modalReducer'
+import { initialState as initialItemState } from 'reducers/itemReducer'
 import { itemsSelector, itemsStateSelector } from './itemSelectors'
 
 const modalState = (state) => state.modal || initialState

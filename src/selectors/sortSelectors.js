@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialSortState } from '../reducers/sortReducer'
+import { initialState, initialSortState } from 'reducers/sortReducer'
 import { currentSearchQuerySelector, currentSortSelector } from './gallerySelectors'
 import { moduleByIdSelector } from './moduleSelectors'
 
@@ -66,7 +66,8 @@ export const defaultSortValueSelector = createSelector(
     // Check un-nested first
     const defaultValueId = sortVals.find((id) => sortState.byId[id].default)
     if (!defaultValueId) {
-      for (const sortVal of sortVals) {
+      for (let i = 0; i < sortVals.length; i += 1) {
+        const sortVal = sortVals[i]
         const nestedDefaultValueId = (sortState.byId[sortVal].values || []).find((id) => sortState.byId[id].default)
         if (nestedDefaultValueId) {
           return nestedDefaultValueId

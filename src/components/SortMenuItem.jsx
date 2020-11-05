@@ -13,7 +13,7 @@ import { withStyles } from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
-import { valueByIdSelector, valueIsCurrentlySelectedSelector } from '../selectors/sortSelectors'
+import { valueByIdSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 import NestedSortMenuItem from './NestedSortMenuItem'
 
 const styles = () => ({

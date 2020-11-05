@@ -1,28 +1,24 @@
-import {
-  LOGIN,
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
-  FETCH_OATH_URL,
-  FETCH_OATH_URL_SUCCESS,
-  FETCH_OATH_URL_FAILURE,
-  REFRESH_SUCCESS,
-  REFRESH_FAILURE,
-  AUTHORIZE,
-  AUTHORIZE_SUCCESS,
-  AUTHORIZE_FAILURE,
-} from './types'
+import { LOGIN, LOGIN_SUCCESS, LOGIN_FAILURE, REFRESH_SUCCESS, REFRESH_FAILURE } from './types'
 
+/**
+ * Authenticate using OAuth 2.0
+ * @param {string|number} moduleId Module ID
+ * @param {string} code OAuth 2.0 authorization code
+ */
 export const authorize = (moduleId, code) => ({
-  type: AUTHORIZE,
-  payload: code,
+  type: LOGIN,
+  payload: {
+    code,
+  },
   meta: moduleId,
 })
 
-export const fetchOAuthURL = (moduleId) => ({
-  type: FETCH_OATH_URL,
-  meta: moduleId,
-})
-
+/**
+ * Authenticate using implicit or basic auth
+ * @param {string|number} moduleId Module ID
+ * @param {string} username User name
+ * @param {string} password Password
+ */
 export const login = (moduleId, username, password) => ({
   type: LOGIN,
   payload: {
@@ -32,50 +28,46 @@ export const login = (moduleId, username, password) => ({
   meta: moduleId,
 })
 
-export const loginSuccess = (moduleId, data) => ({
+/**
+ * Successfully authenticated
+ * @param {string|number} moduleId Module ID
+ * @param {*} authInfo Response data
+ */
+export const loginSuccess = (moduleId, authInfo) => ({
   type: LOGIN_SUCCESS,
-  payload: data,
+  payload: authInfo,
   meta: moduleId,
 })
 
+/**
+ * Failed to authenticate
+ * @param {string|number} moduleId Module ID
+ * @param {Error} error Error data
+ */
 export const loginFailure = (moduleId, error) => ({
   type: LOGIN_FAILURE,
   payload: error,
   meta: moduleId,
 })
 
-export const fetchOathUrlSuccess = (moduleId, data) => ({
-  type: FETCH_OATH_URL_SUCCESS,
-  payload: data,
-  meta: moduleId,
-})
-
-export const fetchOathUrlFailure = (moduleId, error) => ({
-  type: FETCH_OATH_URL_FAILURE,
-  payload: error,
-  meta: moduleId,
-})
-
-export const refreshSuccess = (moduleId, data) => ({
+/**
+ * Successfully refreshed auth token
+ * @param {string|number} moduleId Module ID
+ * @param {*} authInfo Response data
+ */
+export const refreshSuccess = (moduleId, authInfo) => ({
   type: REFRESH_SUCCESS,
-  payload: data,
+  payload: authInfo,
   meta: moduleId,
 })
 
+/**
+ * Failed to refresh auth token
+ * @param {string|number} moduleId Module ID
+ * @param {Error} error Error data
+ */
 export const refreshFailure = (moduleId, error) => ({
   type: REFRESH_FAILURE,
-  payload: error,
-  meta: moduleId,
-})
-
-export const authorizeSuccess = (moduleId, data) => ({
-  type: AUTHORIZE_SUCCESS,
-  payload: data,
-  meta: moduleId,
-})
-
-export const authorizeFailure = (moduleId, error) => ({
-  type: AUTHORIZE_FAILURE,
   payload: error,
   meta: moduleId,
 })

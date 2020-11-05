@@ -1,6 +1,6 @@
 import produce from 'immer'
 
-import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } from '../actions/types'
+import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } from 'actions/types'
 import {
   DEFAULT_GALLERY_ID,
   FILE_SYSTEM_MODULE_ID,
@@ -26,6 +26,7 @@ export const initialModuleState = {
   title: null,
   description: null,
   authType: null,
+  oAuthUrl: null,
   icon: null,
   sortBy: [],
   filterBy: [],

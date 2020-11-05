@@ -17,10 +17,10 @@ import {
   modalPrevSelector,
   modalOpenSelector,
   modalItemSelector,
-} from '../selectors/modalSelectors'
+} from 'selectors/modalSelectors'
+import * as modalActions from 'actions/modalActions'
 import Image from './ImageWithZoom'
 import Video from './Video'
-import * as modalActions from '../actions/modalActions'
 
 const styles = (theme) => ({
   slideShow: {

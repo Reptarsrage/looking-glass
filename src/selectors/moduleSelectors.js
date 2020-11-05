@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialModuleState } from '../reducers/moduleReducer'
+import { initialState, initialModuleState } from 'reducers/moduleReducer'
 
 const getModuleId = (_, props) => props.moduleId
 
@@ -15,6 +15,12 @@ export const moduleByIdSelector = createSelector(
   getModuleId,
   (state, moduleId) => state.byId[moduleId] || initialModuleState
 )
+
+/** Module siteId */
+export const moduleSiteIdSelector = createSelector(moduleByIdSelector, (module) => module.siteId)
+
+/** Module OAuth URL */
+export const moduleOAuthUrlSelector = createSelector(moduleByIdSelector, (module) => module.oAuthUrl)
 
 /** Have modules been fetched? */
 export const fetchedSelector = createSelector(moduleStateSelector, (state) => state.fetched)

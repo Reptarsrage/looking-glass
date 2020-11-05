@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect } from 'react-router'
+import { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { createStructuredSelector } from 'reselect'
@@ -12,22 +12,22 @@ import TuneIcon from '@material-ui/icons/Tune'
 import Drawer from '@material-ui/core/Drawer'
 import { debounce } from 'lodash'
 
-import { productName } from '../../package.json'
-import { supportsSortingSelector, supportsFilteringSelector } from '../selectors/moduleSelectors'
-import { forceRenderItemsSelector } from '../selectors/modalSelectors'
-import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from '../selectors/authSelectors'
-import { galleryByIdSelector, itemsInGallerySelector } from '../selectors/gallerySelectors'
-import { itemDimensionsSelector } from '../selectors/itemSelectors'
-import * as galleryActions from '../actions/galleryActions'
-import Breadcrumbs from '../components/Breadcrumbs'
-import SortMenu from '../components/SortMenu'
-import Masonry from '../components/Masonry'
-import FilterList from '../components/FilterList'
-import SelectedFilters from '../components/SelectedFilters'
-import Modal from '../components/Modal'
-import LoadingIndicator from '../components/LoadingIndicator'
-import SearchBar from '../components/SearchBar'
-import EndOfScrollToast from '../components/EndOfScrollToast'
+import { supportsSortingSelector, supportsFilteringSelector } from 'selectors/moduleSelectors'
+import { forceRenderItemsSelector } from 'selectors/modalSelectors'
+import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from 'selectors/authSelectors'
+import { galleryByIdSelector, itemsInGallerySelector } from 'selectors/gallerySelectors'
+import { itemDimensionsSelector } from 'selectors/itemSelectors'
+import * as galleryActions from 'actions/galleryActions'
+import Breadcrumbs from 'components/Breadcrumbs'
+import SortMenu from 'components/SortMenu'
+import Masonry from 'components/Masonry'
+import FilterList from 'components/FilterList'
+import SelectedFilters from 'components/SelectedFilters'
+import Modal from 'components/Modal'
+import LoadingIndicator from 'components/LoadingIndicator'
+import SearchBar from 'components/SearchBar'
+import EndOfScrollToast from 'components/EndOfScrollToast'
+import withRouteParams from 'hocs/WithRouteParams'
 import titleBar from '../titleBar'
 
 const styles = (theme) => ({
@@ -85,7 +85,7 @@ const Gallery = ({
     fetchInitialItems()
 
     // Set window title
-    titleBar.updateTitle(`${productName} - ${title}`)
+    titleBar.updateTitle(`'The Looking-Glass' - ${title}`)
 
     return () => {
       // remove event listeners from componentDidMount
@@ -265,4 +265,4 @@ const mapDispatchToProps = {
   saveScrollPosition: galleryActions.saveScrollPosition,
 }
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery)
+export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery))

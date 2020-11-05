@@ -1,31 +1,244 @@
-import React, { useMemo, memo, useRef } from 'react'
+import React, { memo, useRef } from 'react'
 import PropTypes from 'prop-types'
-import memoizeOne from 'memoize-one'
+import moize from 'moize'
+import { isValidElementType } from 'react-is'
 
+import withScroll from 'hocs/WithScroll'
+import withResize from 'hocs/WithResize'
 import Virtualized from './Virtualized'
-import withScroll from '../hocs/WithScroll'
-import withResize from '../hocs/WithResize'
+import Item from './Item'
 
-// memo?
-const calculateColumnWidth = memoizeOne((columnCount, width, gutter) => {
-  const sbSize = 10 // scroll bar size is hard-coded in css
-  return (width - sbSize - (columnCount + 1) * gutter) / columnCount
-})
+/**
+ * Calculates the width available to a column in the masonry.
+ */
+export const calculateColumnWidth = ({ columnCount, containerWidth, gutter, scrollBarSize }) =>
+  (containerWidth - scrollBarSize - (columnCount + 1) * gutter) / columnCount
 
-const getAdjustedItemDimensionsEqual = (next, prev) => {
-  const [id, columnCount, width, gutter] = next
-  const [pid, pColumnCount, pWidth, pGutter] = prev
+/**
+ * Memoization cache busting equality comparer for getAdjustedItemDimensions.
+ *
+ * @param {*} next Next parameters
+ * @param {*} prev Previous parameters
+ */
+const getAdjustedItemDimensionsEqual = (next, prev) =>
+  next.id === prev.id &&
+  next.columnCount === prev.columnCount &&
+  next.containerWidth === prev.containerWidth &&
+  next.gutter === prev.gutter &&
+  next.scrollBarSize === prev.scrollBarSize
 
-  return id === pid && columnCount === pColumnCount && width === pWidth && gutter === pGutter
-}
+/**
+ * Calculates the dimensions for a column items.
+ *
+ * @param {*} id Item ID
+ * @param {*} columnCount Number of columns
+ * @param {*} containerWidth Width of the masonry
+ * @param {*} gutter Size of gutter
+ * @param {*} getItemDimensions Function to retrieve item dimensions
+ * @param {*} scrollBarSize Width of the scroll bar
+ * @param {*} memoCalculateColumnWidth Memoized function
+ */
+export const getAdjustedItemDimensions = ({
+  id,
+  columnCount,
+  containerWidth,
+  gutter,
+  getItemDimensions,
+  scrollBarSize,
+  memoCalculateColumnWidth,
+}) => {
+  // calculate column width
+  const columnWidth = memoCalculateColumnWidth({ columnCount, containerWidth, gutter, scrollBarSize })
 
-const getAdjustedItemDimensions = (id, columnCount, width, gutter, getItemDimensions) => {
-  const columnWidth = calculateColumnWidth(columnCount, width, gutter)
+  // lookup item dimensions (non-adjusted)
   const { width: itemWidth, height: itemHeight } = getItemDimensions(id)
+
+  // adjust item dimensions to fit the column
   const calculatedWidth = Math.min(itemWidth, columnWidth)
   const calculatedHeight = (itemHeight / itemWidth) * calculatedWidth
   const calculatedLeft = (columnWidth - calculatedWidth) / 2.0
   return { height: calculatedHeight, width: calculatedWidth, left: calculatedLeft, id }
+}
+
+/**
+ * Memoization cache busting equality comparer for setColumnItems.
+ *
+ * @param {*} next Next parameters
+ * @param {*} prev Previous parameters
+ */
+const setColumnItemsEqual = (next, prev) =>
+  arraysEqual(next.items, prev.items) &&
+  next.width === prev.width &&
+  next.gutter === prev.gutter &&
+  next.columnCount === prev.columnCount &&
+  next.columnItemsCount === prev.columnItemsCount &&
+  next.scrollBarSize === prev.scrollBarSize
+
+/**
+ * In charge of placing items into columns
+ *
+ * @param {Map[]} columns Array of columns
+ * @param {Map} itemColumnLookup Map of item IDs to column IDs
+ * @param {number} columnItemsCount Total number of items in the masonry
+ * @param {string[]} items An array of item IDs to put in the masonry
+ * @param {number} width Width of the masonry
+ * @param {number} gutter Size of space between masonry items
+ * @param {number} columnCount Number of columns
+ * @param {number} scrollBarSize Width of scroll bar
+ * @param {function} getItemDimensions Function to retrieve item dimensions
+ * @param {function} memoGetAdjustedItemDimensions Memoized version
+ * @param {function} memoCalculateColumnWidth Memoized version
+ */
+export const setColumnItems = ({
+  columns,
+  itemColumnLookup,
+  columnItemsCount,
+  items,
+  width,
+  gutter,
+  columnCount,
+  scrollBarSize,
+  getItemDimensions,
+  memoGetAdjustedItemDimensions,
+  memoCalculateColumnWidth,
+}) => {
+  // Check if column count changed
+  const columnCountChanged = columns.length !== columnCount
+
+  // Check if items has changed (besides growing, which is ok)
+  const columnItemsMismatch =
+    items.length <= columnItemsCount || items.slice(0, columnItemsCount + 1).some((id) => !(id in itemColumnLookup))
+
+  // Reset columns if necessary
+  let newColumnItemsCount = columnItemsCount
+  if (columnCountChanged || columnItemsMismatch) {
+    newColumnItemsCount = 0
+
+    // Clear lookup table
+    Object.keys(itemColumnLookup).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(itemColumnLookup, key)) {
+        delete itemColumnLookup[key]
+      }
+    })
+
+    // Clear columns
+    while (columns.length > 0) {
+      columns.pop()
+    }
+  }
+
+  // Initialize columns
+  while (columns.length < columnCount) {
+    columns.push({ adjustedHeight: gutter, id: columns.length })
+  }
+
+  // Fill in column items
+  // Make sure to try and balance column heights in a deterministic way
+  // so items don't jump around on the screen after a resize event
+  for (let i = newColumnItemsCount; i < items.length; i += 1) {
+    // Get item height
+    const itemId = items[i]
+    const adjustedDims = memoGetAdjustedItemDimensions({
+      id: itemId,
+      columnCount,
+      containerWidth: width,
+      gutter,
+      getItemDimensions,
+      scrollBarSize,
+      memoCalculateColumnWidth,
+    })
+
+    // Find shortest column
+    const minHeightColumn = columns.reduce((prev, curr) => (prev.adjustedHeight <= curr.adjustedHeight ? prev : curr))
+
+    // Assign the item to the column
+    itemColumnLookup[itemId] = minHeightColumn.id
+    minHeightColumn.adjustedHeight += adjustedDims.height + gutter
+
+    newColumnItemsCount = i
+  }
+
+  return newColumnItemsCount
+}
+
+/**
+ * Memoization cache busting equality comparer for adjustColumnItems.
+ *
+ * @param {*} next Next parameters
+ * @param {*} prev Previous parameters
+ */
+const adjustColumnItemsEqual = (next, prev) =>
+  arraysEqual(next.items, prev.items) &&
+  next.width === prev.width &&
+  next.gutter === prev.gutter &&
+  next.columnCount === prev.columnCount &&
+  next.scrollBarSize === prev.scrollBarSize
+
+/**
+ * In charge of keeping column heights up to date
+ *
+ * @param {Map[]} columns Array of columns
+ * @param {Map} itemColumnLookup Map of item IDs to column IDs
+ * @param {string[]} items An array of item IDs to put in the masonry
+ * @param {number} width Width of the masonry
+ * @param {number} gutter Size of space between masonry items
+ * @param {number} columnCount Number of columns
+ * @param {number} scrollBarSize Width of scroll bar
+ * @param {function} getItemDimensions Function to retrieve item dimensions
+ * @param {function} memoGetAdjustedItemDimensions Memoized version
+ * @param {function} memoCalculateColumnWidth Memoized version
+ */
+export const adjustColumnItems = ({
+  columns,
+  itemColumnLookup,
+  items,
+  width,
+  gutter,
+  columnCount,
+  scrollBarSize,
+  getItemDimensions,
+  memoGetAdjustedItemDimensions,
+  memoCalculateColumnWidth,
+}) => {
+  // Check if we should clear cache due to layout changes
+  const cacheKeys = memoGetAdjustedItemDimensions.keys()
+  if (cacheKeys.length > 0 && cacheKeys[0].length > 0) {
+    const previousParameters = cacheKeys[0][0]
+    if (
+      width !== previousParameters.containerWidth ||
+      gutter !== previousParameters.gutter ||
+      scrollBarSize !== previousParameters.scrollBarSize
+    ) {
+      memoGetAdjustedItemDimensions.clear() // clear cache
+    }
+  }
+
+  let minHeight = 0
+  for (const column of columns) {
+    const { id: columnId } = column
+    const columnItems = items.filter((itemId) => itemColumnLookup[itemId] === columnId)
+
+    const adjustedHeight = columnItems.reduce(
+      (sum, itemId) =>
+        sum +
+        memoGetAdjustedItemDimensions({
+          id: itemId,
+          columnCount,
+          containerWidth: width,
+          gutter,
+          getItemDimensions,
+          scrollBarSize,
+          memoCalculateColumnWidth,
+        }).height +
+        gutter,
+      gutter
+    )
+
+    column.adjustedHeight = adjustedHeight
+    minHeight = Math.max(adjustedHeight, minHeight)
+  }
+
+  return minHeight
 }
 
 const Masonry = ({
@@ -38,77 +251,95 @@ const Masonry = ({
   gutter,
   scrollDirection,
   forceRenderItems,
+  scrollBarSize,
+  ChildComponent,
 }) => {
-  const savedColumnItems = useRef([]).current
-  const { current: getAdjustedItemDimensionsMemo } = useRef(
-    memoizeOne(getAdjustedItemDimensions, getAdjustedItemDimensionsEqual)
-  )
-  const [columnItems, totalHeight] = useMemo(() => {
-    // If column count changed, reset everything
-    if (savedColumnItems.length > columnCount) {
-      while (savedColumnItems.length > 0) {
-        savedColumnItems.pop()
-      }
-    }
+  // Persist some data
+  const savedRef = useRef({
+    itemColumnLookup: {},
+    columns: [],
+    columnItemsCount: 0,
+    memoAdjustColumnItems: moize(adjustColumnItems, { maxSize: 1, equals: adjustColumnItemsEqual }),
+    memoSetColumnItems: moize(setColumnItems, { maxSize: 1, equals: setColumnItemsEqual }),
+    memoCalculateColumnWidth: moize(calculateColumnWidth, { maxSize: 1 }),
+    memoGetAdjustedItemDimensions: moize(getAdjustedItemDimensions, {
+      equals: getAdjustedItemDimensionsEqual,
+      maxSize: 1000,
+    }),
+  })
 
-    // Ensure each column has an entry
-    while (savedColumnItems.length < columnCount) {
-      savedColumnItems.push({ height: 0, id: savedColumnItems.length, items: [] })
-    }
+  const {
+    itemColumnLookup,
+    columns,
+    columnItemsCount,
+    memoAdjustColumnItems,
+    memoSetColumnItems,
+    memoCalculateColumnWidth,
+    memoGetAdjustedItemDimensions,
+  } = savedRef.current
 
-    // Ensure columns are filled with items
-    let totalLength = savedColumnItems.reduce((acc, cur) => acc + cur.items.length, 0)
-    if (totalLength !== items.length) {
-      // Reset if items has completely changed
-      if (items.length < totalLength) {
-        totalLength = 0
-        savedColumnItems.forEach((savedColumnItem) => {
-          savedColumnItem.height = 0
-          savedColumnItem.items = []
-        })
-      }
+  // Build columns
+  savedRef.current.columnItemsCount = memoSetColumnItems({
+    columns,
+    itemColumnLookup,
+    columnItemsCount,
+    items,
+    width,
+    gutter,
+    columnCount,
+    scrollBarSize,
+    getItemDimensions,
+    memoGetAdjustedItemDimensions,
+    memoCalculateColumnWidth,
+  })
 
-      // Fill in column items
-      // Make sure to try and balance column heights in a deterministic way
-      for (let i = totalLength; i < items.length; i += 1) {
-        const itemId = items[i]
-        const dims = getAdjustedItemDimensionsMemo(itemId, columnCount, width, gutter, getItemDimensions) // prefer accuracy over cost
-        const minHeightColumn = savedColumnItems.reduce((prev, curr) => (prev.height <= curr.height ? prev : curr))
-        minHeightColumn.items.push(itemId)
-        minHeightColumn.height += dims.height
-      }
-    }
+  // Adjust column heights
+  const actualMinHeight = memoAdjustColumnItems({
+    columns,
+    itemColumnLookup,
+    items,
+    width,
+    gutter,
+    columnCount,
+    scrollBarSize,
+    memoCalculateColumnWidth,
+    memoGetAdjustedItemDimensions,
+    getItemDimensions,
+  })
 
-    // Calculate actual height for max column
-    const maxHeightColumn = savedColumnItems.reduce((a, b) => (a.height > b.height ? a : b))
-    const calculatedTotalHeight = maxHeightColumn.items.reduce((acc, cur) => {
-      const { height: adjHeight } = getAdjustedItemDimensionsMemo(cur, columnCount, width, gutter, getItemDimensions)
-      return acc + adjHeight
-    }, 0)
-    return [savedColumnItems, calculatedTotalHeight]
-  }, [columnCount, items, width, gutter])
-
+  const columnWidth = memoCalculateColumnWidth({ columnCount, containerWidth: width, gutter, scrollBarSize })
   return (
-    <div style={{ width: '100%', height: `${totalHeight}px` }}>
-      {columnItems.map((col, index) => {
-        const columnWidth = calculateColumnWidth(columnCount, width, gutter)
-        const forceRenderColumnItems = forceRenderItems.filter((id) => col.items.indexOf(id) >= 0)
+    <div style={{ minHeight: `${actualMinHeight}px` }}>
+      {columns.map((column, index) => {
+        const columnId = column.id
+        const columnItems = items.filter((itemId) => itemColumnLookup[itemId] === columnId)
+        const forceRenderColumnItems = forceRenderItems.filter((itemId) => itemColumnLookup[itemId] === columnId)
+        const left = columnWidth * index + gutter * (index + 1)
 
         return (
           <Virtualized
-            key={col.id}
+            key={columnId}
             width={columnWidth}
             height={height}
-            left={columnWidth * index + gutter * (index + 1)}
+            left={left}
             getAdjustedDimensionsForItem={(id) =>
-              getAdjustedItemDimensionsMemo(id, columnCount, width, gutter, getItemDimensions)
+              memoGetAdjustedItemDimensions({
+                id,
+                columnCount,
+                containerWidth: width,
+                gutter,
+                getItemDimensions,
+                scrollBarSize,
+                memoCalculateColumnWidth,
+              })
             }
-            items={[...col.items]}
+            items={columnItems}
             scrollTop={scrollTop}
             scrollDirection={scrollDirection}
             gutter={gutter}
             columnNumber={index}
             forceRenderItems={forceRenderColumnItems}
+            ChildComponent={ChildComponent}
           />
         )
       })}
@@ -116,19 +347,46 @@ const Masonry = ({
   )
 }
 
+Masonry.defaultProps = {
+  scrollTop: 0,
+  scrollBarSize: 10,
+  gutter: 8,
+  columnCount: 3,
+  scrollDirection: 0,
+  forceRenderItems: [],
+  ChildComponent: Item,
+}
+
 Masonry.propTypes = {
+  // required
   items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  columnCount: PropTypes.number.isRequired,
   getItemDimensions: PropTypes.func.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  scrollTop: PropTypes.number.isRequired,
-  gutter: PropTypes.number.isRequired,
-  scrollDirection: PropTypes.number.isRequired,
-  forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
+
+  // optional
+  columnCount: PropTypes.number,
+  scrollTop: PropTypes.number,
+  gutter: PropTypes.number,
+  scrollBarSize: PropTypes.number,
+  scrollDirection: PropTypes.number,
+  forceRenderItems: PropTypes.arrayOf(PropTypes.string),
+  ChildComponent: (props, propName) => {
+    if (props[propName] && !isValidElementType(props[propName])) {
+      return new Error(`Invalid prop 'component' supplied to 'Virtualized': the prop is not a valid React component`)
+    }
+
+    return undefined
+  },
 }
 
-function itemsEqual(a, b) {
+/**
+ * Compares two arrays for equality.
+ *
+ * @param {string[]} a Array one
+ * @param {string[]} b Array two
+ */
+function arraysEqual(a, b) {
   if (a.length !== b.length) {
     return false
   }
@@ -142,16 +400,24 @@ function itemsEqual(a, b) {
   return true
 }
 
-function areEqual(nextProps, prevProps) {
+/**
+ * Used by React.memo to determine if a render is necessary.
+ *
+ * @param {*} nextProps Incoming props
+ * @param {*} prevProps Current props
+ */
+function propsEqual(nextProps, prevProps) {
   return (
     nextProps.scrollTop === prevProps.scrollTop &&
     nextProps.width === prevProps.width &&
     nextProps.height === prevProps.height &&
     nextProps.columnCount === prevProps.columnCount &&
     nextProps.gutter === prevProps.gutter &&
-    itemsEqual(nextProps.items, prevProps.items) &&
-    itemsEqual(nextProps.forceRenderItems, prevProps.forceRenderItems)
+    nextProps.scrollBarSize === prevProps.scrollBarSize &&
+    arraysEqual(nextProps.items, prevProps.items) &&
+    arraysEqual(nextProps.forceRenderItems, prevProps.forceRenderItems)
   )
 }
 
-export default withResize(withScroll(memo(Masonry, areEqual)))
+export const JustMasonry = memo(Masonry, propsEqual)
+export default withResize(withScroll(JustMasonry))

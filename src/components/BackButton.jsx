@@ -4,7 +4,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import Fab from '@material-ui/core/Fab'
 import IconButton from '@material-ui/core/IconButton'
 import { withStyles } from '@material-ui/core/styles'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
 const styles = (theme) => ({
   fab: {

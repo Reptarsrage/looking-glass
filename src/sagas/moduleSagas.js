@@ -1,23 +1,26 @@
-import { put, call, takeLatest } from 'redux-saga/effects'
+import { put, call, takeEvery } from 'redux-saga/effects'
 
-import LookingGlassService from '../services/lookingGlassService'
-import { FETCH_MODULES } from '../actions/types'
-import { fetchModulesSuccess, fetchModulesFailure } from '../actions/moduleActions'
+import lookingGlassService from 'services/lookingGlassService'
+import { FETCH_MODULES } from 'actions/types'
+import { fetchModulesSuccess, fetchModulesFailure } from 'actions/moduleActions'
 
-function* handleFetchModules() {
+/**
+ * Saga to handle fetching modules
+ */
+export function* handleFetchModules() {
   try {
-    const service = new LookingGlassService()
-    const { data } = yield call(service.fetchModules)
+    // Fetch modules
+    const { data } = yield call(lookingGlassService.fetchModules)
 
+    // Put info into the store
     yield put(fetchModulesSuccess(data))
   } catch (error) {
+    // Encountered an error
     console.error(error, 'Error fetching modules')
     yield put(fetchModulesFailure(error))
   }
 }
 
-function* watchModuleSagas() {
-  yield takeLatest(FETCH_MODULES, handleFetchModules)
+export default function* watchModuleSagas() {
+  yield takeEvery(FETCH_MODULES, handleFetchModules)
 }
-
-export default watchModuleSagas

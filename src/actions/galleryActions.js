@@ -13,70 +13,128 @@ import {
   SET_FILE_SYSTEM_DIRECTORY,
 } from './types'
 
+/**
+ * Fetches gallery items
+ * @param {string|number} galleryId Gallery ID
+ */
 export const fetchGallery = (galleryId) => ({
   type: FETCH_GALLERY,
   meta: galleryId,
 })
 
+/**
+ * Removes all items from gallery
+ * @param {string|number} galleryId Gallery ID
+ */
 export const clearGallery = (galleryId) => ({
   type: CLEAR_GALLERY,
   meta: galleryId,
 })
 
-export const fetchGallerySuccess = (moduleId, galleryId, data) => ({
+/**
+ * Successfully fetched gallery items
+ * @param {string|number} moduleId Module ID
+ * @param {string|number} galleryId Gallery ID
+ * @param {*} gallery Response data
+ */
+export const fetchGallerySuccess = (moduleId, galleryId, gallery) => ({
   type: FETCH_GALLERY_SUCCESS,
-  payload: data,
+  payload: gallery,
   meta: { moduleId, galleryId },
 })
 
+/**
+ * Failed to fetch gallery items
+ * @param {string|number} galleryId Gallery ID
+ * @param {Error} error Error data
+ */
 export const fetchGalleryFailure = (galleryId, error) => ({
   type: FETCH_GALLERY_FAILURE,
   payload: error,
   meta: galleryId,
 })
 
+/**
+ * User typed in search
+ * @param {string|number} galleryId Gallery ID
+ * @param {string} searchQuery Search query string
+ */
 export const searchChange = (galleryId, searchQuery) => ({
   type: SEARCH_CHANGE,
   payload: searchQuery,
   meta: galleryId,
 })
 
+/**
+ * Underlying gallery search query has been updated
+ * @param {string|number} galleryId Gallery ID
+ * @param {string} searchQuery Search query string
+ */
 export const updateSearch = (galleryId, searchQuery) => ({
   type: UPDATE_SEARCH,
   payload: searchQuery,
   meta: galleryId,
 })
 
+/**
+ * Saves gallery scroll position
+ * @param {string|number} galleryId Gallery ID
+ * @param {number} scrollPosition Scroll top value
+ */
 export const saveScrollPosition = (galleryId, scrollPosition) => ({
   type: SAVE_SCROLL_POSITION,
   payload: scrollPosition,
   meta: galleryId,
 })
 
-export const sortChange = (galleryId, valueId) => ({
+/**
+ * User selected a new sort value
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} sortValueId Sort value ID
+ */
+export const sortChange = (galleryId, sortValueId) => ({
   type: SORT_CHANGE,
-  payload: valueId,
+  payload: sortValueId,
   meta: galleryId,
 })
 
+/**
+ * Underlying gallery sort value has been updated
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} sortValueId Sort value ID
+ */
 export const updateSort = (galleryId, valueId) => ({
   type: UPDATE_SORT,
   payload: valueId,
   meta: galleryId,
 })
 
+/**
+ * User selected a new filter value
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} filterId Filter ID
+ */
 export const filterChange = (galleryId, filterId) => ({
   type: FILTER_CHANGE,
   payload: filterId,
   meta: galleryId,
 })
 
+/**
+ * Underlying gallery filter value has been updated
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} filterId Filter ID
+ */
 export const updateFilter = (galleryId, filterId) => ({
   type: UPDATE_FILTER,
   payload: filterId,
   meta: galleryId,
 })
 
+/**
+ * File system location has changed
+ * @param {string} directoryPath Path of the directory to browse
+ */
 export const setFileSystemDirectory = (directoryPath) => ({
   type: SET_FILE_SYSTEM_DIRECTORY,
   payload: directoryPath,

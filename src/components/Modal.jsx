@@ -16,7 +16,7 @@ import Drawer from '@material-ui/core/Drawer'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import clsx from 'clsx'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { Button } from '@material-ui/core'
 
 import {
@@ -27,10 +27,10 @@ import {
   modalBoundsSelector,
   modalItemSelector,
   modalItemHasFiltersSelector,
-} from '../selectors/modalSelectors'
-import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from '../selectors/moduleSelectors'
-import * as modalActions from '../actions/modalActions'
-import * as galleryActions from '../actions/galleryActions'
+} from 'selectors/modalSelectors'
+import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from 'selectors/moduleSelectors'
+import * as modalActions from 'actions/modalActions'
+import * as galleryActions from 'actions/galleryActions'
 import SlideShow from './SlideShow'
 import ItemFilters from './ItemFilters'
 

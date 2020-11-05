@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialItemState } from '../reducers/itemReducer'
-import { generateGalleryId } from '../reducers/constants'
+import { initialState, initialItemState } from 'reducers/itemReducer'
+import { generateGalleryId } from 'reducers/constants'
 import { galleriesStateSelector } from './gallerySelectors'
 import { filterSectionByIdSelector } from './filterSectionSelectors'
 import { stateSelector as filterStateSelector } from './filterSelectors'
@@ -18,6 +18,9 @@ export const itemByIdSelector = createSelector(
   [itemsStateSelector, getItemId],
   (state, itemId) => state.byId[itemId] || initialItemState
 )
+
+/** Item siteId */
+export const itemSiteIdSelector = createSelector(itemByIdSelector, (item) => item.siteId)
 
 /** Item dimensions */
 export const itemDimensionsSelector = createSelector(itemByIdSelector, (item) => ({

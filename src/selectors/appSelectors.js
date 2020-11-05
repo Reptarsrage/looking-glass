@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState } from '../reducers/appReducer'
+import { initialState } from 'reducers/appReducer'
 
 const appState = (state) => state.app || initialState
 

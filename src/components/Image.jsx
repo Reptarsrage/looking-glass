@@ -17,12 +17,13 @@ const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
   const imageRef = useRef(null)
 
   useEffect(() => {
-    if (!imageRef.current.hasAttribute('src')) {
-      imageRef.current.setAttribute('src', src)
+    const img = imageRef.current
+    if (!img.hasAttribute('src')) {
+      img.setAttribute('src', src)
     }
 
     return () => {
-      imageRef.current.removeAttribute('src')
+      img.removeAttribute('src')
     }
   }, [])
 

@@ -1,102 +1,84 @@
-import { put, call, takeLatest, all, select } from 'redux-saga/effects'
+import { put, call, takeEvery, select } from 'redux-saga/effects'
 import moment from 'moment'
 
-import LookingGlassService from '../services/lookingGlassService'
-import { moduleByIdSelector } from '../selectors/moduleSelectors'
-import { expiresSelector, refreshTokenSelector } from '../selectors/authSelectors'
-import { LOGIN, FETCH_OATH_URL, AUTHORIZE } from '../actions/types'
-import {
-  loginSuccess,
-  loginFailure,
-  fetchOathUrlSuccess,
-  fetchOathUrlFailure,
-  refreshSuccess,
-  refreshFailure,
-  authorizeSuccess,
-  authorizeFailure,
-} from '../actions/authActions'
+import lookingGlassService from 'services/lookingGlassService'
+import { moduleSiteIdSelector } from 'selectors/moduleSelectors'
+import { expiresSelector, refreshTokenSelector } from 'selectors/authSelectors'
+import { loginSuccess, loginFailure, refreshSuccess, refreshFailure } from 'actions/authActions'
+import { LOGIN } from 'actions/types'
 
+/**
+ * Helper to check if an access token needs refreshing
+ * @param {string|number} moduleId Module ID
+ */
 function* needsRefresh(moduleId) {
+  // Select info from the redux store
   const expires = yield select(expiresSelector, { moduleId })
   const refreshToken = yield select(refreshTokenSelector, { moduleId })
+
+  // Check if module supports refreshing
   if (!refreshToken || expires <= 0) {
-    return false // module does not support refreshing
+    return false
   }
 
+  // Compare current time with the expiration date
   const expireDate = moment(expires)
   const currentDate = moment()
   return currentDate.isSameOrAfter(expireDate)
 }
 
-export function* handleRefresh(action) {
-  const { meta } = action
-  const moduleId = meta
+/**
+ * Saga to handle refreshing auth tokens
+ * @param {string|number} moduleId Module ID
+ */
+export function* handleRefresh(moduleId) {
+  // Check if we need to refresh the token
   const needToRefresh = yield call(needsRefresh, moduleId)
-  if (needToRefresh) {
-    try {
-      const { siteId } = yield select(moduleByIdSelector, { moduleId })
-      const refreshToken = yield select(refreshTokenSelector, { moduleId })
-      const lookingGlassService = new LookingGlassService()
-      const { data } = yield call(lookingGlassService.refresh, siteId, refreshToken)
-      yield put(refreshSuccess(moduleId, data))
-    } catch (error) {
-      console.error(error, 'Error refreshing authentication token')
-      yield put(refreshFailure(moduleId, error))
-    }
+  if (!needToRefresh) {
+    return
   }
-}
-
-function* handleAuthorize(action) {
-  const { payload, meta } = action
-  const moduleId = meta
 
   try {
-    const lookingGlassService = new LookingGlassService()
-    const { siteId } = yield select(moduleByIdSelector, { moduleId })
-    const { data } = yield call(lookingGlassService.authorize, siteId, payload)
-    yield put(authorizeSuccess(moduleId, data))
+    // Select info from the redux store
+    const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
+    const refreshToken = yield select(refreshTokenSelector, { moduleId })
+
+    // Make request
+    const { data } = yield call(lookingGlassService.refresh, moduleSiteId, refreshToken)
+
+    // Put info into the store
+    yield put(refreshSuccess(moduleId, data))
   } catch (error) {
-    console.error(error, 'Error retrieving authentication token')
-    yield put(authorizeFailure(moduleId, error))
+    // Encountered an error
+    console.error(error, 'Error refreshing authentication token')
+    yield put(refreshFailure(moduleId, error))
   }
 }
 
-function* handleFetchOauthURL(action) {
-  const { meta } = action
-  const moduleId = meta
-
-  try {
-    const lookingGlassService = new LookingGlassService()
-    const { siteId } = yield select(moduleByIdSelector, { moduleId })
-    const { data } = yield call(lookingGlassService.getOauthURL, siteId)
-    yield put(fetchOathUrlSuccess(moduleId, data))
-  } catch (e) {
-    console.error(e, 'Error fetching OAuth info')
-    yield put(fetchOathUrlFailure(moduleId, e))
-  }
-}
-
-function* handleLogin(action) {
+/**
+ * Saga to handle user authentication
+ * @param {*} action Dispatched action
+ */
+export function* handleLogin(action) {
   const { payload, meta } = action
   const moduleId = meta
 
   try {
-    const lookingGlassService = new LookingGlassService()
-    const { siteId } = yield select(moduleByIdSelector, { moduleId })
-    const { data } = yield call(lookingGlassService.login, siteId, payload)
+    // Select info from the redux store
+    const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
+
+    // Make request
+    const { data } = yield call(lookingGlassService.login, moduleSiteId, payload)
+
+    // Put info into the store
     yield put(loginSuccess(moduleId, data))
-  } catch (e) {
-    console.error(e, 'Error logging in')
-    yield put(loginFailure(moduleId, e))
+  } catch (error) {
+    // Encountered an error
+    console.error(error, 'Error logging in')
+    yield put(loginFailure(moduleId, error))
   }
 }
 
-function* watchAuthSagas() {
-  yield all([
-    takeLatest(LOGIN, handleLogin),
-    takeLatest(FETCH_OATH_URL, handleFetchOauthURL),
-    takeLatest(AUTHORIZE, handleAuthorize),
-  ])
+export default function* watchAuthSagas() {
+  yield takeEvery(LOGIN, handleLogin)
 }
-
-export default watchAuthSagas

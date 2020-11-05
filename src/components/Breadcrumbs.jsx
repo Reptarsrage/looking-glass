@@ -7,9 +7,9 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import { compose } from 'redux'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
-import { breadcrumbsSelector } from '../selectors/breadcrumbSelectors'
+import { breadcrumbsSelector } from 'selectors/breadcrumbSelectors'
 import BreadcrumbItem from './BreadcrumbItem'
 
 const styles = (theme) => ({

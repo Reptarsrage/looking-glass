@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import TextField from '@material-ui/core/TextField'
 
-import { filterBySelector } from '../selectors/moduleSelectors'
+import { filterBySelector } from 'selectors/moduleSelectors'
 import FilterSection from './FilterSection'
 
 function FilterList({ filterSections, onClick }) {

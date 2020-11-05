@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
+import { generateBreadcrumbId } from 'reducers/constants'
 import { galleryByIdSelector, galleriesStateSelector } from './gallerySelectors'
-import { generateBreadcrumbId } from '../reducers/constants'
 
 export const breadcrumbsSelector = createSelector(
   [galleryByIdSelector, galleriesStateSelector],

@@ -1,74 +1,79 @@
 import { put, call, takeEvery, select, all } from 'redux-saga/effects'
 
-import LookingGlassService from '../services/lookingGlassService'
-import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from '../actions/types'
-import { accessTokenSelector } from '../selectors/authSelectors'
-import { filterSectionByIdSelector } from '../selectors/filterSectionSelectors'
-import { itemByIdSelector } from '../selectors/itemSelectors'
-import { moduleByIdSelector } from '../selectors/moduleSelectors'
-import { handleRefresh } from './authSagas'
+import lookingGlassService from 'services/lookingGlassService'
+import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
+import { accessTokenSelector } from 'selectors/authSelectors'
+import { filterSectionSiteIdSelector, filterSectionModuleIdSelector } from 'selectors/filterSectionSelectors'
+import { itemSiteIdSelector } from 'selectors/itemSelectors'
+import { moduleSiteIdSelector } from 'selectors/moduleSelectors'
 import {
   fetchFiltersError,
   fetchFiltersSuccess,
   fetchItemFiltersError,
   fetchItemFiltersSuccess,
-} from '../actions/filterActions'
+} from 'actions/filterActions'
+import { handleRefresh } from './authSagas'
 
-function* handleFetchItemFilters(action) {
+/**
+ * Saga to handle fetching filters for an item
+ * @param {*} action Dispatched action
+ */
+export function* handleFetchItemFilters(action) {
   const { meta } = action
   const { itemId, moduleId } = meta
-  const item = yield select(itemByIdSelector, { itemId })
-  const module = yield select(moduleByIdSelector, { moduleId })
 
   try {
-    // resolve service
-    const service = new LookingGlassService()
+    // Refresh token
+    yield call(handleRefresh, moduleId)
 
-    // refresh token (if needed)
-    yield call(handleRefresh, { meta: moduleId })
-
-    // get data
+    // Select info from the redux store
+    const itemSiteId = yield select(itemSiteIdSelector, { itemId })
+    const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
     const accessToken = yield select(accessTokenSelector, { moduleId })
-    const { data } = yield call(service.fetchItemFilters, module.siteId, item.siteId, accessToken)
 
-    // mark completed
+    // Fetch item filters
+    const { data } = yield call(lookingGlassService.fetchItemFilters, moduleSiteId, itemSiteId, accessToken)
+
+    // Put info into the store
     yield put(fetchItemFiltersSuccess(moduleId, itemId, data))
-  } catch (e) {
-    console.error(e, 'Error fetching filters')
-    yield put(fetchItemFiltersError(moduleId, itemId, e))
+  } catch (error) {
+    // Encountered an error
+    console.error(error, 'Error fetching filters')
+    yield put(fetchItemFiltersError(moduleId, itemId, error))
   }
 }
 
-function* handleFetchFilters(action) {
+/**
+ * Saga to handle fetching a section of filters
+ * @param {*} action Dispatched action
+ */
+export function* handleFetchFilters(action) {
   const { meta: filterSectionId } = action
-  const filterSection = yield select(filterSectionByIdSelector, { filterSectionId })
-  const { moduleId } = filterSection
-  const module = yield select(moduleByIdSelector, { moduleId })
 
   try {
-    // resolve service
-    const service = new LookingGlassService()
+    // Select info from the redux store
+    const filterSectionSiteId = yield select(filterSectionSiteIdSelector, { filterSectionId })
+    const moduleId = yield select(filterSectionModuleIdSelector, { filterSectionId })
 
-    // refresh token (if needed)
-    yield call(handleRefresh, { meta: moduleId })
+    // Refresh token
+    yield call(handleRefresh, moduleId)
 
-    // get data
+    // Select additional info from the redux store
+    const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
     const accessToken = yield select(accessTokenSelector, { moduleId })
-    const { data } = yield call(service.fetchFilters, module.siteId, filterSection.siteId, accessToken)
 
-    // mark completed
+    // Fetch filters
+    const { data } = yield call(lookingGlassService.fetchFilters, moduleSiteId, filterSectionSiteId, accessToken)
+
+    // Put info into the store
     yield put(fetchFiltersSuccess(filterSectionId, data))
-  } catch (e) {
-    console.error(e, 'Error fetching filters')
-    yield put(fetchFiltersError(filterSectionId, e))
+  } catch (error) {
+    // Encountered an error
+    console.error(error, 'Error fetching filters')
+    yield put(fetchFiltersError(filterSectionId, error))
   }
 }
 
-function* watchFilterSagas() {
-  yield all([
-    yield takeEvery(FETCH_FILTERS, handleFetchFilters),
-    yield takeEvery(FETCH_ITEM_FILTERS, handleFetchItemFilters),
-  ])
+export default function* watchFilterSagas() {
+  yield all([takeEvery(FETCH_FILTERS, handleFetchFilters), takeEvery(FETCH_ITEM_FILTERS, handleFetchItemFilters)])
 }
-
-export default watchFilterSagas

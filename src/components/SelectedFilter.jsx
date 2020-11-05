@@ -6,8 +6,8 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
-import { filterByIdSelector } from '../selectors/filterSelectors'
-import * as galleryActions from '../actions/galleryActions'
+import { filterByIdSelector } from 'selectors/filterSelectors'
+import * as galleryActions from 'actions/galleryActions'
 
 const styles = (theme) => ({
   filterItem: {

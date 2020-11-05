@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialFilterSectionState } from '../reducers/filterSectionReducer'
+import { initialState, initialFilterSectionState } from 'reducers/filterSectionReducer'
 import { stateSelector as filterStateSelector } from './filterSelectors'
 
 const getFilterSectionId = (_, props) => props.filterSectionId
@@ -16,6 +16,18 @@ export const filterSectionsSelector = createSelector(stateSelector, (state) => s
 export const filterSectionByIdSelector = createSelector(
   [stateSelector, getFilterSectionId],
   (state, filterSectionId) => state.byId[filterSectionId] || initialFilterSectionState
+)
+
+/** Filter section site ID */
+export const filterSectionSiteIdSelector = createSelector(
+  filterSectionByIdSelector,
+  (filterSection) => filterSection.siteId
+)
+
+/** Filter section module ID */
+export const filterSectionModuleIdSelector = createSelector(
+  filterSectionByIdSelector,
+  (filterSection) => filterSection.moduleId
 )
 
 export const filterSectionValuesSearchSelector = createSelector(

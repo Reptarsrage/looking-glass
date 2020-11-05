@@ -2,6 +2,18 @@ import produce from 'immer'
 import { basename } from 'path'
 
 import {
+  FETCH_GALLERY,
+  FETCH_GALLERY_SUCCESS,
+  FETCH_GALLERY_FAILURE,
+  UPDATE_SEARCH,
+  UPDATE_SORT,
+  FETCH_MODULES_SUCCESS,
+  UPDATE_FILTER,
+  SAVE_SCROLL_POSITION,
+  CLEAR_GALLERY,
+  SET_FILE_SYSTEM_DIRECTORY,
+} from 'actions/types'
+import {
   DEFAULT_GALLERY_ID,
   FILE_SYSTEM_MODULE_ID,
   generateGalleryId,
@@ -13,19 +25,6 @@ import {
   generateItemId,
 } from './constants'
 
-import {
-  FETCH_GALLERY,
-  FETCH_GALLERY_SUCCESS,
-  FETCH_GALLERY_FAILURE,
-  UPDATE_SEARCH,
-  UPDATE_SORT,
-  FETCH_MODULES_SUCCESS,
-  UPDATE_FILTER,
-  SAVE_SCROLL_POSITION,
-  CLEAR_GALLERY,
-  SET_FILE_SYSTEM_DIRECTORY,
-} from '../actions/types'
-
 export const initialState = {
   byId: {},
   allIds: [],
@@ -36,7 +35,6 @@ export const initialGalleryState = {
   siteId: null,
   moduleId: null,
   offset: 0,
-  count: 0,
   after: null,
   hasNext: true,
   searchQuery: null,
@@ -171,7 +169,6 @@ const galleryReducer = (state = initialState, action) =>
         // clear gallery
         draft.byId[galleryId].items = []
         draft.byId[galleryId].offset = 0
-        draft.byId[galleryId].count = 0
         draft.byId[galleryId].after = null
         draft.byId[galleryId].hasNext = true
         draft.byId[galleryId].savedScrollPosition = 0

@@ -51,12 +51,13 @@ const ImageWithZoom = ({
 
   // Effect to unload image from memory
   useEffect(() => {
-    if (!imageRef.current.hasAttribute('src')) {
-      imageRef.current.setAttribute('src', src)
+    const img = imageRef.current
+    if (!img.hasAttribute('src')) {
+      img.setAttribute('src', src)
     }
 
     return () => {
-      imageRef.current.removeAttribute('src')
+      img.removeAttribute('src')
     }
   }, [])
 

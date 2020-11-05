@@ -1,16 +1,12 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import createSagaMiddleware, { END } from 'redux-saga'
-import { createHashHistory } from 'history'
-import { routerMiddleware } from 'connected-react-router'
 import { createLogger } from 'redux-logger'
 
-import createRootReducer from '../reducers'
+import createRootReducer from 'reducers'
 
 const sagaMiddleware = createSagaMiddleware()
 
-const history = createHashHistory()
-
-const rootReducer = createRootReducer(history)
+const rootReducer = createRootReducer()
 
 const configureStore = (initialState) => {
   // Redux Configuration
@@ -31,10 +27,6 @@ const configureStore = (initialState) => {
     middleware.push(logger)
   }
 
-  // Router Middleware
-  const router = routerMiddleware(history)
-  middleware.push(router)
-
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
@@ -54,4 +46,4 @@ const configureStore = (initialState) => {
   return store
 }
 
-export default { configureStore, history }
+export default configureStore

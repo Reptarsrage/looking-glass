@@ -12,15 +12,14 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux'
 import FolderIcon from '@material-ui/icons/Folder'
 import { remote } from 'electron'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
-import { productName } from '../../package.json'
-import ModuleItem from '../components/ModuleItem'
-import * as moduleActions from '../actions/moduleActions'
-import * as galleryActions from '../actions/galleryActions'
-import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from '../selectors/moduleSelectors'
-import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from '../reducers/constants'
-import LoadingIndicator from '../components/LoadingIndicator'
+import ModuleItem from 'components/ModuleItem'
+import * as moduleActions from 'actions/moduleActions'
+import * as galleryActions from 'actions/galleryActions'
+import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from 'selectors/moduleSelectors'
+import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from 'reducers/constants'
+import LoadingIndicator from 'components/LoadingIndicator'
 import titleBar from '../titleBar'
 
 const styles = (theme) => ({
@@ -60,7 +59,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
     }
 
     // Set window title
-    titleBar.updateTitle(productName)
+    titleBar.updateTitle('The Looking-Glass')
   }, [])
 
   const chooseFolder = () => {

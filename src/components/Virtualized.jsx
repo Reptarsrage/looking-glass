@@ -74,7 +74,7 @@ function computePositions(items, left, gutter, height, scrollTop, width, saved, 
     top += lastComputedItem.top + lastComputedItem.height
   }
 
-  for (let position = saved.lastComputedIdx + 1; position < items.length && top < bottom; position += 1) {
+  for (let position = saved.lastComputedIdx + 1; position < items.length && top <= bottom; position += 1) {
     const id = items[position]
     const dims = getItemDimensions(id)
     saved.computedById[id] = { ...dims, top, left: dims.left + left, id }
