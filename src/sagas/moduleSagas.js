@@ -1,4 +1,4 @@
-import { put, call, takeLatest } from 'redux-saga/effects'
+import { put, call, takeEvery } from 'redux-saga/effects'
 
 import lookingGlassService from '../services/lookingGlassService'
 import { FETCH_MODULES } from '../actions/types'
@@ -22,5 +22,5 @@ export function* handleFetchModules() {
 }
 
 export default function* watchModuleSagas() {
-  yield takeLatest(FETCH_MODULES, handleFetchModules)
+  yield takeEvery(FETCH_MODULES, handleFetchModules)
 }

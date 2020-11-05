@@ -1,10 +1,17 @@
+import { takeEvery } from 'redux-saga/effects'
+
 import lookingGlassService from '../../services/lookingGlassService'
 import * as moduleActions from '../../actions/moduleActions'
-
-import { handleFetchModules } from '../moduleSagas'
+import watchModuleSagas, { handleFetchModules } from '../moduleSagas'
 import { recordSaga } from './sagaTestHelpers'
+import { FETCH_MODULES } from '../../actions/types'
 
 jest.mock('../../services/lookingGlassService')
+
+it('should watch for all actions', async () => {
+  const gen = watchModuleSagas()
+  expect(gen.next().value).toEqual(takeEvery(FETCH_MODULES, handleFetchModules))
+})
 
 describe('handleFetchModules', () => {
   it('should run successfully', async () => {

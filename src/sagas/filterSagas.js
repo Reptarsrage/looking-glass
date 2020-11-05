@@ -75,8 +75,5 @@ export function* handleFetchFilters(action) {
 }
 
 export default function* watchFilterSagas() {
-  yield all([
-    yield takeEvery(FETCH_FILTERS, handleFetchFilters),
-    yield takeEvery(FETCH_ITEM_FILTERS, handleFetchItemFilters),
-  ])
+  yield all([takeEvery(FETCH_FILTERS, handleFetchFilters), takeEvery(FETCH_ITEM_FILTERS, handleFetchItemFilters)])
 }
