@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux'
 
-import appReducer from './appReducer'
 import authReducer from './authReducer'
 import moduleReducer from './moduleReducer'
 import galleryReducer from './galleryReducer'
@@ -13,7 +12,6 @@ import modalReducer from './modalReducer'
 const rootReducer = (asyncReducers) =>
   combineReducers({
     auth: authReducer,
-    app: appReducer,
     module: moduleReducer,
     gallery: galleryReducer,
     item: itemReducer,
