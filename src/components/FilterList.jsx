@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField'
 import { filterBySelector } from 'selectors/moduleSelectors'
 import FilterSection from './FilterSection'
 
-function FilterList({ moduleId, onClick }) {
+export default function FilterList({ moduleId, onClick }) {
   const filterSections = useSelector((state) => filterBySelector(state, { moduleId }))
   const [search, setSearch] = React.useState('')
 

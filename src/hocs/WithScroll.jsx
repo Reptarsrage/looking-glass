@@ -68,11 +68,11 @@ const withScroll = (WrappedComponent) => {
   }
 
   WithScroll.propTypes = {
+    // required
     initialScrollTop: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     onScroll: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
   }
 
   return WithScroll
