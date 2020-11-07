@@ -85,7 +85,7 @@ export default function App({ children }) {
   const modalOpen = useSelector(modalOpenSelector)
   const match = useRouteMatch({ path: '/', exact: true })
   const [darkThemeEnabled, toggleDarkTheme] = useState(true)
-  const appliedTheme = createMuiTheme(darkThemeEnabled ? lightTheme : darkTheme)
+  const appliedTheme = createMuiTheme(darkThemeEnabled ? darkTheme : lightTheme)
 
   useEffect(() => {
     titleBar.updateBackground(Color.fromHex(appliedTheme.palette.background.default))
