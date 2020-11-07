@@ -15,14 +15,14 @@ class LookingGlassService {
   }
 
   /**
-   * Fetches all available modules
+   * fetches all available modules
    */
   fetchModules = async () => {
     return this.instance.get('/', this.config)
   }
 
   /**
-   * Logs user in using oauth, basic or implicit authentication
+   * logs user in using oauth, basic or implicit authentication
    * @param {string|number} moduleId Module ID
    * @param {*} params Query string parameters
    */
@@ -31,7 +31,7 @@ class LookingGlassService {
   }
 
   /**
-   * Refreshes the user's authentication token
+   * refreshes the user's authentication token
    * @param {string|number} moduleId Module ID
    * @param {string} refreshToken Refresh token
    */
@@ -40,7 +40,7 @@ class LookingGlassService {
   }
 
   /**
-   * Fetches a page of items
+   * fetches a page of items
    * @param {string|number} moduleId Module ID
    * @param {string|number} galleryId Gallery ID
    * @param {string|number} accessToken Authenticated user access token
@@ -66,7 +66,7 @@ class LookingGlassService {
   }
 
   /**
-   * Fetches a list of available filters by section
+   * fetches a list of available filters by section
    * @param {string|number} moduleId Module ID
    * @param {string|number} filterSectionId Section ID
    * @param {string|number} accessToken Authenticated user access token
@@ -83,7 +83,7 @@ class LookingGlassService {
   }
 
   /**
-   * Fetches a list of filters for the given item
+   * fetches a list of filters for the given item
    * @param {string|number} moduleId Module ID
    * @param {string|number} itemId Item ID
    * @param {string|number} accessToken Authenticated user access token

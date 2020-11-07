@@ -124,6 +124,6 @@ export default produce((draft, action) => {
       break
     }
     default:
-      break // Nothing to do
+      break // nothing to do
   }
 }, initialState)

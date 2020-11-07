@@ -6,38 +6,38 @@ const getGalleryId = (_, props) => props.galleryId
 
 export const galleriesStateSelector = (state) => state.gallery || initialState
 
-/** Specific gallery */
+/** specific gallery */
 export const galleryByIdSelector = createSelector(
   [galleriesStateSelector, getGalleryId],
   (state, galleryId) => state.byId[galleryId] || initialGalleryState
 )
 
-/** Gallery module ID */
+/** gallery module ID */
 export const galleryModuleIdSelector = createSelector(galleryByIdSelector, (gallery) => gallery.moduleId)
 
-/** Gallery site ID */
+/** gallery site ID */
 export const gallerySiteIdSelector = createSelector(galleryByIdSelector, (gallery) => gallery.siteId)
 
-/** Gallery after */
+/** gallery after */
 export const galleryAfterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.after)
 
-/** Gallery offset */
+/** gallery offset */
 export const galleryOffsetSelector = createSelector(galleryByIdSelector, (gallery) => gallery.offset)
 
-/** All galleries */
+/** all galleries */
 export const galleriesSelector = createSelector(galleriesStateSelector, (state) => state.allIds)
 
-/** All gallery items */
+/** all gallery items */
 export const itemsInGallerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.items)
 
-/** Gallery search query value */
+/** gallery search query value */
 export const currentSearchQuerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.searchQuery)
 
-/** Gallery sort value */
+/** gallery sort value */
 export const currentSortSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentSort)
 
-/** Gallery filter value  */
+/** gallery filter value  */
 export const currentFilterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentFilter)
 
-/** Gallery saved scroll position */
+/** gallery saved scroll position */
 export const savedScrollPositionSelector = createSelector(galleryByIdSelector, (gallery) => gallery.savedScrollPosition)

@@ -1,14 +1,14 @@
 import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } from './types'
 
 /**
- * Fetch modules
+ * fetch modules
  */
 export const fetchModules = () => ({
   type: FETCH_MODULES,
 })
 
 /**
- * Successfully fetched modules
+ * successfully fetched modules
  * @param {*} modules Response data
  */
 export const fetchModulesSuccess = (modules) => ({
@@ -17,7 +17,7 @@ export const fetchModulesSuccess = (modules) => ({
 })
 
 /**
- * Failed to fetch modules
+ * failed to fetch modules
  * @param {Error} error Error data
  */
 export const fetchModulesFailure = (error) => ({

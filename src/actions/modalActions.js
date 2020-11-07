@@ -1,7 +1,7 @@
 import { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } from './types'
 
 /**
- * Sets the current modal item
+ * sets the current modal item
  * @param {string|number} itemId Item ID
  */
 export const modalSetItem = (itemId) => ({
@@ -10,21 +10,21 @@ export const modalSetItem = (itemId) => ({
 })
 
 /**
- * Closes the modal
+ * closes the modal
  */
 export const modalClose = () => ({
   type: MODAL_CLOSE,
 })
 
 /**
- * Removes the current modal item
+ * removes the current modal item
  */
 export const modalClear = () => ({
   type: MODAL_CLEAR,
 })
 
 /**
- * Updates bounds used for modal transition
+ * updates bounds used for modal transition
  * @param {DOMRect} modalBounds Bounding rectangle
  */
 export const modalBoundsUpdate = (modalBounds) => ({
@@ -33,7 +33,7 @@ export const modalBoundsUpdate = (modalBounds) => ({
 })
 
 /**
- * Opens modal
+ * opens modal
  */
 export const modalOpen = () => ({
   type: MODAL_OPEN,

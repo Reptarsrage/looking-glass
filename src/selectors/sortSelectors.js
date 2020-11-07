@@ -8,10 +8,10 @@ const getValueId = (_, props) => props.valueId
 
 const stateSelector = (state) => state.sort || initialState
 
-/** All Values */
+/** all Values */
 export const valuesSelector = createSelector(stateSelector, (state) => state.allIds)
 
-/** Specific Value */
+/** specific Value */
 export const valueByIdSelector = createSelector(
   [stateSelector, getValueId, currentSearchQuerySelector],
   (state, valueId, searchQuery) => {
@@ -34,10 +34,10 @@ export const valueByIdSelector = createSelector(
   }
 )
 
-/** Translate internal id to siteId */
+/** translate internal id to siteId */
 export const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => value && value.siteId)
 
-/** All values for a given module */
+/** all values for a given module */
 export const moduleValuesSelector = createSelector(
   [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
@@ -51,7 +51,7 @@ export const moduleValuesSelector = createSelector(
   }
 )
 
-/** Default value */
+/** default value */
 export const defaultSortValueSelector = createSelector(
   [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
@@ -63,7 +63,7 @@ export const defaultSortValueSelector = createSelector(
       sortVals = sortVals.filter((id) => !sortState.byId[id].exclusiveToSearch)
     }
 
-    // Check un-nested first
+    // check un-nested first
     const defaultValueId = sortVals.find((id) => sortState.byId[id].default)
     if (!defaultValueId) {
       for (let i = 0; i < sortVals.length; i += 1) {

@@ -8,7 +8,7 @@ import {
 } from './types'
 
 /**
- * Fetch filters for section
+ * fetch filters for section
  * @param {string|number} filterSectionId Section ID
  */
 export const fetchFilters = (filterSectionId) => ({
@@ -17,7 +17,7 @@ export const fetchFilters = (filterSectionId) => ({
 })
 
 /**
- * Successfully fetched filters
+ * successfully fetched filters
  * @param {string|number} filterSectionId Section ID
  * @param {*} filters Response data
  */
@@ -28,7 +28,7 @@ export const fetchFiltersSuccess = (filterSectionId, filters) => ({
 })
 
 /**
- * Failed to fetch filters
+ * failed to fetch filters
  * @param {string|number} filterSectionId Section ID
  * @param {Error} error Error data
  */
@@ -39,7 +39,7 @@ export const fetchFiltersError = (filterSectionId, error) => ({
 })
 
 /**
- * Fetch filters for item
+ * fetch filters for item
  * @param {string|number} moduleId Module ID
  * @param {string|number} itemId Item ID
  */
@@ -49,7 +49,7 @@ export const fetchItemFilters = (moduleId, itemId) => ({
 })
 
 /**
- * Successfully fetched item filters
+ * successfully fetched item filters
  * @param {string|number} moduleId Module ID
  * @param {string|number} itemId Item ID
  * @param {*} filters Response data
@@ -61,7 +61,7 @@ export const fetchItemFiltersSuccess = (moduleId, itemId, filters) => ({
 })
 
 /**
- * Failed to fetch item filters
+ * failed to fetch item filters
  * @param {string|number} moduleId Module ID
  * @param {string|number} itemId Item ID
  * @param {Error} error Error data

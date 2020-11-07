@@ -9,10 +9,10 @@ const imageSizeOfSync = require('image-size')
 const { exec } = require('child_process')
 const os = require('os')
 
-// Get dimensions of an image file
+// get dimensions of an image file
 const imageSizeOf = promisify(imageSizeOfSync)
 
-// Get dimensions of a video file using ffprobe
+// get dimensions of a video file using ffprobe
 function videoSizeOf(fPath) {
   const widthReg = /width=(\d+)/
   const heightReg = /height=(\d+)/
@@ -37,7 +37,7 @@ function videoSizeOf(fPath) {
   )
 }
 
-// Gets all files in a directory
+// gets all files in a directory
 async function* getFiles(dirPath) {
   const dir = await fs.promises.opendir(dirPath)
   for await (const dirent of dir) {
@@ -49,7 +49,7 @@ async function* getFiles(dirPath) {
   }
 }
 
-// Dummy function for callbacks
+// dummy function for callbacks
 function dummy() {}
 
 module.exports = class crawler {
@@ -75,7 +75,7 @@ module.exports = class crawler {
     this.start = page * this.pageSize
     this.end = this.start + this.pageSize
 
-    // Start, if not already
+    // start, if not already
     if (!this.started) {
       const pagePromise = new Promise((resolve, reject) => {
         this.promiseResolve = resolve
@@ -87,7 +87,7 @@ module.exports = class crawler {
       return pagePromise
     }
 
-    // If done, return requested page
+    // if done, return requested page
     while (this.done) {
       if (this.start >= this.resolved.length) {
         return []
@@ -96,12 +96,12 @@ module.exports = class crawler {
       return this.resolve()
     }
 
-    // Return page if available
+    // return page if available
     if (this.end < this.resolved.length) {
       return this.resolve()
     }
 
-    // Wait for requested page to be finished
+    // wait for requested page to be finished
     const pagePromise = new Promise((resolve, reject) => {
       this.promiseResolve = resolve
       this.promiseReject = reject
@@ -147,7 +147,7 @@ module.exports = class crawler {
       } else if (type && type.startsWith('video')) {
         size = await videoSizeOf(file)
       } else {
-        // TODO: log?
+        // tODO: log?
         console.warn('Unable to measure file', file)
         return
       }
@@ -191,7 +191,7 @@ module.exports = class crawler {
           }
         }
       } catch {
-        /* Expected for system volumes */
+        /* expected for system volumes */
       }
     }
 

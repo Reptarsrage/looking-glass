@@ -29,16 +29,16 @@ import {
 import { handleRefresh } from './authSagas'
 
 /**
- * Saga to handle changes in sort value
+ * saga to handle changes in sort value
  * @param {*} action Dispatched action
  */
 export function* handleSortChange(action) {
   const { meta: galleryId, payload: valueId } = action
 
-  // Select info from the redux store
+  // select info from the redux store
   const currentValueId = yield select(currentSortSelector, { galleryId })
 
-  // If changed, clear and fetch new items
+  // if changed, clear and fetch new items
   if (currentValueId !== valueId) {
     yield put(clearGallery(galleryId))
     yield put(updateSort(galleryId, valueId))
@@ -47,16 +47,16 @@ export function* handleSortChange(action) {
 }
 
 /**
- * Saga to handle changes in filter value
+ * saga to handle changes in filter value
  * @param {*} action Dispatched action
  */
 export function* handleFilterChange(action) {
   const { meta: galleryId, payload: filterId } = action
 
-  // Select info from the redux store
+  // select info from the redux store
   const currentFilterId = yield select(currentFilterSelector, { galleryId })
 
-  // If changed, clear and fetch new items
+  // if changed, clear and fetch new items
   if (currentFilterId !== filterId) {
     yield put(clearGallery(galleryId))
     yield put(updateFilter(galleryId, filterId))
@@ -65,40 +65,40 @@ export function* handleFilterChange(action) {
 }
 
 /**
- * Saga to handle changes in search query value
+ * saga to handle changes in search query value
  * @param {*} action Dispatched action
  */
 export function* handleSearchChange(action) {
   const { meta: galleryId, payload: searchQuery } = action
 
-  // Select info from the redux store
+  // select info from the redux store
   const currentSearchQuery = yield select(currentSearchQuerySelector, { galleryId })
 
-  // If changed, clear items
+  // if changed, clear items
   if (currentSearchQuery !== searchQuery) {
     yield put(clearGallery(galleryId))
     yield put(updateSearch(galleryId, searchQuery))
 
-    // Wait for user to finish typing
+    // wait for user to finish typing
     yield delay(500)
     if (yield cancelled()) {
       return
     }
 
-    // Fetch items after user is done typing
+    // fetch items after user is done typing
     yield put(fetchGallery(galleryId))
   }
 }
 
 /**
- * Saga to handle fetching items
+ * saga to handle fetching items
  * @param {*} action Dispatched action
  */
 export function* handleFetchGallery(action) {
   const { meta: galleryId } = action
 
   try {
-    // Select info from the redux store
+    // select info from the redux store
     const moduleId = yield select(galleryModuleIdSelector, { galleryId })
     const defaultGalleryId = yield select(defaultGalleryIdSelector, { moduleId })
     const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
@@ -112,16 +112,16 @@ export function* handleFetchGallery(action) {
     const sortValueSiteId = yield select(valueSiteIdSelector, { valueId: currentValueId || defaultSort })
     const filterSiteId = yield select(filterSiteIdSelector, { filterId: currentFilterId })
 
-    // Resolve service
+    // resolve service
     const service = moduleId === FILE_SYSTEM_MODULE_ID ? fileSystemService : lookingGlassService
 
-    // Refresh token
+    // refresh token
     yield call(handleRefresh, moduleId)
 
-    // Select additional info from the redux store
+    // select additional info from the redux store
     const accessToken = yield select(accessTokenSelector, { moduleId })
 
-    // Fetch items
+    // fetch items
     const { data } = yield call(
       service.fetchItems,
       moduleSiteId,
@@ -134,10 +134,10 @@ export function* handleFetchGallery(action) {
       filterSiteId
     )
 
-    // Put info into the store
+    // put info into the store
     yield put(fetchGallerySuccess(moduleId, galleryId, data))
   } catch (error) {
-    // Encountered an error
+    // encountered an error
     console.error(error, 'Error fetching gallery')
     yield put(fetchGalleryFailure(galleryId, error))
   }

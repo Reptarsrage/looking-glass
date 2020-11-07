@@ -33,13 +33,13 @@
     "dev": "cross-env NODE_ENV=development ELECTRON_IS_DEV=1 concurrently -k \"yarn dev-server\" \"yarn start-dev\"",
     "dist": "rimraf ./release && electron-builder",
     "release": "standard-version",
-    "lint": "eslint --cache --format=pretty src",
+    "lint": "eslint --cache --format=pretty .",
     "test": "jest",
     "clean": "rimraf dist release main.prod.js"
   },
   "lint-staged": {
     "*.{js,jsx}": [
-      "eslint --cache --format=pretty"
+      "eslint --cache --format=pretty --fix"
     ],
     "*.{html,md,yml,json,css}": [
       "prettier --ignore-path .eslintignore --write"

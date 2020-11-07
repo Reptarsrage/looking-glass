@@ -31,6 +31,13 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-param-reassign': ['error', { props: false }],
     'no-console': ['error', { allow: ['warn', 'error'] }],
+    'capitalized-comments': [
+      'error',
+      'never',
+      {
+        ignoreInlineComments: false,
+      },
+    ],
 
     // https://github.com/prettier/eslint-plugin-prettier
     'prettier/prettier': 'error',

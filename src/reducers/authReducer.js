@@ -19,7 +19,7 @@ import {
   initialAsyncState,
 } from './constants'
 
-// Allow store to be passed via unit test
+// allow store to be passed via unit test
 let electronStore
 const getStore = () => {
   if (!electronStore) {
@@ -91,7 +91,7 @@ export default produce((draft, action, store = getStore()) => {
       break
     }
     default:
-      // Nothing to do
+      // nothing to do
       break
   }
 }, initialState)

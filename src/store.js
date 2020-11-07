@@ -7,17 +7,17 @@ import rootSaga from './sagas'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-// Create saga middleware
+// create saga middleware
 const sagaMiddleware = createSagaMiddleware()
 
-// Redux Configuration
+// redux Configuration
 const middleware = []
 const enhancers = []
 
-// Saga Middleware
+// saga Middleware
 middleware.push(sagaMiddleware)
 
-// Logging Middleware
+// logging Middleware
 if (isDevelopment) {
   middleware.push(
     createLogger({
@@ -27,20 +27,20 @@ if (isDevelopment) {
   )
 }
 
-// If Redux DevTools Extension is installed use it, otherwise use Redux compose
+// if Redux DevTools Extension is installed use it, otherwise use Redux compose
 const composeEnhancers =
   isDevelopment && typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
     : compose
 
-// Apply Middleware & Compose Enhancers
+// apply Middleware & Compose Enhancers
 enhancers.push(applyMiddleware(...middleware))
 const enhancer = composeEnhancers(...enhancers)
 
-// Create Store
+// create Store
 const store = createStore(rootReducer, enhancer)
 
-// Run sagas
+// run sagas
 sagaMiddleware.run(rootSaga)
 
 export default store

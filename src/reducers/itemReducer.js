@@ -45,7 +45,7 @@ const addItem = (draft, galleryId, moduleId, item) => {
   // generate ids
   const itemId = generateItemId(galleryId, item.id)
 
-  // Translate filters
+  // translate filters
   let filters = []
   item.filters.forEach(({ filterId, id }) => {
     const filterSectionId = generateFilterSectionId(moduleId, filterId)
@@ -126,6 +126,6 @@ export default produce((draft, action) => {
       break
     }
     default:
-      break // Nothing to do
+      break // nothing to do
   }
 }, initialState)

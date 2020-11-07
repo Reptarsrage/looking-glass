@@ -5,17 +5,17 @@ import { FETCH_MODULES } from 'actions/types'
 import { fetchModulesSuccess, fetchModulesFailure } from 'actions/moduleActions'
 
 /**
- * Saga to handle fetching modules
+ * saga to handle fetching modules
  */
 export function* handleFetchModules() {
   try {
-    // Fetch modules
+    // fetch modules
     const { data } = yield call(lookingGlassService.fetchModules)
 
-    // Put info into the store
+    // put info into the store
     yield put(fetchModulesSuccess(data))
   } catch (error) {
-    // Encountered an error
+    // encountered an error
     console.error(error, 'Error fetching modules')
     yield put(fetchModulesFailure(error))
   }

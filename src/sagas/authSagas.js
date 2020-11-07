@@ -8,55 +8,55 @@ import { loginSuccess, loginFailure, refreshSuccess, refreshFailure } from 'acti
 import { LOGIN } from 'actions/types'
 
 /**
- * Helper to check if an access token needs refreshing
+ * helper to check if an access token needs refreshing
  * @param {string|number} moduleId Module ID
  */
 function* needsRefresh(moduleId) {
-  // Select info from the redux store
+  // select info from the redux store
   const expires = yield select(expiresSelector, { moduleId })
   const refreshToken = yield select(refreshTokenSelector, { moduleId })
 
-  // Check if module supports refreshing
+  // check if module supports refreshing
   if (!refreshToken || expires <= 0) {
     return false
   }
 
-  // Compare current time with the expiration date
+  // compare current time with the expiration date
   const expireDate = moment(expires)
   const currentDate = moment()
   return currentDate.isSameOrAfter(expireDate)
 }
 
 /**
- * Saga to handle refreshing auth tokens
+ * saga to handle refreshing auth tokens
  * @param {string|number} moduleId Module ID
  */
 export function* handleRefresh(moduleId) {
-  // Check if we need to refresh the token
+  // check if we need to refresh the token
   const needToRefresh = yield call(needsRefresh, moduleId)
   if (!needToRefresh) {
     return
   }
 
   try {
-    // Select info from the redux store
+    // select info from the redux store
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
     const refreshToken = yield select(refreshTokenSelector, { moduleId })
 
-    // Make request
+    // make request
     const { data } = yield call(lookingGlassService.refresh, moduleSiteId, refreshToken)
 
-    // Put info into the store
+    // put info into the store
     yield put(refreshSuccess(moduleId, data))
   } catch (error) {
-    // Encountered an error
+    // encountered an error
     console.error(error, 'Error refreshing authentication token')
     yield put(refreshFailure(moduleId, error))
   }
 }
 
 /**
- * Saga to handle user authentication
+ * saga to handle user authentication
  * @param {*} action Dispatched action
  */
 export function* handleLogin(action) {
@@ -64,16 +64,16 @@ export function* handleLogin(action) {
   const moduleId = meta
 
   try {
-    // Select info from the redux store
+    // select info from the redux store
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
 
-    // Make request
+    // make request
     const { data } = yield call(lookingGlassService.login, moduleSiteId, payload)
 
-    // Put info into the store
+    // put info into the store
     yield put(loginSuccess(moduleId, data))
   } catch (error) {
-    // Encountered an error
+    // encountered an error
     console.error(error, 'Error logging in')
     yield put(loginFailure(moduleId, error))
   }

@@ -72,13 +72,13 @@ export default produce((draft, action) => {
     case FETCH_MODULES_SUCCESS: {
       const modules = payload
 
-      // Add default module galleries for all modules
+      // add default module galleries for all modules
       modules.forEach(({ id, title }) => {
         const moduleId = generateModuleId(id)
         addGallery(draft, moduleId, DEFAULT_GALLERY_ID, title)
       })
 
-      // Add file system default module galleries
+      // add file system default module galleries
       addGallery(draft, FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID, 'Local Files')
       break
     }
@@ -104,11 +104,11 @@ export default produce((draft, action) => {
       draft.byId[galleryId].items = [
         ...draft.byId[galleryId].items,
         ...items
-          .filter(({ url, width, height }) => url && width && height) // Remove any poorly formatted items
+          .filter(({ url, width, height }) => url && width && height) // remove any poorly formatted items
           .map(({ id }) => generateItemId(galleryId, id)),
       ]
 
-      // Remove duplicates (if any)
+      // remove duplicates (if any)
       draft.byId[galleryId].items = draft.byId[galleryId].items.filter(
         (id, idx) => draft.byId[galleryId].items.indexOf(id) === idx
       )
@@ -189,6 +189,6 @@ export default produce((draft, action) => {
       break
     }
     default:
-      break // Nothing to do
+      break // nothing to do
   }
 }, initialState)

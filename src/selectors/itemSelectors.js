@@ -10,25 +10,25 @@ const getItemId = (_, props) => props.itemId
 
 export const itemsStateSelector = (state) => state.item || initialState
 
-/** All items */
+/** all items */
 export const itemsSelector = createSelector(itemsStateSelector, (state) => state.allIds)
 
-/** Specific item */
+/** specific item */
 export const itemByIdSelector = createSelector(
   [itemsStateSelector, getItemId],
   (state, itemId) => state.byId[itemId] || initialItemState
 )
 
-/** Item siteId */
+/** item siteId */
 export const itemSiteIdSelector = createSelector(itemByIdSelector, (item) => item.siteId)
 
-/** Item dimensions */
+/** item dimensions */
 export const itemDimensionsSelector = createSelector(itemByIdSelector, (item) => ({
   width: item.width,
   height: item.height,
 }))
 
-/** Item gallery URL */
+/** item gallery URL */
 export const itemGalleryUrlSelector = createSelector([itemByIdSelector, galleriesStateSelector], (item, state) => {
   if (!item.isGallery) {
     return null
@@ -40,19 +40,19 @@ export const itemGalleryUrlSelector = createSelector([itemByIdSelector, gallerie
   return `/gallery/${moduleId}/${itemGalleryId}`
 })
 
-/** Item filters are pending */
+/** item filters are pending */
 export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchingFilters)
 
-/** Item filters are fetched */
+/** item filters are fetched */
 export const itemFetchedFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchedFilters)
 
-/** Item filters error */
+/** item filters error */
 export const itemFetchFiltersErrorSelector = createSelector(itemByIdSelector, (item) => item.fetchFiltersError)
 
-/** Item filters */
+/** item filters */
 export const itemFiltersSelector = createSelector(itemByIdSelector, (item) => item.filters)
 
-/** Item filters by section */
+/** item filters by section */
 export const itemFiltersSectionSelector = createSelector(
   [itemByIdSelector, filterStateSelector, filterSectionByIdSelector],
   (item, filterState, filterSection) => {

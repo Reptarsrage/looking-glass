@@ -67,14 +67,14 @@ class FileSystemService {
 
       return { data }
     } catch (err) {
-      // Deal with the fact the chain failed
+      // deal with the fact the chain failed
       console.error('Error crawling', err)
       throw err
     }
   }
 
   fetchFilters = async () => {
-    return { data: [] } // TODO: Implement this
+    return { data: [] } // tODO: Implement this
   }
 }
 

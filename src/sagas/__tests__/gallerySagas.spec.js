@@ -166,7 +166,7 @@ describe('handleSearchChange', () => {
     expect(gen.next().value).toEqual(put(updateSearch(expectedGalleryId, expectedSearchQuery)))
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
     expect(gen.next().value).toEqual(cancelled())
-    expect(gen.next(false /* NOT cancelled */).value).toEqual(put(fetchGallery(expectedGalleryId)))
+    expect(gen.next(false /* nOT cancelled */).value).toEqual(put(fetchGallery(expectedGalleryId)))
   })
 
   it('when cancelled and given different values', async () => {

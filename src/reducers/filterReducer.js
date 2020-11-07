@@ -41,7 +41,7 @@ export default produce((draft, action) => {
       const filterSectionId = meta
       payload.forEach((filter) => addFiltersForSection(draft, filterSectionId, filter))
 
-      // TODO: add file system filter options
+      // tODO: add file system filter options
       break
     }
     case FETCH_ITEM_FILTERS_SUCCESS: {
@@ -72,6 +72,6 @@ export default produce((draft, action) => {
       break
     }
     default:
-      break // Nothing to do
+      break // nothing to do
   }
 }, initialState)

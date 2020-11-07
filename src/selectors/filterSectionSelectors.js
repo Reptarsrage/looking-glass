@@ -9,22 +9,22 @@ const getSearch = (_, props) => props.search
 
 const stateSelector = (state) => state.filterSection || initialState
 
-/** All filter sections */
+/** all filter sections */
 export const filterSectionsSelector = createSelector(stateSelector, (state) => state.allIds)
 
-/** Specific filter section */
+/** specific filter section */
 export const filterSectionByIdSelector = createSelector(
   [stateSelector, getFilterSectionId],
   (state, filterSectionId) => state.byId[filterSectionId] || initialFilterSectionState
 )
 
-/** Filter section site ID */
+/** filter section site ID */
 export const filterSectionSiteIdSelector = createSelector(
   filterSectionByIdSelector,
   (filterSection) => filterSection.siteId
 )
 
-/** Filter section module ID */
+/** filter section module ID */
 export const filterSectionModuleIdSelector = createSelector(
   filterSectionByIdSelector,
   (filterSection) => filterSection.moduleId
