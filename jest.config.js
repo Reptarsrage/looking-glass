@@ -1,6 +1,7 @@
 module.exports = {
   roots: ['<rootDir>/src'],
-  collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/**/*.d.ts'],
+  collectCoverageFrom: ['src/**/*.{js,jsx}'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/__tests__/'],
   setupFilesAfterEnv: ['<rootDir>/test-setup.js'],
   testMatch: ['**/__tests__/**/*.{spec,test}.{js,jsx}'],
   transform: {
