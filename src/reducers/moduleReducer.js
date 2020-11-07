@@ -57,44 +57,41 @@ const addModule = (draft, module, actualModuleId) => {
   }
 }
 
-const moduleReducer = (state = initialState, action) =>
-  produce(state, (draft) => {
-    const { type, payload } = action || {}
+export default produce((draft, action) => {
+  const { type, payload } = action || {}
 
-    switch (type) {
-      case FETCH_MODULES: {
-        handleAsyncFetch(state, draft)
-        break
-      }
-      case FETCH_MODULES_SUCCESS: {
-        const modules = payload
-        handleAsyncSuccess(state, draft)
-
-        // add modules
-        modules.forEach((module) => addModule(draft, module))
-
-        // add file system module
-        addModule(
-          draft,
-          {
-            ...initialModuleState,
-            id: FILE_SYSTEM_MODULE_ID,
-            title: 'Local files',
-            description: 'Choose a directory',
-            authType: '',
-          },
-          FILE_SYSTEM_MODULE_ID
-        )
-
-        break
-      }
-      case FETCH_MODULES_FAILURE: {
-        handleAsyncError(state, draft, payload)
-        break
-      }
-      default:
-        break // Nothing to do
+  switch (type) {
+    case FETCH_MODULES: {
+      handleAsyncFetch(draft)
+      break
     }
-  })
+    case FETCH_MODULES_SUCCESS: {
+      const modules = payload
+      handleAsyncSuccess(draft)
 
-export default moduleReducer
+      // add modules
+      modules.forEach((module) => addModule(draft, module))
+
+      // add file system module
+      addModule(
+        draft,
+        {
+          ...initialModuleState,
+          id: FILE_SYSTEM_MODULE_ID,
+          title: 'Local files',
+          description: 'Choose a directory',
+          authType: '',
+        },
+        FILE_SYSTEM_MODULE_ID
+      )
+
+      break
+    }
+    case FETCH_MODULES_FAILURE: {
+      handleAsyncError(draft, payload)
+      break
+    }
+    default:
+      break // Nothing to do
+  }
+}, initialState)

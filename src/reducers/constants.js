@@ -7,18 +7,18 @@ export const initialAsyncState = {
   error: null,
 }
 
-export const handleAsyncFetch = (_state, draft) => {
+export const handleAsyncFetch = (draft) => {
   draft.fetching = true
   draft.error = null
 }
 
-export const handleAsyncSuccess = (_state, draft) => {
+export const handleAsyncSuccess = (draft) => {
   draft.fetching = false
   draft.fetched = true
   draft.error = null
 }
 
-export const handleAsyncError = (_state, draft, error) => {
+export const handleAsyncError = (draft, error) => {
   draft.fetching = false
   draft.fetched = true
   draft.error = error

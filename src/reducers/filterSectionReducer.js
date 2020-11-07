@@ -51,82 +51,79 @@ const addFilterSectionForModule = (draft, module) => {
   })
 }
 
-const filterSectionReducer = (state = initialState, action) =>
-  produce(state, (draft) => {
-    const { type, payload, meta } = action || {}
+export default produce((draft, action) => {
+  const { type, payload, meta } = action || {}
 
-    switch (type) {
-      case FETCH_MODULES_SUCCESS: {
-        const modules = payload
+  switch (type) {
+    case FETCH_MODULES_SUCCESS: {
+      const modules = payload
 
-        // add filter sections for modules
-        modules.forEach((module) => addFilterSectionForModule(draft, module))
-        break
-      }
-      case FETCH_FILTERS: {
-        const filterSectionId = meta
-        handleAsyncFetch(state.byId[filterSectionId], draft.byId[filterSectionId])
-        break
-      }
-      case FETCH_ITEM_FILTERS_SUCCESS: {
-        const { moduleId } = meta
-        const filters = payload
+      // add filter sections for modules
+      modules.forEach((module) => addFilterSectionForModule(draft, module))
+      break
+    }
+    case FETCH_FILTERS: {
+      const filterSectionId = meta
+      handleAsyncFetch(draft.byId[filterSectionId])
+      break
+    }
+    case FETCH_ITEM_FILTERS_SUCCESS: {
+      const { moduleId } = meta
+      const filters = payload
 
-        // add filters for modules
-        filters.forEach(({ filterId, id }) => {
+      // add filters for modules
+      filters.forEach(({ filterId, id }) => {
+        const filterSectionId = generateFilterSectionId(moduleId, filterId)
+        const toAdd = generateFilterId(filterSectionId, id)
+        const { values } = draft.byId[filterSectionId]
+        if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
+          draft.byId[filterSectionId].values = [...values, toAdd]
+        }
+      })
+
+      break
+    }
+    case FETCH_FILTERS_SUCCESS: {
+      const filterSectionId = meta
+      handleAsyncSuccess(draft.byId[filterSectionId])
+
+      payload.forEach(({ id }) => {
+        const toAdd = generateFilterId(filterSectionId, id)
+        const { values } = draft.byId[filterSectionId]
+        if (values.indexOf(toAdd) < 0) {
+          draft.byId[filterSectionId].values = [...values, toAdd]
+        }
+      })
+
+      break
+    }
+    case FETCH_FILTERS_FAILURE: {
+      const filterSectionId = meta
+      handleAsyncError(draft.byId[filterSectionId], payload)
+      break
+    }
+    case FETCH_GALLERY_SUCCESS: {
+      const { moduleId } = meta
+      const gallery = payload
+      const { items } = gallery
+
+      // add item filters
+      items.forEach((item) => {
+        item.filters.forEach(({ filterId, id }) => {
           const filterSectionId = generateFilterSectionId(moduleId, filterId)
           const toAdd = generateFilterId(filterSectionId, id)
-          const { values } = draft.byId[filterSectionId]
-          if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
-            draft.byId[filterSectionId].values = [...values, toAdd]
-          }
-        })
-
-        break
-      }
-      case FETCH_FILTERS_SUCCESS: {
-        const filterSectionId = meta
-        handleAsyncSuccess(state.byId[filterSectionId], draft.byId[filterSectionId])
-
-        payload.forEach(({ id }) => {
-          const toAdd = generateFilterId(filterSectionId, id)
-          const { values } = draft.byId[filterSectionId]
-          if (values.indexOf(toAdd) < 0) {
-            draft.byId[filterSectionId].values = [...values, toAdd]
-          }
-        })
-
-        break
-      }
-      case FETCH_FILTERS_FAILURE: {
-        const filterSectionId = meta
-        handleAsyncError(state.byId[filterSectionId], draft.byId[filterSectionId], payload)
-        break
-      }
-      case FETCH_GALLERY_SUCCESS: {
-        const { moduleId } = meta
-        const gallery = payload
-        const { items } = gallery
-
-        // add item filters
-        items.forEach((item) => {
-          item.filters.forEach(({ filterId, id }) => {
-            const filterSectionId = generateFilterSectionId(moduleId, filterId)
-            const toAdd = generateFilterId(filterSectionId, id)
-            if (filterSectionId in draft.byId) {
-              const { values } = draft.byId[filterSectionId]
-              if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
-                draft.byId[filterSectionId].values = [...values, toAdd]
-              }
+          if (filterSectionId in draft.byId) {
+            const { values } = draft.byId[filterSectionId]
+            if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
+              draft.byId[filterSectionId].values = [...values, toAdd]
             }
-          })
+          }
         })
+      })
 
-        break
-      }
-      default:
-        break // Nothing to do
+      break
     }
-  })
-
-export default filterSectionReducer
+    default:
+      break // Nothing to do
+  }
+}, initialState)

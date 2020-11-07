@@ -41,60 +41,57 @@ export const initialAuthState = {
   ...initialAsyncState,
 }
 
-const authReducer = (state = initialState, action, store = getStore()) =>
-  produce(state, (draft) => {
-    const { type, payload, meta } = action || {}
-    const moduleId = meta
+export default produce((draft, action, store = getStore()) => {
+  const { type, payload, meta } = action || {}
+  const moduleId = meta
 
-    switch (type) {
-      case FETCH_MODULES_SUCCESS: {
-        const modules = payload
+  switch (type) {
+    case FETCH_MODULES_SUCCESS: {
+      const modules = payload
 
-        modules.forEach((module) => {
-          // generate id
-          const id = generateModuleId(module.id)
+      modules.forEach((module) => {
+        // generate id
+        const id = generateModuleId(module.id)
 
-          // load from persistent store
-          draft.byId[id] = store.get(id, initialAuthState)
-          draft.allIds.push(id)
-        })
+        // load from persistent store
+        draft.byId[id] = store.get(id, initialAuthState)
+        draft.allIds.push(id)
+      })
 
-        // add file system
-        draft.byId[FILE_SYSTEM_MODULE_ID] = initialAuthState
-        draft.allIds.push(FILE_SYSTEM_MODULE_ID)
+      // add file system
+      draft.byId[FILE_SYSTEM_MODULE_ID] = initialAuthState
+      draft.allIds.push(FILE_SYSTEM_MODULE_ID)
 
-        break
-      }
-      case LOGIN: {
-        handleAsyncFetch(state.byId[moduleId], draft.byId[moduleId])
-        break
-      }
-      case REFRESH_SUCCESS:
-      case LOGIN_SUCCESS: {
-        const { expiresIn } = payload
-        const date = moment()
-        date.add(expiresIn, 'seconds')
-
-        handleAsyncSuccess(state.byId[moduleId], draft.byId[moduleId])
-        draft.byId[moduleId] = {
-          ...draft.byId[moduleId],
-          ...payload,
-          expires: date.valueOf(),
-        }
-
-        // save to persistent store
-        store.set(moduleId, draft.byId[moduleId])
-        break
-      }
-      case REFRESH_FAILURE:
-      case LOGIN_FAILURE: {
-        handleAsyncError(state.byId[moduleId], draft.byId[moduleId], payload)
-        break
-      }
-      default:
-        // Nothing to do
-        break
+      break
     }
-  })
+    case LOGIN: {
+      handleAsyncFetch(draft.byId[moduleId])
+      break
+    }
+    case REFRESH_SUCCESS:
+    case LOGIN_SUCCESS: {
+      const { expiresIn } = payload
+      const date = moment()
+      date.add(expiresIn, 'seconds')
 
-export default authReducer
+      handleAsyncSuccess(draft.byId[moduleId])
+      draft.byId[moduleId] = {
+        ...draft.byId[moduleId],
+        ...payload,
+        expires: date.valueOf(),
+      }
+
+      // save to persistent store
+      store.set(moduleId, draft.byId[moduleId])
+      break
+    }
+    case REFRESH_FAILURE:
+    case LOGIN_FAILURE: {
+      handleAsyncError(draft.byId[moduleId], payload)
+      break
+    }
+    default:
+      // Nothing to do
+      break
+  }
+}, initialState)

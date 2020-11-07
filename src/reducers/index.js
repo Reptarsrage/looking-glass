@@ -9,17 +9,13 @@ import filterSectionReducer from './filterSectionReducer'
 import filterReducer from './filterReducer'
 import modalReducer from './modalReducer'
 
-const rootReducer = (asyncReducers) =>
-  combineReducers({
-    auth: authReducer,
-    module: moduleReducer,
-    gallery: galleryReducer,
-    item: itemReducer,
-    sort: sortReducer,
-    filterSection: filterSectionReducer,
-    filter: filterReducer,
-    modal: modalReducer,
-    ...asyncReducers,
-  })
-
-export default rootReducer
+export default combineReducers({
+  auth: authReducer,
+  module: moduleReducer,
+  gallery: galleryReducer,
+  item: itemReducer,
+  sort: sortReducer,
+  filterSection: filterSectionReducer,
+  filter: filterReducer,
+  modal: modalReducer,
+})

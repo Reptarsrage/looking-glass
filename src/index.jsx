@@ -4,12 +4,8 @@ import { Provider } from 'react-redux'
 
 import './index.css'
 import Routes from './Routes'
-import configureStore from './store/configureStore'
-import rootSaga from './sagas'
+import store from './store'
 import './titleBar'
-
-const store = configureStore()
-store.runSaga(rootSaga)
 
 render(
   <React.StrictMode>
