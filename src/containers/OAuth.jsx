@@ -18,7 +18,6 @@ import * as authActions from 'actions/authActions'
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
 import { moduleOAuthUrlSelector } from 'selectors/moduleSelectors'
 import LoadingIndicator from 'components/LoadingIndicator'
-import withRouteParams from 'hocs/WithRouteParams'
 
 const styles = (theme) => ({
   main: {
@@ -190,4 +189,4 @@ const mapDispatchToProps = {
   authorize: authActions.authorize,
 }
 
-export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth))
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth)

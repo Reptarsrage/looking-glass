@@ -7,7 +7,6 @@ import { Redirect } from 'react-router-dom'
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
 import * as authActions from 'actions/authActions'
 import LoadingIndicator from 'components/LoadingIndicator'
-import withRouteParams from 'hocs/WithRouteParams'
 
 const ImplicitAuth = ({ login, fetching, error, fetched, moduleId, galleryId }) => {
   useEffect(() => {
@@ -46,4 +45,4 @@ const mapDispatchToProps = {
   login: authActions.login,
 }
 
-export default withRouteParams(connect(mapStateToProps, mapDispatchToProps)(ImplicitAuth))
+export default connect(mapStateToProps, mapDispatchToProps)(ImplicitAuth)

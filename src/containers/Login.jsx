@@ -24,7 +24,6 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
 import * as authActions from 'actions/authActions'
 import LoadingIndicator from 'components/LoadingIndicator'
-import withRouteParams from 'hocs/WithRouteParams'
 
 const styles = (theme) => ({
   main: {
@@ -202,4 +201,4 @@ const mapDispatchToProps = {
   login: authActions.login,
 }
 
-export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login))
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login)

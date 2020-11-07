@@ -27,7 +27,6 @@ import Modal from 'components/Modal'
 import LoadingIndicator from 'components/LoadingIndicator'
 import SearchBar from 'components/SearchBar'
 import EndOfScrollToast from 'components/EndOfScrollToast'
-import withRouteParams from 'hocs/WithRouteParams'
 import titleBar from '../titleBar'
 
 const styles = (theme) => ({
@@ -265,4 +264,4 @@ const mapDispatchToProps = {
   saveScrollPosition: galleryActions.saveScrollPosition,
 }
 
-export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery))
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery)
