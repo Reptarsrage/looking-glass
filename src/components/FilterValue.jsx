@@ -1,25 +1,24 @@
-import React, { memo } from 'react'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
 import { filterByIdSelector } from 'selectors/filterSelectors'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   listItem: {
     textTransform: 'capitalize',
   },
-})
+}))
 
-function FilterValue({ filterId, filter, classes, onClick }) {
+export default function FilterValue({ filterId, onClick }) {
+  const classes = useStyles()
+  const filter = useSelector((state) => filterByIdSelector(state, { filterId }))
+
   const handleClick = () => {
-    if (onClick) {
-      onClick(filterId)
-    }
+    onClick(filterId)
   }
 
   return (
@@ -30,7 +29,7 @@ function FilterValue({ filterId, filter, classes, onClick }) {
 }
 
 FilterValue.defaultProps = {
-  onClick: null,
+  onClick: () => {},
 }
 
 FilterValue.propTypes = {
@@ -39,21 +38,4 @@ FilterValue.propTypes = {
 
   // Optional
   onClick: PropTypes.func,
-
-  // Selectors
-  filter: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  filter: filterByIdSelector,
-})
-
-const areEqual = (prevProps, nextProps) => prevProps.filterId === nextProps.filterId
-
-export default compose(connect(mapStateToProps), withStyles(styles))(memo(FilterValue, areEqual))

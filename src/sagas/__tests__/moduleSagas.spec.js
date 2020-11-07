@@ -1,7 +1,7 @@
 import { takeEvery } from 'redux-saga/effects'
 
 import lookingGlassService from 'services/lookingGlassService'
-import * as moduleActions from 'actions/moduleActions'
+import { fetchModules, fetchModulesSuccess, fetchModulesFailure } from 'actions/moduleActions'
 import { FETCH_MODULES } from 'actions/types'
 import watchModuleSagas, { handleFetchModules } from '../moduleSagas'
 import { recordSaga } from './sagaTestHelpers'
@@ -21,10 +21,10 @@ describe('handleFetchModules', () => {
     lookingGlassService.fetchModules.mockImplementation(() => Promise.resolve({ data: expectedData }))
 
     // act
-    const dispatched = await recordSaga(handleFetchModules)
+    const dispatched = await recordSaga(handleFetchModules, fetchModules())
 
     // assert
-    expect(dispatched).toContainEqual(moduleActions.fetchModulesSuccess(expectedData))
+    expect(dispatched).toContainEqual(fetchModulesSuccess(expectedData))
     expect(lookingGlassService.fetchModules).toHaveBeenCalled()
   })
 
@@ -36,10 +36,10 @@ describe('handleFetchModules', () => {
     lookingGlassService.fetchModules.mockImplementation(() => Promise.reject(expectedError))
 
     // act
-    const dispatched = await recordSaga(handleFetchModules)
+    const dispatched = await recordSaga(handleFetchModules, fetchModules())
 
     // assert
-    expect(dispatched).toContainEqual(moduleActions.fetchModulesFailure(expectedError))
+    expect(dispatched).toContainEqual(fetchModulesFailure(expectedError))
     expect(console.error).toHaveBeenCalled()
     expect(lookingGlassService.fetchModules).toHaveBeenCalled()
   })

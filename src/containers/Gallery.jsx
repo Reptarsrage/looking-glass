@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { useDispatch, useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -17,7 +15,7 @@ import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from 'selectors/authSelectors'
 import { galleryByIdSelector, itemsInGallerySelector } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
-import * as galleryActions from 'actions/galleryActions'
+import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
 import SortMenu from 'components/SortMenu'
 import Masonry from 'components/Masonry'
@@ -29,7 +27,7 @@ import SearchBar from 'components/SearchBar'
 import EndOfScrollToast from 'components/EndOfScrollToast'
 import titleBar from '../titleBar'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: '1',
   },
@@ -51,29 +49,24 @@ const styles = (theme) => ({
   masonryContainer: {
     flex: '1 1 auto',
   },
-})
+}))
 
-const Gallery = ({
-  items,
-  classes,
-  moduleId,
-  galleryId,
-  gallery,
-  isAuthenticated,
-  requiresAuth,
-  authUrl,
-  filterChange,
-  overlayButtonThreshold,
-  fetchGallery,
-  itemDimensionsSelectorFunc,
-  forceRenderItems,
-  saveScrollPosition,
-  supportsFiltering,
-  supportsSorting,
-}) => {
+export default function Gallery({ moduleId, galleryId, overlayButtonThreshold }) {
+  const classes = useStyles()
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
+  const gallery = useSelector((state) => galleryByIdSelector(state, { galleryId }))
+  const items = useSelector((state) => itemsInGallerySelector(state, { galleryId }))
+  const requiresAuth = useSelector((state) => requiresAuthSelector(state, { moduleId }))
+  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId }))
+  const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
+  const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
+  const forceRenderItems = useSelector(forceRenderItemsSelector)
+  const supportsSorting = useSelector((state) => supportsSortingSelector(state, { moduleId }))
+  const supportsFiltering = useSelector((state) => supportsFilteringSelector(state, { moduleId }))
+  const dispatch = useDispatch()
+
   const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery
 
   useEffect(() => {
@@ -98,7 +91,7 @@ const Gallery = ({
 
   const handleFilterClick = (filterId) => {
     setDrawerOpen(false)
-    filterChange(galleryId, filterId)
+    dispatch(filterChange(galleryId, filterId))
   }
 
   const handleOpenDrawerClick = () => {
@@ -121,7 +114,7 @@ const Gallery = ({
     }
 
     // save position for later
-    saveScrollPosition(galleryId, scrollTop)
+    dispatch(saveScrollPosition(galleryId, scrollTop))
 
     // Show end of the line toast
     if (scrollTop + clientHeight >= scrollHeight - 10 && !hasNext) {
@@ -137,7 +130,7 @@ const Gallery = ({
 
     // Check if first page is available and not already fetched, and fetch it
     if (!fetching && !fetched && !error) {
-      fetchGallery(galleryId)
+      dispatch(fetchGallery(galleryId))
     }
   }
 
@@ -149,7 +142,7 @@ const Gallery = ({
 
     // Check if next page is available, and fetch it
     if (hasNext && !fetching) {
-      fetchGallery(galleryId)
+      dispatch(fetchGallery(galleryId))
     }
   }
 
@@ -207,7 +200,6 @@ const Gallery = ({
 }
 
 Gallery.defaultProps = {
-  authUrl: null,
   overlayButtonThreshold: 25,
 }
 
@@ -218,50 +210,4 @@ Gallery.propTypes = {
 
   // optional
   overlayButtonThreshold: PropTypes.number,
-
-  // selectors
-  gallery: PropTypes.shape({
-    hasNext: PropTypes.bool.isRequired,
-    fetching: PropTypes.bool.isRequired,
-    fetched: PropTypes.bool.isRequired,
-    error: PropTypes.object,
-    title: PropTypes.string.isRequired,
-    savedScrollPosition: PropTypes.number.isRequired,
-  }).isRequired,
-  items: PropTypes.arrayOf(PropTypes.string).isRequired,
-  itemDimensionsSelectorFunc: PropTypes.func.isRequired,
-  requiresAuth: PropTypes.bool.isRequired,
-  authUrl: PropTypes.string,
-  isAuthenticated: PropTypes.bool.isRequired,
-  supportsSorting: PropTypes.bool.isRequired,
-  supportsFiltering: PropTypes.bool.isRequired,
-  forceRenderItems: PropTypes.arrayOf(PropTypes.string).isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
-
-  // actions
-  fetchGallery: PropTypes.func.isRequired,
-  filterChange: PropTypes.func.isRequired,
-  saveScrollPosition: PropTypes.func.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  gallery: galleryByIdSelector,
-  items: itemsInGallerySelector,
-  requiresAuth: requiresAuthSelector,
-  authUrl: authUrlSelector,
-  isAuthenticated: isAuthenticatedSelector,
-  itemDimensionsSelectorFunc: (state) => (itemId) => itemDimensionsSelector(state, { itemId }),
-  forceRenderItems: forceRenderItemsSelector,
-  supportsSorting: supportsSortingSelector,
-  supportsFiltering: supportsFilteringSelector,
-})
-
-const mapDispatchToProps = {
-  fetchGallery: galleryActions.fetchGallery,
-  filterChange: galleryActions.filterChange,
-  saveScrollPosition: galleryActions.saveScrollPosition,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Gallery)

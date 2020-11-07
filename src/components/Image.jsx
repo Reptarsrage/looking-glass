@@ -1,19 +1,20 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   image: {
     maxWidth: '100%',
     maxHeight: '100%',
     width: 'auto',
     height: 'auto',
   },
-})
+}))
 
-const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
+export default function Image({ src, width, height, title, styleName, ...passThroughProps }) {
+  const classes = useStyles()
   const imageRef = useRef(null)
 
   useEffect(() => {
@@ -29,6 +30,7 @@ const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
 
   return (
     <motion.img
+      {...passThroughProps}
       ref={imageRef}
       className={clsx(classes.image, styleName)}
       src={src}
@@ -36,7 +38,6 @@ const Image = ({ classes, src, width, height, title, styleName, ...other }) => {
       width={width}
       height={height}
       title={title}
-      {...other}
     />
   )
 }
@@ -47,12 +48,12 @@ Image.defaultProps = {
 }
 
 Image.propTypes = {
-  classes: PropTypes.object.isRequired,
+  // required
   src: PropTypes.string.isRequired,
-  title: PropTypes.string,
-  styleName: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-}
 
-export default withStyles(styles)(Image)
+  // optional
+  title: PropTypes.string,
+  styleName: PropTypes.string,
+}

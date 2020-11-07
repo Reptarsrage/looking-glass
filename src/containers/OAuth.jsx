@@ -1,25 +1,23 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-import { compose } from 'redux'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-import withStyles from '@material-ui/core/styles/withStyles'
+import { makeStyles } from '@material-ui/core/styles'
 import { parse } from 'url'
 import { remote } from 'electron'
 import qs from 'qs'
 
-import * as authActions from 'actions/authActions'
+import { authorize } from 'actions/authActions'
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
 import { moduleOAuthUrlSelector } from 'selectors/moduleSelectors'
 import LoadingIndicator from 'components/LoadingIndicator'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   main: {
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
@@ -56,10 +54,16 @@ const styles = (theme) => ({
     position: 'absolute',
     marginLeft: '-12px',
   },
-})
+}))
 
-const OAuth = ({ galleryId, fetching, fetched, moduleId, oAuthUrl, authorize, classes, error }) => {
+export default function OAuth({ galleryId, moduleId }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
   const [modalFetching, setModalFetching] = useState(false)
+  const oAuthUrl = useSelector((state) => moduleOAuthUrlSelector(state, { moduleId }))
+  const fetched = useSelector((state) => fetchedSelector(state, { moduleId }))
+  const fetching = useSelector((state) => fetchingSelector(state, { moduleId }))
+  const error = useSelector((state) => errorSelector(state, { moduleId }))
 
   const showOauthModal = (authUrl) => {
     return new Promise((resolve, reject) => {
@@ -105,7 +109,7 @@ const OAuth = ({ galleryId, fetching, fetched, moduleId, oAuthUrl, authorize, cl
 
     try {
       const accessToken = await showOauthModal(oAuthUrl)
-      authorize(moduleId, accessToken)
+      dispatch(authorize(moduleId, accessToken))
       setModalFetching(false)
     } catch (e) {
       setModalFetching(false)
@@ -156,37 +160,8 @@ const OAuth = ({ galleryId, fetching, fetched, moduleId, oAuthUrl, authorize, cl
   )
 }
 
-OAuth.defaultProps = {
-  error: null,
-}
-
 OAuth.propTypes = {
   // Route params
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
-
-  // Selectors
-  fetched: PropTypes.bool.isRequired,
-  fetching: PropTypes.bool.isRequired,
-  oAuthUrl: PropTypes.string.isRequired,
-  error: PropTypes.object,
-
-  // Actions
-  authorize: PropTypes.func.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  oAuthUrl: moduleOAuthUrlSelector,
-  fetched: fetchedSelector,
-  fetching: fetchingSelector,
-  error: errorSelector,
-})
-
-const mapDispatchToProps = {
-  authorize: authActions.authorize,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(OAuth)

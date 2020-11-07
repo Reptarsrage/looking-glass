@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { useDispatch, useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 import Fade from '@material-ui/core/Fade'
 import Zoom from '@material-ui/core/Zoom'
 import CloseIcon from '@material-ui/icons/Close'
@@ -20,21 +18,18 @@ import { useHistory } from 'react-router-dom'
 import { Button } from '@material-ui/core'
 
 import {
-  modalItemIdSelector,
-  modalNextSelector,
-  modalPrevSelector,
   modalOpenSelector,
   modalBoundsSelector,
   modalItemSelector,
   modalItemHasFiltersSelector,
 } from 'selectors/modalSelectors'
 import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from 'selectors/moduleSelectors'
-import * as modalActions from 'actions/modalActions'
-import * as galleryActions from 'actions/galleryActions'
+import { modalClose, modalClear } from 'actions/modalActions'
+import { filterChange } from 'actions/galleryActions'
 import SlideShow from './SlideShow'
 import ItemFilters from './ItemFilters'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   modal: {
     top: '30px', // titleBar height
     position: 'fixed',
@@ -77,34 +72,30 @@ const styles = (theme) => ({
     zIndex: theme.zIndex.drawer + 5,
     margin: theme.spacing(1),
   },
-})
+}))
 
-const Modal = ({
-  classes,
-  modalOpen,
-  modalBounds,
-  modalClear,
-  modalClose,
-  modalItem,
-  filterChange,
-  moduleId,
-  defaultGalleryId,
-  modalItemHasFilters,
-  itemFiltersEnabled,
-}) => {
+export default function Modal({ moduleId }) {
+  const classes = useStyles()
   const [open, setOpen] = useState(false)
   const [animating, setAnimating] = useState(true)
   const [showCaption, setShowCaption] = useState(true)
   const history = useHistory()
+  const dispatch = useDispatch()
+  const modalItem = useSelector(modalItemSelector)
+  const modalOpen = useSelector(modalOpenSelector)
+  const modalBounds = useSelector(modalBoundsSelector)
+  const defaultGalleryId = useSelector((state) => defaultGalleryIdSelector(state, { moduleId }))
+  const modalItemHasFilters = useSelector(modalItemHasFiltersSelector)
+  const itemFiltersEnabled = useSelector((state) => itemFiltersEnabledSelector(state, { moduleId }))
 
   const handleAnimationComplete = () => {
     if (!modalOpen) {
-      modalClear()
+      dispatch(modalClear())
     }
   }
 
   const close = () => {
-    modalClose()
+    dispatch(modalClose())
   }
 
   const drawerOpen = () => {
@@ -120,8 +111,8 @@ const Modal = ({
 
     // TODO: Something better than this
     if (filterId) {
-      modalClose()
-      filterChange(defaultGalleryId, filterId)
+      dispatch(modalClose())
+      dispatch(filterChange(defaultGalleryId, filterId))
       history.push(`/gallery/${moduleId}/${defaultGalleryId}`)
     }
   }
@@ -189,7 +180,7 @@ const Modal = ({
       )}
 
       <Drawer anchor="right" open={open} onClose={() => drawerClose()}>
-        <ItemFilters moduleId={moduleId} itemId={modalItem.id} onClick={drawerClose} />
+        {modalItem.id && <ItemFilters moduleId={moduleId} itemId={modalItem.id} onClick={drawerClose} />}
       </Drawer>
 
       {modalItem && modalItem.id && (
@@ -213,51 +204,7 @@ const Modal = ({
   )
 }
 
-Modal.defaultProps = {
-  modalBounds: null,
-}
-
 Modal.propTypes = {
+  // required
   moduleId: PropTypes.string.isRequired,
-  modalItem: PropTypes.shape({
-    id: PropTypes.string,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    galleryId: PropTypes.string,
-    filters: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
-  modalOpen: PropTypes.bool.isRequired,
-  modalBounds: PropTypes.shape({
-    top: PropTypes.number.isRequired,
-    left: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
-  }),
-  modalItemHasFilters: PropTypes.bool.isRequired,
-  defaultGalleryId: PropTypes.string.isRequired,
-  modalClear: PropTypes.func.isRequired,
-  modalClose: PropTypes.func.isRequired,
-  filterChange: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
-  itemFiltersEnabled: PropTypes.bool.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  modalItem: modalItemSelector,
-  modalItemId: modalItemIdSelector,
-  modalNext: modalNextSelector,
-  modalPrev: modalPrevSelector,
-  modalOpen: modalOpenSelector,
-  modalBounds: modalBoundsSelector,
-  defaultGalleryId: defaultGalleryIdSelector,
-  modalItemHasFilters: modalItemHasFiltersSelector,
-  itemFiltersEnabled: itemFiltersEnabledSelector,
-})
-
-const mapDispatchToProps = {
-  modalClear: modalActions.modalClear,
-  modalClose: modalActions.modalClose,
-  filterChange: galleryActions.filterChange,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Modal)

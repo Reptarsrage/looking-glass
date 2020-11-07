@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 
 import progressTracker from 'services/progressTracker'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   bar: {
     position: 'fixed',
     top: '30px', // titleBar height
@@ -21,9 +20,10 @@ const styles = (theme) => ({
   failed: {
     backgroundColor: theme.palette.error.main,
   },
-})
+}))
 
-const Progress = ({ classes }) => {
+export default function Progress() {
+  const classes = useStyles()
   let duration = progressTracker.estimateDuration()
   let step = 1000 / Math.floor(duration)
 
@@ -72,9 +72,3 @@ const Progress = ({ classes }) => {
     />
   )
 }
-
-Progress.propTypes = {
-  classes: PropTypes.object.isRequired,
-}
-
-export default withStyles(styles)(Progress)

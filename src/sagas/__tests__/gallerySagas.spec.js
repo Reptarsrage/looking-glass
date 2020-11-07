@@ -3,7 +3,18 @@ import { put, call, select, cancelled, takeEvery, takeLatest } from 'redux-saga/
 
 import lookingGlassService from 'services/lookingGlassService'
 import fileSystemService from 'services/fileSystemService'
-import * as galleryActions from 'actions/galleryActions'
+import {
+  sortChange,
+  filterChange,
+  searchChange,
+  clearGallery,
+  updateSort,
+  fetchGallery,
+  updateFilter,
+  updateSearch,
+  fetchGalleryFailure,
+  fetchGallerySuccess,
+} from 'actions/galleryActions'
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
@@ -50,7 +61,7 @@ describe('handleSortChange', () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedSortValueId = 'EXPECTED SORT VALUE ID'
-    const initialAction = galleryActions.sortChange(expectedGalleryId, expectedSortValueId)
+    const initialAction = sortChange(expectedGalleryId, expectedSortValueId)
     const initialState = {
       gallery: {
         byId: {
@@ -65,16 +76,16 @@ describe('handleSortChange', () => {
     const dispatched = await recordSaga(handleSortChange, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(galleryActions.clearGallery(expectedGalleryId))
-    expect(dispatched).toContainEqual(galleryActions.updateSort(expectedGalleryId, expectedSortValueId))
-    expect(dispatched).toContainEqual(galleryActions.fetchGallery(expectedGalleryId))
+    expect(dispatched).toContainEqual(clearGallery(expectedGalleryId))
+    expect(dispatched).toContainEqual(updateSort(expectedGalleryId, expectedSortValueId))
+    expect(dispatched).toContainEqual(fetchGallery(expectedGalleryId))
   })
 
   it('when given same values', async () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedSortValueId = 'EXPECTED SORT VALUE ID'
-    const initialAction = galleryActions.sortChange(expectedGalleryId, expectedSortValueId)
+    const initialAction = sortChange(expectedGalleryId, expectedSortValueId)
     const initialState = {
       gallery: {
         byId: {
@@ -98,7 +109,7 @@ describe('handleFilterChange', () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedFilterId = 'EXPECTED FILTER ID'
-    const initialAction = galleryActions.filterChange(expectedGalleryId, expectedFilterId)
+    const initialAction = filterChange(expectedGalleryId, expectedFilterId)
     const initialState = {
       gallery: {
         byId: {
@@ -113,16 +124,16 @@ describe('handleFilterChange', () => {
     const dispatched = await recordSaga(handleFilterChange, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(galleryActions.clearGallery(expectedGalleryId))
-    expect(dispatched).toContainEqual(galleryActions.updateFilter(expectedGalleryId, expectedFilterId))
-    expect(dispatched).toContainEqual(galleryActions.fetchGallery(expectedGalleryId))
+    expect(dispatched).toContainEqual(clearGallery(expectedGalleryId))
+    expect(dispatched).toContainEqual(updateFilter(expectedGalleryId, expectedFilterId))
+    expect(dispatched).toContainEqual(fetchGallery(expectedGalleryId))
   })
 
   it('when given same values', async () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedFilterId = 'EXPECTED FILTER ID'
-    const initialAction = galleryActions.filterChange(expectedGalleryId, expectedFilterId)
+    const initialAction = filterChange(expectedGalleryId, expectedFilterId)
     const initialState = {
       gallery: {
         byId: {
@@ -146,29 +157,29 @@ describe('handleSearchChange', () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedSearchQuery = 'EXPECTED SEARCH QUERY'
-    const action = galleryActions.searchChange(expectedGalleryId, expectedSearchQuery)
+    const action = searchChange(expectedGalleryId, expectedSearchQuery)
 
     // act & assert
     const gen = handleSearchChange(action)
     expect(gen.next().value).toEqual(select(currentSearchQuerySelector, { galleryId: expectedGalleryId }))
-    expect(gen.next().value).toEqual(put(galleryActions.clearGallery(expectedGalleryId)))
-    expect(gen.next().value).toEqual(put(galleryActions.updateSearch(expectedGalleryId, expectedSearchQuery)))
+    expect(gen.next().value).toEqual(put(clearGallery(expectedGalleryId)))
+    expect(gen.next().value).toEqual(put(updateSearch(expectedGalleryId, expectedSearchQuery)))
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
     expect(gen.next().value).toEqual(cancelled())
-    expect(gen.next(false /* NOT cancelled */).value).toEqual(put(galleryActions.fetchGallery(expectedGalleryId)))
+    expect(gen.next(false /* NOT cancelled */).value).toEqual(put(fetchGallery(expectedGalleryId)))
   })
 
   it('when cancelled and given different values', async () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedSearchQuery = 'EXPECTED SEARCH QUERY'
-    const action = galleryActions.searchChange(expectedGalleryId, expectedSearchQuery)
+    const action = searchChange(expectedGalleryId, expectedSearchQuery)
 
     // act & assert
     const gen = handleSearchChange(action)
     expect(gen.next().value).toEqual(select(currentSearchQuerySelector, { galleryId: expectedGalleryId }))
-    expect(gen.next().value).toEqual(put(galleryActions.clearGallery(expectedGalleryId)))
-    expect(gen.next().value).toEqual(put(galleryActions.updateSearch(expectedGalleryId, expectedSearchQuery)))
+    expect(gen.next().value).toEqual(put(clearGallery(expectedGalleryId)))
+    expect(gen.next().value).toEqual(put(updateSearch(expectedGalleryId, expectedSearchQuery)))
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
     expect(gen.next().value).toEqual(cancelled())
     expect(gen.next(true /* cancelled */).value).toBeUndefined()
@@ -178,7 +189,7 @@ describe('handleSearchChange', () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedSearchQuery = 'EXPECTED SEARCH QUERY'
-    const action = galleryActions.searchChange(expectedGalleryId, expectedSearchQuery)
+    const action = searchChange(expectedGalleryId, expectedSearchQuery)
 
     // act & assert
     const gen = handleSearchChange(action)
@@ -195,7 +206,7 @@ describe('handleFetchGallery', () => {
     const expectedSortValueId = 'EXPECTED SORT VALUE ID'
     const expectedFilterId = 'EXPECTED FILTER ID'
     const expectedData = 'EXPECTED DATA'
-    const initialAction = galleryActions.fetchGallery(expectedGalleryId)
+    const initialAction = fetchGallery(expectedGalleryId)
     const initialState = {
       sort: {
         allIds: [expectedSortValueId],
@@ -246,9 +257,7 @@ describe('handleFetchGallery', () => {
     const dispatched = await recordSaga(handleFetchGallery, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(
-      galleryActions.fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData)
-    )
+    expect(dispatched).toContainEqual(fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
     expect(lookingGlassService.fetchItems).toHaveBeenCalledWith(
       'EXPECTED MODULE SITE ID',
       'EXPECTED GALLERY SITE ID',
@@ -277,7 +286,7 @@ describe('handleFetchGallery', () => {
     const filterSiteId = 'EXPECTED FILTER SITE ID'
     const expectedError = new Error('TEST EXCEPTION')
 
-    const action = galleryActions.fetchGallery(expectedGalleryId)
+    const action = fetchGallery(expectedGalleryId)
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
@@ -313,9 +322,7 @@ describe('handleFetchGallery', () => {
       )
     )
 
-    expect(gen.throw(expectedError).value).toEqual(
-      put(galleryActions.fetchGalleryFailure(expectedGalleryId, expectedError))
-    )
+    expect(gen.throw(expectedError).value).toEqual(put(fetchGalleryFailure(expectedGalleryId, expectedError)))
     expect(gen.next().value).toBeUndefined()
     expect(console.error).toHaveBeenCalled()
   })
@@ -336,7 +343,7 @@ describe('handleFetchGallery', () => {
     const filterSiteId = 'EXPECTED FILTER SITE ID'
     const expectedData = 'EXPECTED DATA'
 
-    const action = galleryActions.fetchGallery(expectedGalleryId)
+    const action = fetchGallery(expectedGalleryId)
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
@@ -373,7 +380,7 @@ describe('handleFetchGallery', () => {
     )
 
     expect(gen.next({ data: expectedData }).value).toEqual(
-      put(galleryActions.fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
+      put(fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
     )
     expect(gen.next().value).toBeUndefined()
   })
@@ -395,7 +402,7 @@ describe('handleFetchGallery', () => {
     const filterSiteId = 'EXPECTED FILTER SITE ID'
     const expectedData = 'EXPECTED DATA'
 
-    const action = galleryActions.fetchGallery(expectedGalleryId)
+    const action = fetchGallery(expectedGalleryId)
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
@@ -434,7 +441,7 @@ describe('handleFetchGallery', () => {
     )
 
     expect(gen.next({ data: expectedData }).value).toEqual(
-      put(galleryActions.fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
+      put(fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
     )
     expect(gen.next().value).toBeUndefined()
   })
@@ -455,7 +462,7 @@ describe('handleFetchGallery', () => {
     const filterSiteId = 'EXPECTED FILTER SITE ID'
     const expectedData = 'EXPECTED DATA'
 
-    const action = galleryActions.fetchGallery(expectedGalleryId)
+    const action = fetchGallery(expectedGalleryId)
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
@@ -490,7 +497,7 @@ describe('handleFetchGallery', () => {
     )
 
     expect(gen.next({ data: expectedData }).value).toEqual(
-      put(galleryActions.fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
+      put(fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
     )
     expect(gen.next().value).toBeUndefined()
   })

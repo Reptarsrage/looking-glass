@@ -1,29 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Link from '@material-ui/core/Link'
-import { withStyles } from '@material-ui/core/styles'
-import { useHistory, useLocation } from 'react-router-dom'
+import { makeStyles } from '@material-ui/core/styles'
+import { Link as RouterLink } from 'react-router-dom'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   link: {
     display: 'flex',
   },
-})
+}))
 
-const BreadcrumbItem = ({ title, classes, url }) => {
-  const history = useHistory()
-  const location = useLocation()
+export default function BreadcrumbItem({ title, url }) {
+  const classes = useStyles()
 
-  const handleClick = () => {
-    if (location.pathname === url) {
-      // TODO: Scroll to top maybe?
-    } else {
-      history.push(url)
-    }
-  }
-
+  // TODO: Scroll to top when user clicks on current link
   return (
-    <Link color="inherit" variant="body1" component="button" onClick={handleClick} className={classes.link}>
+    <Link component={RouterLink} color="inherit" to={url} className={classes.link}>
       {title}
     </Link>
   )
@@ -33,9 +25,4 @@ BreadcrumbItem.propTypes = {
   // required
   title: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-export default withStyles(styles)(BreadcrumbItem)

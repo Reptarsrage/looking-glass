@@ -2,17 +2,15 @@ import React from 'react'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Link from '@material-ui/core/Link'
 import HomeIcon from '@material-ui/icons/Home'
-import { createStructuredSelector } from 'reselect'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
-import { compose } from 'redux'
-import { useHistory } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
+import { Link as RouterLink } from 'react-router-dom'
 
 import { breadcrumbsSelector } from 'selectors/breadcrumbSelectors'
 import BreadcrumbItem from './BreadcrumbItem'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   link: {
     display: 'flex',
     cursor: 'pointer',
@@ -22,17 +20,15 @@ const styles = (theme) => ({
     width: 20,
     height: 20,
   },
-})
+}))
 
-const CustomBreadcrumbs = ({ breadcrumbs, classes }) => {
-  const history = useHistory()
-  const navigateHome = () => {
-    history.push('/')
-  }
+export default function CustomBreadcrumbs({ galleryId }) {
+  const classes = useStyles()
+  const breadcrumbs = useSelector((state) => breadcrumbsSelector(state, { galleryId }))
 
   return (
     <Breadcrumbs maxItems={3} aria-label="Breadcrumb">
-      <Link key="Home" color="inherit" className={classes.link} onClick={navigateHome}>
+      <Link component={RouterLink} to="/" key="Home" color="inherit" className={classes.link}>
         <HomeIcon className={classes.icon} />
         Home
       </Link>
@@ -45,24 +41,5 @@ const CustomBreadcrumbs = ({ breadcrumbs, classes }) => {
 
 CustomBreadcrumbs.propTypes = {
   // required
-  // eslint-disable-next-line react/no-unused-prop-types
   galleryId: PropTypes.string.isRequired,
-
-  // selectors
-  breadcrumbs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      url: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  breadcrumbs: breadcrumbsSelector,
-})
-
-export default compose(connect(mapStateToProps), withStyles(styles))(CustomBreadcrumbs)

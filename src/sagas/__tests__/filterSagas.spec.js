@@ -1,7 +1,14 @@
 import { takeEvery } from 'redux-saga/effects'
 
 import lookingGlassService from 'services/lookingGlassService'
-import * as filterActions from 'actions/filterActions'
+import {
+  fetchFilters,
+  fetchItemFilters,
+  fetchFiltersSuccess,
+  fetchFiltersError,
+  fetchItemFiltersError,
+  fetchItemFiltersSuccess,
+} from 'actions/filterActions'
 import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
 import watchFilterSagas, { handleFetchItemFilters, handleFetchFilters } from '../filterSagas'
 import { recordSaga } from './sagaTestHelpers'
@@ -27,7 +34,7 @@ describe('handleFetchItemFilters', () => {
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedItemId = 'EXPECTED ITEM ID'
     const expectedItemSiteId = 'EXPECTED ITEM SITE ID'
-    const initialAction = filterActions.fetchItemFilters(expectedModuleId, expectedItemId)
+    const initialAction = fetchItemFilters(expectedModuleId, expectedItemId)
     const initialState = {
       item: {
         byId: {
@@ -51,9 +58,7 @@ describe('handleFetchItemFilters', () => {
     const dispatched = await recordSaga(handleFetchItemFilters, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(
-      filterActions.fetchItemFiltersSuccess(expectedModuleId, expectedItemId, expectedData)
-    )
+    expect(dispatched).toContainEqual(fetchItemFiltersSuccess(expectedModuleId, expectedItemId, expectedData))
     expect(lookingGlassService.fetchItemFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedItemSiteId, '')
   })
 
@@ -64,7 +69,7 @@ describe('handleFetchItemFilters', () => {
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedItemId = 'EXPECTED ITEM ID'
     const expectedItemSiteId = 'EXPECTED ITEM SITE ID'
-    const initialAction = filterActions.fetchItemFilters(expectedModuleId, expectedItemId)
+    const initialAction = fetchItemFilters(expectedModuleId, expectedItemId)
     const initialState = {
       item: {
         byId: {
@@ -89,9 +94,7 @@ describe('handleFetchItemFilters', () => {
     const dispatched = await recordSaga(handleFetchItemFilters, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(
-      filterActions.fetchItemFiltersError(expectedModuleId, expectedItemId, expectedError)
-    )
+    expect(dispatched).toContainEqual(fetchItemFiltersError(expectedModuleId, expectedItemId, expectedError))
     expect(lookingGlassService.fetchItemFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedItemSiteId, '')
     expect(console.error).toHaveBeenCalled()
   })
@@ -105,7 +108,7 @@ describe('handleFetchFilters', () => {
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
-    const initialAction = filterActions.fetchFilters(expectedFilterSectionId)
+    const initialAction = fetchFilters(expectedFilterSectionId)
     const initialState = {
       filterSection: {
         byId: {
@@ -130,7 +133,7 @@ describe('handleFetchFilters', () => {
     const dispatched = await recordSaga(handleFetchFilters, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(filterActions.fetchFiltersSuccess(expectedFilterSectionId, expectedData))
+    expect(dispatched).toContainEqual(fetchFiltersSuccess(expectedFilterSectionId, expectedData))
     expect(lookingGlassService.fetchFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedFilterSectionSiteId, '')
   })
 
@@ -141,7 +144,7 @@ describe('handleFetchFilters', () => {
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
-    const initialAction = filterActions.fetchFilters(expectedFilterSectionId)
+    const initialAction = fetchFilters(expectedFilterSectionId)
     const initialState = {
       filterSection: {
         byId: {
@@ -167,7 +170,7 @@ describe('handleFetchFilters', () => {
     const dispatched = await recordSaga(handleFetchFilters, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(filterActions.fetchFiltersError(expectedFilterSectionId, expectedError))
+    expect(dispatched).toContainEqual(fetchFiltersError(expectedFilterSectionId, expectedError))
     expect(lookingGlassService.fetchFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedFilterSectionSiteId, '')
     expect(console.error).toHaveBeenCalled()
   })

@@ -1,17 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
+import { useSelector, useDispatch } from 'react-redux'
 import InputBase from '@material-ui/core/InputBase'
 import { fade } from '@material-ui/core/styles/colorManipulator'
 import SearchIcon from '@material-ui/icons/Search'
 
 import { currentSearchQuerySelector } from 'selectors/gallerySelectors'
-import * as galleryActions from 'actions/galleryActions'
+import { searchChange } from 'actions/galleryActions'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -50,11 +48,15 @@ const styles = (theme) => ({
       width: 200,
     },
   },
-})
+}))
 
-const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) => {
+export default function SearchBar({ moduleId, galleryId }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const searchQuery = useSelector((state) => currentSearchQuerySelector(state, { galleryId }))
+
   const handleSearchChange = (e) => {
-    searchChange(galleryId, e.target.value)
+    dispatch(searchChange(galleryId, e.target.value))
   }
 
   if (!moduleId || !galleryId) {
@@ -79,33 +81,8 @@ const SearchBar = ({ searchChange, classes, moduleId, galleryId, searchQuery }) 
   )
 }
 
-SearchBar.defaultProps = {
-  moduleId: null,
-  galleryId: null,
-  searchQuery: null,
-}
-
 SearchBar.propTypes = {
   // required
-  moduleId: PropTypes.string,
-  galleryId: PropTypes.string,
-
-  // actions
-  searchChange: PropTypes.func.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
-
-  // selectors
-  searchQuery: PropTypes.string,
+  moduleId: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  searchQuery: currentSearchQuerySelector,
-})
-
-const mapDispatchToProps = {
-  searchChange: galleryActions.searchChange,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SearchBar)

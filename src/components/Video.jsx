@@ -1,20 +1,21 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { extname } from 'path'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   video: {
     maxWidth: '100%',
     maxHeight: '100%',
     width: 'auto',
     height: 'auto',
   },
-})
+}))
 
-const Video = ({ classes, src, thumb, width, height, title, styleName, ...other }) => {
+export default function Video({ src, thumb, width, height, title, styleName, ...passThroughProps }) {
+  const classes = useStyles()
   const videoRef = useRef(null)
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const Video = ({ classes, src, thumb, width, height, title, styleName, ...other 
       height={height}
       title={title}
       poster={thumb}
-      {...other}
+      {...passThroughProps}
     >
       <source src={src} type={`video/${extname(src).slice(1).split('?')[0] || 'mp4'}`} />
     </motion.video>
@@ -56,13 +57,13 @@ Video.defaultProps = {
 }
 
 Video.propTypes = {
-  classes: PropTypes.object.isRequired,
+  // required
   src: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+
+  // optional
   thumb: PropTypes.string,
   title: PropTypes.string,
   styleName: PropTypes.string,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
 }
-
-export default withStyles(styles)(Video)

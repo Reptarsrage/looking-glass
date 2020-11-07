@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import Fab from '@material-ui/core/Fab'
 import IconButton from '@material-ui/core/IconButton'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { useHistory } from 'react-router-dom'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   fab: {
     margin: theme.spacing(1),
   },
@@ -14,10 +14,12 @@ const styles = (theme) => ({
     marginLeft: -12,
     marginRight: 20,
   },
-})
+}))
 
-const BackButton = ({ color, classes, isFab }) => {
+export default function BackButton({ color, isFab }) {
+  const classes = useStyles()
   const history = useHistory()
+
   const navigateBack = () => {
     history.goBack()
   }
@@ -51,9 +53,4 @@ BackButton.propTypes = {
   // optional
   color: PropTypes.string,
   isFab: PropTypes.bool,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-export default withStyles(styles)(BackButton)

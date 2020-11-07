@@ -3,7 +3,7 @@ import { takeEvery } from 'redux-saga/effects'
 
 import { LOGIN } from 'actions/types'
 import lookingGlassService from 'services/lookingGlassService'
-import * as authActions from 'actions/authActions'
+import { login, loginFailure, loginSuccess, refreshSuccess, refreshFailure } from 'actions/authActions'
 import watchAuthSagas, { handleLogin, handleRefresh } from '../authSagas'
 import { recordSaga } from './sagaTestHelpers'
 
@@ -45,7 +45,7 @@ describe('handleRefresh', () => {
     const dispatched = await recordSaga(handleRefresh, expectedModuleId, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(authActions.refreshSuccess(expectedModuleId, expectedData))
+    expect(dispatched).toContainEqual(refreshSuccess(expectedModuleId, expectedData))
     expect(lookingGlassService.refresh).toHaveBeenCalledWith(expectedModuleSiteId, expectedRefreshToken)
   })
 
@@ -115,7 +115,7 @@ describe('handleRefresh', () => {
     const dispatched = await recordSaga(handleRefresh, expectedModuleId, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(authActions.refreshFailure(expectedModuleId, expectedError))
+    expect(dispatched).toContainEqual(refreshFailure(expectedModuleId, expectedError))
     expect(lookingGlassService.refresh).toHaveBeenCalledWith(expectedModuleSiteId, expectedRefreshToken)
     expect(console.error).toHaveBeenCalled()
   })
@@ -129,7 +129,7 @@ describe('handleLogin', () => {
     const expectedUsername = 'EXPECTED USERNAME'
     const expectedPassword = 'EXPECTED PASSWORD'
     const expectedData = 'EXPECTED DATA'
-    const initialAction = authActions.login(expectedModuleId, expectedUsername, expectedPassword)
+    const initialAction = login(expectedModuleId, expectedUsername, expectedPassword)
     const initialState = {
       module: {
         byId: {
@@ -146,7 +146,7 @@ describe('handleLogin', () => {
     const dispatched = await recordSaga(handleLogin, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(authActions.loginSuccess(expectedModuleId, expectedData))
+    expect(dispatched).toContainEqual(loginSuccess(expectedModuleId, expectedData))
     expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, initialAction.payload)
   })
 
@@ -157,7 +157,7 @@ describe('handleLogin', () => {
     const expectedUsername = 'EXPECTED USERNAME'
     const expectedPassword = 'EXPECTED PASSWORD'
     const expectedError = 'EXPECTED DATA'
-    const initialAction = authActions.login(expectedModuleId, expectedUsername, expectedPassword)
+    const initialAction = login(expectedModuleId, expectedUsername, expectedPassword)
     const initialState = {
       module: {
         byId: {
@@ -175,7 +175,7 @@ describe('handleLogin', () => {
     const dispatched = await recordSaga(handleLogin, initialAction, initialState)
 
     // assert
-    expect(dispatched).toContainEqual(authActions.loginFailure(expectedModuleId, expectedError))
+    expect(dispatched).toContainEqual(loginFailure(expectedModuleId, expectedError))
     expect(console.error).toHaveBeenCalled()
     expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, initialAction.payload)
   })

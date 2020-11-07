@@ -1,28 +1,25 @@
 import React, { useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
-import { compose } from 'redux'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import FolderIcon from '@material-ui/icons/Folder'
 import { remote } from 'electron'
 import { useHistory } from 'react-router-dom'
 
 import ModuleItem from 'components/ModuleItem'
-import * as moduleActions from 'actions/moduleActions'
-import * as galleryActions from 'actions/galleryActions'
+import { fetchModules } from 'actions/moduleActions'
+import { setFileSystemDirectory } from 'actions/galleryActions'
 import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from 'selectors/moduleSelectors'
 import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from 'reducers/constants'
 import LoadingIndicator from 'components/LoadingIndicator'
 import titleBar from '../titleBar'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   main: {
     overflow: 'auto',
     flex: '1 1 auto',
@@ -47,15 +44,21 @@ const styles = (theme) => ({
       borderRadius: '4px',
     },
   },
-})
+}))
 
-const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFileSystemDirectory }) => {
+export default function Home() {
+  const classes = useStyles()
   const history = useHistory()
+  const modules = useSelector(modulesSelector)
+  const fetched = useSelector(fetchedSelector)
+  const fetching = useSelector(fetchingSelector)
+  const error = useSelector(errorSelector)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     // fetch modules
     if (!fetching && !fetched) {
-      fetchModules()
+      dispatch(fetchModules())
     }
 
     // Set window title
@@ -66,7 +69,7 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
     remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const directoryPath = filePaths[0]
-        setFileSystemDirectory(directoryPath)
+        dispatch(setFileSystemDirectory(directoryPath))
         const siteId = Buffer.from(directoryPath, 'utf-8').toString('base64')
         const galleryId = generateGalleryId(FILE_SYSTEM_MODULE_ID, siteId)
         history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
@@ -102,36 +105,3 @@ const Home = ({ classes, fetching, fetched, fetchModules, error, modules, setFil
 
   return <main className={classes.main}>{renderModules()}</main>
 }
-
-Home.defaultProps = {
-  error: null,
-}
-
-Home.propTypes = {
-  // selectors
-  modules: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])).isRequired,
-  fetched: PropTypes.bool.isRequired,
-  fetching: PropTypes.bool.isRequired,
-  error: PropTypes.object,
-
-  // actions
-  fetchModules: PropTypes.func.isRequired,
-  setFileSystemDirectory: PropTypes.func.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
-}
-
-const mapStateToProps = createStructuredSelector({
-  modules: modulesSelector,
-  fetched: fetchedSelector,
-  fetching: fetchingSelector,
-  error: errorSelector,
-})
-
-const mapDispatchToProps = {
-  fetchModules: moduleActions.fetchModules,
-  setFileSystemDirectory: galleryActions.setFileSystemDirectory,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Home)

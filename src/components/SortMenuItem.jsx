@@ -1,32 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Popover from '@material-ui/core/Popover'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux'
 import clsx from 'clsx'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
 import { valueByIdSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 import NestedSortMenuItem from './NestedSortMenuItem'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   icon: {
     justifyContent: 'flex-end',
   },
   secondIcon: {
     marginLeft: '-20px',
   },
-})
+}))
 
-const SortMenuItem = ({ classes, value, valueId, onClick, valueIsCurrentlySelected, galleryId, moduleId }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null)
+export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) {
+  const classes = useStyles()
+  const value = useSelector((state) => valueByIdSelector(state, { valueId }))
+  const valueIsCurrentlySelected = useSelector((state) =>
+    valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
+  )
+
+  const [anchorEl, setAnchorEl] = useState(null)
   const nestedValues = value.values || []
   const ariaId = `${valueId}-nested-sort-menu`
   const hasNestedValues = nestedValues.length > 0
@@ -90,28 +94,16 @@ const SortMenuItem = ({ classes, value, valueId, onClick, valueIsCurrentlySelect
   )
 }
 
+SortMenuItem.defaultProps = {
+  onClick: () => {},
+}
+
 SortMenuItem.propTypes = {
   // required
   galleryId: PropTypes.string.isRequired,
   moduleId: PropTypes.string.isRequired,
   valueId: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
 
-  // selectors
-  valueIsCurrentlySelected: PropTypes.bool.isRequired,
-  value: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    values: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
+  // optional
+  onClick: PropTypes.func,
 }
-
-const mapStateToProps = createStructuredSelector({
-  value: valueByIdSelector,
-  valueIsCurrentlySelected: valueIsCurrentlySelectedSelector,
-})
-
-export default compose(connect(mapStateToProps), withStyles(styles))(SortMenuItem)

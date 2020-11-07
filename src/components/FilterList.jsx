@@ -1,15 +1,16 @@
 import React from 'react'
-import { createStructuredSelector } from 'reselect'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import TextField from '@material-ui/core/TextField'
 
 import { filterBySelector } from 'selectors/moduleSelectors'
 import FilterSection from './FilterSection'
 
-function FilterList({ filterSections, onClick }) {
+function FilterList({ moduleId, onClick }) {
+  const filterSections = useSelector((state) => filterBySelector(state, { moduleId }))
   const [search, setSearch] = React.useState('')
+
   const handleChange = (event) => {
     setSearch(event.target.value)
   }
@@ -39,23 +40,13 @@ function FilterList({ filterSections, onClick }) {
 }
 
 FilterList.defaultProps = {
-  onClick: null,
+  onClick: () => {},
 }
 
 FilterList.propTypes = {
   // Required
-  // eslint-disable-next-line react/no-unused-prop-types
   moduleId: PropTypes.string.isRequired,
 
   // optional
   onClick: PropTypes.func,
-
-  // Selectors
-  filterSections: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  filterSections: filterBySelector,
-})
-
-export default connect(mapStateToProps)(FilterList)
