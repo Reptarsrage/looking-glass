@@ -1,30 +1,33 @@
 import React, { useEffect } from 'react'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import List from '@material-ui/core/List'
 import ListSubheader from '@material-ui/core/ListSubheader'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
 import { filterSectionByIdSelector, filterSectionValuesSearchSelector } from 'selectors/filterSectionSelectors'
-import * as filterActions from 'actions/filterActions'
+import { fetchFilters } from 'actions/filterActions'
 import FilterValue from './FilterValue'
 import LoadingIndicator from './LoadingIndicator'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
-})
+}))
 
-const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, onClick, filterValues }) => {
+export default function FilterSection({ filterSectionId, onClick }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const filterSection = useSelector((state) => filterSectionByIdSelector(state, { filterSectionId }))
+  const filterValues = useSelector((state) => filterSectionValuesSearchSelector(state, { filterSectionId }))
+
   const { fetching, fetched, error, name } = filterSection
 
   useEffect(() => {
     if (!fetching && !fetched) {
-      fetchFilters(filterSectionId)
+      dispatch(fetchFilters(filterSectionId))
     }
   })
 
@@ -50,8 +53,7 @@ const FilterSection = ({ filterSection, filterSectionId, fetchFilters, classes, 
 }
 
 FilterSection.defaultProps = {
-  onClick: null,
-  search: null,
+  onClick: () => {},
 }
 
 FilterSection.propTypes = {
@@ -59,34 +61,5 @@ FilterSection.propTypes = {
   filterSectionId: PropTypes.string.isRequired,
 
   // Optional
-  // eslint-disable-next-line react/no-unused-prop-types
-  search: PropTypes.string,
   onClick: PropTypes.func,
-
-  // Selectors
-  filterValues: PropTypes.arrayOf(PropTypes.string).isRequired,
-  filterSection: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    fetching: PropTypes.bool.isRequired,
-    fetched: PropTypes.bool.isRequired,
-    error: PropTypes.object,
-  }).isRequired,
-
-  // Actions
-  fetchFilters: PropTypes.func.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  filterSection: filterSectionByIdSelector,
-  filterValues: filterSectionValuesSearchSelector,
-})
-
-const mapDispatchToProps = {
-  fetchFilters: filterActions.fetchFilters,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(FilterSection)

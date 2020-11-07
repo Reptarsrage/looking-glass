@@ -1,53 +1,32 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Chip from '@material-ui/core/Chip'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { useDispatch, useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 
 import { filterByIdSelector } from 'selectors/filterSelectors'
-import * as galleryActions from 'actions/galleryActions'
+import { filterChange } from 'actions/galleryActions'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   filterItem: {
     margin: theme.spacing(0.5),
   },
-})
+}))
 
-const SelectedFilter = ({ filterChange, galleryId, filter, classes }) => (
-  <Chip
-    className={classes.filterItem}
-    color="primary"
-    label={filter.name}
-    onDelete={() => filterChange(galleryId, null)}
-  />
-)
+export default function SelectedFilter({ galleryId, filterId }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const filter = useSelector((state) => filterByIdSelector(state, { filterId }))
+
+  const onDelete = () => {
+    dispatch(filterChange(galleryId, null))
+  }
+
+  return <Chip className={classes.filterItem} color="primary" label={filter.name} onDelete={onDelete} />
+}
 
 SelectedFilter.propTypes = {
   // required
-  // eslint-disable-next-line react/no-unused-prop-types
   filterId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
-
-  // selectors
-  filter: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-
-  // actions
-  filterChange: PropTypes.func.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  filter: filterByIdSelector,
-})
-
-const mapDispatchToProps = {
-  filterChange: galleryActions.filterChange,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SelectedFilter)

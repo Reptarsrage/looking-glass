@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-import { compose } from 'redux'
 import Avatar from '@material-ui/core/Avatar'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -19,14 +17,13 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import IconButton from '@material-ui/core/IconButton'
-import withStyles from '@material-ui/core/styles/withStyles'
+import { makeStyles } from '@material-ui/core/styles'
 
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
-import * as authActions from 'actions/authActions'
+import { login } from 'actions/authActions'
 import LoadingIndicator from 'components/LoadingIndicator'
-import withRouteParams from 'hocs/WithRouteParams'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   main: {
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
@@ -67,13 +64,18 @@ const styles = (theme) => ({
     position: 'absolute',
     marginLeft: '-12px',
   },
-})
+}))
 
-const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }) => {
+export default function Login({ moduleId, galleryId }) {
+  const classes = useStyles()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const fetched = useSelector((state) => fetchedSelector(state, { moduleId }))
+  const fetching = useSelector((state) => fetchingSelector(state, { moduleId }))
+  const error = useSelector((state) => errorSelector(state, { moduleId }))
+  const dispatch = useDispatch()
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev)
@@ -92,7 +94,7 @@ const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }
   }
 
   const handleSubmit = (event) => {
-    login(moduleId, username, password)
+    dispatch(login(moduleId, username, password))
     event.preventDefault()
   }
 
@@ -177,29 +179,8 @@ const Login = ({ login, fetching, error, fetched, classes, moduleId, galleryId }
   )
 }
 
-Login.defaultProps = {
-  error: null,
-  classes: {},
-}
-
 Login.propTypes = {
+  // required
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
-  login: PropTypes.func.isRequired,
-  fetched: PropTypes.bool.isRequired,
-  fetching: PropTypes.bool.isRequired,
-  error: PropTypes.object,
-  classes: PropTypes.object,
 }
-
-const mapStateToProps = createStructuredSelector({
-  fetched: fetchedSelector,
-  fetching: fetchingSelector,
-  error: errorSelector,
-})
-
-const mapDispatchToProps = {
-  login: authActions.login,
-}
-
-export default withRouteParams(compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Login))

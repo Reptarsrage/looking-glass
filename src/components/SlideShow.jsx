@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
-import { compose } from 'redux'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { useSelector, useDispatch } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import Fab from '@material-ui/core/Fab'
@@ -18,11 +16,11 @@ import {
   modalOpenSelector,
   modalItemSelector,
 } from 'selectors/modalSelectors'
-import * as modalActions from 'actions/modalActions'
+import { modalSetItem } from 'actions/modalActions'
 import Image from './ImageWithZoom'
 import Video from './Video'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   slideShow: {
     width: '100%',
     height: '100%',
@@ -50,7 +48,7 @@ const styles = (theme) => ({
     width: 'auto',
     height: 'auto',
   },
-})
+}))
 
 const variants = {
   enter: (direction) => {
@@ -73,21 +71,28 @@ const variants = {
   },
 }
 
-const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, modalSetItem, animating }) => {
+export default function SlideShow({ animating }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
   const [direction, setDirection] = useState(0)
   const [leaving, setLeaving] = useState(false)
+  const itemId = useSelector(modalItemIdSelector)
+  const modalNext = useSelector(modalNextSelector)
+  const modalPrev = useSelector(modalPrevSelector)
+  const modalOpen = useSelector(modalOpenSelector)
+  const item = useSelector(modalItemSelector)
+  const swipeConfidenceThreshold = 10000
 
   const handleAnimationEnd = () => {
     setLeaving(false)
   }
 
-  const swipeConfidenceThreshold = 10000
   const swipePower = (offset, velocity) => Math.abs(offset) * velocity
 
   const paginate = (id, newDirection) => {
     setLeaving(true)
     setDirection(newDirection)
-    modalSetItem(id)
+    dispatch(modalSetItem(id))
   }
 
   const commonProps = {
@@ -169,34 +174,7 @@ const SlideShow = ({ item, classes, itemId, modalNext, modalPrev, modalOpen, mod
   )
 }
 
-SlideShow.defaultProps = {
-  item: null,
-  itemId: null,
-  modalNext: null,
-  modalPrev: null,
-}
-
 SlideShow.propTypes = {
-  item: PropTypes.object,
-  itemId: PropTypes.string,
-  modalNext: PropTypes.string,
-  modalPrev: PropTypes.string,
-  modalOpen: PropTypes.bool.isRequired,
+  // required
   animating: PropTypes.bool.isRequired,
-  modalSetItem: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  itemId: modalItemIdSelector,
-  modalNext: modalNextSelector,
-  modalPrev: modalPrevSelector,
-  modalOpen: modalOpenSelector,
-  item: modalItemSelector,
-})
-
-const mapDispatchToProps = {
-  modalSetItem: modalActions.modalSetItem,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SlideShow)

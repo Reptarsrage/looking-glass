@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { compose } from 'redux'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
+import { ThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles'
+import { useDispatch, useSelector } from 'react-redux'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
@@ -17,7 +15,7 @@ import { Color } from 'custom-electron-titlebar'
 
 import { darkThemeSelector } from 'selectors/appSelectors'
 import { modalOpenSelector } from 'selectors/modalSelectors'
-import * as appActions from 'actions/appActions'
+import { toggleDarkTheme } from 'actions/appActions'
 import BackButton from 'components/BackButton'
 import Progress from 'components/Progress'
 import titleBar from '../titleBar'
@@ -61,7 +59,7 @@ const lightTheme = createMuiTheme({
   },
 })
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     flex: '1 1 auto',
     display: 'flex',
@@ -81,9 +79,14 @@ const styles = (theme) => ({
       display: 'block',
     },
   },
-})
+}))
 
-const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) => {
+export default function App({ children }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const useDarkTheme = useSelector(darkThemeSelector)
+  const modalOpen = useSelector(modalOpenSelector)
+
   const match = useRouteMatch({ path: '/', exact: true })
 
   useEffect(() => {
@@ -91,10 +94,16 @@ const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) =>
     titleBar.updateBackground(Color.fromHex(theme.palette.background.default))
   }, [useDarkTheme])
 
+  const handleClick = () => {
+    dispatch(toggleDarkTheme())
+  }
+
   return (
-    <MuiThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+    <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
       <CssBaseline />
+
       <Progress />
+
       <AppBar position="static" color="default" className={classes.appBar} style={{ opacity: modalOpen ? '0' : '1' }}>
         <Toolbar>
           {match ? null : <BackButton color="inherit" isFab={false} />}
@@ -103,38 +112,20 @@ const App = ({ children, useDarkTheme, classes, toggleDarkTheme, modalOpen }) =>
           </Typography>
           <div className={classes.grow} />
           <div>
-            <IconButton color="inherit" onClick={toggleDarkTheme}>
+            <IconButton color="inherit" onClick={handleClick}>
               {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
             </IconButton>
           </div>
         </Toolbar>
       </AppBar>
+
       <Container maxWidth={false} className={classes.container}>
         {children}
       </Container>
-    </MuiThemeProvider>
+    </ThemeProvider>
   )
 }
 
-App.defaultProps = {
-  modalOpen: false,
-}
-
 App.propTypes = {
-  toggleDarkTheme: PropTypes.func.isRequired,
-  children: PropTypes.element.isRequired,
-  useDarkTheme: PropTypes.bool.isRequired,
-  classes: PropTypes.object.isRequired,
-  modalOpen: PropTypes.bool,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  useDarkTheme: darkThemeSelector,
-  modalOpen: modalOpenSelector,
-})
-
-const mapDispatchToProps = {
-  toggleDarkTheme: appActions.toggleDarkTheme,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(App)

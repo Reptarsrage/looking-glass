@@ -1,54 +1,49 @@
 import React from 'react'
-import { compose } from 'redux'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import CheckIcon from '@material-ui/icons/Check'
-import { createStructuredSelector } from 'reselect'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 
 import { valueByIdSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   icon: {
     justifyContent: 'flex-end',
   },
-})
+}))
 
-const NestedSortMenuItem = ({ classes, value, onClick, valueIsCurrentlySelected }) => (
-  <ListItem button onClick={onClick}>
-    <ListItemText primary={value.name} />
-    {valueIsCurrentlySelected && (
-      <ListItemIcon className={classes.icon}>
-        <CheckIcon color="primary" />
-      </ListItemIcon>
-    )}
-  </ListItem>
-)
+export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onClick }) {
+  const classes = useStyles()
+  const value = useSelector((state) => valueByIdSelector(state, { valueId }))
+  const valueIsCurrentlySelected = useSelector((state) =>
+    valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
+  )
+
+  return (
+    <ListItem button onClick={onClick}>
+      <ListItemText primary={value.name} />
+      {valueIsCurrentlySelected && (
+        <ListItemIcon className={classes.icon}>
+          <CheckIcon color="primary" />
+        </ListItemIcon>
+      )}
+    </ListItem>
+  )
+}
+
+NestedSortMenuItem.defaultProps = {
+  onClick: () => {},
+}
 
 NestedSortMenuItem.propTypes = {
   // required
-  moduleId: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
-  galleryId: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
-  valueId: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
-  onClick: PropTypes.func.isRequired,
+  moduleId: PropTypes.string.isRequired,
+  galleryId: PropTypes.string.isRequired,
+  valueId: PropTypes.string.isRequired,
 
-  // selectors
-  valueIsCurrentlySelected: PropTypes.bool.isRequired,
-  value: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
+  // optional
+  onClick: PropTypes.func,
 }
-
-const mapStateToProps = createStructuredSelector({
-  value: valueByIdSelector,
-  valueIsCurrentlySelected: valueIsCurrentlySelectedSelector,
-})
-
-export default compose(connect(mapStateToProps), withStyles(styles))(NestedSortMenuItem)

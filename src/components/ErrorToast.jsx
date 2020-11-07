@@ -1,14 +1,14 @@
 import React from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import Snackbar from '@material-ui/core/Snackbar'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import CloseIcon from '@material-ui/icons/Close'
 import ErrorIcon from '@material-ui/icons/Error'
 import clsx from 'clsx'
 import PropTypes from 'prop-types'
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   close: {
     padding: theme.spacing(0.5),
   },
@@ -26,32 +26,36 @@ const styles = (theme) => ({
     alignItems: 'center',
     display: 'flex',
   },
-})
+}))
 
-const ErrorToast = ({ classes, message, onClose, open }) => (
-  <Snackbar
-    anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
-    open={open}
-    autoHideDuration={5000}
-    onClose={onClose}
-  >
-    <SnackbarContent
-      className={classes.error}
-      aria-describedby="client-snackbar"
-      message={
-        <span id="client-snackbar" className={classes.message}>
-          <ErrorIcon className={clsx(classes.icon, classes.iconVariant)} />
-          {message}
-        </span>
-      }
-      action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-          <CloseIcon className={classes.icon} />
-        </IconButton>,
-      ]}
-    />
-  </Snackbar>
-)
+export default function ErrorToast({ message, onClose, open }) {
+  const classes = useStyles()
+
+  return (
+    <Snackbar
+      anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+      open={open}
+      autoHideDuration={5000}
+      onClose={onClose}
+    >
+      <SnackbarContent
+        className={classes.error}
+        aria-describedby="client-snackbar"
+        message={
+          <span id="client-snackbar" className={classes.message}>
+            <ErrorIcon className={clsx(classes.icon, classes.iconVariant)} />
+            {message}
+          </span>
+        }
+        action={[
+          <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+            <CloseIcon className={classes.icon} />
+          </IconButton>,
+        ]}
+      />
+    </Snackbar>
+  )
+}
 
 ErrorToast.defaultProps = {
   message: 'An error occurred',
@@ -64,9 +68,4 @@ ErrorToast.propTypes = {
 
   // optional
   message: PropTypes.string,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-export default withStyles(styles)(ErrorToast)

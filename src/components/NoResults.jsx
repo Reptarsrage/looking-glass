@@ -1,10 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied'
 import Typography from '@material-ui/core/Typography'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   wrapper: {
     alignItems: 'center',
     display: 'flex',
@@ -19,25 +18,23 @@ const styles = () => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-})
+}))
 
-const NoResults = ({ classes }) => (
-  <div className={classes.wrapper}>
-    <div className={classes.row}>
-      <Typography align="center" color="textSecondary" noWrap>
-        <SentimentDissatisfiedIcon style={{ width: '100px', height: '100px' }} />
-      </Typography>
-    </div>
-    <div className={classes.row}>
-      <Typography align="center" color="textSecondary" noWrap variant="h5">
-        No Results
-      </Typography>
-    </div>
-  </div>
-)
+export default function NoResults() {
+  const classes = useStyles()
 
-NoResults.propTypes = {
-  classes: PropTypes.object.isRequired,
+  return (
+    <div className={classes.wrapper}>
+      <div className={classes.row}>
+        <Typography align="center" color="textSecondary" noWrap>
+          <SentimentDissatisfiedIcon style={{ width: '100px', height: '100px' }} />
+        </Typography>
+      </div>
+      <div className={classes.row}>
+        <Typography align="center" color="textSecondary" noWrap variant="h5">
+          No Results
+        </Typography>
+      </div>
+    </div>
+  )
 }
-
-export default withStyles(styles)(NoResults)

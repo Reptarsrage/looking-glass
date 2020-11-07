@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   container: {
     top: 0,
     left: 0,
@@ -18,9 +18,9 @@ const styles = () => ({
     transformOrigin: '0px 0px',
     transform: 'translate(0, 0) scale(1)',
   },
-})
-const ImageWithZoom = ({
-  classes,
+}))
+
+export default function ImageWithZoom({
   enableZoom,
   width,
   height,
@@ -32,8 +32,9 @@ const ImageWithZoom = ({
   initialZoom,
   initialX,
   initialY,
-  ...other
-}) => {
+  ...passThroughProps
+}) {
+  const classes = useStyles()
   const [scale, setScale] = useState(0)
   const [translateX, setTranslateX] = useState(0)
   const [translateY, setTranslateY] = useState(0)
@@ -218,7 +219,7 @@ const ImageWithZoom = ({
     style.cursor = 'grab'
   }
 
-  const otherProps = { ...other }
+  const otherProps = { ...passThroughProps }
   if (zoomedIn) {
     otherProps.drag = undefined // Disable dragging when zoomed
   }
@@ -255,13 +256,12 @@ ImageWithZoom.defaultProps = {
 }
 
 ImageWithZoom.propTypes = {
-  // Required
-  classes: PropTypes.object.isRequired,
+  // required
   src: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 
-  // Optional
+  // optional
   zoom: PropTypes.number,
   maxZoom: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   initialZoom: PropTypes.number,
@@ -271,5 +271,3 @@ ImageWithZoom.propTypes = {
   title: PropTypes.string,
   styleName: PropTypes.string,
 }
-
-export default withStyles(styles)(ImageWithZoom)

@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   container: {
     position: 'relative',
     overflow: 'auto',
@@ -15,10 +15,11 @@ const styles = () => ({
       borderRadius: '4px',
     },
   },
-})
+}))
 
 const withScroll = (WrappedComponent) => {
-  const WithScroll = ({ classes, initialScrollTop, width, height, onScroll, ...passThroughProps }) => {
+  const WithScroll = ({ initialScrollTop, width, height, onScroll, ...passThroughProps }) => {
+    const classes = useStyles()
     const scrollContainerRef = useRef(null)
     const [scrollTop, setScrollTop] = useState(initialScrollTop || 0)
     const [scrollDirection, setScrollDirection] = useState(1)
@@ -74,7 +75,7 @@ const withScroll = (WrappedComponent) => {
     classes: PropTypes.object.isRequired,
   }
 
-  return withStyles(styles)(WithScroll)
+  return WithScroll
 }
 
 export default withScroll

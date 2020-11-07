@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   wrapper: {
     margin: '0',
     padding: '0',
@@ -16,13 +16,17 @@ const styles = () => ({
     height: '100%',
     width: '100%',
   },
-})
+}))
 
-const LoadingIndicator = ({ classes, className, size }) => (
-  <div className={className || classes.wrapper}>
-    <CircularProgress size={size} />
-  </div>
-)
+export default function LoadingIndicator({ className, size }) {
+  const classes = useStyles()
+
+  return (
+    <div className={className || classes.wrapper}>
+      <CircularProgress size={size} />
+    </div>
+  )
+}
 
 LoadingIndicator.defaultProps = {
   size: 100,
@@ -33,9 +37,4 @@ LoadingIndicator.propTypes = {
   // optional
   size: PropTypes.number,
   className: PropTypes.string,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-export default withStyles(styles)(LoadingIndicator)

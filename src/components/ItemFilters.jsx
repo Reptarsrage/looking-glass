@@ -1,12 +1,10 @@
-import React from 'react'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
-import { compose } from 'redux'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
 
-import * as filterActions from 'actions/filterActions'
+import { fetchItemFilters } from 'actions/filterActions'
 import { itemFiltersEnabledSelector, filterBySelector } from 'selectors/moduleSelectors'
 import {
   itemFetchingFiltersSelector,
@@ -18,31 +16,28 @@ import NoResults from './NoResults'
 import ItemFiltersSection from './ItemFiltersSection'
 import LoadingIndicator from './LoadingIndicator'
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   spacer: {
     minWidth: '360px',
     flex: '1 1 auto',
     display: 'flex',
     flexDirection: 'column',
   },
-})
+}))
 
-const ItemFilters = ({
-  classes,
-  itemId,
-  moduleId,
-  fetchItemFilters,
-  itemFiltersEnabled,
-  fetching,
-  fetched,
-  error,
-  filters,
-  filterSections,
-  onClick,
-}) => {
-  React.useEffect(() => {
+export default function ItemFilters({ itemId, moduleId, onClick }) {
+  const classes = useStyles()
+  const itemFiltersEnabled = useSelector((state) => itemFiltersEnabledSelector(state, { moduleId }))
+  const fetching = useSelector((state) => itemFetchingFiltersSelector(state, { itemId }))
+  const fetched = useSelector((state) => itemFetchedFiltersSelector(state, { itemId }))
+  const error = useSelector((state) => itemFetchFiltersErrorSelector(state, { itemId }))
+  const filters = useSelector((state) => itemFiltersSelector(state, { itemId }))
+  const filterSections = useSelector((state) => filterBySelector(state, { moduleId }))
+  const dispatch = useDispatch()
+
+  useEffect(() => {
     if (itemFiltersEnabled && !fetched && !fetching) {
-      fetchItemFilters(moduleId, itemId)
+      dispatch(fetchItemFilters(moduleId, itemId))
     }
   }, [])
 
@@ -79,48 +74,14 @@ const ItemFilters = ({
 }
 
 ItemFilters.defaultProps = {
-  filters: [],
   onClick: () => {},
-  error: null,
-  itemId: null,
-  fetching: false,
-  fetched: false,
 }
 
 ItemFilters.propTypes = {
   // Required
-  itemId: PropTypes.string,
+  itemId: PropTypes.string.isRequired,
   moduleId: PropTypes.string.isRequired,
 
   // Optional
   onClick: PropTypes.func,
-
-  // Selectors
-  itemFiltersEnabled: PropTypes.bool.isRequired,
-  fetching: PropTypes.bool,
-  fetched: PropTypes.bool,
-  filters: PropTypes.arrayOf(PropTypes.string),
-  error: PropTypes.object,
-  filterSections: PropTypes.arrayOf(PropTypes.string).isRequired,
-
-  // Actions
-  fetchItemFilters: PropTypes.func.isRequired,
-
-  // withStyles
-  classes: PropTypes.object.isRequired,
 }
-
-const mapStateToProps = createStructuredSelector({
-  itemFiltersEnabled: itemFiltersEnabledSelector,
-  fetching: itemFetchingFiltersSelector,
-  fetched: itemFetchedFiltersSelector,
-  error: itemFetchFiltersErrorSelector,
-  filters: itemFiltersSelector,
-  filterSections: filterBySelector,
-})
-
-const mapDispatchToProps = {
-  fetchItemFilters: filterActions.fetchItemFilters,
-}
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(ItemFilters)
