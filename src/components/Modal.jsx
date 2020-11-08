@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Fade from '@material-ui/core/Fade'
@@ -26,16 +26,10 @@ import {
 import { moduleDefaultGalleryIdSelector, moduleSupportsItemFiltersSelector } from 'selectors/moduleSelectors'
 import { modalClose, modalClear } from 'actions/modalActions'
 import { filterChange } from 'actions/galleryActions'
-import SlideShow from './SlideShow'
+import ModalTransitionContainer from './ModalTransitionContainer'
 import ItemFilters from './ItemFilters'
 
 const useStyles = makeStyles((theme) => ({
-  modal: {
-    top: '30px', // titleBar height
-    position: 'fixed',
-    zIndex: theme.zIndex.drawer + 2,
-    background: 'transparent',
-  },
   backdrop: {
     position: 'fixed',
     height: '100%',
@@ -186,17 +180,12 @@ export default function Modal({ moduleId }) {
       {modalItem && modalItem.id && (
         <AnimatePresence onExitComplete={handleAnimationComplete}>
           {modalOpen && (
-            <motion.div
+            <ModalTransitionContainer
+              animating={animating}
               initial={initial}
-              animate={{ top: '30px', left: 0, width: '100%', height: 'calc(100% - 30px)' }}
-              exit={initial}
-              transition={{ duration: 0.2 }}
               onAnimationStart={onAnimationStart}
               onAnimationComplete={onAnimationComplete}
-              className={classes.modal}
-            >
-              <SlideShow animating={animating} />
-            </motion.div>
+            />
           )}
         </AnimatePresence>
       )}
