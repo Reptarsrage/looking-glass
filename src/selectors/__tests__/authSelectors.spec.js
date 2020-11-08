@@ -191,3 +191,15 @@ it('authUrlSelector selects expected', () => {
 
   expect(authSelectors.authUrlSelector(expectedState, expectedProps)).toEqual(`/${authType}/${moduleId}/${galleryId}`)
 })
+
+it('authUrlSelector selects expected when null', () => {
+  const moduleId = 'EXPECTED MODULE ID'
+  const galleryId = 'EXPECTED GALLERY ID'
+  const authType = null
+  const expectedProps = { moduleId, galleryId }
+  const expectedState = {
+    module: { byId: { [moduleId]: { authType } } },
+  }
+
+  expect(authSelectors.authUrlSelector(expectedState, expectedProps)).toEqual(null)
+})

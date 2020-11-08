@@ -7,9 +7,9 @@ import { accessTokenSelector } from 'selectors/authSelectors'
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
-  currentSortSelector,
-  currentFilterSelector,
-  currentSearchQuerySelector,
+  gallerySortSelector,
+  galleryFilterSelector,
+  gallerySearchQuerySelector,
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
@@ -36,7 +36,7 @@ export function* handleSortChange(action) {
   const { meta: galleryId, payload: valueId } = action
 
   // select info from the redux store
-  const currentValueId = yield select(currentSortSelector, { galleryId })
+  const currentValueId = yield select(gallerySortSelector, { galleryId })
 
   // if changed, clear and fetch new items
   if (currentValueId !== valueId) {
@@ -54,7 +54,7 @@ export function* handleFilterChange(action) {
   const { meta: galleryId, payload: filterId } = action
 
   // select info from the redux store
-  const currentFilterId = yield select(currentFilterSelector, { galleryId })
+  const currentFilterId = yield select(galleryFilterSelector, { galleryId })
 
   // if changed, clear and fetch new items
   if (currentFilterId !== filterId) {
@@ -72,7 +72,7 @@ export function* handleSearchChange(action) {
   const { meta: galleryId, payload: searchQuery } = action
 
   // select info from the redux store
-  const currentSearchQuery = yield select(currentSearchQuerySelector, { galleryId })
+  const currentSearchQuery = yield select(gallerySearchQuerySelector, { galleryId })
 
   // if changed, clear items
   if (currentSearchQuery !== searchQuery) {
@@ -103,13 +103,13 @@ export function* handleFetchGallery(action) {
     const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
     const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
-    const currentFilterId = yield select(currentFilterSelector, { galleryId })
-    const currentValueId = yield select(currentSortSelector, { galleryId })
-    const currentSearchQuery = yield select(currentSearchQuerySelector, { galleryId })
+    const currentFilterId = yield select(galleryFilterSelector, { galleryId })
+    const currentValueId = yield select(gallerySortSelector, { galleryId })
+    const currentSearchQuery = yield select(gallerySearchQuerySelector, { galleryId })
     const after = yield select(galleryAfterSelector, { galleryId })
     const offset = yield select(galleryOffsetSelector, { galleryId })
-    const defaultSort = yield select(defaultSortValueSelector, { moduleId })
-    const sortValueSiteId = yield select(valueSiteIdSelector, { valueId: currentValueId || defaultSort })
+    const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId })
+    const sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: currentValueId || defaultSort })
     const filterSiteId = yield select(filterSiteIdSelector, { filterId: currentFilterId })
 
     // resolve service

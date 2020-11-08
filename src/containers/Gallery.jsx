@@ -13,7 +13,7 @@ import { debounce } from 'lodash'
 import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
 import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
-import { galleryByIdSelector, itemsInGallerySelector } from 'selectors/gallerySelectors'
+import { gallerySelector, galleryItemsSelector } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
 import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
@@ -56,8 +56,8 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
-  const gallery = useSelector((state) => galleryByIdSelector(state, { galleryId }))
-  const items = useSelector((state) => itemsInGallerySelector(state, { galleryId }))
+  const gallery = useSelector((state) => gallerySelector(state, { galleryId }))
+  const items = useSelector((state) => galleryItemsSelector(state, { galleryId }))
   const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
   const forceRenderItems = useSelector(forceRenderItemsSelector)
   const supportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))

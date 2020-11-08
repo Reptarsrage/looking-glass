@@ -18,9 +18,9 @@ import {
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
-  currentSortSelector,
-  currentFilterSelector,
-  currentSearchQuerySelector,
+  gallerySortSelector,
+  galleryFilterSelector,
+  gallerySearchQuerySelector,
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
@@ -161,7 +161,7 @@ describe('handleSearchChange', () => {
 
     // act & assert
     const gen = handleSearchChange(action)
-    expect(gen.next().value).toEqual(select(currentSearchQuerySelector, { galleryId: expectedGalleryId }))
+    expect(gen.next().value).toEqual(select(gallerySearchQuerySelector, { galleryId: expectedGalleryId }))
     expect(gen.next().value).toEqual(put(clearGallery(expectedGalleryId)))
     expect(gen.next().value).toEqual(put(updateSearch(expectedGalleryId, expectedSearchQuery)))
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
@@ -177,7 +177,7 @@ describe('handleSearchChange', () => {
 
     // act & assert
     const gen = handleSearchChange(action)
-    expect(gen.next().value).toEqual(select(currentSearchQuerySelector, { galleryId: expectedGalleryId }))
+    expect(gen.next().value).toEqual(select(gallerySearchQuerySelector, { galleryId: expectedGalleryId }))
     expect(gen.next().value).toEqual(put(clearGallery(expectedGalleryId)))
     expect(gen.next().value).toEqual(put(updateSearch(expectedGalleryId, expectedSearchQuery)))
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
@@ -193,13 +193,13 @@ describe('handleSearchChange', () => {
 
     // act & assert
     const gen = handleSearchChange(action)
-    expect(gen.next().value).toEqual(select(currentSearchQuerySelector, { galleryId: expectedGalleryId }))
+    expect(gen.next().value).toEqual(select(gallerySearchQuerySelector, { galleryId: expectedGalleryId }))
     expect(gen.next(expectedSearchQuery).value).toBeUndefined()
   })
 })
 
 describe('handleFetchGallery', () => {
-  it('runs successfully', async () => {
+  it('handleFetchGallery runs successfully', async () => {
     // arrange
     const expectedGalleryId = 'EXPECTED GALLERY ID'
     const expectedModuleId = 'EXPECTED MODULE ID'
@@ -308,13 +308,13 @@ describe('handleFetchGallery', () => {
     expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
-    expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
-    expect(gen.next(expectedFilterId).value).toEqual(select(currentSortSelector, galleryProps))
-    expect(gen.next(expectedSortValueId).value).toEqual(select(currentSearchQuerySelector, galleryProps))
+    expect(gen.next(moduleSiteId).value).toEqual(select(galleryFilterSelector, galleryProps))
+    expect(gen.next(expectedFilterId).value).toEqual(select(gallerySortSelector, galleryProps))
+    expect(gen.next(expectedSortValueId).value).toEqual(select(gallerySearchQuerySelector, galleryProps))
     expect(gen.next(currentSearchQuery).value).toEqual(select(galleryAfterSelector, galleryProps))
     expect(gen.next(after).value).toEqual(select(galleryOffsetSelector, galleryProps))
-    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, moduleProps))
-    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { valueId: expectedSortValueId }))
+    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, { ...galleryProps, ...moduleProps }))
+    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { ...galleryProps, valueId: expectedSortValueId }))
     expect(gen.next(sortValueSiteId).value).toEqual(select(filterSiteIdSelector, { filterId: expectedFilterId }))
     expect(gen.next(filterSiteId).value).toEqual(call(handleRefresh, expectedModuleId))
     expect(gen.next().value).toEqual(select(accessTokenSelector, moduleProps))
@@ -365,13 +365,13 @@ describe('handleFetchGallery', () => {
     expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next(expectedGalleryId).value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
-    expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
-    expect(gen.next(expectedFilterId).value).toEqual(select(currentSortSelector, galleryProps))
-    expect(gen.next(expectedSortValueId).value).toEqual(select(currentSearchQuerySelector, galleryProps))
+    expect(gen.next(moduleSiteId).value).toEqual(select(galleryFilterSelector, galleryProps))
+    expect(gen.next(expectedFilterId).value).toEqual(select(gallerySortSelector, galleryProps))
+    expect(gen.next(expectedSortValueId).value).toEqual(select(gallerySearchQuerySelector, galleryProps))
     expect(gen.next(currentSearchQuery).value).toEqual(select(galleryAfterSelector, galleryProps))
     expect(gen.next(after).value).toEqual(select(galleryOffsetSelector, galleryProps))
-    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, moduleProps))
-    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { valueId: expectedSortValueId }))
+    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, { ...galleryProps, ...moduleProps }))
+    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { ...galleryProps, valueId: expectedSortValueId }))
     expect(gen.next(sortValueSiteId).value).toEqual(select(filterSiteIdSelector, { filterId: expectedFilterId }))
     expect(gen.next(filterSiteId).value).toEqual(call(handleRefresh, expectedModuleId))
     expect(gen.next().value).toEqual(select(accessTokenSelector, moduleProps))
@@ -424,14 +424,14 @@ describe('handleFetchGallery', () => {
     expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
-    expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
-    expect(gen.next(expectedFilterId).value).toEqual(select(currentSortSelector, galleryProps))
-    expect(gen.next(expectedSortValueId).value).toEqual(select(currentSearchQuerySelector, galleryProps))
+    expect(gen.next(moduleSiteId).value).toEqual(select(galleryFilterSelector, galleryProps))
+    expect(gen.next(expectedFilterId).value).toEqual(select(gallerySortSelector, galleryProps))
+    expect(gen.next(expectedSortValueId).value).toEqual(select(gallerySearchQuerySelector, galleryProps))
     expect(gen.next(currentSearchQuery).value).toEqual(select(galleryAfterSelector, galleryProps))
     expect(gen.next(after).value).toEqual(select(galleryOffsetSelector, galleryProps))
-    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, moduleProps))
+    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, { ...galleryProps, ...moduleProps }))
     expect(gen.next(expectedDefaultSortValueId).value).toEqual(
-      select(valueSiteIdSelector, { valueId: expectedDefaultSortValueId })
+      select(valueSiteIdSelector, { ...galleryProps, valueId: expectedDefaultSortValueId })
     )
     expect(gen.next(sortValueSiteId).value).toEqual(select(filterSiteIdSelector, { filterId: expectedFilterId }))
     expect(gen.next(filterSiteId).value).toEqual(call(handleRefresh, expectedModuleId))
@@ -482,13 +482,13 @@ describe('handleFetchGallery', () => {
     expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
-    expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
-    expect(gen.next(expectedFilterId).value).toEqual(select(currentSortSelector, galleryProps))
-    expect(gen.next(expectedSortValueId).value).toEqual(select(currentSearchQuerySelector, galleryProps))
+    expect(gen.next(moduleSiteId).value).toEqual(select(galleryFilterSelector, galleryProps))
+    expect(gen.next(expectedFilterId).value).toEqual(select(gallerySortSelector, galleryProps))
+    expect(gen.next(expectedSortValueId).value).toEqual(select(gallerySearchQuerySelector, galleryProps))
     expect(gen.next(currentSearchQuery).value).toEqual(select(galleryAfterSelector, galleryProps))
     expect(gen.next(after).value).toEqual(select(galleryOffsetSelector, galleryProps))
-    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, moduleProps))
-    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { valueId: expectedSortValueId }))
+    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, { ...galleryProps, ...moduleProps }))
+    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { ...galleryProps, valueId: expectedSortValueId }))
     expect(gen.next(sortValueSiteId).value).toEqual(select(filterSiteIdSelector, { filterId: expectedFilterId }))
     expect(gen.next(filterSiteId).value).toEqual(call(handleRefresh, expectedModuleId))
     expect(gen.next().value).toEqual(select(accessTokenSelector, moduleProps))

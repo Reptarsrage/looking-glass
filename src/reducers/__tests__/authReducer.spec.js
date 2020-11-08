@@ -116,6 +116,7 @@ it('should handle FETCH_MODULES_SUCCESS when given modules with auth', () => {
   const state = reducer(undefined, action, mockStore)
 
   // assert
+  expect(mockStore.get).toHaveBeenCalled()
   expect(state.allIds).toEqual([...expectedModuleIds])
   expect(Object.keys(state.byId)).toEqual([...expectedModuleIds])
 })

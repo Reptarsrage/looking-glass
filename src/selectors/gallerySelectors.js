@@ -1,43 +1,29 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialGalleryState } from 'reducers/galleryReducer'
-
+// select props
 const getGalleryId = (_, props) => props.galleryId
 
-export const galleriesStateSelector = (state) => state.gallery || initialState
+// simple state selectors
+export const byIdSelector = (state) => state.gallery.byId
+export const allIdsSelector = (state) => state.gallery.allIds
 
-/** specific gallery */
-export const galleryByIdSelector = createSelector(
-  [galleriesStateSelector, getGalleryId],
-  (state, galleryId) => state.byId[galleryId] || initialGalleryState
+// select from a specific gallery
+export const gallerySelector = createSelector([byIdSelector, getGalleryId], (byId, galleryId) => byId[galleryId])
+export const galleryFetchingSelector = createSelector(gallerySelector, (gallery) => gallery.fetching)
+export const galleryFetchedSelector = createSelector(gallerySelector, (gallery) => gallery.fetched)
+export const galleryErrorSelector = createSelector(gallerySelector, (gallery) => gallery.error)
+export const gallerySiteIdSelector = createSelector(gallerySelector, (gallery) => gallery.siteId)
+export const galleryModuleIdSelector = createSelector(gallerySelector, (gallery) => gallery.moduleId)
+export const galleryParentIdSelector = createSelector(gallerySelector, (gallery) => gallery.parentId)
+export const galleryOffsetSelector = createSelector(gallerySelector, (gallery) => gallery.offset)
+export const galleryAfterSelector = createSelector(gallerySelector, (gallery) => gallery.after)
+export const galleryHasNextSelector = createSelector(gallerySelector, (gallery) => gallery.hasNext)
+export const gallerySearchQuerySelector = createSelector(gallerySelector, (gallery) => gallery.searchQuery)
+export const gallerySortSelector = createSelector(gallerySelector, (gallery) => gallery.currentSort)
+export const galleryFilterSelector = createSelector(gallerySelector, (gallery) => gallery.currentFilter)
+export const galleryItemsSelector = createSelector(gallerySelector, (gallery) => gallery.items)
+export const galleryTitleSelector = createSelector(gallerySelector, (gallery) => gallery.title)
+export const gallerySavedScrollPositionSelector = createSelector(
+  gallerySelector,
+  (gallery) => gallery.savedScrollPosition
 )
-
-/** gallery module ID */
-export const galleryModuleIdSelector = createSelector(galleryByIdSelector, (gallery) => gallery.moduleId)
-
-/** gallery site ID */
-export const gallerySiteIdSelector = createSelector(galleryByIdSelector, (gallery) => gallery.siteId)
-
-/** gallery after */
-export const galleryAfterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.after)
-
-/** gallery offset */
-export const galleryOffsetSelector = createSelector(galleryByIdSelector, (gallery) => gallery.offset)
-
-/** all galleries */
-export const galleriesSelector = createSelector(galleriesStateSelector, (state) => state.allIds)
-
-/** all gallery items */
-export const itemsInGallerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.items)
-
-/** gallery search query value */
-export const currentSearchQuerySelector = createSelector(galleryByIdSelector, (gallery) => gallery.searchQuery)
-
-/** gallery sort value */
-export const currentSortSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentSort)
-
-/** gallery filter value  */
-export const currentFilterSelector = createSelector(galleryByIdSelector, (gallery) => gallery.currentFilter)
-
-/** gallery saved scroll position */
-export const savedScrollPositionSelector = createSelector(galleryByIdSelector, (gallery) => gallery.savedScrollPosition)

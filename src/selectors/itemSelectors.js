@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 
 import { initialState, initialItemState } from 'reducers/itemReducer'
 import { generateGalleryId } from 'reducers/constants'
-import { galleriesStateSelector } from './gallerySelectors'
+import { byIdSelector as galleriesByIdSelector } from './gallerySelectors'
 import { filterSectionByIdSelector } from './filterSectionSelectors'
 import { stateSelector as filterStateSelector } from './filterSelectors'
 
@@ -29,16 +29,19 @@ export const itemDimensionsSelector = createSelector(itemByIdSelector, (item) =>
 }))
 
 /** item gallery URL */
-export const itemGalleryUrlSelector = createSelector([itemByIdSelector, galleriesStateSelector], (item, state) => {
-  if (!item.isGallery) {
-    return null
-  }
+export const itemGalleryUrlSelector = createSelector(
+  [itemByIdSelector, galleriesByIdSelector],
+  (item, galleriesById) => {
+    if (!item.isGallery) {
+      return null
+    }
 
-  const { galleryId, siteId } = item
-  const { moduleId } = state.byId[galleryId]
-  const itemGalleryId = generateGalleryId(moduleId, siteId)
-  return `/gallery/${moduleId}/${itemGalleryId}`
-})
+    const { galleryId, siteId } = item
+    const { moduleId } = galleriesById[galleryId]
+    const itemGalleryId = generateGalleryId(moduleId, siteId)
+    return `/gallery/${moduleId}/${itemGalleryId}`
+  }
+)
 
 /** item filters are pending */
 export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchingFilters)

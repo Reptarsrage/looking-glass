@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
 import { initialState, initialSortState } from 'reducers/sortReducer'
-import { currentSearchQuerySelector, currentSortSelector } from './gallerySelectors'
+import { gallerySearchQuerySelector, gallerySortSelector } from './gallerySelectors'
 import { moduleSelector } from './moduleSelectors'
 
 const getValueId = (_, props) => props.valueId
@@ -13,7 +13,7 @@ export const valuesSelector = createSelector(stateSelector, (state) => state.all
 
 /** specific Value */
 export const valueByIdSelector = createSelector(
-  [stateSelector, getValueId, currentSearchQuerySelector],
+  [stateSelector, getValueId, gallerySearchQuerySelector],
   (state, valueId, searchQuery) => {
     const value = state.byId[valueId] || initialSortState
     if (!value.values) {
@@ -39,7 +39,7 @@ export const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => 
 
 /** all values for a given module */
 export const moduleValuesSelector = createSelector(
-  [moduleSelector, stateSelector, currentSearchQuerySelector],
+  [moduleSelector, stateSelector, gallerySearchQuerySelector],
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different sort values when searching
@@ -53,7 +53,7 @@ export const moduleValuesSelector = createSelector(
 
 /** default value */
 export const defaultSortValueSelector = createSelector(
-  [moduleSelector, stateSelector, currentSearchQuerySelector],
+  [moduleSelector, stateSelector, gallerySearchQuerySelector],
   (module, sortState, searchQuery) => {
     let sortVals = sortState.allIds.filter((id) => sortState.byId[id].moduleId === module.id)
     if (searchQuery) {
@@ -80,7 +80,7 @@ export const defaultSortValueSelector = createSelector(
 )
 
 export const valueIsCurrentlySelectedSelector = createSelector(
-  [defaultSortValueSelector, currentSortSelector, valueByIdSelector],
+  [defaultSortValueSelector, gallerySortSelector, valueByIdSelector],
   (defaultValue, currentlySelectedValue, thisValue) => {
     if (currentlySelectedValue) {
       return (
