@@ -35,7 +35,7 @@ export default function ImageWithZoom({
   ...passThroughProps
 }) {
   const classes = useStyles()
-  const [scale, setScale] = useState(0)
+  const [scale, setScale] = useState(1)
   const [translateX, setTranslateX] = useState(0)
   const [translateY, setTranslateY] = useState(0)
   const [isDragging, setIsDragging] = useState(0)
@@ -50,7 +50,7 @@ export default function ImageWithZoom({
     h: 0,
   }).current
 
-  // Effect to unload image from memory
+  // effect to unload image from memory
   useEffect(() => {
     const img = imageRef.current
     if (!img.hasAttribute('src')) {
@@ -62,7 +62,7 @@ export default function ImageWithZoom({
     }
   }, [])
 
-  // Effect to bootstrap zooming
+  // effect to bootstrap zooming
   useEffect(() => {
     const img = imageRef.current
     if (!enableZoom) {
@@ -74,12 +74,12 @@ export default function ImageWithZoom({
     const w = parseInt(computedStyle.width, 10)
     const h = parseInt(computedStyle.height, 10)
 
-    // Set state
+    // set state
     setScale(1)
     setTranslateX(0)
     setTranslateY(0)
 
-    // Set non-state properties
+    // set non-state properties
     refState.x = 0
     refState.y = 0
     refState.w = w
@@ -221,7 +221,7 @@ export default function ImageWithZoom({
 
   const otherProps = { ...passThroughProps }
   if (zoomedIn) {
-    otherProps.drag = undefined // Disable dragging when zoomed
+    otherProps.drag = undefined // disable dragging when zoomed
   }
 
   return (
