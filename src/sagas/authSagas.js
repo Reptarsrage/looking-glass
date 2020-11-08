@@ -6,6 +6,7 @@ import { moduleSiteIdSelector } from 'selectors/moduleSelectors'
 import { expiresSelector, refreshTokenSelector } from 'selectors/authSelectors'
 import { loginSuccess, loginFailure, refreshSuccess, refreshFailure } from 'actions/authActions'
 import { LOGIN } from 'actions/types'
+import logger from '../logger'
 
 /**
  * helper to check if an access token needs refreshing
@@ -50,7 +51,7 @@ export function* handleRefresh(moduleId) {
     yield put(refreshSuccess(moduleId, data))
   } catch (error) {
     // encountered an error
-    console.error(error, 'Error refreshing authentication token')
+    logger.error(error, 'Error refreshing authentication token')
     yield put(refreshFailure(moduleId, error))
   }
 }
@@ -74,7 +75,7 @@ export function* handleLogin(action) {
     yield put(loginSuccess(moduleId, data))
   } catch (error) {
     // encountered an error
-    console.error(error, 'Error logging in')
+    logger.error(error, 'Error logging in')
     yield put(loginFailure(moduleId, error))
   }
 }

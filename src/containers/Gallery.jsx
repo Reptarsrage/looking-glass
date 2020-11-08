@@ -161,7 +161,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     return <Redirect to={authUrl} />
   }
 
-  // tODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
+  // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
   return (
     <>
       <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={handleDrawerClose}>

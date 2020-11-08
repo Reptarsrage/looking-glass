@@ -13,6 +13,7 @@ import {
   fetchItemFiltersSuccess,
 } from 'actions/filterActions'
 import { handleRefresh } from './authSagas'
+import logger from '../logger'
 
 /**
  * saga to handle fetching filters for an item
@@ -38,7 +39,7 @@ export function* handleFetchItemFilters(action) {
     yield put(fetchItemFiltersSuccess(moduleId, itemId, data))
   } catch (error) {
     // encountered an error
-    console.error(error, 'Error fetching filters')
+    logger.error(error, 'Error fetching filters')
     yield put(fetchItemFiltersError(moduleId, itemId, error))
   }
 }
@@ -69,7 +70,7 @@ export function* handleFetchFilters(action) {
     yield put(fetchFiltersSuccess(filterSectionId, data))
   } catch (error) {
     // encountered an error
-    console.error(error, 'Error fetching filters')
+    logger.error(error, 'Error fetching filters')
     yield put(fetchFiltersError(filterSectionId, error))
   }
 }

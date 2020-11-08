@@ -9,6 +9,8 @@ const imageSizeOfSync = require('image-size')
 const { exec } = require('child_process')
 const os = require('os')
 
+const logger = require('../logger')
+
 // get dimensions of an image file
 const imageSizeOf = promisify(imageSizeOfSync)
 
@@ -22,7 +24,7 @@ function videoSizeOf(fPath) {
       `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 "${fPath}"`,
       (err, stdout) => {
         if (err) {
-          console.error('ffprobe error:', err)
+          logger.error('ffprobe error:', err)
           reject(err)
         }
 
@@ -147,14 +149,14 @@ module.exports = class crawler {
       } else if (type && type.startsWith('video')) {
         size = await videoSizeOf(file)
       } else {
-        // tODO: log?
-        console.warn('Unable to measure file', file)
+        // TODO: log?
+        logger.warn('Unable to measure file', file)
         return
       }
 
       this.markComplete(file, size, isFile, path)
     } catch (err) {
-      console.error('Error getting file dimensions', err)
+      logger.error('Error getting file dimensions', err)
     }
   }
 

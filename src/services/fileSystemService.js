@@ -3,6 +3,7 @@ import { lookup } from 'mime-types'
 import { stringify, parse } from 'querystring'
 
 import Crawler from './directoryCrawler'
+import logger from '../logger'
 
 class FileSystemService {
   constructor() {
@@ -68,13 +69,13 @@ class FileSystemService {
       return { data }
     } catch (err) {
       // deal with the fact the chain failed
-      console.error('Error crawling', err)
+      logger.error('Error crawling', err)
       throw err
     }
   }
 
   fetchFilters = async () => {
-    return { data: [] } // tODO: Implement this
+    return { data: [] } // TODO: Implement this
   }
 }
 

@@ -27,7 +27,7 @@ const installExtensions = async () => {
   const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
   const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]
 
-  return Promise.all(extensions.map(installExtension)).catch(console.error)
+  return Promise.all(extensions.map(installExtension)).catch(log.error)
 }
 
 // fix warning https://github.com/electron/electron/issues/18397

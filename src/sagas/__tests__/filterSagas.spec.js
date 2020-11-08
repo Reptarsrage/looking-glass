@@ -12,6 +12,7 @@ import {
 import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
 import watchFilterSagas, { handleFetchItemFilters, handleFetchFilters } from '../filterSagas'
 import { recordSaga } from './sagaTestHelpers'
+import logger from '../../logger'
 
 jest.mock('services/lookingGlassService')
 
@@ -105,7 +106,7 @@ describe('handleFetchItemFilters', () => {
       },
     }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.fetchItemFilters.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -114,7 +115,7 @@ describe('handleFetchItemFilters', () => {
     // assert
     expect(dispatched).toContainEqual(fetchItemFiltersError(expectedModuleId, expectedItemId, expectedError))
     expect(lookingGlassService.fetchItemFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedItemSiteId, '')
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 })
 
@@ -199,7 +200,7 @@ describe('handleFetchFilters', () => {
       },
     }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.fetchFilters.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -208,6 +209,6 @@ describe('handleFetchFilters', () => {
     // assert
     expect(dispatched).toContainEqual(fetchFiltersError(expectedFilterSectionId, expectedError))
     expect(lookingGlassService.fetchFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedFilterSectionSiteId, '')
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 })

@@ -67,7 +67,7 @@ export default function OAuth({ galleryId, moduleId }) {
 
   const showOauthModal = (authUrl) => {
     return new Promise((resolve, reject) => {
-      // tODO: load these values from service
+      // TODO: load these values from service
       const { state: expectedState } = qs.parse(authUrl)
       const authWindow = new remote.BrowserWindow({
         parent: remote.getCurrentWindow(),

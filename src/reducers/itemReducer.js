@@ -15,6 +15,7 @@ import {
   handleAsyncSuccess,
   handleAsyncError,
 } from './constants'
+import logger from '../logger'
 
 export const initialState = {
   byId: {},
@@ -42,10 +43,7 @@ export const initialItemState = {
 const addItem = (draft, galleryId, moduleId, item) => {
   // quick sanity check
   if (!item.width || !item.height || !item.url) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Invalid item', item)
-    }
-
+    logger.error('Invalid item', item)
     return
   }
 

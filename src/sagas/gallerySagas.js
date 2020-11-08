@@ -27,6 +27,7 @@ import {
   clearGallery,
 } from 'actions/galleryActions'
 import { handleRefresh } from './authSagas'
+import logger from '../logger'
 
 /**
  * saga to handle changes in sort value
@@ -138,7 +139,7 @@ export function* handleFetchGallery(action) {
     yield put(fetchGallerySuccess(moduleId, galleryId, data))
   } catch (error) {
     // encountered an error
-    console.error(error, 'Error fetching gallery')
+    logger.error(error, 'Error fetching gallery')
     yield put(fetchGalleryFailure(galleryId, error))
   }
 }

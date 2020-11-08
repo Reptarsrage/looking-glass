@@ -38,6 +38,7 @@ import watchGallerySagas, {
 } from '../gallerySagas'
 import { handleRefresh } from '../authSagas'
 import { recordSaga } from './sagaTestHelpers'
+import logger from '../../logger'
 
 jest.mock('services/lookingGlassService')
 jest.mock('services/fileSystemService')
@@ -300,7 +301,7 @@ describe('handleFetchGallery', () => {
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
 
     // act & assert
     const gen = handleFetchGallery(action)
@@ -334,7 +335,7 @@ describe('handleFetchGallery', () => {
 
     expect(gen.throw(expectedError).value).toEqual(put(fetchGalleryFailure(expectedGalleryId, expectedError)))
     expect(gen.next().value).toBeUndefined()
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 
   it('uses default gallery', async () => {
@@ -357,7 +358,7 @@ describe('handleFetchGallery', () => {
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
 
     // act & assert
     const gen = handleFetchGallery(action)
@@ -416,7 +417,7 @@ describe('handleFetchGallery', () => {
     const galleryProps = { galleryId: expectedGalleryId }
     const moduleProps = { moduleId: expectedModuleId }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
 
     // act & assert
     const gen = handleFetchGallery(action)

@@ -5,6 +5,7 @@ import { fetchModules, fetchModulesSuccess, fetchModulesFailure } from 'actions/
 import { FETCH_MODULES } from 'actions/types'
 import watchModuleSagas, { handleFetchModules } from '../moduleSagas'
 import { recordSaga } from './sagaTestHelpers'
+import logger from '../../logger'
 
 jest.mock('services/lookingGlassService')
 
@@ -32,7 +33,7 @@ describe('handleFetchModules', () => {
     // arrange
     const expectedError = 'EXPECTED ERROR'
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.fetchModules.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -40,7 +41,7 @@ describe('handleFetchModules', () => {
 
     // assert
     expect(dispatched).toContainEqual(fetchModulesFailure(expectedError))
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
     expect(lookingGlassService.fetchModules).toHaveBeenCalled()
   })
 })

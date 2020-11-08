@@ -6,6 +6,7 @@ import lookingGlassService from 'services/lookingGlassService'
 import { login, loginFailure, loginSuccess, refreshSuccess, refreshFailure } from 'actions/authActions'
 import watchAuthSagas, { handleLogin, handleRefresh } from '../authSagas'
 import { recordSaga } from './sagaTestHelpers'
+import logger from '../../logger'
 
 jest.mock('services/lookingGlassService')
 
@@ -119,7 +120,7 @@ describe('handleRefresh', () => {
       },
     }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.refresh.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -128,7 +129,7 @@ describe('handleRefresh', () => {
     // assert
     expect(dispatched).toContainEqual(refreshFailure(expectedModuleId, expectedError))
     expect(lookingGlassService.refresh).toHaveBeenCalledWith(expectedModuleSiteId, expectedRefreshToken)
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 })
 
@@ -179,7 +180,7 @@ describe('handleLogin', () => {
       },
     }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.login.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -187,7 +188,7 @@ describe('handleLogin', () => {
 
     // assert
     expect(dispatched).toContainEqual(loginFailure(expectedModuleId, expectedError))
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
     expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, initialAction.payload)
   })
 })

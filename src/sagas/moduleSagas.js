@@ -3,6 +3,7 @@ import { put, call, takeEvery } from 'redux-saga/effects'
 import lookingGlassService from 'services/lookingGlassService'
 import { FETCH_MODULES } from 'actions/types'
 import { fetchModulesSuccess, fetchModulesFailure } from 'actions/moduleActions'
+import logger from '../logger'
 
 /**
  * saga to handle fetching modules
@@ -16,7 +17,7 @@ export function* handleFetchModules() {
     yield put(fetchModulesSuccess(data))
   } catch (error) {
     // encountered an error
-    console.error(error, 'Error fetching modules')
+    logger.error(error, 'Error fetching modules')
     yield put(fetchModulesFailure(error))
   }
 }

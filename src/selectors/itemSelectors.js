@@ -5,6 +5,7 @@ import { generateGalleryId } from 'reducers/constants'
 import { byIdSelector as galleriesByIdSelector } from './gallerySelectors'
 import { filterSectionByIdSelector } from './filterSectionSelectors'
 import { stateSelector as filterStateSelector } from './filterSelectors'
+import logger from '../logger'
 
 const getItemId = (_, props) => props.itemId
 
@@ -64,7 +65,7 @@ export const itemFiltersSectionSelector = createSelector(
         return filterState.byId[id].filterSectionId === filterSection.id
       }
 
-      console.warn('Filter not found', id)
+      logger.warn('Filter not found', id)
       return false
     })
 

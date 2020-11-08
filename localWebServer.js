@@ -52,7 +52,7 @@ const createServer = async () => {
         fs.createReadStream(filePath).pipe(res)
       }
     } catch (err) {
-      console.error(err)
+      log.error(err)
       res.writeHead(500)
       res.end()
     }

@@ -103,7 +103,7 @@ export default function Modal({ moduleId }) {
   const drawerClose = (filterId) => {
     setOpen(false)
 
-    // tODO: Something better than this
+    // TODO: Something better than this
     if (filterId) {
       dispatch(modalClose())
       dispatch(filterChange(defaultGalleryId, filterId))
