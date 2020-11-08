@@ -13,7 +13,15 @@ import { debounce } from 'lodash'
 import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
 import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
-import { gallerySelector, galleryItemsSelector } from 'selectors/gallerySelectors'
+import {
+  gallerySavedScrollPositionSelector,
+  galleryTitleSelector,
+  galleryHasNextSelector,
+  galleryItemsSelector,
+  galleryFetchingSelector,
+  galleryFetchedSelector,
+  galleryErrorSelector,
+} from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
 import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
@@ -56,7 +64,6 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
-  const gallery = useSelector((state) => gallerySelector(state, { galleryId }))
   const items = useSelector((state) => galleryItemsSelector(state, { galleryId }))
   const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
   const forceRenderItems = useSelector(forceRenderItemsSelector)
@@ -64,9 +71,13 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const supportsFiltering = useSelector((state) => moduleSupportsFilteringSelector(state, { moduleId }))
   const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
   const authUrl = useSelector((state) => authUrlSelector(state, { moduleId, galleryId }))
+  const hasNext = useSelector((state) => galleryHasNextSelector(state, { galleryId }))
+  const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
+  const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
+  const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
+  const title = useSelector((state) => galleryTitleSelector(state, { galleryId }))
+  const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const dispatch = useDispatch()
-
-  const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery
 
   useEffect(() => {
     // set event listeners
