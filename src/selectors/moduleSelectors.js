@@ -20,7 +20,11 @@ export const modulesSelector = createSelector([allIdsSelector, byIdSelector], (a
 // select from a specific module
 export const moduleSelector = createSelector([byIdSelector, getModuleId], (byId, moduleId) => byId[moduleId])
 export const moduleSiteIdSelector = createSelector(moduleSelector, (module) => module.siteId)
+export const moduleTitleSelector = createSelector(moduleSelector, (module) => module.title)
+export const moduleDescriptionSelector = createSelector(moduleSelector, (module) => module.description)
+export const moduleIconSelector = createSelector(moduleSelector, (module) => module.icon)
 export const moduleOAuthUrlSelector = createSelector(moduleSelector, (module) => module.oAuthUrl)
+export const moduleAuthTypeSelector = createSelector(moduleSelector, (module) => module.authType)
 export const moduleFilterSectionsSelector = createSelector(moduleSelector, (module) => module.filterBy)
 export const moduleSortBySelector = createSelector(moduleSelector, (module) => module.sortBy)
 export const moduleDefaultGalleryIdSelector = createSelector(moduleSelector, (module) => module.defaultGalleryId)

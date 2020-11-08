@@ -62,6 +62,36 @@ it('moduleSiteIdSelector selects expected', () => {
   expect(moduleSelectors.moduleSiteIdSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
+it('moduleTitleSelector selects expected', () => {
+  const expected = 'EXPECTED ERROR'
+  const moduleId = 'EXPECTED MODULE ID'
+
+  const expectedState = { module: { byId: { [moduleId]: { title: expected } } } }
+  const expectedProps = { moduleId }
+
+  expect(moduleSelectors.moduleTitleSelector(expectedState, expectedProps)).toEqual(expected)
+})
+
+it('moduleDescriptionSelector selects expected', () => {
+  const expected = 'EXPECTED ERROR'
+  const moduleId = 'EXPECTED MODULE ID'
+
+  const expectedState = { module: { byId: { [moduleId]: { description: expected } } } }
+  const expectedProps = { moduleId }
+
+  expect(moduleSelectors.moduleDescriptionSelector(expectedState, expectedProps)).toEqual(expected)
+})
+
+it('moduleIconSelector selects expected', () => {
+  const expected = 'EXPECTED ERROR'
+  const moduleId = 'EXPECTED MODULE ID'
+
+  const expectedState = { module: { byId: { [moduleId]: { icon: expected } } } }
+  const expectedProps = { moduleId }
+
+  expect(moduleSelectors.moduleIconSelector(expectedState, expectedProps)).toEqual(expected)
+})
+
 it('moduleOAuthUrlSelector selects expected', () => {
   const expected = 'EXPECTED ERROR'
   const moduleId = 'EXPECTED MODULE ID'
@@ -70,6 +100,16 @@ it('moduleOAuthUrlSelector selects expected', () => {
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleOAuthUrlSelector(expectedState, expectedProps)).toEqual(expected)
+})
+
+it('moduleAuthTypeSelector selects expected', () => {
+  const expected = 'EXPECTED ERROR'
+  const moduleId = 'EXPECTED MODULE ID'
+
+  const expectedState = { module: { byId: { [moduleId]: { authType: expected } } } }
+  const expectedProps = { moduleId }
+
+  expect(moduleSelectors.moduleAuthTypeSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
 it('moduleFilterSectionsSelector selects expected', () => {

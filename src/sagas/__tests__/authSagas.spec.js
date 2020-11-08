@@ -75,9 +75,20 @@ describe('handleRefresh', () => {
   it('should not support refresh', async () => {
     // arrange
     const expectedModuleId = 'EXPECTED MODULE ID'
+    const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
+    }
 
     // act
-    const dispatched = await recordSaga(handleRefresh, expectedModuleId)
+    const dispatched = await recordSaga(handleRefresh, expectedModuleId, initialState)
 
     // assert
     expect(dispatched).toHaveLength(0)

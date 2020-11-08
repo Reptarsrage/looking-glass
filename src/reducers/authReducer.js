@@ -11,7 +11,6 @@ import {
   FETCH_MODULES_SUCCESS,
 } from 'actions/types'
 import {
-  FILE_SYSTEM_MODULE_ID,
   generateModuleId,
   handleAsyncError,
   handleAsyncFetch,
@@ -19,15 +18,7 @@ import {
   initialAsyncState,
 } from './constants'
 
-// allow store to be passed via unit test
-let electronStore
-const getStore = () => {
-  if (!electronStore) {
-    electronStore = new Store()
-  }
-
-  return electronStore
-}
+const electronStore = new Store()
 
 export const initialState = {
   byId: {},
@@ -41,7 +32,7 @@ export const initialAuthState = {
   ...initialAsyncState,
 }
 
-export default produce((draft, action, store = getStore()) => {
+export default produce((draft, action, store = electronStore) => {
   const { type, payload, meta } = action || {}
   const moduleId = meta
 
@@ -49,18 +40,16 @@ export default produce((draft, action, store = getStore()) => {
     case FETCH_MODULES_SUCCESS: {
       const modules = payload
 
-      modules.forEach((module) => {
-        // generate id
-        const id = generateModuleId(module.id)
+      modules
+        .filter((module) => Boolean(module.authType))
+        .forEach((module) => {
+          // generate id
+          const id = generateModuleId(module.id)
 
-        // load from persistent store
-        draft.byId[id] = store.get(id, initialAuthState)
-        draft.allIds.push(id)
-      })
-
-      // add file system
-      draft.byId[FILE_SYSTEM_MODULE_ID] = initialAuthState
-      draft.allIds.push(FILE_SYSTEM_MODULE_ID)
+          // load from persistent store
+          draft.byId[id] = store.get(id, initialAuthState)
+          draft.allIds.push(id)
+        })
 
       break
     }
@@ -70,19 +59,18 @@ export default produce((draft, action, store = getStore()) => {
     }
     case REFRESH_SUCCESS:
     case LOGIN_SUCCESS: {
-      const { expiresIn } = payload
-      const date = moment()
-      date.add(expiresIn, 'seconds')
+      const { expiresIn, accessToken, refreshToken } = payload
+      const expires = moment().add(expiresIn, 'seconds').valueOf()
+
+      draft.byId[moduleId].accessToken = accessToken
+      draft.byId[moduleId].refreshToken = refreshToken
+      draft.byId[moduleId].expires = expires
 
       handleAsyncSuccess(draft.byId[moduleId])
-      draft.byId[moduleId] = {
-        ...draft.byId[moduleId],
-        ...payload,
-        expires: date.valueOf(),
-      }
 
       // save to persistent store
       store.set(moduleId, draft.byId[moduleId])
+
       break
     }
     case REFRESH_FAILURE:
@@ -90,8 +78,7 @@ export default produce((draft, action, store = getStore()) => {
       handleAsyncError(draft.byId[moduleId], payload)
       break
     }
-    default:
-      // nothing to do
-      break
+
+    // no default
   }
 }, initialState)

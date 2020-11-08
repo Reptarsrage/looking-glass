@@ -12,7 +12,7 @@ import { debounce } from 'lodash'
 
 import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
 import { forceRenderItemsSelector } from 'selectors/modalSelectors'
-import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from 'selectors/authSelectors'
+import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
 import { galleryByIdSelector, itemsInGallerySelector } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
 import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
@@ -58,13 +58,12 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
   const gallery = useSelector((state) => galleryByIdSelector(state, { galleryId }))
   const items = useSelector((state) => itemsInGallerySelector(state, { galleryId }))
-  const requiresAuth = useSelector((state) => requiresAuthSelector(state, { moduleId }))
-  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId }))
-  const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
   const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
   const forceRenderItems = useSelector(forceRenderItemsSelector)
   const supportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))
   const supportsFiltering = useSelector((state) => moduleSupportsFilteringSelector(state, { moduleId }))
+  const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
+  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId }))
   const dispatch = useDispatch()
 
   const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery
@@ -124,7 +123,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
 
   const fetchInitialItems = () => {
     // abort if waiting for authentication
-    if (requiresAuth && !isAuthenticated) {
+    if (!isAuthenticated) {
       return
     }
 
@@ -136,7 +135,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
 
   const loadMoreItems = () => {
     // abort if waiting for authentication
-    if (requiresAuth && !isAuthenticated) {
+    if (!isAuthenticated) {
       return
     }
 
@@ -147,7 +146,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   }
 
   // redirect to authenticate
-  if (requiresAuth && !isAuthenticated) {
+  if (!isAuthenticated) {
     return <Redirect to={authUrl} />
   }
 

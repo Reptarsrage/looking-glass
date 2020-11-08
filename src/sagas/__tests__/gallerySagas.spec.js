@@ -208,6 +208,15 @@ describe('handleFetchGallery', () => {
     const expectedData = 'EXPECTED DATA'
     const initialAction = fetchGallery(expectedGalleryId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       sort: {
         allIds: [expectedSortValueId],
         byId: {
@@ -227,6 +236,7 @@ describe('handleFetchGallery', () => {
         },
       },
       module: {
+        allIds: [expectedModuleId],
         byId: {
           [expectedModuleId]: {
             id: expectedModuleId,

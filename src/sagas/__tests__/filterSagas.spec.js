@@ -36,6 +36,15 @@ describe('handleFetchItemFilters', () => {
     const expectedItemSiteId = 'EXPECTED ITEM SITE ID'
     const initialAction = fetchItemFilters(expectedModuleId, expectedItemId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       item: {
         byId: {
           [expectedItemId]: {
@@ -71,6 +80,15 @@ describe('handleFetchItemFilters', () => {
     const expectedItemSiteId = 'EXPECTED ITEM SITE ID'
     const initialAction = fetchItemFilters(expectedModuleId, expectedItemId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       item: {
         byId: {
           [expectedItemId]: {
@@ -110,6 +128,15 @@ describe('handleFetchFilters', () => {
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
     const initialAction = fetchFilters(expectedFilterSectionId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       filterSection: {
         byId: {
           [expectedFilterSectionId]: {
@@ -146,6 +173,15 @@ describe('handleFetchFilters', () => {
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
     const initialAction = fetchFilters(expectedFilterSectionId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       filterSection: {
         byId: {
           [expectedFilterSectionId]: {
