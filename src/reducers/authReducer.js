@@ -18,7 +18,14 @@ import {
   initialAsyncState,
 } from './constants'
 
-const electronStore = new Store()
+let electronStore
+const getStore = () => {
+  if (!electronStore) {
+    electronStore = new Store()
+  }
+
+  return electronStore
+}
 
 export const initialState = {
   byId: {},
@@ -32,7 +39,7 @@ export const initialAuthState = {
   ...initialAsyncState,
 }
 
-export default produce((draft, action, store = electronStore) => {
+export default produce((draft, action, store = getStore()) => {
   const { type, payload, meta } = action || {}
   const moduleId = meta
 
