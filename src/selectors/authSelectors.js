@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
 import { initialState, initialAuthState } from 'reducers/authReducer'
-import { moduleByIdSelector } from './moduleSelectors'
+import { moduleSelector } from './moduleSelectors'
 
 const authState = (state) => state.auth || initialState
 
@@ -29,8 +29,8 @@ export const expiresSelector = createSelector(authByModuleIdSelector, (state) =>
 export const isAuthenticatedSelector = createSelector(authByModuleIdSelector, (state) => state.fetched)
 
 export const authUrlSelector = createSelector(
-  [getModuleId, getGalleryId, moduleByIdSelector],
+  [getModuleId, getGalleryId, moduleSelector],
   (moduleId, galleryId, { authType }) => (authType ? `/${authType}/${moduleId}/${galleryId}` : null)
 )
 
-export const requiresAuthSelector = createSelector([moduleByIdSelector], (module) => !!module.authType)
+export const requiresAuthSelector = createSelector([moduleSelector], (module) => !!module.authType)

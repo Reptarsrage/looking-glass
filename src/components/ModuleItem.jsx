@@ -7,10 +7,10 @@ import Avatar from '@material-ui/core/Avatar'
 import { useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 
-import { moduleByIdSelector } from 'selectors/moduleSelectors'
+import { moduleSelector } from 'selectors/moduleSelectors'
 
 export default function ModuleItem({ moduleId }) {
-  const module = useSelector((state) => moduleByIdSelector(state, { moduleId }))
+  const module = useSelector((state) => moduleSelector(state, { moduleId }))
 
   return (
     <ListItem button component={RouterLink} to={`/gallery/${moduleId}/${module.defaultGalleryId}`}>

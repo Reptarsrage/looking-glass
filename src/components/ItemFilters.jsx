@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
 
 import { fetchItemFilters } from 'actions/filterActions'
-import { itemFiltersEnabledSelector, filterBySelector } from 'selectors/moduleSelectors'
+import { moduleSupportsItemFiltersSelector, moduleFilterSectionsSelector } from 'selectors/moduleSelectors'
 import {
   itemFetchingFiltersSelector,
   itemFetchedFiltersSelector,
@@ -27,12 +27,12 @@ const useStyles = makeStyles(() => ({
 
 export default function ItemFilters({ itemId, moduleId, onClick }) {
   const classes = useStyles()
-  const itemFiltersEnabled = useSelector((state) => itemFiltersEnabledSelector(state, { moduleId }))
+  const itemFiltersEnabled = useSelector((state) => moduleSupportsItemFiltersSelector(state, { moduleId }))
   const fetching = useSelector((state) => itemFetchingFiltersSelector(state, { itemId }))
   const fetched = useSelector((state) => itemFetchedFiltersSelector(state, { itemId }))
   const error = useSelector((state) => itemFetchFiltersErrorSelector(state, { itemId }))
   const filters = useSelector((state) => itemFiltersSelector(state, { itemId }))
-  const filterSections = useSelector((state) => filterBySelector(state, { moduleId }))
+  const filterSections = useSelector((state) => moduleFilterSectionsSelector(state, { moduleId }))
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -78,10 +78,10 @@ ItemFilters.defaultProps = {
 }
 
 ItemFilters.propTypes = {
-  // Required
+  // required
   itemId: PropTypes.string.isRequired,
   moduleId: PropTypes.string.isRequired,
 
-  // Optional
+  // optional
   onClick: PropTypes.func,
 }

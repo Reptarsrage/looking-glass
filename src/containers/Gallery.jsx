@@ -10,7 +10,7 @@ import TuneIcon from '@material-ui/icons/Tune'
 import Drawer from '@material-ui/core/Drawer'
 import { debounce } from 'lodash'
 
-import { supportsSortingSelector, supportsFilteringSelector } from 'selectors/moduleSelectors'
+import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
 import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from 'selectors/authSelectors'
 import { galleryByIdSelector, itemsInGallerySelector } from 'selectors/gallerySelectors'
@@ -63,8 +63,8 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
   const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
   const forceRenderItems = useSelector(forceRenderItemsSelector)
-  const supportsSorting = useSelector((state) => supportsSortingSelector(state, { moduleId }))
-  const supportsFiltering = useSelector((state) => supportsFilteringSelector(state, { moduleId }))
+  const supportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))
+  const supportsFiltering = useSelector((state) => moduleSupportsFilteringSelector(state, { moduleId }))
   const dispatch = useDispatch()
 
   const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery
@@ -76,7 +76,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     // fetch images
     fetchInitialItems()
 
-    // Set window title
+    // set window title
     titleBar.updateTitle(`'The Looking-Glass' - ${title}`)
 
     return () => {
@@ -116,42 +116,42 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     // save position for later
     dispatch(saveScrollPosition(galleryId, scrollTop))
 
-    // Show end of the line toast
+    // show end of the line toast
     if (scrollTop + clientHeight >= scrollHeight - 10 && !hasNext) {
       setShowEndOfScrollToast(true)
     }
   }
 
   const fetchInitialItems = () => {
-    // Abort if waiting for authentication
+    // abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
       return
     }
 
-    // Check if first page is available and not already fetched, and fetch it
+    // check if first page is available and not already fetched, and fetch it
     if (!fetching && !fetched && !error) {
       dispatch(fetchGallery(galleryId))
     }
   }
 
   const loadMoreItems = () => {
-    // Abort if waiting for authentication
+    // abort if waiting for authentication
     if (requiresAuth && !isAuthenticated) {
       return
     }
 
-    // Check if next page is available, and fetch it
+    // check if next page is available, and fetch it
     if (hasNext && !fetching) {
       dispatch(fetchGallery(galleryId))
     }
   }
 
-  // Redirect to authenticate
+  // redirect to authenticate
   if (requiresAuth && !isAuthenticated) {
     return <Redirect to={authUrl} />
   }
 
-  // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
+  // tODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
   return (
     <>
       <Drawer classes={{ paper: classes.drawer }} anchor="right" open={drawerOpen} onClose={handleDrawerClose}>

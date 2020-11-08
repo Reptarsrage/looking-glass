@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 
 import { initialState, initialSortState } from 'reducers/sortReducer'
 import { currentSearchQuerySelector, currentSortSelector } from './gallerySelectors'
-import { moduleByIdSelector } from './moduleSelectors'
+import { moduleSelector } from './moduleSelectors'
 
 const getValueId = (_, props) => props.valueId
 
@@ -39,7 +39,7 @@ export const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => 
 
 /** all values for a given module */
 export const moduleValuesSelector = createSelector(
-  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
+  [moduleSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different sort values when searching
@@ -53,7 +53,7 @@ export const moduleValuesSelector = createSelector(
 
 /** default value */
 export const defaultSortValueSelector = createSelector(
-  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
+  [moduleSelector, stateSelector, currentSearchQuerySelector],
   (module, sortState, searchQuery) => {
     let sortVals = sortState.allIds.filter((id) => sortState.byId[id].moduleId === module.id)
     if (searchQuery) {

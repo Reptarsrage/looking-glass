@@ -24,7 +24,7 @@ import {
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
-import { moduleSiteIdSelector, defaultGalleryIdSelector } from 'selectors/moduleSelectors'
+import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/moduleSelectors'
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
 import { filterSiteIdSelector } from 'selectors/filterSelectors'
 import { accessTokenSelector } from 'selectors/authSelectors'
@@ -295,7 +295,7 @@ describe('handleFetchGallery', () => {
     // act & assert
     const gen = handleFetchGallery(action)
     expect(gen.next().value).toEqual(select(galleryModuleIdSelector, galleryProps))
-    expect(gen.next(expectedModuleId).value).toEqual(select(defaultGalleryIdSelector, moduleProps))
+    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
     expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
@@ -352,7 +352,7 @@ describe('handleFetchGallery', () => {
     // act & assert
     const gen = handleFetchGallery(action)
     expect(gen.next().value).toEqual(select(galleryModuleIdSelector, galleryProps))
-    expect(gen.next(expectedModuleId).value).toEqual(select(defaultGalleryIdSelector, moduleProps))
+    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next(expectedGalleryId).value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
     expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
@@ -411,7 +411,7 @@ describe('handleFetchGallery', () => {
     // act & assert
     const gen = handleFetchGallery(action)
     expect(gen.next().value).toEqual(select(galleryModuleIdSelector, galleryProps))
-    expect(gen.next(expectedModuleId).value).toEqual(select(defaultGalleryIdSelector, moduleProps))
+    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
     expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))
@@ -469,7 +469,7 @@ describe('handleFetchGallery', () => {
     // act & assert
     const gen = handleFetchGallery(action)
     expect(gen.next().value).toEqual(select(galleryModuleIdSelector, galleryProps))
-    expect(gen.next(expectedModuleId).value).toEqual(select(defaultGalleryIdSelector, moduleProps))
+    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
     expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
     expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
     expect(gen.next(moduleSiteId).value).toEqual(select(currentFilterSelector, galleryProps))

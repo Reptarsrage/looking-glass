@@ -13,7 +13,7 @@ import {
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
-import { moduleSiteIdSelector, defaultGalleryIdSelector } from 'selectors/moduleSelectors'
+import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/moduleSelectors'
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
 import { filterSiteIdSelector } from 'selectors/filterSelectors'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
@@ -100,7 +100,7 @@ export function* handleFetchGallery(action) {
   try {
     // select info from the redux store
     const moduleId = yield select(galleryModuleIdSelector, { galleryId })
-    const defaultGalleryId = yield select(defaultGalleryIdSelector, { moduleId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
     const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
     const currentFilterId = yield select(currentFilterSelector, { galleryId })

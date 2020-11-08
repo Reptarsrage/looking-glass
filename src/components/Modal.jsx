@@ -23,7 +23,7 @@ import {
   modalItemSelector,
   modalItemHasFiltersSelector,
 } from 'selectors/modalSelectors'
-import { defaultGalleryIdSelector, itemFiltersEnabledSelector } from 'selectors/moduleSelectors'
+import { moduleDefaultGalleryIdSelector, moduleSupportsItemFiltersSelector } from 'selectors/moduleSelectors'
 import { modalClose, modalClear } from 'actions/modalActions'
 import { filterChange } from 'actions/galleryActions'
 import SlideShow from './SlideShow'
@@ -84,9 +84,9 @@ export default function Modal({ moduleId }) {
   const modalItem = useSelector(modalItemSelector)
   const modalOpen = useSelector(modalOpenSelector)
   const modalBounds = useSelector(modalBoundsSelector)
-  const defaultGalleryId = useSelector((state) => defaultGalleryIdSelector(state, { moduleId }))
+  const defaultGalleryId = useSelector((state) => moduleDefaultGalleryIdSelector(state, { moduleId }))
   const modalItemHasFilters = useSelector(modalItemHasFiltersSelector)
-  const itemFiltersEnabled = useSelector((state) => itemFiltersEnabledSelector(state, { moduleId }))
+  const itemFiltersEnabled = useSelector((state) => moduleSupportsItemFiltersSelector(state, { moduleId }))
 
   const handleAnimationComplete = () => {
     if (!modalOpen) {
@@ -109,7 +109,7 @@ export default function Modal({ moduleId }) {
   const drawerClose = (filterId) => {
     setOpen(false)
 
-    // TODO: Something better than this
+    // tODO: Something better than this
     if (filterId) {
       dispatch(modalClose())
       dispatch(filterChange(defaultGalleryId, filterId))

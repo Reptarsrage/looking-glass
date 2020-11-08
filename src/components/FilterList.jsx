@@ -4,11 +4,11 @@ import { useSelector } from 'react-redux'
 import Divider from '@material-ui/core/Divider'
 import TextField from '@material-ui/core/TextField'
 
-import { filterBySelector } from 'selectors/moduleSelectors'
+import { moduleFilterSectionsSelector } from 'selectors/moduleSelectors'
 import FilterSection from './FilterSection'
 
 export default function FilterList({ moduleId, onClick }) {
-  const filterSections = useSelector((state) => filterBySelector(state, { moduleId }))
+  const filterSections = useSelector((state) => moduleFilterSectionsSelector(state, { moduleId }))
   const [search, setSearch] = React.useState('')
 
   const handleChange = (event) => {
@@ -44,7 +44,7 @@ FilterList.defaultProps = {
 }
 
 FilterList.propTypes = {
-  // Required
+  // required
   moduleId: PropTypes.string.isRequired,
 
   // optional
