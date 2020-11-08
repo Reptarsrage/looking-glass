@@ -34,6 +34,7 @@ export const initialGalleryState = {
   id: null,
   siteId: null,
   moduleId: null,
+  parentId: null,
   offset: 0,
   after: null,
   hasNext: true,
@@ -101,17 +102,14 @@ export default produce((draft, action) => {
       }
 
       // add items
-      draft.byId[galleryId].items = [
-        ...draft.byId[galleryId].items,
-        ...items
-          .filter(({ url, width, height }) => url && width && height) // remove any poorly formatted items
-          .map(({ id }) => generateItemId(galleryId, id)),
-      ]
-
-      // remove duplicates (if any)
-      draft.byId[galleryId].items = draft.byId[galleryId].items.filter(
-        (id, idx) => draft.byId[galleryId].items.indexOf(id) === idx
-      )
+      items
+        .filter(({ url, width, height }) => url && width && height) // remove any poorly formatted items
+        .forEach((item) => {
+          const itemId = generateItemId(galleryId, item.id)
+          if (draft.byId[galleryId].items.indexOf(itemId) < 0) {
+            draft.byId[galleryId].items.push(itemId)
+          }
+        })
 
       // go through any items
       // for any items that are themselves galleries, add them

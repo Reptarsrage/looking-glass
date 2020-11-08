@@ -35,7 +35,7 @@ export const initialModuleState = {
 }
 
 export default produce((draft, action) => {
-  const { type, payload } = action
+  const { type, payload } = action || {}
 
   switch (type) {
     case FETCH_MODULES: {

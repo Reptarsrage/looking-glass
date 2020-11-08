@@ -14,7 +14,7 @@ const mockStore = {
 }
 
 it('should return the initial state', () => {
-  expect(reducer(undefined, {}, mockStore)).toEqual(initialState)
+  expect(reducer(undefined, null)).toEqual(initialState)
 })
 
 it('should handle LOGIN', () => {

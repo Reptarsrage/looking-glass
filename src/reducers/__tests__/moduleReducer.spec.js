@@ -5,7 +5,7 @@ import * as constants from '../constants'
 jest.mock('../constants')
 
 it('should return the initial state', () => {
-  expect(reducer(undefined, {})).toEqual(initialState)
+  expect(reducer(undefined, null)).toEqual(initialState)
 })
 
 it('should handle FETCH_MODULES', () => {
