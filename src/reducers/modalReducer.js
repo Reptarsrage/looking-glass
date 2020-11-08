@@ -32,8 +32,7 @@ export default produce((draft, action) => {
       draft.modalItemId = payload
       break
     }
-    default:
-      // nothing to do
-      break
+
+    // no default
   }
 }, initialState)

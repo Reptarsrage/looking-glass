@@ -186,7 +186,7 @@ export default produce((draft, action) => {
       addGallery(draft, FILE_SYSTEM_MODULE_ID, siteId, basename(directoryPath))
       break
     }
-    default:
-      break // nothing to do
+
+    // no default
   }
 }, initialState)

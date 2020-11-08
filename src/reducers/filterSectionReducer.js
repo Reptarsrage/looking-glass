@@ -76,8 +76,8 @@ export default produce((draft, action) => {
         const filterSectionId = generateFilterSectionId(moduleId, filterId)
         const toAdd = generateFilterId(filterSectionId, id)
         const { values } = draft.byId[filterSectionId]
-        if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
-          draft.byId[filterSectionId].values = [...values, toAdd]
+        if (values.indexOf(toAdd) < 0) {
+          values.push(toAdd)
         }
       })
 
@@ -91,7 +91,7 @@ export default produce((draft, action) => {
         const toAdd = generateFilterId(filterSectionId, id)
         const { values } = draft.byId[filterSectionId]
         if (values.indexOf(toAdd) < 0) {
-          draft.byId[filterSectionId].values = [...values, toAdd]
+          draft.byId[filterSectionId].values.push(toAdd)
         }
       })
 
@@ -112,18 +112,16 @@ export default produce((draft, action) => {
         item.filters.forEach(({ filterId, id }) => {
           const filterSectionId = generateFilterSectionId(moduleId, filterId)
           const toAdd = generateFilterId(filterSectionId, id)
-          if (filterSectionId in draft.byId) {
-            const { values } = draft.byId[filterSectionId]
-            if (filterSectionId in draft.byId && values.indexOf(toAdd) < 0) {
-              draft.byId[filterSectionId].values = [...values, toAdd]
-            }
+          const { values } = draft.byId[filterSectionId]
+          if (values.indexOf(toAdd) < 0) {
+            values.push(toAdd)
           }
         })
       })
 
       break
     }
-    default:
-      break // nothing to do
+
+    // no default
   }
 }, initialState)

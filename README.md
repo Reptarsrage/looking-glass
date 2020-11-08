@@ -63,3 +63,5 @@ yarn package
 - [ ] Add dedicated search page
 - [ ] Add forward and backward navigation buttons
 - [ ] Redesign app bar
+- [ ] Add more consistent "Loading", "Error", "No results" indicators
+- [ ] Add some fun art for the Not Found, Error boundary, ect. screens

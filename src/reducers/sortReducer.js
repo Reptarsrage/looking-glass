@@ -27,7 +27,7 @@ const addSortForModule = (draft, module) => {
   // add sort values
   module.sortBy.forEach((sortValue) => {
     // add nested values
-    if (sortValue.values) {
+    if (Array.isArray(sortValue.values)) {
       sortValue.values.forEach((nestedSortValue) => {
         const nestedId = generateSortId(moduleId, nestedSortValue.id)
         draft.allIds.push(nestedId)
@@ -70,7 +70,7 @@ export default produce((draft, action) => {
       // TODO: add file system sort options
       break
     }
-    default:
-      break // nothing to do
+
+    // no default
   }
 }, initialState)
