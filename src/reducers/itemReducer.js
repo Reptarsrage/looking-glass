@@ -7,7 +7,14 @@ import {
   CLEAR_GALLERY,
   FETCH_ITEM_FILTERS_SUCCESS,
 } from 'actions/types'
-import { generateItemId, generateFilterId, generateFilterSectionId } from './constants'
+import {
+  generateItemId,
+  generateFilterId,
+  generateFilterSectionId,
+  handleAsyncFetch,
+  handleAsyncSuccess,
+  handleAsyncError,
+} from './constants'
 
 export const initialState = {
   byId: {},
@@ -46,13 +53,13 @@ const addItem = (draft, galleryId, moduleId, item) => {
   const itemId = generateItemId(galleryId, item.id)
 
   // translate filters
-  let filters = []
+  const filters = []
   item.filters.forEach(({ filterId, id }) => {
     const filterSectionId = generateFilterSectionId(moduleId, filterId)
     const toAdd = generateFilterId(filterSectionId, id)
 
     if (filters.indexOf(toAdd) < 0) {
-      filters = [...filters, toAdd]
+      filters.push(toAdd)
     }
   })
 
@@ -75,7 +82,7 @@ export default produce((draft, action) => {
 
   switch (type) {
     case CLEAR_GALLERY: {
-      const { galleryId } = meta
+      const galleryId = meta
 
       // remove items
       const galleryItemsToRemove = draft.allIds.filter((id) => draft.byId[id].galleryId === galleryId)
@@ -94,38 +101,32 @@ export default produce((draft, action) => {
     }
     case FETCH_ITEM_FILTERS: {
       const { itemId } = meta
-      draft.byId[itemId].fetchingFilters = true
-      draft.byId[itemId].fetchedFilters = false
-      draft.byId[itemId].fetchFiltersError = null
+      handleAsyncFetch(draft.byId[itemId])
       break
     }
     case FETCH_ITEM_FILTERS_FAILURE: {
       const { itemId } = meta
-      draft.byId[itemId].fetchingFilters = false
-      draft.byId[itemId].fetchedFilters = true
-      draft.byId[itemId].fetchFiltersError = payload
+      handleAsyncError(draft.byId[itemId], payload)
       break
     }
     case FETCH_ITEM_FILTERS_SUCCESS: {
       const { itemId, moduleId } = meta
       const filters = payload
 
-      draft.byId[itemId].fetchingFilters = false
-      draft.byId[itemId].fetchedFilters = true
-      draft.byId[itemId].fetchFiltersError = null
       filters.forEach(({ filterId, id }) => {
         const filterSectionId = generateFilterSectionId(moduleId, filterId)
         const toAdd = generateFilterId(filterSectionId, id)
         const values = draft.byId[itemId].filters
 
         if (values.indexOf(toAdd) < 0) {
-          draft.byId[itemId].filters = [...draft.byId[itemId].filters, toAdd]
+          draft.byId[itemId].filters.push(toAdd)
         }
       })
 
+      handleAsyncSuccess(draft.byId[itemId])
       break
     }
-    default:
-      break // nothing to do
+
+    // no default
   }
 }, initialState)
