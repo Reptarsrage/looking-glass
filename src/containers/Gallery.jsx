@@ -63,7 +63,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const supportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))
   const supportsFiltering = useSelector((state) => moduleSupportsFilteringSelector(state, { moduleId }))
   const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
-  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId }))
+  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId, galleryId }))
   const dispatch = useDispatch()
 
   const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery

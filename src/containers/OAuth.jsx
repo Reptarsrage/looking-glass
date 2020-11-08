@@ -20,7 +20,7 @@ import LoadingIndicator from 'components/LoadingIndicator'
 const useStyles = makeStyles((theme) => ({
   main: {
     width: 'auto',
-    display: 'block', // Fix IE 11 issue.
+    display: 'block', // fix IE 11 issue.
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
     [theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
@@ -67,7 +67,7 @@ export default function OAuth({ galleryId, moduleId }) {
 
   const showOauthModal = (authUrl) => {
     return new Promise((resolve, reject) => {
-      // TODO: load these values from service
+      // tODO: load these values from service
       const { state: expectedState } = qs.parse(authUrl)
       const authWindow = new remote.BrowserWindow({
         parent: remote.getCurrentWindow(),
@@ -117,8 +117,8 @@ export default function OAuth({ galleryId, moduleId }) {
   }
 
   if (fetched) {
-    // Redirect to whatever gallery the user was on before
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
+    // redirect to whatever gallery the user was on before
+    return <Redirect to={`/gallery/${moduleId}/${galleryId}`} />
   }
 
   const isFetching = modalFetching || fetching
@@ -161,7 +161,7 @@ export default function OAuth({ galleryId, moduleId }) {
 }
 
 OAuth.propTypes = {
-  // Route params
+  // route params
   moduleId: PropTypes.string.isRequired,
   galleryId: PropTypes.string.isRequired,
 }
