@@ -11,9 +11,9 @@ import {
  * fetch filters for section
  * @param {string|number} filterSectionId Section ID
  */
-export const fetchFilters = (filterSectionId) => ({
+export const fetchFilters = (moduleId) => ({
   type: FETCH_FILTERS,
-  meta: filterSectionId,
+  meta: moduleId,
 })
 
 /**

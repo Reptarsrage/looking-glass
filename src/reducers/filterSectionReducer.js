@@ -63,8 +63,12 @@ export default produce((draft, action) => {
       break
     }
     case FETCH_FILTERS: {
-      const filterSectionId = meta
-      handleAsyncFetch(draft.byId[filterSectionId])
+      const moduleId = meta
+
+      draft.allIds
+        .filter((id) => draft.byId[id].moduleId === moduleId)
+        .forEach((id) => handleAsyncFetch(draft.byId[id]))
+
       break
     }
     case FETCH_ITEM_FILTERS_SUCCESS: {

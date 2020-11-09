@@ -4,19 +4,19 @@ import { makeStyles } from '@material-ui/core/styles'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import TextField from '@material-ui/core/TextField'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import List from '@material-ui/core/List'
 
 import { filterNameSelector } from 'selectors/filterSelectors'
-import { fetchFilters } from 'actions/filterActions'
+import { fetchItemFilters } from 'actions/filterActions'
 import {
-  sectionCountsSelector,
-  sectionItemsSelector,
-  filtersFetchingSelector,
-  filtersFetchedSelector,
-  filtersErrorSelector,
-} from 'selectors/filterSectionSelectors'
-import { moduleFilterSectionsSelector } from 'selectors/moduleSelectors'
+  itemFiltersSectionItemsSelector,
+  itemFiltersSectionCountsSelector,
+  itemFetchingFiltersSelector,
+  itemFetchedFiltersSelector,
+  itemFetchFiltersErrorSelector,
+} from 'selectors/itemSelectors'
+import { moduleFilterSectionsSelector, moduleSupportsItemFiltersSelector } from 'selectors/moduleSelectors'
 import withResize from 'hocs/WithResize'
 import VirtualGroupedList from './VirtualGroupedList'
 import FilterSectionHeader from './FilterSectionHeader'
@@ -33,10 +33,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick }) {
+function SectionItem({ itemId, itemIndex, sectionIndex, style, moduleId, search, onClick }) {
   const sections = useSelector((state) => moduleFilterSectionsSelector(state, { moduleId }))
   const filterSectionId = sections[sectionIndex]
-  const sectionItems = useSelector((state) => sectionItemsSelector(state, { moduleId, filterSectionId, search }))
+  const sectionItems = useSelector((state) =>
+    itemFiltersSectionItemsSelector(state, { itemId, moduleId, filterSectionId, search })
+  )
   const filterId = sectionItems[itemIndex]
   const name = useSelector((state) => filterNameSelector(state, { filterId }))
 
@@ -52,12 +54,13 @@ SectionItem.propTypes = {
   sectionIndex: PropTypes.number.isRequired,
   style: PropTypes.object.isRequired,
   moduleId: PropTypes.string.isRequired,
+  itemId: PropTypes.string.isRequired,
   search: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 }
 
-function Inner({ moduleId, search, width, height, onClick }) {
-  const sectionCounts = useSelector((state) => sectionCountsSelector(state, { moduleId, search }))
+function Inner({ moduleId, search, width, height, itemId, onClick }) {
+  const sectionCounts = useSelector((state) => itemFiltersSectionCountsSelector(state, { itemId, moduleId, search }))
 
   return (
     <VirtualGroupedList
@@ -68,13 +71,14 @@ function Inner({ moduleId, search, width, height, onClick }) {
       listComponent={List}
       headerComponent={FilterSectionHeader}
       itemComponent={SectionItem}
-      itemData={{ moduleId, search, onClick }}
+      itemData={{ moduleId, search, itemId, onClick }}
     />
   )
 }
 
 Inner.propTypes = {
   moduleId: PropTypes.string.isRequired,
+  itemId: PropTypes.string.isRequired,
   search: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
@@ -83,29 +87,30 @@ Inner.propTypes = {
 
 const InnerWithResize = withResize(Inner)
 
-export default function FilterList({ moduleId, onClick }) {
+export default function FilterList({ moduleId, itemId, onClick }) {
   const classes = useStyles()
-  const dispatch = useDispatch()
-  const fetching = useSelector((state) => filtersFetchingSelector(state, { moduleId }))
-  const fetched = useSelector((state) => filtersFetchedSelector(state, { moduleId }))
-  const error = useSelector((state) => filtersErrorSelector(state, { moduleId }))
   const [search, setSearch] = useState('')
+  const dispatch = useDispatch()
+  const fetching = useSelector((state) => itemFetchingFiltersSelector(state, { itemId }))
+  const fetched = useSelector((state) => itemFetchedFiltersSelector(state, { itemId }))
+  const error = useSelector((state) => itemFetchFiltersErrorSelector(state, { itemId }))
+  const itemFiltersSupported = useSelector((state) => moduleSupportsItemFiltersSelector(state, { moduleId }))
 
   useEffect(() => {
-    if (!fetched && !fetching) {
-      dispatch(fetchFilters(moduleId))
+    if (itemFiltersSupported && !fetched && !fetching) {
+      dispatch(fetchItemFilters(moduleId, itemId))
     }
-  }, [fetched, fetching, moduleId])
+  }, [fetched, fetching, itemFiltersSupported, moduleId, itemId])
 
   const handleFilterChange = (event) => {
     setSearch(event.target.value)
   }
 
-  if (fetching) {
+  if (itemFiltersSupported && fetching) {
     return <LoadingIndicator size={50} />
   }
 
-  if (error) {
+  if (itemFiltersSupported && error) {
     return <span>Error!</span>
   }
 
@@ -122,7 +127,7 @@ export default function FilterList({ moduleId, onClick }) {
       />
 
       <div className={classes.main}>
-        <InnerWithResize moduleId={moduleId} search={search} onClick={onClick} />
+        <InnerWithResize moduleId={moduleId} itemId={itemId} search={search} onClick={onClick} />
       </div>
     </>
   )
@@ -135,6 +140,7 @@ FilterList.defaultProps = {
 FilterList.propTypes = {
   // required
   moduleId: PropTypes.string.isRequired,
+  itemId: PropTypes.string.isRequired,
 
   // optional
   onClick: PropTypes.func,

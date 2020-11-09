@@ -120,14 +120,14 @@ describe('handleFetchItemFilters', () => {
 })
 
 describe('handleFetchFilters', () => {
-  it('should run successfully', async () => {
+  it('zzz should run successfully', async () => {
     // arrange
     const expectedData = 'EXPECTED DATA'
     const expectedModuleId = 'EXPECTED MODULE ID'
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
-    const initialAction = fetchFilters(expectedFilterSectionId)
+    const initialAction = fetchFilters(expectedModuleId)
     const initialState = {
       auth: {
         allIds: [expectedModuleId],
@@ -139,6 +139,7 @@ describe('handleFetchFilters', () => {
         },
       },
       filterSection: {
+        allIds: [expectedFilterSectionId],
         byId: {
           [expectedFilterSectionId]: {
             siteId: expectedFilterSectionSiteId,
@@ -147,9 +148,11 @@ describe('handleFetchFilters', () => {
         },
       },
       module: {
+        allIds: [expectedModuleId],
         byId: {
           [expectedModuleId]: {
             siteId: expectedModuleSiteId,
+            filterBy: [expectedFilterSectionId],
           },
         },
       },
@@ -172,7 +175,7 @@ describe('handleFetchFilters', () => {
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
-    const initialAction = fetchFilters(expectedFilterSectionId)
+    const initialAction = fetchFilters(expectedModuleId)
     const initialState = {
       auth: {
         allIds: [expectedModuleId],
@@ -184,6 +187,7 @@ describe('handleFetchFilters', () => {
         },
       },
       filterSection: {
+        allIds: [expectedFilterSectionId],
         byId: {
           [expectedFilterSectionId]: {
             siteId: expectedFilterSectionSiteId,
@@ -192,9 +196,11 @@ describe('handleFetchFilters', () => {
         },
       },
       module: {
+        allIds: [expectedModuleId],
         byId: {
           [expectedModuleId]: {
             siteId: expectedModuleSiteId,
+            filterBy: [expectedFilterSectionId],
           },
         },
       },

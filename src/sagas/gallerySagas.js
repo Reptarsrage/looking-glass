@@ -111,7 +111,10 @@ export function* handleFetchGallery(action) {
     const offset = yield select(galleryOffsetSelector, { galleryId })
     const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId })
     const sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: currentValueId || defaultSort })
-    const filterSiteId = yield select(filterSiteIdSelector, { filterId: currentFilterId })
+    let filterSiteId
+    if (currentFilterId) {
+      filterSiteId = yield select(filterSiteIdSelector, { filterId: currentFilterId })
+    }
 
     // resolve service
     const service = moduleId === FILE_SYSTEM_MODULE_ID ? fileSystemService : lookingGlassService

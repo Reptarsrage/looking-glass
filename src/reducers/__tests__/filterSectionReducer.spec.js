@@ -36,15 +36,15 @@ it('should handle FETCH_MODULES_SUCCESS', () => {
 
 it('should handle FETCH_FILTERS', () => {
   // arrange
-  const filterSectionId = 'EXPECTED FILTER SECTION ID'
-  const action = fetchFilters(filterSectionId)
-  const state = { byId: { [filterSectionId]: 'EXPECTED' } }
+  const moduleId = 'EXPECTED MODULE ID'
+  const action = fetchFilters(moduleId)
+  const state = { allIds: [1], byId: { 1: { test: 'EXPECTED', moduleId } } }
 
   // act
   reducer(state, action)
 
   // assert
-  expect(constants.handleAsyncFetch).toHaveBeenCalledWith('EXPECTED')
+  expect(constants.handleAsyncFetch).toHaveBeenCalled()
 })
 
 describe('should handle FETCH_ITEM_FILTERS_SUCCESS', () => {

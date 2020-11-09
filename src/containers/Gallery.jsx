@@ -40,15 +40,11 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: '1',
   },
   drawer: {
+    padding: theme.spacing(1),
+    display: 'flex',
+    flexDirection: 'column',
     minWidth: '360px',
-    '&::-webkit-scrollbar': {
-      width: '5px',
-      backgroundColor: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#d5d5d5',
-      borderRadius: '2px',
-    },
+    height: 'calc(100% - 30px)',
   },
   extendedIcon: {
     marginRight: theme.spacing(1),

@@ -27,7 +27,7 @@ import { moduleDefaultGalleryIdSelector, moduleSupportsItemFiltersSelector } fro
 import { modalClose, modalClear } from 'actions/modalActions'
 import { filterChange } from 'actions/galleryActions'
 import ModalTransitionContainer from './ModalTransitionContainer'
-import ItemFilters from './ItemFilters'
+import ItemFilterList from './ItemFilterList'
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -38,6 +38,13 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     zIndex: theme.zIndex.drawer + 1,
     background: 'rgba(0,0,0,1)',
+  },
+  drawer: {
+    padding: theme.spacing(1),
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: '360px',
+    height: 'calc(100% - 30px)',
   },
   button: {
     top: '46px', // 16 + titleBar height
@@ -173,8 +180,8 @@ export default function Modal({ moduleId }) {
         </Zoom>
       )}
 
-      <Drawer anchor="right" open={open} onClose={() => drawerClose()}>
-        {modalItem.id && <ItemFilters moduleId={moduleId} itemId={modalItem.id} onClick={drawerClose} />}
+      <Drawer classes={{ paper: classes.drawer }} anchor="right" open={open} onClose={() => drawerClose()}>
+        {modalItem.id && <ItemFilterList moduleId={moduleId} itemId={modalItem.id} onClick={drawerClose} />}
       </Drawer>
 
       {modalItem && modalItem.id && (

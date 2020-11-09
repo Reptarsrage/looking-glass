@@ -4,7 +4,7 @@ import Chip from '@material-ui/core/Chip'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { filterByIdSelector } from 'selectors/filterSelectors'
+import { filterSelector } from 'selectors/filterSelectors'
 import { filterChange } from 'actions/galleryActions'
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SelectedFilter({ galleryId, filterId }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const filter = useSelector((state) => filterByIdSelector(state, { filterId }))
+  const filter = useSelector((state) => filterSelector(state, { filterId }))
 
   const onDelete = () => {
     dispatch(filterChange(galleryId, null))
