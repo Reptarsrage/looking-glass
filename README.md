@@ -29,6 +29,14 @@ To package apps for the local platform:
 yarn package
 ```
 
+## Release
+
+1. Run `yarn release`
+2. Run `git push --follow-tags origin <branch>`
+3. Craft a new _draft_ release on GitHub with the tag created in Step 1
+4. Create a PR and merge changes
+5. Publish the GitHub release
+
 ## Forked from [Electron React Boilerplate](https://github.com/electron-react-boilerplate)
 
 ## TODO (In no particular order)
