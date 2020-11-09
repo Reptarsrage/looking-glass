@@ -42,8 +42,12 @@ function SectionItem({ itemId, itemIndex, sectionIndex, style, moduleId, search,
   const filterId = sectionItems[itemIndex]
   const name = useSelector((state) => filterNameSelector(state, { filterId }))
 
+  const handleClick = () => {
+    onClick(filterId)
+  }
+
   return (
-    <ListItem button style={style} onClick={onClick}>
+    <ListItem button style={style} onClick={handleClick}>
       <ListItemText primary={name} />
     </ListItem>
   )

@@ -25,10 +25,10 @@ export const filterSectionErrorSelector = createSelector(filterSectionSelector, 
 export const filterSectionDescriptionSelector = createSelector(filterSectionSelector, (section) => section.description)
 export const filtersFetchingSelector = createSelector(
   [moduleFilterSectionsSelector, byIdSelector],
-  (sectionIds, byId) => sectionIds.some((id) => byId[id].fetching)
+  (sectionIds, byId) => sectionIds.every((id) => byId[id].fetching)
 )
 export const filtersFetchedSelector = createSelector([moduleFilterSectionsSelector, byIdSelector], (sectionIds, byId) =>
-  sectionIds.every((id) => byId[id].fetched)
+  sectionIds.some((id) => byId[id].fetched)
 )
 export const filtersErrorSelector = createSelector([moduleFilterSectionsSelector, byIdSelector], (sectionIds, byId) =>
   sectionIds.find((id) => byId[id].error)

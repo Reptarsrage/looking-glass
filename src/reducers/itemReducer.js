@@ -35,9 +35,9 @@ export const initialItemState = {
   url: null,
   thumb: null,
   filters: [],
-  fetchingFilters: false,
-  fetchedFilters: false,
-  fetchFiltersError: null,
+  fetching: false, // filters
+  fetched: false, // filters
+  error: null, // filters
 }
 
 const addItem = (draft, galleryId, moduleId, item) => {

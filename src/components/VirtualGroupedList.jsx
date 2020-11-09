@@ -2,6 +2,7 @@ import { createElement, useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
+import { isValidElementType } from 'react-is'
 
 const useStyles = makeStyles((theme) => ({
   scroll: {
@@ -162,7 +163,16 @@ export default function VirtualGroupedList({
 
 VirtualGroupedList.defaultProps = {
   itemData: {},
-  listComponent: 'ul',
+}
+
+const component = {
+  isRequired: (props, propName) => {
+    if (props[propName] && !isValidElementType(props[propName])) {
+      return new Error(`Invalid prop 'component' supplied to 'Virtualized': the prop is not a valid React component`)
+    }
+
+    return undefined
+  },
 }
 
 VirtualGroupedList.propTypes = {
@@ -171,7 +181,7 @@ VirtualGroupedList.propTypes = {
   sectionCounts: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
   itemSize: PropTypes.number.isRequired,
   itemData: PropTypes.object,
-  listComponent: PropTypes.node,
-  headerComponent: PropTypes.node.isRequired,
-  itemComponent: PropTypes.node.isRequired,
+  listComponent: component.isRequired,
+  headerComponent: component.isRequired,
+  itemComponent: component.isRequired,
 }

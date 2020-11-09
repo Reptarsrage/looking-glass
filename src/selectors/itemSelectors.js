@@ -46,13 +46,13 @@ export const itemGalleryUrlSelector = createSelector(
 )
 
 /** item filters are pending */
-export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchingFilters)
+export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetching)
 
 /** item filters are fetched */
-export const itemFetchedFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetchedFilters)
+export const itemFetchedFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetched)
 
 /** item filters error */
-export const itemFetchFiltersErrorSelector = createSelector(itemByIdSelector, (item) => item.fetchFiltersError)
+export const itemFetchFiltersErrorSelector = createSelector(itemByIdSelector, (item) => item.error)
 
 /** item filters */
 export const itemFiltersSelector = createSelector(itemByIdSelector, (item) => item.filters)
