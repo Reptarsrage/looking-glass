@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/reptarsrage/looking-glass/compare/v0.0.3...v0.0.4) (2020-11-09)
+
+### Features
+
+- adding ability to toggle caption on and off ([88c8c1a](https://github.com/reptarsrage/looking-glass/commit/88c8c1af0f7b1d2d86401e3345701f1c336112c3))
+- adding support for local directories in file explorer ([f3f8bd1](https://github.com/reptarsrage/looking-glass/commit/f3f8bd1ea034bb55597fbe460f386dc55d0b5633))
+- adding virtualized, grouped filters ([0c851a8](https://github.com/reptarsrage/looking-glass/commit/0c851a83ce167ffb8fb0113e7b8623cc475fb839))
+- switching to @reach/router for navigation ([b3c2e41](https://github.com/reptarsrage/looking-glass/commit/b3c2e4115ee14042448a7981a52e0538d047f2bc))
+
+### Bug Fixes
+
+- fix drawer overlap with title bar ([12a97ac](https://github.com/reptarsrage/looking-glass/commit/12a97ac4714998604c8925016d49859f5340b4b1))
+- fixing breaking change with useEffect in React 17 ([92e2431](https://github.com/reptarsrage/looking-glass/commit/92e243154685a819fc38709a13582990b9be611d))
+- fixing bug with missing auth galleryID ([c9ade66](https://github.com/reptarsrage/looking-glass/commit/c9ade669fb7a77374966744d1bc1b0b6a44e67b6))
+- fixing bugs with the new filter section stuff ([c88048f](https://github.com/reptarsrage/looking-glass/commit/c88048fb39b27d72dea63ffd2c7d0f912c74f61b))
+- fixing electron store persist ([8ce9a8c](https://github.com/reptarsrage/looking-glass/commit/8ce9a8c679980619a5757ab8a9d8dd60ff54eb44))
+- fixing issue with switching between themes ([9965958](https://github.com/reptarsrage/looking-glass/commit/9965958c6e6b109c34f83258f7f958db49fda932))
+- fixing issues with artifactory urls showing up in yarn lockfile ([34480ca](https://github.com/reptarsrage/looking-glass/commit/34480ca0c7da54af117c9ffcd95e5be2999f5c4f))
+- fixing scripts path typo ([79d515a](https://github.com/reptarsrage/looking-glass/commit/79d515a635f3bf80b181a97ea6adc70c1efac404))
+- fixing two small typos ([fabd9d1](https://github.com/reptarsrage/looking-glass/commit/fabd9d1dcc114a40381f5b4b4e8ef699d2169a77))
+- fixing whoopsie with default theme ([4df6446](https://github.com/reptarsrage/looking-glass/commit/4df64469066f2d27d28d7cf542df716832743166))
+- initial item scale when modal first opens ([5930d81](https://github.com/reptarsrage/looking-glass/commit/5930d81d1ff431fb598ec6ffa4e11041fb46c783))
+- modal close animation ([9876703](https://github.com/reptarsrage/looking-glass/commit/9876703f69e9872966868dee34768fb269c5d203))
+- reverting bvack to react-router since reach router doesn't play well with electron ([f7b7e68](https://github.com/reptarsrage/looking-glass/commit/f7b7e68bdf6a50988b2c97e53fcb553200b25330))
+
 ### [0.0.3](https://github.com/reptarsrage/looking-glass/compare/v0.0.1...v0.0.3) (2020-09-30)
 
 ### Features
