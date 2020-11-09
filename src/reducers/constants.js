@@ -7,18 +7,18 @@ export const initialAsyncState = {
   error: null,
 }
 
-export const handleAsyncFetch = (_state, draft) => {
+export const handleAsyncFetch = (draft) => {
   draft.fetching = true
   draft.error = null
 }
 
-export const handleAsyncSuccess = (_state, draft) => {
+export const handleAsyncSuccess = (draft) => {
   draft.fetching = false
   draft.fetched = true
   draft.error = null
 }
 
-export const handleAsyncError = (_state, draft, error) => {
+export const handleAsyncError = (draft, error) => {
   draft.fetching = false
   draft.fetched = true
   draft.error = error
@@ -42,8 +42,6 @@ export const FILTER_NAMESPACE = '4d33d42f-49b3-4ec9-865d-a14c6ab8ad2b'
 export const generateModuleId = (moduleId) => v3(moduleId, MODULE_NAMESPACE)
 export const generateItemId = (galleryId, itemId) => v3(galleryId + itemId, ITEM_NAMESPACE)
 export const generateGalleryId = (moduleId, galleryId) => v3(moduleId + galleryId, GALLERY_NAMESPACE)
-export const generateModuleGalleryId = (moduleId, galleryId) => v3(moduleId + galleryId, MODULE_GALLERY_NAMESPACE)
-export const generateGalleryItemId = (galleryId, itemId) => v3(galleryId + itemId, GALLERY_ITEM_NAMESPACE)
 export const generateSortId = (moduleId, sortId) => v3(moduleId + sortId, SORT_NAMESPACE)
 export const generateBreadcrumbId = (moduleId, galleryId) => v3(moduleId + galleryId, BREADCRUMB_NAMESPACE)
 export const generateFilterSectionId = (moduleId, filterSectionId) =>

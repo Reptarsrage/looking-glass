@@ -14,7 +14,7 @@ import {
 } from './types'
 
 /**
- * Fetches gallery items
+ * fetches gallery items
  * @param {string|number} galleryId Gallery ID
  */
 export const fetchGallery = (galleryId) => ({
@@ -23,7 +23,7 @@ export const fetchGallery = (galleryId) => ({
 })
 
 /**
- * Removes all items from gallery
+ * removes all items from gallery
  * @param {string|number} galleryId Gallery ID
  */
 export const clearGallery = (galleryId) => ({
@@ -32,7 +32,7 @@ export const clearGallery = (galleryId) => ({
 })
 
 /**
- * Successfully fetched gallery items
+ * successfully fetched gallery items
  * @param {string|number} moduleId Module ID
  * @param {string|number} galleryId Gallery ID
  * @param {*} gallery Response data
@@ -44,7 +44,7 @@ export const fetchGallerySuccess = (moduleId, galleryId, gallery) => ({
 })
 
 /**
- * Failed to fetch gallery items
+ * failed to fetch gallery items
  * @param {string|number} galleryId Gallery ID
  * @param {Error} error Error data
  */
@@ -55,7 +55,7 @@ export const fetchGalleryFailure = (galleryId, error) => ({
 })
 
 /**
- * User typed in search
+ * user typed in search
  * @param {string|number} galleryId Gallery ID
  * @param {string} searchQuery Search query string
  */
@@ -66,7 +66,7 @@ export const searchChange = (galleryId, searchQuery) => ({
 })
 
 /**
- * Underlying gallery search query has been updated
+ * underlying gallery search query has been updated
  * @param {string|number} galleryId Gallery ID
  * @param {string} searchQuery Search query string
  */
@@ -77,7 +77,7 @@ export const updateSearch = (galleryId, searchQuery) => ({
 })
 
 /**
- * Saves gallery scroll position
+ * saves gallery scroll position
  * @param {string|number} galleryId Gallery ID
  * @param {number} scrollPosition Scroll top value
  */
@@ -88,7 +88,7 @@ export const saveScrollPosition = (galleryId, scrollPosition) => ({
 })
 
 /**
- * User selected a new sort value
+ * user selected a new sort value
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} sortValueId Sort value ID
  */
@@ -99,7 +99,7 @@ export const sortChange = (galleryId, sortValueId) => ({
 })
 
 /**
- * Underlying gallery sort value has been updated
+ * underlying gallery sort value has been updated
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} sortValueId Sort value ID
  */
@@ -110,7 +110,7 @@ export const updateSort = (galleryId, valueId) => ({
 })
 
 /**
- * User selected a new filter value
+ * user selected a new filter value
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} filterId Filter ID
  */
@@ -121,7 +121,7 @@ export const filterChange = (galleryId, filterId) => ({
 })
 
 /**
- * Underlying gallery filter value has been updated
+ * underlying gallery filter value has been updated
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} filterId Filter ID
  */
@@ -132,7 +132,7 @@ export const updateFilter = (galleryId, filterId) => ({
 })
 
 /**
- * File system location has changed
+ * file system location has changed
  * @param {string} directoryPath Path of the directory to browse
  */
 export const setFileSystemDirectory = (directoryPath) => ({

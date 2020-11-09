@@ -1,40 +1,133 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { useSelector } from 'react-redux'
-import Divider from '@material-ui/core/Divider'
+import { makeStyles } from '@material-ui/core/styles'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
 import TextField from '@material-ui/core/TextField'
+import { useDispatch, useSelector } from 'react-redux'
+import List from '@material-ui/core/List'
 
-import { filterBySelector } from 'selectors/moduleSelectors'
-import FilterSection from './FilterSection'
+import { filterNameSelector } from 'selectors/filterSelectors'
+import { fetchFilters } from 'actions/filterActions'
+import {
+  sectionCountsSelector,
+  sectionItemsSelector,
+  filtersFetchingSelector,
+  filtersFetchedSelector,
+  filtersErrorSelector,
+} from 'selectors/filterSectionSelectors'
+import { moduleFilterSectionsSelector } from 'selectors/moduleSelectors'
+import withResize from 'hocs/WithResize'
+import VirtualGroupedList from './VirtualGroupedList'
+import FilterSectionHeader from './FilterSectionHeader'
+import LoadingIndicator from './LoadingIndicator'
 
-function FilterList({ moduleId, onClick }) {
-  const filterSections = useSelector((state) => filterBySelector(state, { moduleId }))
-  const [search, setSearch] = React.useState('')
+const useStyles = makeStyles((theme) => ({
+  main: {
+    flex: '1 1 100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  listSection: {
+    backgroundColor: theme.palette.background.paper,
+  },
+}))
 
-  const handleChange = (event) => {
+function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick }) {
+  const sections = useSelector((state) => moduleFilterSectionsSelector(state, { moduleId }))
+  const filterSectionId = sections[sectionIndex]
+  const sectionItems = useSelector((state) => sectionItemsSelector(state, { moduleId, filterSectionId, search }))
+  const filterId = sectionItems[itemIndex]
+  const name = useSelector((state) => filterNameSelector(state, { filterId }))
+
+  const handleClick = () => {
+    onClick(filterId)
+  }
+
+  return (
+    <ListItem button style={style} onClick={handleClick}>
+      <ListItemText primary={name} />
+    </ListItem>
+  )
+}
+
+SectionItem.propTypes = {
+  itemIndex: PropTypes.number.isRequired,
+  sectionIndex: PropTypes.number.isRequired,
+  style: PropTypes.object.isRequired,
+  moduleId: PropTypes.string.isRequired,
+  search: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+}
+
+function Inner({ moduleId, search, width, height, onClick }) {
+  const sectionCounts = useSelector((state) => sectionCountsSelector(state, { moduleId, search }))
+
+  return (
+    <VirtualGroupedList
+      height={height}
+      width={width}
+      itemSize={48}
+      sectionCounts={sectionCounts}
+      listComponent={List}
+      headerComponent={FilterSectionHeader}
+      itemComponent={SectionItem}
+      itemData={{ moduleId, search, onClick }}
+    />
+  )
+}
+
+Inner.propTypes = {
+  moduleId: PropTypes.string.isRequired,
+  search: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  onClick: PropTypes.func.isRequired,
+}
+
+const InnerWithResize = withResize(Inner)
+
+export default function FilterList({ moduleId, onClick }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const fetching = useSelector((state) => filtersFetchingSelector(state, { moduleId }))
+  const fetched = useSelector((state) => filtersFetchedSelector(state, { moduleId }))
+  const error = useSelector((state) => filtersErrorSelector(state, { moduleId }))
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    if (!fetched && !fetching) {
+      dispatch(fetchFilters(moduleId))
+    }
+  }, [fetched, fetching, moduleId])
+
+  const handleFilterChange = (event) => {
     setSearch(event.target.value)
+  }
+
+  if (fetching) {
+    return <LoadingIndicator size={50} />
+  }
+
+  if (error) {
+    return <span>Error!</span>
   }
 
   return (
     <>
       <TextField
-        label="Search"
-        placeholder="Search for filters"
+        id="filter"
+        label="Filter items"
         fullWidth
-        margin="normal"
-        style={{ margin: 8 }}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        onChange={handleChange}
+        autoFocus
         value={search}
+        onChange={handleFilterChange}
+        margin="dense"
       />
 
-      {filterSections
-        .map((filterSectionId) => (
-          <FilterSection key={filterSectionId} onClick={onClick} filterSectionId={filterSectionId} search={search} />
-        ))
-        .reduce((p, c) => [...p, <Divider key={`${c.key}-divider`} />, c], [])}
+      <div className={classes.main}>
+        <InnerWithResize moduleId={moduleId} search={search} onClick={onClick} />
+      </div>
     </>
   )
 }
@@ -44,7 +137,7 @@ FilterList.defaultProps = {
 }
 
 FilterList.propTypes = {
-  // Required
+  // required
   moduleId: PropTypes.string.isRequired,
 
   // optional

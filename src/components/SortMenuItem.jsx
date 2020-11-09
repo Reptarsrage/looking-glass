@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 
 export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) {
   const classes = useStyles()
-  const value = useSelector((state) => valueByIdSelector(state, { valueId }))
+  const value = useSelector((state) => valueByIdSelector(state, { valueId, galleryId }))
   const valueIsCurrentlySelected = useSelector((state) =>
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
   )

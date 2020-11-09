@@ -49,12 +49,12 @@ function loadProgressBar(axios) {
 }
 
 export const create = (options) => {
-  // Create new axios instance
+  // create new axios instance
   const axios = Axios.create(options)
   axios.CancelToken = Axios.CancelToken
   axios.isCancel = Axios.isCancel
 
-  // Setup interceptors
+  // setup interceptors
   loadProgressBar(axios)
 
   return axios

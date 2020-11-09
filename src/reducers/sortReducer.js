@@ -27,7 +27,7 @@ const addSortForModule = (draft, module) => {
   // add sort values
   module.sortBy.forEach((sortValue) => {
     // add nested values
-    if (sortValue.values) {
+    if (Array.isArray(sortValue.values)) {
       sortValue.values.forEach((nestedSortValue) => {
         const nestedId = generateSortId(moduleId, nestedSortValue.id)
         draft.allIds.push(nestedId)
@@ -57,23 +57,20 @@ const addSortForModule = (draft, module) => {
   })
 }
 
-const sortReducer = (state = initialState, action) =>
-  produce(state, (draft) => {
-    const { type, payload } = action || {}
+export default produce((draft, action) => {
+  const { type, payload } = action || {}
 
-    switch (type) {
-      case FETCH_MODULES_SUCCESS: {
-        const modules = payload
+  switch (type) {
+    case FETCH_MODULES_SUCCESS: {
+      const modules = payload
 
-        // add sort options for modules
-        modules.forEach((module) => addSortForModule(draft, module))
+      // add sort options for modules
+      modules.forEach((module) => addSortForModule(draft, module))
 
-        // TODO: add file system sort options
-        break
-      }
-      default:
-        break // Nothing to do
+      // TODO: add file system sort options
+      break
     }
-  })
 
-export default sortReducer
+    // no default
+  }
+}, initialState)

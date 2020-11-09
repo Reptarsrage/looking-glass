@@ -23,7 +23,7 @@ export default function SortMenu({ moduleId, galleryId }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
-  const sortByValues = useSelector((state) => moduleValuesSelector(state, { moduleId }))
+  const sortByValues = useSelector((state) => moduleValuesSelector(state, { moduleId, galleryId }))
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)

@@ -3,6 +3,7 @@ import { lookup } from 'mime-types'
 import { stringify, parse } from 'querystring'
 
 import Crawler from './directoryCrawler'
+import logger from '../logger'
 
 class FileSystemService {
   constructor() {
@@ -67,8 +68,8 @@ class FileSystemService {
 
       return { data }
     } catch (err) {
-      // Deal with the fact the chain failed
-      console.error('Error crawling', err)
+      // deal with the fact the chain failed
+      logger.error('Error crawling', err)
       throw err
     }
   }

@@ -9,13 +9,13 @@ import Virtualized from './Virtualized'
 import Item from './Item'
 
 /**
- * Calculates the width available to a column in the masonry.
+ * calculates the width available to a column in the masonry.
  */
 export const calculateColumnWidth = ({ columnCount, containerWidth, gutter, scrollBarSize }) =>
   (containerWidth - scrollBarSize - (columnCount + 1) * gutter) / columnCount
 
 /**
- * Memoization cache busting equality comparer for getAdjustedItemDimensions.
+ * memoization cache busting equality comparer for getAdjustedItemDimensions.
  *
  * @param {*} next Next parameters
  * @param {*} prev Previous parameters
@@ -28,7 +28,7 @@ const getAdjustedItemDimensionsEqual = (next, prev) =>
   next.scrollBarSize === prev.scrollBarSize
 
 /**
- * Calculates the dimensions for a column items.
+ * calculates the dimensions for a column items.
  *
  * @param {*} id Item ID
  * @param {*} columnCount Number of columns
@@ -61,7 +61,7 @@ export const getAdjustedItemDimensions = ({
 }
 
 /**
- * Memoization cache busting equality comparer for setColumnItems.
+ * memoization cache busting equality comparer for setColumnItems.
  *
  * @param {*} next Next parameters
  * @param {*} prev Previous parameters
@@ -75,7 +75,7 @@ const setColumnItemsEqual = (next, prev) =>
   next.scrollBarSize === prev.scrollBarSize
 
 /**
- * In charge of placing items into columns
+ * in charge of placing items into columns
  *
  * @param {Map[]} columns Array of columns
  * @param {Map} itemColumnLookup Map of item IDs to column IDs
@@ -102,41 +102,41 @@ export const setColumnItems = ({
   memoGetAdjustedItemDimensions,
   memoCalculateColumnWidth,
 }) => {
-  // Check if column count changed
+  // check if column count changed
   const columnCountChanged = columns.length !== columnCount
 
-  // Check if items has changed (besides growing, which is ok)
+  // check if items has changed (besides growing, which is ok)
   const columnItemsMismatch =
     items.length <= columnItemsCount || items.slice(0, columnItemsCount + 1).some((id) => !(id in itemColumnLookup))
 
-  // Reset columns if necessary
+  // reset columns if necessary
   let newColumnItemsCount = columnItemsCount
   if (columnCountChanged || columnItemsMismatch) {
     newColumnItemsCount = 0
 
-    // Clear lookup table
+    // clear lookup table
     Object.keys(itemColumnLookup).forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(itemColumnLookup, key)) {
         delete itemColumnLookup[key]
       }
     })
 
-    // Clear columns
+    // clear columns
     while (columns.length > 0) {
       columns.pop()
     }
   }
 
-  // Initialize columns
+  // initialize columns
   while (columns.length < columnCount) {
     columns.push({ adjustedHeight: gutter, id: columns.length })
   }
 
-  // Fill in column items
-  // Make sure to try and balance column heights in a deterministic way
+  // fill in column items
+  // make sure to try and balance column heights in a deterministic way
   // so items don't jump around on the screen after a resize event
   for (let i = newColumnItemsCount; i < items.length; i += 1) {
-    // Get item height
+    // get item height
     const itemId = items[i]
     const adjustedDims = memoGetAdjustedItemDimensions({
       id: itemId,
@@ -148,10 +148,10 @@ export const setColumnItems = ({
       memoCalculateColumnWidth,
     })
 
-    // Find shortest column
+    // find shortest column
     const minHeightColumn = columns.reduce((prev, curr) => (prev.adjustedHeight <= curr.adjustedHeight ? prev : curr))
 
-    // Assign the item to the column
+    // assign the item to the column
     itemColumnLookup[itemId] = minHeightColumn.id
     minHeightColumn.adjustedHeight += adjustedDims.height + gutter
 
@@ -162,7 +162,7 @@ export const setColumnItems = ({
 }
 
 /**
- * Memoization cache busting equality comparer for adjustColumnItems.
+ * memoization cache busting equality comparer for adjustColumnItems.
  *
  * @param {*} next Next parameters
  * @param {*} prev Previous parameters
@@ -175,7 +175,7 @@ const adjustColumnItemsEqual = (next, prev) =>
   next.scrollBarSize === prev.scrollBarSize
 
 /**
- * In charge of keeping column heights up to date
+ * in charge of keeping column heights up to date
  *
  * @param {Map[]} columns Array of columns
  * @param {Map} itemColumnLookup Map of item IDs to column IDs
@@ -200,7 +200,7 @@ export const adjustColumnItems = ({
   memoGetAdjustedItemDimensions,
   memoCalculateColumnWidth,
 }) => {
-  // Check if we should clear cache due to layout changes
+  // check if we should clear cache due to layout changes
   const cacheKeys = memoGetAdjustedItemDimensions.keys()
   if (cacheKeys.length > 0 && cacheKeys[0].length > 0) {
     const previousParameters = cacheKeys[0][0]
@@ -254,7 +254,7 @@ const Masonry = ({
   scrollBarSize,
   ChildComponent,
 }) => {
-  // Persist some data
+  // persist some data
   const savedRef = useRef({
     itemColumnLookup: {},
     columns: [],
@@ -278,7 +278,7 @@ const Masonry = ({
     memoGetAdjustedItemDimensions,
   } = savedRef.current
 
-  // Build columns
+  // build columns
   savedRef.current.columnItemsCount = memoSetColumnItems({
     columns,
     itemColumnLookup,
@@ -293,7 +293,7 @@ const Masonry = ({
     memoCalculateColumnWidth,
   })
 
-  // Adjust column heights
+  // adjust column heights
   const actualMinHeight = memoAdjustColumnItems({
     columns,
     itemColumnLookup,
@@ -381,7 +381,7 @@ Masonry.propTypes = {
 }
 
 /**
- * Compares two arrays for equality.
+ * compares two arrays for equality.
  *
  * @param {string[]} a Array one
  * @param {string[]} b Array two
@@ -401,7 +401,7 @@ function arraysEqual(a, b) {
 }
 
 /**
- * Used by React.memo to determine if a render is necessary.
+ * used by React.memo to determine if a render is necessary.
  *
  * @param {*} nextProps Incoming props
  * @param {*} prevProps Current props

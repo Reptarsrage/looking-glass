@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { currentFilterSelector } from 'selectors/gallerySelectors'
+import { galleryFilterSelector } from 'selectors/gallerySelectors'
 import SelectedFilter from './SelectedFilter'
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SelectedFilters({ galleryId }) {
   const classes = useStyles()
-  const currentFilter = useSelector((state) => currentFilterSelector(state, { galleryId }))
+  const currentFilter = useSelector((state) => galleryFilterSelector(state, { galleryId }))
 
   return (
     currentFilter && (

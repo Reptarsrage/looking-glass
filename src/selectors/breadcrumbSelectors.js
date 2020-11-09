@@ -1,11 +1,11 @@
 import { createSelector } from 'reselect'
 
 import { generateBreadcrumbId } from 'reducers/constants'
-import { galleryByIdSelector, galleriesStateSelector } from './gallerySelectors'
+import { gallerySelector, byIdSelector as galleriesByIdSelector } from './gallerySelectors'
 
 export const breadcrumbsSelector = createSelector(
-  [galleryByIdSelector, galleriesStateSelector],
-  (currentGallery, state) => {
+  [gallerySelector, galleriesByIdSelector],
+  (currentGallery, galleriesById) => {
     if (!currentGallery || !currentGallery.id) {
       return []
     }
@@ -20,7 +20,7 @@ export const breadcrumbsSelector = createSelector(
         url: `/gallery/${moduleId}/${galleryId}`,
       })
 
-      gallery = (parentId && state.byId[parentId]) || null
+      gallery = (parentId && galleriesById[parentId]) || null
     }
 
     return breadcrumbs

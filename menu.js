@@ -17,12 +17,12 @@ const decorateMenuItem = (menuItem) => {
 }
 
 const removeUnusedMenuItems = (menuTemplate) => {
-  // Filter visible Items
+  // filter visible Items
   const visibleItems = menuTemplate.filter(
     (menuItem) => menuItem !== undefined && menuItem !== false && menuItem.visible !== false && menuItem.visible !== ''
   )
 
-  // Remove unneeded separators
+  // remove unneeded separators
   let prevMenuItem = null
   return visibleItems.filter((menuItem, index, array) => {
     const isSeparator = menuItem.type === 'separator'
@@ -212,7 +212,7 @@ class MenuBuilder {
         defaultActions.separator(),
       ]
 
-      // Filter out leading/trailing separators
+      // filter out leading/trailing separators
       menuTemplate = removeUnusedMenuItems(menuTemplate)
 
       if (menuTemplate.length > 0) {

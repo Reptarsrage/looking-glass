@@ -34,67 +34,71 @@ export const initialModuleState = {
   itemFiltersEnabled: false,
 }
 
-const addModule = (draft, module, actualModuleId) => {
-  // generate id
-  const moduleId = actualModuleId || generateModuleId(module.id)
+export default produce((draft, action) => {
+  const { type, payload } = action || {}
 
-  // if module does not exist
-  if (!(moduleId in draft.byId)) {
-    const { sortBy, filterBy, ...rest } = module
-    const sortValues = (sortBy || []).map(({ id }) => generateSortId(moduleId, id))
-    const filterSections = (filterBy || []).map(({ id }) => generateFilterSectionId(moduleId, id))
+  switch (type) {
+    case FETCH_MODULES: {
+      draft.allIds = []
+      draft.byId = {}
 
-    // add module
-    draft.allIds.push(moduleId)
-    draft.byId[moduleId] = {
-      ...rest,
-      siteId: module.id,
-      id: moduleId,
-      sortBy: sortValues,
-      filterBy: filterSections,
-      defaultGalleryId: generateGalleryId(moduleId, DEFAULT_GALLERY_ID),
+      handleAsyncFetch(draft)
+      break
     }
+    case FETCH_MODULES_SUCCESS: {
+      const modules = payload
+
+      // add modules
+      modules.forEach((module) => {
+        const { id: siteId, sortBy, filterBy, ...rest } = module
+
+        const moduleId = generateModuleId(siteId)
+        const defaultGalleryId = generateGalleryId(moduleId, DEFAULT_GALLERY_ID)
+
+        // sort values
+        let sortValues
+        if (Array.isArray(sortBy)) {
+          sortValues = sortBy.map(({ id }) => generateSortId(moduleId, id))
+        }
+
+        // filter sections
+        let filterSections
+        if (Array.isArray(filterBy)) {
+          filterSections = filterBy.map(({ id }) => generateFilterSectionId(moduleId, id))
+        }
+
+        draft.allIds.push(moduleId)
+
+        draft.byId[moduleId] = {
+          ...initialModuleState,
+          ...rest,
+          siteId,
+          id: moduleId,
+          sortBy: sortValues,
+          filterBy: filterSections,
+          defaultGalleryId,
+        }
+      })
+
+      // add file system module
+      draft.allIds.push(FILE_SYSTEM_MODULE_ID)
+
+      draft.byId[FILE_SYSTEM_MODULE_ID] = {
+        ...initialModuleState,
+        id: FILE_SYSTEM_MODULE_ID,
+        title: 'Local files',
+        description: 'Choose a directory',
+        defaultGalleryId: generateGalleryId(FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID),
+      }
+
+      handleAsyncSuccess(draft)
+      break
+    }
+    case FETCH_MODULES_FAILURE: {
+      handleAsyncError(draft, payload)
+      break
+    }
+
+    // no default
   }
-}
-
-const moduleReducer = (state = initialState, action) =>
-  produce(state, (draft) => {
-    const { type, payload } = action || {}
-
-    switch (type) {
-      case FETCH_MODULES: {
-        handleAsyncFetch(state, draft)
-        break
-      }
-      case FETCH_MODULES_SUCCESS: {
-        const modules = payload
-        handleAsyncSuccess(state, draft)
-
-        // add modules
-        modules.forEach((module) => addModule(draft, module))
-
-        // add file system module
-        addModule(
-          draft,
-          {
-            ...initialModuleState,
-            id: FILE_SYSTEM_MODULE_ID,
-            title: 'Local files',
-            description: 'Choose a directory',
-            authType: '',
-          },
-          FILE_SYSTEM_MODULE_ID
-        )
-
-        break
-      }
-      case FETCH_MODULES_FAILURE: {
-        handleAsyncError(state, draft, payload)
-        break
-      }
-      default:
-        break // Nothing to do
-    }
-  })
-
-export default moduleReducer
+}, initialState)

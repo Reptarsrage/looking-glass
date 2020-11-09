@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 
 export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onClick }) {
   const classes = useStyles()
-  const value = useSelector((state) => valueByIdSelector(state, { valueId }))
+  const value = useSelector((state) => valueByIdSelector(state, { valueId, galleryId }))
   const valueIsCurrentlySelected = useSelector((state) =>
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
   )

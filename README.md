@@ -58,3 +58,10 @@ yarn package
 - [ ] Add custom icon
 - [ ] Modal close button instead of clicking anywhere
 - [ ] Add keyboard navigation
+- [ ] Add support for html5 pictures with multiple sources based on screen size
+- [ ] Add support for multiple filters
+- [ ] Add dedicated search page
+- [ ] Add forward and backward navigation buttons
+- [ ] Redesign app bar
+- [ ] Add more consistent "Loading", "Error", "No results" indicators
+- [ ] Add some fun art for the Not Found, Error boundary, ect. screens

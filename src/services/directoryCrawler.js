@@ -9,10 +9,12 @@ const imageSizeOfSync = require('image-size')
 const { exec } = require('child_process')
 const os = require('os')
 
-// Get dimensions of an image file
+const logger = require('../logger')
+
+// get dimensions of an image file
 const imageSizeOf = promisify(imageSizeOfSync)
 
-// Get dimensions of a video file using ffprobe
+// get dimensions of a video file using ffprobe
 function videoSizeOf(fPath) {
   const widthReg = /width=(\d+)/
   const heightReg = /height=(\d+)/
@@ -22,7 +24,7 @@ function videoSizeOf(fPath) {
       `ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 "${fPath}"`,
       (err, stdout) => {
         if (err) {
-          console.error('ffprobe error:', err)
+          logger.error('ffprobe error:', err)
           reject(err)
         }
 
@@ -37,7 +39,7 @@ function videoSizeOf(fPath) {
   )
 }
 
-// Gets all files in a directory
+// gets all files in a directory
 async function* getFiles(dirPath) {
   const dir = await fs.promises.opendir(dirPath)
   for await (const dirent of dir) {
@@ -49,7 +51,7 @@ async function* getFiles(dirPath) {
   }
 }
 
-// Dummy function for callbacks
+// dummy function for callbacks
 function dummy() {}
 
 module.exports = class crawler {
@@ -75,7 +77,7 @@ module.exports = class crawler {
     this.start = page * this.pageSize
     this.end = this.start + this.pageSize
 
-    // Start, if not already
+    // start, if not already
     if (!this.started) {
       const pagePromise = new Promise((resolve, reject) => {
         this.promiseResolve = resolve
@@ -87,7 +89,7 @@ module.exports = class crawler {
       return pagePromise
     }
 
-    // If done, return requested page
+    // if done, return requested page
     while (this.done) {
       if (this.start >= this.resolved.length) {
         return []
@@ -96,12 +98,12 @@ module.exports = class crawler {
       return this.resolve()
     }
 
-    // Return page if available
+    // return page if available
     if (this.end < this.resolved.length) {
       return this.resolve()
     }
 
-    // Wait for requested page to be finished
+    // wait for requested page to be finished
     const pagePromise = new Promise((resolve, reject) => {
       this.promiseResolve = resolve
       this.promiseReject = reject
@@ -148,13 +150,13 @@ module.exports = class crawler {
         size = await videoSizeOf(file)
       } else {
         // TODO: log?
-        console.warn('Unable to measure file', file)
+        logger.warn('Unable to measure file', file)
         return
       }
 
       this.markComplete(file, size, isFile, path)
     } catch (err) {
-      console.error('Error getting file dimensions', err)
+      logger.error('Error getting file dimensions', err)
     }
   }
 
@@ -191,7 +193,7 @@ module.exports = class crawler {
           }
         }
       } catch {
-        /* Expected for system volumes */
+        /* expected for system volumes */
       }
     }
 

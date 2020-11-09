@@ -7,7 +7,15 @@ import {
   CLEAR_GALLERY,
   FETCH_ITEM_FILTERS_SUCCESS,
 } from 'actions/types'
-import { generateItemId, generateFilterId, generateFilterSectionId } from './constants'
+import {
+  generateItemId,
+  generateFilterId,
+  generateFilterSectionId,
+  handleAsyncFetch,
+  handleAsyncSuccess,
+  handleAsyncError,
+} from './constants'
+import logger from '../logger'
 
 export const initialState = {
   byId: {},
@@ -27,32 +35,29 @@ export const initialItemState = {
   url: null,
   thumb: null,
   filters: [],
-  fetchingFilters: false,
-  fetchedFilters: false,
-  fetchFiltersError: null,
+  fetching: false, // filters
+  fetched: false, // filters
+  error: null, // filters
 }
 
 const addItem = (draft, galleryId, moduleId, item) => {
   // quick sanity check
   if (!item.width || !item.height || !item.url) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Invalid item', item)
-    }
-
+    logger.error('Invalid item', item)
     return
   }
 
   // generate ids
   const itemId = generateItemId(galleryId, item.id)
 
-  // Translate filters
-  let filters = []
+  // translate filters
+  const filters = []
   item.filters.forEach(({ filterId, id }) => {
     const filterSectionId = generateFilterSectionId(moduleId, filterId)
     const toAdd = generateFilterId(filterSectionId, id)
 
     if (filters.indexOf(toAdd) < 0) {
-      filters = [...filters, toAdd]
+      filters.push(toAdd)
     }
   })
 
@@ -70,65 +75,56 @@ const addItem = (draft, galleryId, moduleId, item) => {
   }
 }
 
-const itemReducer = (state = initialState, action) =>
-  produce(state, (draft) => {
-    const { type, payload, meta } = action || {}
+export default produce((draft, action) => {
+  const { type, payload, meta } = action || {}
 
-    switch (type) {
-      case CLEAR_GALLERY: {
-        const { galleryId } = meta
+  switch (type) {
+    case CLEAR_GALLERY: {
+      const galleryId = meta
 
-        // remove items
-        const galleryItemsToRemove = state.allIds.filter((id) => state.byId[id].galleryId === galleryId)
-        draft.allIds = state.allIds.filter((id) => state.byId[id].galleryId !== galleryId)
-        galleryItemsToRemove.forEach((id) => delete draft.byId[id])
-        break
-      }
-      case FETCH_GALLERY_SUCCESS: {
-        const { galleryId, moduleId } = meta
-        const gallery = payload
-        const { items } = gallery
-
-        // add items
-        items.forEach((item) => addItem(draft, galleryId, moduleId, item))
-        break
-      }
-      case FETCH_ITEM_FILTERS: {
-        const { itemId } = meta
-        draft.byId[itemId].fetchingFilters = true
-        draft.byId[itemId].fetchedFilters = false
-        draft.byId[itemId].fetchFiltersError = null
-        break
-      }
-      case FETCH_ITEM_FILTERS_FAILURE: {
-        const { itemId } = meta
-        draft.byId[itemId].fetchingFilters = false
-        draft.byId[itemId].fetchedFilters = true
-        draft.byId[itemId].fetchFiltersError = payload
-        break
-      }
-      case FETCH_ITEM_FILTERS_SUCCESS: {
-        const { itemId, moduleId } = meta
-        const filters = payload
-
-        draft.byId[itemId].fetchingFilters = false
-        draft.byId[itemId].fetchedFilters = true
-        draft.byId[itemId].fetchFiltersError = null
-        filters.forEach(({ filterId, id }) => {
-          const filterSectionId = generateFilterSectionId(moduleId, filterId)
-          const toAdd = generateFilterId(filterSectionId, id)
-          const values = draft.byId[itemId].filters
-
-          if (values.indexOf(toAdd) < 0) {
-            draft.byId[itemId].filters = [...draft.byId[itemId].filters, toAdd]
-          }
-        })
-
-        break
-      }
-      default:
-        break // Nothing to do
+      // remove items
+      const galleryItemsToRemove = draft.allIds.filter((id) => draft.byId[id].galleryId === galleryId)
+      draft.allIds = draft.allIds.filter((id) => draft.byId[id].galleryId !== galleryId)
+      galleryItemsToRemove.forEach((id) => delete draft.byId[id])
+      break
     }
-  })
+    case FETCH_GALLERY_SUCCESS: {
+      const { galleryId, moduleId } = meta
+      const gallery = payload
+      const { items } = gallery
 
-export default itemReducer
+      // add items
+      items.forEach((item) => addItem(draft, galleryId, moduleId, item))
+      break
+    }
+    case FETCH_ITEM_FILTERS: {
+      const { itemId } = meta
+      handleAsyncFetch(draft.byId[itemId])
+      break
+    }
+    case FETCH_ITEM_FILTERS_FAILURE: {
+      const { itemId } = meta
+      handleAsyncError(draft.byId[itemId], payload)
+      break
+    }
+    case FETCH_ITEM_FILTERS_SUCCESS: {
+      const { itemId, moduleId } = meta
+      const filters = payload
+
+      filters.forEach(({ filterId, id }) => {
+        const filterSectionId = generateFilterSectionId(moduleId, filterId)
+        const toAdd = generateFilterId(filterSectionId, id)
+        const values = draft.byId[itemId].filters
+
+        if (values.indexOf(toAdd) < 0) {
+          draft.byId[itemId].filters.push(toAdd)
+        }
+      })
+
+      handleAsyncSuccess(draft.byId[itemId])
+      break
+    }
+
+    // no default
+  }
+}, initialState)

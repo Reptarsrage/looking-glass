@@ -1,36 +1,33 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialAuthState } from 'reducers/authReducer'
-import { moduleByIdSelector } from './moduleSelectors'
+import { moduleAuthTypeSelector } from './moduleSelectors'
 
-const authState = (state) => state.auth || initialState
-
+// select props
 const getGalleryId = (_, props) => props.galleryId
-
 const getModuleId = (_, props) => props.moduleId
 
-export const authByModuleIdSelector = createSelector(
-  [authState, getModuleId],
-  (state, moduleId) => state.byId[moduleId] || initialAuthState
-)
+// simple state selectors
+export const byIdSelector = (state) => state.auth.byId
+export const allIdsSelector = (state) => state.auth.allIds
 
-export const fetchingSelector = createSelector(authByModuleIdSelector, (state) => state.fetching)
+// select from a specific module
+export const authByModuleIdSelector = createSelector([byIdSelector, getModuleId], (byId, moduleId) => byId[moduleId])
+export const fetchingSelector = createSelector(authByModuleIdSelector, (auth) => auth && auth.fetching)
+export const errorSelector = createSelector(authByModuleIdSelector, (auth) => auth && auth.error)
+export const fetchedSelector = createSelector(authByModuleIdSelector, (auth) => auth && auth.fetched)
+export const accessTokenSelector = createSelector(authByModuleIdSelector, (auth) => auth && auth.accessToken)
+export const refreshTokenSelector = createSelector(authByModuleIdSelector, (auth) => auth && auth.refreshToken)
+export const expiresSelector = createSelector(authByModuleIdSelector, (auth) => auth && auth.expires)
+export const requiresAuthSelector = createSelector([moduleAuthTypeSelector], Boolean)
 
-export const errorSelector = createSelector(authByModuleIdSelector, (state) => state.error)
-
-export const fetchedSelector = createSelector(authByModuleIdSelector, (state) => state.fetched)
-
-export const accessTokenSelector = createSelector(authByModuleIdSelector, (state) => state.accessToken)
-
-export const refreshTokenSelector = createSelector(authByModuleIdSelector, (state) => state.refreshToken)
-
-export const expiresSelector = createSelector(authByModuleIdSelector, (state) => state.expires)
-
-export const isAuthenticatedSelector = createSelector(authByModuleIdSelector, (state) => state.fetched)
-
+// form auth url
 export const authUrlSelector = createSelector(
-  [getModuleId, getGalleryId, moduleByIdSelector],
-  (moduleId, galleryId, { authType }) => (authType ? `/${authType}/${moduleId}/${galleryId}` : null)
+  [getModuleId, getGalleryId, requiresAuthSelector, moduleAuthTypeSelector],
+  (moduleId, galleryId, requiresAuth, authType) => (requiresAuth ? `/${authType}/${moduleId}/${galleryId}` : null)
 )
 
-export const requiresAuthSelector = createSelector([moduleByIdSelector], (module) => !!module.authType)
+// module needs authentication
+export const isAuthenticatedSelector = createSelector(
+  [requiresAuthSelector, fetchedSelector],
+  (requiresAuth, fetched) => !requiresAuth || fetched || false
+)

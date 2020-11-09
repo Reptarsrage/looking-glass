@@ -6,7 +6,7 @@ import InputBase from '@material-ui/core/InputBase'
 import { fade } from '@material-ui/core/styles/colorManipulator'
 import SearchIcon from '@material-ui/icons/Search'
 
-import { currentSearchQuerySelector } from 'selectors/gallerySelectors'
+import { gallerySearchQuerySelector } from 'selectors/gallerySelectors'
 import { searchChange } from 'actions/galleryActions'
 
 const useStyles = makeStyles((theme) => ({
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SearchBar({ moduleId, galleryId }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const searchQuery = useSelector((state) => currentSearchQuerySelector(state, { galleryId }))
+  const searchQuery = useSelector((state) => gallerySearchQuerySelector(state, { galleryId }))
 
   const handleSearchChange = (e) => {
     dispatch(searchChange(galleryId, e.target.value))

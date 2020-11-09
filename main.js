@@ -1,4 +1,4 @@
-// Modules to control application life and create native browser window
+// modules to control application life and create native browser window
 const { app, BrowserWindow, screen } = require('electron')
 const isDev = require('electron-is-dev')
 const path = require('path')
@@ -9,10 +9,10 @@ const qs = require('querystring')
 const MenuBuilder = require('./menu')
 const createLocalWebServer = require('./localWebServer')
 
-// Web Server
+// web Server
 let localWebServer
 
-// Auto updater
+// auto updater
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'debug'
@@ -21,29 +21,29 @@ class AppUpdater {
   }
 }
 
-// Dev tools installer
+// dev tools installer
 const installExtensions = async () => {
   // eslint-disable-next-line global-require
   const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
   const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]
 
-  return Promise.all(extensions.map(installExtension)).catch(console.log)
+  return Promise.all(extensions.map(installExtension)).catch(log.error)
 }
 
-// Fix warning https://github.com/electron/electron/issues/18397
+// fix warning https://github.com/electron/electron/issues/18397
 app.allowRendererProcessReuse = true
 
-// Keep a global reference of the window object, if you don't, the window will
+// keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 const createWindow = async (port) => {
-  // Install dev tools
+  // install dev tools
   if (isDev) {
     await installExtensions()
   }
 
-  // Create the browser window.
+  // create the browser window.
   const { bounds } = screen.getPrimaryDisplay()
   mainWindow = new BrowserWindow({
     show: false,
@@ -58,55 +58,55 @@ const createWindow = async (port) => {
     },
   })
 
-  // Load the url (or file)
+  // load the url (or file)
   if (isDev) {
     mainWindow.loadURL(`http://localhost:4000?${qs.stringify({ port })}`)
   } else {
     mainWindow.loadFile(path.resolve('./dist', 'index.html'), { query: { port } })
   }
 
-  // Emitted when the window is closed.
+  // emitted when the window is closed.
   mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
+    // dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
   })
 
-  // Configure Menu
+  // configure Menu
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildContextMenu()
 
-  // Wait until window is presentable to show
+  // wait until window is presentable to show
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
 
-    // Open Dev Tools
+    // open Dev Tools
     if (isDev) {
       mainWindow.webContents.openDevTools()
     }
   })
 }
 
-// This method will be called when Electron has finished
+// this method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  // Start a web server to serve up local media files
+  // start a web server to serve up local media files
   const { server, port } = await createLocalWebServer()
   localWebServer = server
 
-  // Create the window
+  // create the window
   await createWindow(port)
 
-  // Remove this if your app does not use auto updates
+  // remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater()
 })
 
-// Quit when all windows are closed.
+// quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
+  // on macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
@@ -114,14 +114,14 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', async () => {
-  // On macOS it's common to re-create a window in the app when the
+  // on macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     await createWindow()
   }
 })
 
-// In this file you can include the rest of your app's specific main process
+// in this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
 app.on('before-quit', () => {

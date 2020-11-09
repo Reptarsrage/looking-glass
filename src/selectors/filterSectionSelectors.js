@@ -1,43 +1,72 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialFilterSectionState } from 'reducers/filterSectionReducer'
-import { stateSelector as filterStateSelector } from './filterSelectors'
+import { byIdSelector as filterByIdSelector } from './filterSelectors'
+import { moduleFilterSectionsSelector } from './moduleSelectors'
 
+// select props
 const getFilterSectionId = (_, props) => props.filterSectionId
-
 const getSearch = (_, props) => props.search
 
-const stateSelector = (state) => state.filterSection || initialState
+// simple state selectors
+export const byIdSelector = (state) => state.filterSection.byId
+export const allIdsSelector = (state) => state.filterSection.allIds
 
-/** All filter sections */
-export const filterSectionsSelector = createSelector(stateSelector, (state) => state.allIds)
-
-/** Specific filter section */
-export const filterSectionByIdSelector = createSelector(
-  [stateSelector, getFilterSectionId],
-  (state, filterSectionId) => state.byId[filterSectionId] || initialFilterSectionState
+// select from a specific filter section
+export const filterSectionSelector = createSelector(
+  [byIdSelector, getFilterSectionId],
+  (byId, filterSectionId) => byId[filterSectionId]
 )
 
-/** Filter section site ID */
-export const filterSectionSiteIdSelector = createSelector(
-  filterSectionByIdSelector,
-  (filterSection) => filterSection.siteId
+export const filterSectionSiteIdSelector = createSelector(filterSectionSelector, (section) => section.siteId)
+export const filterSectionNameSelector = createSelector(filterSectionSelector, (section) => section.name)
+export const filterSectionFetchingSelector = createSelector(filterSectionSelector, (section) => section.fetching)
+export const filterSectionFetchedSelector = createSelector(filterSectionSelector, (section) => section.fetched)
+export const filterSectionErrorSelector = createSelector(filterSectionSelector, (section) => section.errpr)
+export const filterSectionDescriptionSelector = createSelector(filterSectionSelector, (section) => section.description)
+export const filtersFetchingSelector = createSelector(
+  [moduleFilterSectionsSelector, byIdSelector],
+  (sectionIds, byId) => sectionIds.every((id) => byId[id].fetching)
 )
-
-/** Filter section module ID */
-export const filterSectionModuleIdSelector = createSelector(
-  filterSectionByIdSelector,
-  (filterSection) => filterSection.moduleId
+export const filtersFetchedSelector = createSelector([moduleFilterSectionsSelector, byIdSelector], (sectionIds, byId) =>
+  sectionIds.some((id) => byId[id].fetched)
 )
+export const filtersErrorSelector = createSelector([moduleFilterSectionsSelector, byIdSelector], (sectionIds, byId) =>
+  sectionIds.find((id) => byId[id].error)
+)
+export const filterSectionModuleIdSelector = createSelector(filterSectionSelector, (section) => section.moduleId)
 
-export const filterSectionValuesSearchSelector = createSelector(
-  [filterSectionByIdSelector, getSearch, filterStateSelector],
-  (section, search, filterState) => {
-    if (!search) {
-      return section.values
+// select lengths of all sections for the given module
+export const sectionCountsSelector = createSelector(
+  [moduleFilterSectionsSelector, byIdSelector, filterByIdSelector, getSearch],
+  (moduleFilterSectionIds, sectionById, filterById, searchQuery) => {
+    if (searchQuery) {
+      const upper = searchQuery.toUpperCase()
+      return moduleFilterSectionIds.map(
+        (filterSectionId) =>
+          sectionById[filterSectionId].values.filter((filterId) =>
+            filterById[filterId].name.toUpperCase().includes(upper)
+          ).length
+      )
     }
 
-    const lower = search.toLowerCase()
-    return section.values.filter((id) => filterState.byId[id].name.toLowerCase().includes(lower))
+    return moduleFilterSectionIds.map((filterSectionId) => sectionById[filterSectionId].values.length)
+  }
+)
+
+// select all item ids for the given section
+export const sectionItemsSelector = createSelector(
+  [filterSectionSelector, filterByIdSelector, getSearch],
+  (section, filterById, searchQuery) => {
+    let sectionItems = [...section.values]
+
+    if (searchQuery) {
+      const upper = searchQuery.toUpperCase()
+      sectionItems = sectionItems.filter((filterId) => filterById[filterId].name.toUpperCase().includes(upper))
+    } else {
+      // sort by name
+      sectionItems.sort((a, b) => filterById[a].name.localeCompare(filterById[b].name))
+    }
+
+    return sectionItems
   }
 )

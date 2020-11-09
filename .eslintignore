@@ -33,6 +33,7 @@ node_modules
 # App packaged
 release
 dist
+main.prod.js
 
 .idea
 npm-debug.log.*

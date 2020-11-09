@@ -1,27 +1,26 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { ThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles'
-import { useDispatch, useSelector } from 'react-redux'
+import { ThemeProvider } from '@material-ui/core'
+import { createMuiTheme, makeStyles } from '@material-ui/core/styles'
+import { useSelector } from 'react-redux'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
-import Brightness2Icon from '@material-ui/icons/Brightness2'
-import WbSunnyIcon from '@material-ui/icons/WbSunny'
 import { useRouteMatch } from 'react-router-dom'
 import { Color } from 'custom-electron-titlebar'
+import Brightness3Icon from '@material-ui/icons/Brightness3'
+import Brightness7Icon from '@material-ui/icons/Brightness7'
 
-import { darkThemeSelector } from 'selectors/appSelectors'
 import { modalOpenSelector } from 'selectors/modalSelectors'
-import { toggleDarkTheme } from 'actions/appActions'
 import BackButton from 'components/BackButton'
 import Progress from 'components/Progress'
 import titleBar from '../titleBar'
 
 // https://material-ui.com/customization/palette/
-const darkTheme = createMuiTheme({
+const darkTheme = {
   palette: {
     type: 'dark',
     primary: {
@@ -38,9 +37,9 @@ const darkTheme = createMuiTheme({
   typography: {
     useNextVariants: true,
   },
-})
+}
 
-const lightTheme = createMuiTheme({
+const lightTheme = {
   palette: {
     type: 'light',
     primary: {
@@ -57,7 +56,7 @@ const lightTheme = createMuiTheme({
   typography: {
     useNextVariants: true,
   },
-})
+}
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -83,23 +82,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App({ children }) {
   const classes = useStyles()
-  const dispatch = useDispatch()
-  const useDarkTheme = useSelector(darkThemeSelector)
   const modalOpen = useSelector(modalOpenSelector)
-
   const match = useRouteMatch({ path: '/', exact: true })
+  const [darkThemeEnabled, toggleDarkTheme] = useState(true)
+  const appliedTheme = createMuiTheme(darkThemeEnabled ? darkTheme : lightTheme)
 
   useEffect(() => {
-    const theme = useDarkTheme ? darkTheme : lightTheme
-    titleBar.updateBackground(Color.fromHex(theme.palette.background.default))
-  }, [useDarkTheme])
+    titleBar.updateBackground(Color.fromHex(appliedTheme.palette.background.default))
+  }, [appliedTheme])
 
   const handleClick = () => {
-    dispatch(toggleDarkTheme())
+    toggleDarkTheme(!darkThemeEnabled)
   }
 
   return (
-    <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+    <ThemeProvider theme={appliedTheme}>
       <CssBaseline />
 
       <Progress />
@@ -113,7 +110,7 @@ export default function App({ children }) {
           <div className={classes.grow} />
           <div>
             <IconButton color="inherit" onClick={handleClick}>
-              {darkTheme ? <Brightness2Icon /> : <WbSunnyIcon />}
+              {darkThemeEnabled ? <Brightness3Icon /> : <Brightness7Icon />}
             </IconButton>
           </div>
         </Toolbar>

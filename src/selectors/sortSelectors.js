@@ -1,19 +1,19 @@
 import { createSelector } from 'reselect'
 
 import { initialState, initialSortState } from 'reducers/sortReducer'
-import { currentSearchQuerySelector, currentSortSelector } from './gallerySelectors'
-import { moduleByIdSelector } from './moduleSelectors'
+import { gallerySearchQuerySelector, gallerySortSelector } from './gallerySelectors'
+import { moduleSelector } from './moduleSelectors'
 
 const getValueId = (_, props) => props.valueId
 
 const stateSelector = (state) => state.sort || initialState
 
-/** All Values */
+/** all Values */
 export const valuesSelector = createSelector(stateSelector, (state) => state.allIds)
 
-/** Specific Value */
+/** specific Value */
 export const valueByIdSelector = createSelector(
-  [stateSelector, getValueId, currentSearchQuerySelector],
+  [stateSelector, getValueId, gallerySearchQuerySelector],
   (state, valueId, searchQuery) => {
     const value = state.byId[valueId] || initialSortState
     if (!value.values) {
@@ -34,12 +34,12 @@ export const valueByIdSelector = createSelector(
   }
 )
 
-/** Translate internal id to siteId */
+/** translate internal id to siteId */
 export const valueSiteIdSelector = createSelector(valueByIdSelector, (value) => value && value.siteId)
 
-/** All values for a given module */
+/** all values for a given module */
 export const moduleValuesSelector = createSelector(
-  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
+  [moduleSelector, stateSelector, gallerySearchQuerySelector],
   (module, sortState, searchQuery) => {
     if (searchQuery) {
       // different sort values when searching
@@ -51,9 +51,9 @@ export const moduleValuesSelector = createSelector(
   }
 )
 
-/** Default value */
+/** default value */
 export const defaultSortValueSelector = createSelector(
-  [moduleByIdSelector, stateSelector, currentSearchQuerySelector],
+  [moduleSelector, stateSelector, gallerySearchQuerySelector],
   (module, sortState, searchQuery) => {
     let sortVals = sortState.allIds.filter((id) => sortState.byId[id].moduleId === module.id)
     if (searchQuery) {
@@ -63,7 +63,7 @@ export const defaultSortValueSelector = createSelector(
       sortVals = sortVals.filter((id) => !sortState.byId[id].exclusiveToSearch)
     }
 
-    // Check un-nested first
+    // check un-nested first
     const defaultValueId = sortVals.find((id) => sortState.byId[id].default)
     if (!defaultValueId) {
       for (let i = 0; i < sortVals.length; i += 1) {
@@ -80,7 +80,7 @@ export const defaultSortValueSelector = createSelector(
 )
 
 export const valueIsCurrentlySelectedSelector = createSelector(
-  [defaultSortValueSelector, currentSortSelector, valueByIdSelector],
+  [defaultSortValueSelector, gallerySortSelector, valueByIdSelector],
   (defaultValue, currentlySelectedValue, thisValue) => {
     if (currentlySelectedValue) {
       return (

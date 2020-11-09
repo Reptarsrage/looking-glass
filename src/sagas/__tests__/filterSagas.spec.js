@@ -12,6 +12,7 @@ import {
 import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
 import watchFilterSagas, { handleFetchItemFilters, handleFetchFilters } from '../filterSagas'
 import { recordSaga } from './sagaTestHelpers'
+import logger from '../../logger'
 
 jest.mock('services/lookingGlassService')
 
@@ -36,6 +37,15 @@ describe('handleFetchItemFilters', () => {
     const expectedItemSiteId = 'EXPECTED ITEM SITE ID'
     const initialAction = fetchItemFilters(expectedModuleId, expectedItemId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       item: {
         byId: {
           [expectedItemId]: {
@@ -71,6 +81,15 @@ describe('handleFetchItemFilters', () => {
     const expectedItemSiteId = 'EXPECTED ITEM SITE ID'
     const initialAction = fetchItemFilters(expectedModuleId, expectedItemId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       item: {
         byId: {
           [expectedItemId]: {
@@ -87,7 +106,7 @@ describe('handleFetchItemFilters', () => {
       },
     }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.fetchItemFilters.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -96,21 +115,31 @@ describe('handleFetchItemFilters', () => {
     // assert
     expect(dispatched).toContainEqual(fetchItemFiltersError(expectedModuleId, expectedItemId, expectedError))
     expect(lookingGlassService.fetchItemFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedItemSiteId, '')
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 })
 
 describe('handleFetchFilters', () => {
-  it('should run successfully', async () => {
+  it('zzz should run successfully', async () => {
     // arrange
     const expectedData = 'EXPECTED DATA'
     const expectedModuleId = 'EXPECTED MODULE ID'
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
-    const initialAction = fetchFilters(expectedFilterSectionId)
+    const initialAction = fetchFilters(expectedModuleId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       filterSection: {
+        allIds: [expectedFilterSectionId],
         byId: {
           [expectedFilterSectionId]: {
             siteId: expectedFilterSectionSiteId,
@@ -119,9 +148,11 @@ describe('handleFetchFilters', () => {
         },
       },
       module: {
+        allIds: [expectedModuleId],
         byId: {
           [expectedModuleId]: {
             siteId: expectedModuleSiteId,
+            filterBy: [expectedFilterSectionId],
           },
         },
       },
@@ -144,9 +175,19 @@ describe('handleFetchFilters', () => {
     const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
     const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
     const expectedFilterSectionSiteId = 'EXPECTED FILTER SECTION SITE ID'
-    const initialAction = fetchFilters(expectedFilterSectionId)
+    const initialAction = fetchFilters(expectedModuleId)
     const initialState = {
+      auth: {
+        allIds: [expectedModuleId],
+        byId: {
+          [expectedModuleId]: {
+            accessToken: '',
+            refreshToken: null,
+          },
+        },
+      },
       filterSection: {
+        allIds: [expectedFilterSectionId],
         byId: {
           [expectedFilterSectionId]: {
             siteId: expectedFilterSectionSiteId,
@@ -155,15 +196,17 @@ describe('handleFetchFilters', () => {
         },
       },
       module: {
+        allIds: [expectedModuleId],
         byId: {
           [expectedModuleId]: {
             siteId: expectedModuleSiteId,
+            filterBy: [expectedFilterSectionId],
           },
         },
       },
     }
 
-    console.error = jest.fn()
+    logger.error = jest.fn()
     lookingGlassService.fetchFilters.mockImplementation(() => Promise.reject(expectedError))
 
     // act
@@ -172,6 +215,6 @@ describe('handleFetchFilters', () => {
     // assert
     expect(dispatched).toContainEqual(fetchFiltersError(expectedFilterSectionId, expectedError))
     expect(lookingGlassService.fetchFilters).toHaveBeenCalledWith(expectedModuleSiteId, expectedFilterSectionSiteId, '')
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 })

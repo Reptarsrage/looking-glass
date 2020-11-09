@@ -10,10 +10,18 @@ import TuneIcon from '@material-ui/icons/Tune'
 import Drawer from '@material-ui/core/Drawer'
 import { debounce } from 'lodash'
 
-import { supportsSortingSelector, supportsFilteringSelector } from 'selectors/moduleSelectors'
+import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
 import { forceRenderItemsSelector } from 'selectors/modalSelectors'
-import { isAuthenticatedSelector, requiresAuthSelector, authUrlSelector } from 'selectors/authSelectors'
-import { galleryByIdSelector, itemsInGallerySelector } from 'selectors/gallerySelectors'
+import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
+import {
+  gallerySavedScrollPositionSelector,
+  galleryTitleSelector,
+  galleryHasNextSelector,
+  galleryItemsSelector,
+  galleryFetchingSelector,
+  galleryFetchedSelector,
+  galleryErrorSelector,
+} from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
 import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
@@ -32,15 +40,11 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: '1',
   },
   drawer: {
+    padding: theme.spacing(1),
+    display: 'flex',
+    flexDirection: 'column',
     minWidth: '360px',
-    '&::-webkit-scrollbar': {
-      width: '5px',
-      backgroundColor: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#d5d5d5',
-      borderRadius: '2px',
-    },
+    height: 'calc(100% - 30px)',
   },
   extendedIcon: {
     marginRight: theme.spacing(1),
@@ -56,18 +60,20 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
-  const gallery = useSelector((state) => galleryByIdSelector(state, { galleryId }))
-  const items = useSelector((state) => itemsInGallerySelector(state, { galleryId }))
-  const requiresAuth = useSelector((state) => requiresAuthSelector(state, { moduleId }))
-  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId }))
-  const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
+  const items = useSelector((state) => galleryItemsSelector(state, { galleryId }))
   const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
   const forceRenderItems = useSelector(forceRenderItemsSelector)
-  const supportsSorting = useSelector((state) => supportsSortingSelector(state, { moduleId }))
-  const supportsFiltering = useSelector((state) => supportsFilteringSelector(state, { moduleId }))
+  const supportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))
+  const supportsFiltering = useSelector((state) => moduleSupportsFilteringSelector(state, { moduleId }))
+  const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
+  const authUrl = useSelector((state) => authUrlSelector(state, { moduleId, galleryId }))
+  const hasNext = useSelector((state) => galleryHasNextSelector(state, { galleryId }))
+  const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
+  const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
+  const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
+  const title = useSelector((state) => galleryTitleSelector(state, { galleryId }))
+  const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const dispatch = useDispatch()
-
-  const { hasNext, fetching, error, fetched, title, savedScrollPosition } = gallery
 
   useEffect(() => {
     // set event listeners
@@ -76,7 +82,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     // fetch images
     fetchInitialItems()
 
-    // Set window title
+    // set window title
     titleBar.updateTitle(`'The Looking-Glass' - ${title}`)
 
     return () => {
@@ -116,38 +122,38 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     // save position for later
     dispatch(saveScrollPosition(galleryId, scrollTop))
 
-    // Show end of the line toast
+    // show end of the line toast
     if (scrollTop + clientHeight >= scrollHeight - 10 && !hasNext) {
       setShowEndOfScrollToast(true)
     }
   }
 
   const fetchInitialItems = () => {
-    // Abort if waiting for authentication
-    if (requiresAuth && !isAuthenticated) {
+    // abort if waiting for authentication
+    if (!isAuthenticated) {
       return
     }
 
-    // Check if first page is available and not already fetched, and fetch it
+    // check if first page is available and not already fetched, and fetch it
     if (!fetching && !fetched && !error) {
       dispatch(fetchGallery(galleryId))
     }
   }
 
   const loadMoreItems = () => {
-    // Abort if waiting for authentication
-    if (requiresAuth && !isAuthenticated) {
+    // abort if waiting for authentication
+    if (!isAuthenticated) {
       return
     }
 
-    // Check if next page is available, and fetch it
+    // check if next page is available, and fetch it
     if (hasNext && !fetching) {
       dispatch(fetchGallery(galleryId))
     }
   }
 
-  // Redirect to authenticate
-  if (requiresAuth && !isAuthenticated) {
+  // redirect to authenticate
+  if (!isAuthenticated) {
     return <Redirect to={authUrl} />
   }
 
