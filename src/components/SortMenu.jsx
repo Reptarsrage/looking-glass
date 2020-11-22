@@ -23,7 +23,7 @@ export default function SortMenu({ moduleId, galleryId }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
-  const sortByValues = useSelector((state) => moduleValuesSelector(state, { moduleId, galleryId }))
+  const sortValues = useSelector((state) => moduleValuesSelector(state, { moduleId, galleryId }))
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -38,7 +38,7 @@ export default function SortMenu({ moduleId, galleryId }) {
   }
 
   // nothing to display
-  if (!sortByValues) {
+  if (!sortValues) {
     return null
   }
 
@@ -64,7 +64,7 @@ export default function SortMenu({ moduleId, galleryId }) {
         }}
       >
         <List>
-          {sortByValues.map((valueId) => (
+          {sortValues.map((valueId) => (
             <SortMenuItem
               key={valueId}
               moduleId={moduleId}

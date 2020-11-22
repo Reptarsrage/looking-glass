@@ -13,32 +13,36 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function Image({ src, width, height, title, styleName, ...passThroughProps }) {
+export default function Image({ sources, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
   const imageRef = useRef(null)
 
   useEffect(() => {
-    const img = imageRef.current
-    if (!img.hasAttribute('src')) {
-      img.setAttribute('src', src)
-    }
-
-    return () => {
-      img.removeAttribute('src')
-    }
+    // const img = imageRef.current
+    // if (!img.hasAttribute('src')) {
+    //   img.setAttribute('src', src)
+    // }
+    // return () => {
+    //   img.removeAttribute('src')
+    // }
   }, [])
 
   return (
-    <motion.img
-      {...passThroughProps}
-      ref={imageRef}
-      className={clsx(classes.image, styleName)}
-      src={src}
-      alt={title}
-      width={width}
-      height={height}
-      title={title}
-    />
+    <picture>
+      {sources.map(({ url, width: minWidth }, idx) => (
+        <source key={url} srcSet={url} media={`(min-width: ${idx === sources.length - 1 ? 0 : minWidth}px)`} />
+      ))}
+
+      <motion.img
+        {...passThroughProps}
+        ref={imageRef}
+        src={sources[0].url}
+        alt={title}
+        width={width}
+        height={height}
+        className={clsx(classes.image, styleName)}
+      />
+    </picture>
   )
 }
 
@@ -49,7 +53,13 @@ Image.defaultProps = {
 
 Image.propTypes = {
   // required
-  src: PropTypes.string.isRequired,
+  sources: PropTypes.arrayOf(
+    PropTypes.shape({
+      url: PropTypes.string.isRequired,
+      width: PropTypes.number.isRequired,
+      height: PropTypes.number.isRequired,
+    })
+  ).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 

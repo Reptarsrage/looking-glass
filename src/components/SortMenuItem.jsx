@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
-import { valueByIdSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
+import { valueSelector, valueIsCurrentlySelectedSelector, nestedSelector } from 'selectors/sortSelectors'
 import NestedSortMenuItem from './NestedSortMenuItem'
 
 const useStyles = makeStyles(() => ({
@@ -25,15 +25,15 @@ const useStyles = makeStyles(() => ({
 
 export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) {
   const classes = useStyles()
-  const value = useSelector((state) => valueByIdSelector(state, { valueId, galleryId }))
+  const value = useSelector((state) => valueSelector(state, { valueId, galleryId }))
+  const nestedValues = useSelector((state) => nestedSelector(state, { valueId, galleryId }))
   const valueIsCurrentlySelected = useSelector((state) =>
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
   )
 
   const [anchorEl, setAnchorEl] = useState(null)
-  const nestedValues = value.values || []
   const ariaId = `${valueId}-nested-sort-menu`
-  const hasNestedValues = nestedValues.length > 0
+  const hasNestedValues = Array.isArray(nestedValues) && nestedValues.length > 0
 
   const handleClick = (event) => {
     if (hasNestedValues) {

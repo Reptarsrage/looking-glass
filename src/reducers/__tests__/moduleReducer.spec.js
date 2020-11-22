@@ -44,7 +44,7 @@ it('should handle FETCH_MODULES_SUCCESS', () => {
     authType: `EXPECTED MODULE AUTH TYPE #${id}`,
     oAuthUrl: `EXPECTED MODULE OAUTH URL #${id}`,
     icon: `EXPECTED MODULE ICON #${id}`,
-    itemFiltersEnabled: true,
+    supportsItemFilters: true,
   }))
 
   const action = fetchModulesSuccess(expectedModules)
@@ -64,11 +64,11 @@ it('should handle FETCH_MODULES_SUCCESS with sort values', () => {
   // arrange
   const expectedLength = 3
   const expectedModuleId = 'EXPECTED MODULE ID'
-  const expectedSortByIds = [...Array(expectedLength).keys()].map((id) => id.toString())
+  const expectedSortIds = [...Array(expectedLength).keys()].map((id) => id.toString())
   const expectedModules = [
     {
       id: expectedModuleId,
-      sortBy: expectedSortByIds.map((id) => ({ id })),
+      sort: expectedSortIds.map((id) => ({ id })),
     },
   ]
 
@@ -80,18 +80,18 @@ it('should handle FETCH_MODULES_SUCCESS with sort values', () => {
   const state = reducer(undefined, action)
 
   // assert
-  expect(state.byId[expectedModuleId].sortBy).toEqual(expectedSortByIds)
+  expect(state.byId[expectedModuleId].sort).toEqual(expectedSortIds)
 })
 
 it('should handle FETCH_MODULES_SUCCESS with filter values', () => {
   // arrange
   const expectedLength = 3
   const expectedModuleId = 'EXPECTED MODULE ID'
-  const expectedFilterByIds = [...Array(expectedLength).keys()].map((id) => id.toString())
+  const expectedFilterIds = [...Array(expectedLength).keys()].map((id) => id.toString())
   const expectedModules = [
     {
       id: expectedModuleId,
-      filterBy: expectedFilterByIds.map((id) => ({ id })),
+      filters: expectedFilterIds.map((id) => ({ id })),
     },
   ]
 
@@ -103,5 +103,5 @@ it('should handle FETCH_MODULES_SUCCESS with filter values', () => {
   const state = reducer(undefined, action)
 
   // assert
-  expect(state.byId[expectedModuleId].filterBy).toEqual(expectedFilterByIds)
+  expect(state.byId[expectedModuleId].filters).toEqual(expectedFilterIds)
 })

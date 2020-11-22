@@ -22,12 +22,22 @@ class LookingGlassService {
   }
 
   /**
-   * logs user in using oauth, basic or implicit authentication
+   * logs user in using basic or implicit authentication
    * @param {string|number} moduleId Module ID
-   * @param {*} params Query string parameters
+   * @param {string} username Username
+   * @param {string} password Password
    */
-  login = async (moduleId, params) => {
-    return this.instance.get(`/${moduleId}/login?${qs.stringify(params)}`, this.config)
+  login = async (moduleId, username, password) => {
+    return this.instance.get(`/${moduleId}/login?${qs.stringify({ username, password })}`, this.config)
+  }
+
+  /**
+   * logs user in using oauth authentication
+   * @param {string|number} moduleId Module ID
+   * @param {string} code Code
+   */
+  authorize = async (moduleId, code) => {
+    return this.instance.get(`/${moduleId}/authorize?${qs.stringify({ code })}`, this.config)
   }
 
   /**
@@ -36,7 +46,12 @@ class LookingGlassService {
    * @param {string} refreshToken Refresh token
    */
   refresh = async (moduleId, refreshToken) => {
-    return this.instance.get(`/${moduleId}/refresh?${qs.stringify({ refreshToken })}`, this.config)
+    const config = {
+      ...this.config,
+      headers: { 'refresh-token': refreshToken },
+    }
+
+    return this.instance.get(`/${moduleId}/refresh`, config)
   }
 
   /**
@@ -51,7 +66,7 @@ class LookingGlassService {
    * @param {string|number} filter Filter value
    */
   fetchItems = async (moduleId, galleryId, accessToken, offset, after, query, sort, filter) => {
-    const params = { offset, after, query, sort, filter }
+    const params = { offset, after, query, sort, filters: filter ? [filter] : undefined }
     if (galleryId) {
       params.galleryId = galleryId
     }
@@ -61,8 +76,8 @@ class LookingGlassService {
       headers: { 'access-token': accessToken },
     }
 
-    const url = `/${moduleId}?${qs.stringify(params)}`
-    return this.instance.get(url, config)
+    const url = `/${moduleId}`
+    return this.instance.post(url, params, config)
   }
 
   /**

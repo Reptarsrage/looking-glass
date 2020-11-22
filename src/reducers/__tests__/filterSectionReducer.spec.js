@@ -16,7 +16,7 @@ it('should handle FETCH_MODULES_SUCCESS', () => {
   const modules = [
     {
       id: 'MODULE ID',
-      filterBy: expected.map((id) => ({ id })),
+      filters: expected.map((id) => ({ id })),
     },
   ]
 

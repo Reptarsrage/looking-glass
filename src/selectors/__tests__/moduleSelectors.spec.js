@@ -62,14 +62,14 @@ it('moduleSiteIdSelector selects expected', () => {
   expect(moduleSelectors.moduleSiteIdSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
-it('moduleTitleSelector selects expected', () => {
+it('moduleNameSelector selects expected', () => {
   const expected = 'EXPECTED ERROR'
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { title: expected } } } }
+  const expectedState = { module: { byId: { [moduleId]: { name: expected } } } }
   const expectedProps = { moduleId }
 
-  expect(moduleSelectors.moduleTitleSelector(expectedState, expectedProps)).toEqual(expected)
+  expect(moduleSelectors.moduleNameSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
 it('moduleDescriptionSelector selects expected', () => {
@@ -116,20 +116,20 @@ it('moduleFilterSectionsSelector selects expected', () => {
   const expected = 'EXPECTED ERROR'
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { filterBy: expected } } } }
+  const expectedState = { module: { byId: { [moduleId]: { filters: expected } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleFilterSectionsSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
-it('moduleSortBySelector selects expected', () => {
+it('moduleSortSelector selects expected', () => {
   const expected = 'EXPECTED ERROR'
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { sortBy: expected } } } }
+  const expectedState = { module: { byId: { [moduleId]: { sort: expected } } } }
   const expectedProps = { moduleId }
 
-  expect(moduleSelectors.moduleSortBySelector(expectedState, expectedProps)).toEqual(expected)
+  expect(moduleSelectors.moduleSortSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
 it('moduleDefaultGalleryIdSelector selects expected', () => {
@@ -146,7 +146,7 @@ it('moduleSupportsItemFiltersSelector selects expected', () => {
   const expected = 'EXPECTED ERROR'
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { itemFiltersEnabled: expected } } } }
+  const expectedState = { module: { byId: { [moduleId]: { supportsItemFilters: expected } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsItemFiltersSelector(expectedState, expectedProps)).toEqual(expected)
@@ -155,7 +155,7 @@ it('moduleSupportsItemFiltersSelector selects expected', () => {
 it('moduleSupportsSortingSelector selects expected when given null', () => {
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { sortBy: null } } } }
+  const expectedState = { module: { byId: { [moduleId]: { sort: null } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsSortingSelector(expectedState, expectedProps)).toEqual(false)
@@ -164,7 +164,7 @@ it('moduleSupportsSortingSelector selects expected when given null', () => {
 it('moduleSupportsSortingSelector selects expected when given empty', () => {
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { sortBy: [] } } } }
+  const expectedState = { module: { byId: { [moduleId]: { sort: [] } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsSortingSelector(expectedState, expectedProps)).toEqual(false)
@@ -173,7 +173,7 @@ it('moduleSupportsSortingSelector selects expected when given empty', () => {
 it('moduleSupportsSortingSelector selects expected when given array', () => {
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { sortBy: [{}, {}, {}] } } } }
+  const expectedState = { module: { byId: { [moduleId]: { sort: [{}, {}, {}] } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsSortingSelector(expectedState, expectedProps)).toEqual(true)
@@ -182,7 +182,7 @@ it('moduleSupportsSortingSelector selects expected when given array', () => {
 it('moduleSupportsFilteringSelector selects expected when given null', () => {
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { filterBy: null } } } }
+  const expectedState = { module: { byId: { [moduleId]: { filters: null } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsFilteringSelector(expectedState, expectedProps)).toEqual(false)
@@ -191,7 +191,7 @@ it('moduleSupportsFilteringSelector selects expected when given null', () => {
 it('moduleSupportsFilteringSelector selects expected when given empty', () => {
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { filterBy: [] } } } }
+  const expectedState = { module: { byId: { [moduleId]: { filters: [] } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsFilteringSelector(expectedState, expectedProps)).toEqual(false)
@@ -200,7 +200,7 @@ it('moduleSupportsFilteringSelector selects expected when given empty', () => {
 it('moduleSupportsFilteringSelector selects expected when given array', () => {
   const moduleId = 'EXPECTED MODULE ID'
 
-  const expectedState = { module: { byId: { [moduleId]: { filterBy: [{}, {}, {}] } } } }
+  const expectedState = { module: { byId: { [moduleId]: { filters: [{}, {}, {}] } } } }
   const expectedProps = { moduleId }
 
   expect(moduleSelectors.moduleSupportsFilteringSelector(expectedState, expectedProps)).toEqual(true)

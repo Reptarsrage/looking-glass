@@ -3,7 +3,7 @@ import { takeEvery } from 'redux-saga/effects'
 
 import { LOGIN } from 'actions/types'
 import lookingGlassService from 'services/lookingGlassService'
-import { login, loginFailure, loginSuccess, refreshSuccess, refreshFailure } from 'actions/authActions'
+import { login, loginFailure, loginSuccess, refreshSuccess, refreshFailure, authorize } from 'actions/authActions'
 import watchAuthSagas, { handleLogin, handleRefresh } from '../authSagas'
 import { recordSaga } from './sagaTestHelpers'
 import logger from '../../logger'
@@ -159,7 +159,7 @@ describe('handleLogin', () => {
 
     // assert
     expect(dispatched).toContainEqual(loginSuccess(expectedModuleId, expectedData))
-    expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, initialAction.payload)
+    expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, expectedUsername, expectedPassword)
   })
 
   it('should fail', async () => {
@@ -189,6 +189,62 @@ describe('handleLogin', () => {
     // assert
     expect(dispatched).toContainEqual(loginFailure(expectedModuleId, expectedError))
     expect(logger.error).toHaveBeenCalled()
-    expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, initialAction.payload)
+    expect(lookingGlassService.login).toHaveBeenCalledWith(expectedModuleSiteId, expectedUsername, expectedPassword)
+  })
+
+  it('should run successfully using authorize', async () => {
+    // arrange
+    const expectedModuleId = 'EXPECTED MODULE ID'
+    const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
+    const expectedCode = 'EXPECTED CODE'
+    const expectedData = 'EXPECTED DATA'
+    const initialAction = authorize(expectedModuleId, expectedCode)
+    const initialState = {
+      module: {
+        byId: {
+          [expectedModuleId]: {
+            siteId: expectedModuleSiteId,
+          },
+        },
+      },
+    }
+
+    lookingGlassService.authorize.mockImplementation(() => Promise.resolve({ data: expectedData }))
+
+    // act
+    const dispatched = await recordSaga(handleLogin, initialAction, initialState)
+
+    // assert
+    expect(dispatched).toContainEqual(loginSuccess(expectedModuleId, expectedData))
+    expect(lookingGlassService.authorize).toHaveBeenCalledWith(expectedModuleSiteId, expectedCode)
+  })
+
+  it('should fail using authorize', async () => {
+    // arrange
+    const expectedModuleId = 'EXPECTED MODULE ID'
+    const expectedModuleSiteId = 'EXPECTED MODULE SITE ID'
+    const expectedCode = 'EXPECTED CODE'
+    const expectedError = 'EXPECTED DATA'
+    const initialAction = authorize(expectedModuleId, expectedCode)
+    const initialState = {
+      module: {
+        byId: {
+          [expectedModuleId]: {
+            siteId: expectedModuleSiteId,
+          },
+        },
+      },
+    }
+
+    logger.error = jest.fn()
+    lookingGlassService.authorize.mockImplementation(() => Promise.reject(expectedError))
+
+    // act
+    const dispatched = await recordSaga(handleLogin, initialAction, initialState)
+
+    // assert
+    expect(dispatched).toContainEqual(loginFailure(expectedModuleId, expectedError))
+    expect(logger.error).toHaveBeenCalled()
+    expect(lookingGlassService.authorize).toHaveBeenCalledWith(expectedModuleSiteId, expectedCode)
   })
 })

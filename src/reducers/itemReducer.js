@@ -27,14 +27,17 @@ export const initialItemState = {
   siteId: null,
   galleryId: null,
   title: null,
-  description: null,
   width: 0,
   height: 0,
   isVideo: false,
   isGallery: false,
-  url: null,
-  thumb: null,
+  urls: [],
+  poster: null,
   filters: [],
+  date: null,
+  source: null,
+  author: null,
+
   fetching: false, // filters
   fetched: false, // filters
   error: null, // filters
@@ -42,7 +45,7 @@ export const initialItemState = {
 
 const addItem = (draft, galleryId, moduleId, item) => {
   // quick sanity check
-  if (!item.width || !item.height || !item.url) {
+  if (!item.width || !item.height) {
     logger.error('Invalid item', item)
     return
   }
@@ -52,8 +55,8 @@ const addItem = (draft, galleryId, moduleId, item) => {
 
   // translate filters
   const filters = []
-  item.filters.forEach(({ filterId, id }) => {
-    const filterSectionId = generateFilterSectionId(moduleId, filterId)
+  item.filters.forEach(({ filterSectionId: filterSectionSiteId, id }) => {
+    const filterSectionId = generateFilterSectionId(moduleId, filterSectionSiteId)
     const toAdd = generateFilterId(filterSectionId, id)
 
     if (filters.indexOf(toAdd) < 0) {
@@ -65,12 +68,23 @@ const addItem = (draft, galleryId, moduleId, item) => {
   if (!(itemId in draft.byId)) {
     // add item
     draft.allIds.push(itemId)
+
+    const { id, title, width, height, isVideo, isGallery, urls, poster, author, date, source } = item
     draft.byId[itemId] = {
-      ...item,
-      siteId: item.id,
+      siteId: id,
       id: itemId,
       galleryId,
       filters,
+      urls,
+      poster,
+      isGallery,
+      isVideo,
+      title,
+      width,
+      height,
+      date,
+      source,
+      author,
     }
   }
 }
@@ -111,8 +125,8 @@ export default produce((draft, action) => {
       const { itemId, moduleId } = meta
       const filters = payload
 
-      filters.forEach(({ filterId, id }) => {
-        const filterSectionId = generateFilterSectionId(moduleId, filterId)
+      filters.forEach(({ filterSectionId: filterSectionSiteId, id }) => {
+        const filterSectionId = generateFilterSectionId(moduleId, filterSectionSiteId)
         const toAdd = generateFilterId(filterSectionId, id)
         const values = draft.byId[itemId].filters
 

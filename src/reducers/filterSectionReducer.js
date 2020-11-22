@@ -38,7 +38,7 @@ const addFilterSectionForModule = (draft, module) => {
   const moduleId = generateModuleId(module.id)
 
   // add filter sections
-  module.filterBy.forEach((filterSection) => {
+  module.filters.forEach((filterSection) => {
     const id = generateFilterSectionId(moduleId, filterSection.id)
     draft.allIds.push(id)
     draft.byId[id] = {
@@ -76,8 +76,8 @@ export default produce((draft, action) => {
       const filters = payload
 
       // add filters for modules
-      filters.forEach(({ filterId, id }) => {
-        const filterSectionId = generateFilterSectionId(moduleId, filterId)
+      filters.forEach(({ filterSectionId: filterSectionSiteId, id }) => {
+        const filterSectionId = generateFilterSectionId(moduleId, filterSectionSiteId)
         const toAdd = generateFilterId(filterSectionId, id)
         const { values } = draft.byId[filterSectionId]
         if (values.indexOf(toAdd) < 0) {
@@ -113,8 +113,8 @@ export default produce((draft, action) => {
 
       // add item filters
       items.forEach((item) => {
-        item.filters.forEach(({ filterId, id }) => {
-          const filterSectionId = generateFilterSectionId(moduleId, filterId)
+        item.filters.forEach(({ filterSectionId: filterSectionSiteId, id }) => {
+          const filterSectionId = generateFilterSectionId(moduleId, filterSectionSiteId)
           const toAdd = generateFilterId(filterSectionId, id)
           const { values } = draft.byId[filterSectionId]
           if (values.indexOf(toAdd) < 0) {

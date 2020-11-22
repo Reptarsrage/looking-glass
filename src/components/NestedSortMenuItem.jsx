@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { valueByIdSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
+import { valueNameSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 
 const useStyles = makeStyles(() => ({
   icon: {
@@ -17,14 +17,14 @@ const useStyles = makeStyles(() => ({
 
 export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onClick }) {
   const classes = useStyles()
-  const value = useSelector((state) => valueByIdSelector(state, { valueId, galleryId }))
+  const name = useSelector((state) => valueNameSelector(state, { valueId, galleryId }))
   const valueIsCurrentlySelected = useSelector((state) =>
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
   )
 
   return (
     <ListItem button onClick={onClick}>
-      <ListItemText primary={value.name} />
+      <ListItemText primary={name} />
       {valueIsCurrentlySelected && (
         <ListItemIcon className={classes.icon}>
           <CheckIcon color="primary" />

@@ -152,7 +152,7 @@ describe('handleFetchFilters', () => {
         byId: {
           [expectedModuleId]: {
             siteId: expectedModuleSiteId,
-            filterBy: [expectedFilterSectionId],
+            filters: [expectedFilterSectionId],
           },
         },
       },
@@ -200,7 +200,7 @@ describe('handleFetchFilters', () => {
         byId: {
           [expectedModuleId]: {
             siteId: expectedModuleSiteId,
-            filterBy: [expectedFilterSectionId],
+            filters: [expectedFilterSectionId],
           },
         },
       },
