@@ -87,7 +87,7 @@ export default function Modal({ moduleId }) {
   const modalBounds = useSelector(modalBoundsSelector)
   const defaultGalleryId = useSelector((state) => moduleDefaultGalleryIdSelector(state, { moduleId }))
   const modalItemHasFilters = useSelector(modalItemHasFiltersSelector)
-  const itemFiltersEnabled = useSelector((state) => moduleSupportsItemFiltersSelector(state, { moduleId }))
+  const supportsItemFilters = useSelector((state) => moduleSupportsItemFiltersSelector(state, { moduleId }))
 
   const handleAnimationComplete = () => {
     if (!modalOpen) {
@@ -137,7 +137,7 @@ export default function Modal({ moduleId }) {
     }
   }
 
-  const renderFilters = itemFiltersEnabled || modalItemHasFilters
+  const renderFilters = supportsItemFilters || modalItemHasFilters
   return (
     <>
       {!showCaption && (

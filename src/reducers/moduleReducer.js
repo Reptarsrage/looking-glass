@@ -23,15 +23,17 @@ export const initialState = {
 export const initialModuleState = {
   id: null,
   siteId: null,
-  title: null,
+  name: null,
   description: null,
   authType: null,
   oAuthUrl: null,
   icon: null,
-  sortBy: [],
-  filterBy: [],
+  sort: [],
+  filters: [],
   defaultGalleryId: null,
-  itemFiltersEnabled: false,
+  supportsItemFilters: false,
+  supportsAuthorFilter: false,
+  supportsSourceFilter: false,
 }
 
 export default produce((draft, action) => {
@@ -50,21 +52,21 @@ export default produce((draft, action) => {
 
       // add modules
       modules.forEach((module) => {
-        const { id: siteId, sortBy, filterBy, ...rest } = module
+        const { id: siteId, sort, filters, ...rest } = module
 
         const moduleId = generateModuleId(siteId)
         const defaultGalleryId = generateGalleryId(moduleId, DEFAULT_GALLERY_ID)
 
         // sort values
         let sortValues
-        if (Array.isArray(sortBy)) {
-          sortValues = sortBy.map(({ id }) => generateSortId(moduleId, id))
+        if (Array.isArray(sort)) {
+          sortValues = sort.map(({ id }) => generateSortId(moduleId, id))
         }
 
         // filter sections
         let filterSections
-        if (Array.isArray(filterBy)) {
-          filterSections = filterBy.map(({ id }) => generateFilterSectionId(moduleId, id))
+        if (Array.isArray(filters)) {
+          filterSections = filters.map(({ id }) => generateFilterSectionId(moduleId, id))
         }
 
         draft.allIds.push(moduleId)
@@ -74,8 +76,8 @@ export default produce((draft, action) => {
           ...rest,
           siteId,
           id: moduleId,
-          sortBy: sortValues,
-          filterBy: filterSections,
+          sort: sortValues,
+          filters: filterSections,
           defaultGalleryId,
         }
       })
@@ -86,7 +88,7 @@ export default produce((draft, action) => {
       draft.byId[FILE_SYSTEM_MODULE_ID] = {
         ...initialModuleState,
         id: FILE_SYSTEM_MODULE_ID,
-        title: 'Local files',
+        name: 'Local files',
         description: 'Choose a directory',
         defaultGalleryId: generateGalleryId(FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID),
       }

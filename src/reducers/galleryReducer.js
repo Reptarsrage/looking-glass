@@ -74,9 +74,9 @@ export default produce((draft, action) => {
       const modules = payload
 
       // add default module galleries for all modules
-      modules.forEach(({ id, title }) => {
+      modules.forEach(({ id, name }) => {
         const moduleId = generateModuleId(id)
-        addGallery(draft, moduleId, DEFAULT_GALLERY_ID, title)
+        addGallery(draft, moduleId, DEFAULT_GALLERY_ID, name)
       })
 
       // add file system default module galleries
@@ -103,7 +103,7 @@ export default produce((draft, action) => {
 
       // add items
       items
-        .filter(({ url, width, height }) => url && width && height) // remove any poorly formatted items
+        .filter(({ width, height, urls }) => width && height && Array.isArray(urls) && urls.length > 0) // remove any poorly formatted items
         .forEach((item) => {
           const itemId = generateItemId(galleryId, item.id)
           if (draft.byId[galleryId].items.indexOf(itemId) < 0) {

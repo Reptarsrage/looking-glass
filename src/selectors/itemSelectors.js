@@ -48,6 +48,12 @@ export const itemGalleryUrlSelector = createSelector(
 /** item filters are pending */
 export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetching)
 
+export const itemUrlsSelector = createSelector(itemByIdSelector, (item) => {
+  const urls = [...item.urls]
+  urls.sort((a, b) => b.width - a.width)
+  return urls
+})
+
 /** item filters are fetched */
 export const itemFetchedFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetched)
 

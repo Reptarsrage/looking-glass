@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 
 import {
-  moduleTitleSelector,
+  moduleNameSelector,
   moduleDescriptionSelector,
   moduleDefaultGalleryIdSelector,
   moduleIconSelector,
@@ -16,16 +16,16 @@ import {
 
 export default function ModuleItem({ moduleId }) {
   const defaultGalleryId = useSelector((state) => moduleDefaultGalleryIdSelector(state, { moduleId }))
-  const title = useSelector((state) => moduleTitleSelector(state, { moduleId }))
+  const name = useSelector((state) => moduleNameSelector(state, { moduleId }))
   const icon = useSelector((state) => moduleIconSelector(state, { moduleId }))
   const description = useSelector((state) => moduleDescriptionSelector(state, { moduleId }))
 
   return (
     <ListItem button component={RouterLink} to={`/gallery/${moduleId}/${defaultGalleryId}`}>
       <ListItemAvatar>
-        <Avatar alt={title} src={icon} />
+        <Avatar alt={name} src={icon} />
       </ListItemAvatar>
-      <ListItemText primary={title} secondary={description} />
+      <ListItemText primary={name} secondary={description} />
     </ListItem>
   )
 }

@@ -191,7 +191,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
         id,
         width: 'EXPECTED WIDTH',
         height: 'EXPECTED HEIGHT',
-        url: 'EXPECTED URL',
+        urls: [{ url: 'URL', width: 1, height: 1 }],
       })),
       offset: 'OFFSET',
     }
@@ -218,7 +218,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
         id,
         width: id === 0 ? null : 'EXPECTED WIDTH',
         height: id === 1 ? null : 'EXPECTED HEIGHT',
-        url: id === 2 ? null : 'EXPECTED URL',
+        urls: id === 2 ? null : [{ url: 'EXPECTED URL', width: 1, height: 1 }],
       })),
       offset: 'OFFSET',
     }
@@ -244,7 +244,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
         id,
         width: 'EXPECTED WIDTH',
         height: 'EXPECTED HEIGHT',
-        url: 'EXPECTED URL',
+        urls: [{ url: 'URL', width: 1, height: 1 }],
         isGallery: true,
       })),
       offset: 'OFFSET',
@@ -275,7 +275,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
         id,
         width: 'EXPECTED WIDTH',
         height: 'EXPECTED HEIGHT',
-        url: 'EXPECTED URL',
+        urls: [{ url: 'URL', width: 1, height: 1 }],
       })),
     }
 

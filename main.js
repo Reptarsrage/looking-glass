@@ -3,7 +3,6 @@ const { app, BrowserWindow, screen } = require('electron')
 const isDev = require('electron-is-dev')
 const path = require('path')
 const log = require('electron-log')
-const { autoUpdater } = require('electron-updater')
 const qs = require('querystring')
 
 const MenuBuilder = require('./menu')
@@ -11,15 +10,6 @@ const createLocalWebServer = require('./localWebServer')
 
 // web Server
 let localWebServer
-
-// auto updater
-class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'debug'
-    autoUpdater.logger = log
-    autoUpdater.checkForUpdatesAndNotify()
-  }
-}
 
 // dev tools installer
 const installExtensions = async () => {

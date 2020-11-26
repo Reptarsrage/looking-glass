@@ -24,7 +24,7 @@ export default function ImageWithZoom({
   enableZoom,
   width,
   height,
-  src,
+  sources,
   title,
   styleName,
   zoom,
@@ -52,14 +52,13 @@ export default function ImageWithZoom({
 
   // effect to unload image from memory
   useEffect(() => {
-    const img = imageRef.current
-    if (!img.hasAttribute('src')) {
-      img.setAttribute('src', src)
-    }
-
-    return () => {
-      img.removeAttribute('src')
-    }
+    // const img = imageRef.current
+    // if (!img.hasAttribute('src')) {
+    //   img.setAttribute('src', src)
+    // }
+    // return () => {
+    //   img.removeAttribute('src')
+    // }
   }, [])
 
   // effect to bootstrap zooming
@@ -226,20 +225,25 @@ export default function ImageWithZoom({
 
   return (
     <motion.div className={clsx(classes.container, styleName)} {...otherProps}>
-      <motion.img
-        ref={imageRef}
-        className={classes.image}
-        role="presentation"
-        src={src}
-        alt={title}
-        width={width}
-        height={height}
-        title={title}
-        onWheel={handleWheel}
-        onMouseDown={handleMouseDown}
-        style={style}
-        draggable={zoomedIn}
-      />
+      <picture>
+        {sources.map(({ url, width: minWidth }, idx) => (
+          <source key={url} srcSet={url} media={`(min-width: ${idx === sources.length - 1 ? 0 : minWidth}px)`} />
+        ))}
+
+        <motion.img
+          ref={imageRef}
+          className={classes.image}
+          role="presentation"
+          alt={title}
+          width={width}
+          height={height}
+          title={title}
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          style={style}
+          draggable={zoomedIn}
+        />
+      </picture>
     </motion.div>
   )
 }
@@ -257,7 +261,13 @@ ImageWithZoom.defaultProps = {
 
 ImageWithZoom.propTypes = {
   // required
-  src: PropTypes.string.isRequired,
+  sources: PropTypes.arrayOf(
+    PropTypes.shape({
+      url: PropTypes.string.isRequired,
+      width: PropTypes.number.isRequired,
+      height: PropTypes.number.isRequired,
+    })
+  ).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 

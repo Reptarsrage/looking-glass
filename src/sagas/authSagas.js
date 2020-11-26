@@ -63,16 +63,22 @@ export function* handleRefresh(moduleId) {
 export function* handleLogin(action) {
   const { payload, meta } = action
   const moduleId = meta
+  const { username, password, code } = payload
 
   try {
     // select info from the redux store
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
 
     // make request
-    const { data } = yield call(lookingGlassService.login, moduleSiteId, payload)
+    let response
+    if (code) {
+      response = yield call(lookingGlassService.authorize, moduleSiteId, code)
+    } else {
+      response = yield call(lookingGlassService.login, moduleSiteId, username, password)
+    }
 
     // put info into the store
-    yield put(loginSuccess(moduleId, data))
+    yield put(loginSuccess(moduleId, response.data))
   } catch (error) {
     // encountered an error
     logger.error(error, 'Error logging in')

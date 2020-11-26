@@ -107,7 +107,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
     const gallery = {
       items: expectedItemIds.map((id) => ({
         id,
-        url: 'URL',
+        urls: [{ url: 'URL', width: 1, height: 1 }],
         width: 'WIDTH',
         height: 'HEIGHT',
         filters: [],
@@ -137,7 +137,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
     const gallery = {
       items: expectedItemIds.map((id) => ({
         id,
-        url: id === '0' ? undefined : 'URL',
+        urls: id === '0' ? undefined : [{ url: 'URL', width: 0, height: 0 }],
         width: id === '1' ? undefined : 'WIDTH',
         height: id === '2' ? undefined : 'HEIGHT',
         filters: [],
@@ -167,7 +167,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
     const gallery = {
       items: ['0', '1', '2', '0', '0', '1', '2', '2'].map((id) => ({
         id,
-        url: 'URL',
+        urls: [{ url: 'URL', width: 1, height: 1 }],
         width: 'WIDTH',
         height: 'HEIGHT',
         filters: [],
@@ -198,7 +198,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
       items: [
         {
           id: itemId,
-          url: 'URL',
+          urls: [{ url: 'URL', width: 1, height: 1 }],
           width: 'WIDTH',
           height: 'HEIGHT',
           filters: [...Array(3).keys()].map((id) => ({ filterId: 'EXPECTED FILTER SECTION ID', id })),
@@ -233,7 +233,7 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
       items: [
         {
           id: itemId,
-          url: 'URL',
+          urls: [{ url: 'URL', width: 1, height: 1 }],
           width: 'WIDTH',
           height: 'HEIGHT',
           filters: [0, 1, 2, 2, 1, 2, 2, 1].map((id) => ({ filterId: 'EXPECTED FILTER SECTION ID', id })),

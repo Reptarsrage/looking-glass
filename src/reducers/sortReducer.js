@@ -13,9 +13,7 @@ export const initialSortState = {
   siteId: null,
   moduleId: null,
   name: null,
-  fullText: null,
-  values: [],
-  default: false,
+  isDefault: false,
   availableInSearch: false,
   exclusiveToSearch: false,
 }
@@ -25,32 +23,14 @@ const addSortForModule = (draft, module) => {
   const moduleId = generateModuleId(module.id)
 
   // add sort values
-  module.sortBy.forEach((sortValue) => {
-    // add nested values
-    if (Array.isArray(sortValue.values)) {
-      sortValue.values.forEach((nestedSortValue) => {
-        const nestedId = generateSortId(moduleId, nestedSortValue.id)
-        draft.allIds.push(nestedId)
-        draft.byId[nestedId] = {
-          ...initialSortState,
-          ...nestedSortValue,
-          siteId: nestedSortValue.id,
-          moduleId,
-          id: nestedId,
-          fullText: `${sortValue.name} (${nestedSortValue.name})`,
-        }
-      })
-    }
-
-    // add current one
+  module.sort.forEach((sortValue) => {
     const id = generateSortId(moduleId, sortValue.id)
     draft.allIds.push(id)
     draft.byId[id] = {
       ...initialSortState,
       ...sortValue,
-      values:
-        sortValue.values && sortValue.values.map((nestedSortValue) => generateSortId(moduleId, nestedSortValue.id)),
       siteId: sortValue.id,
+      parentId: sortValue.parentId ? generateSortId(moduleId, sortValue.parentId) : undefined,
       moduleId,
       id,
     }

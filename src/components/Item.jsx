@@ -6,7 +6,7 @@ import CollectionsIcon from '@material-ui/icons/Collections'
 import { useHistory } from 'react-router-dom'
 
 import { modalItemIdSelector } from 'selectors/modalSelectors'
-import { itemByIdSelector, itemGalleryUrlSelector } from 'selectors/itemSelectors'
+import { itemByIdSelector, itemGalleryUrlSelector, itemUrlsSelector } from 'selectors/itemSelectors'
 import { modalOpen, modalBoundsUpdate, modalSetItem } from 'actions/modalActions'
 import Image from './Image'
 import Video from './Video'
@@ -37,6 +37,7 @@ function Item({ itemId, style }) {
   const itemRef = useRef(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
   const item = useSelector((state) => itemByIdSelector(state, { itemId }))
+  const sources = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const modalItemId = useSelector(modalItemIdSelector)
   const itemGalleryUrl = useSelector((state) => itemGalleryUrlSelector(state, { itemId }))
   const dispatch = useDispatch()
@@ -84,12 +85,12 @@ function Item({ itemId, style }) {
     dispatch(modalOpen())
   }
 
-  const renderImage = () => <Image src={item.url} title={item.title} width={item.width} height={item.height} />
+  const renderImage = () => <Image sources={sources} title={item.title} width={item.width} height={item.height} />
 
   const renderVideo = () => (
     <Video
-      src={item.url}
-      thumb={item.thumb}
+      sources={sources}
+      poster={item.poster}
       title={item.title}
       width={item.width}
       height={item.height}

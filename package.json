@@ -13,7 +13,7 @@
     "email": "reptarsrage@gmail.com",
     "url": "https://github.com/reptarsrage"
   },
-  "license": "UNLICENSED",
+  "license": "Unlicense",
   "bugs": {
     "url": "https://github.com/reptarsrage/looking-glass/issues"
   },
@@ -71,7 +71,7 @@
     "cross-env": "7.0.2",
     "css-loader": "5.0.1",
     "cz-conventional-changelog": "3.3.0",
-    "electron": "10.1.6",
+    "electron": "11.0.2",
     "electron-builder": "22.9.1",
     "electron-devtools-installer": "3.1.1",
     "eslint": "7.14.0",
@@ -123,11 +123,10 @@
     "electron-is-dev": "^1.1.0",
     "electron-log": "^4.3.0",
     "electron-store": "^6.0.1",
-    "electron-updater": "4.3.5",
     "framer-motion": "^2.9.4",
     "get-port": "^5.1.1",
     "image-size": "^0.9.3",
-    "immer": "^7.0.14",
+    "immer": "^8.0.0",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.25",
     "moize": "^5.4.7",

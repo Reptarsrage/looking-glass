@@ -13,31 +13,31 @@ export const errorSelector = (state) => state.module.error
 // select all modules in sorted order
 export const modulesSelector = createSelector([allIdsSelector, byIdSelector], (allIds, byId) => {
   const modules = [...allIds]
-  modules.sort((a, b) => byId[a].title.localeCompare(byId[b].title))
+  modules.sort((a, b) => byId[a].name.localeCompare(byId[b].name))
   return modules
 })
 
 // select from a specific module
 export const moduleSelector = createSelector([byIdSelector, getModuleId], (byId, moduleId) => byId[moduleId])
 export const moduleSiteIdSelector = createSelector(moduleSelector, (module) => module.siteId)
-export const moduleTitleSelector = createSelector(moduleSelector, (module) => module.title)
+export const moduleNameSelector = createSelector(moduleSelector, (module) => module.name)
 export const moduleDescriptionSelector = createSelector(moduleSelector, (module) => module.description)
 export const moduleIconSelector = createSelector(moduleSelector, (module) => module.icon)
 export const moduleOAuthUrlSelector = createSelector(moduleSelector, (module) => module.oAuthUrl)
 export const moduleAuthTypeSelector = createSelector(moduleSelector, (module) => module.authType)
-export const moduleFilterSectionsSelector = createSelector(moduleSelector, (module) => module.filterBy)
-export const moduleSortBySelector = createSelector(moduleSelector, (module) => module.sortBy)
+export const moduleFilterSectionsSelector = createSelector(moduleSelector, (module) => module.filters)
+export const moduleSortSelector = createSelector(moduleSelector, (module) => module.sort)
 export const moduleDefaultGalleryIdSelector = createSelector(moduleSelector, (module) => module.defaultGalleryId)
-export const moduleSupportsItemFiltersSelector = createSelector(moduleSelector, (module) => module.itemFiltersEnabled)
+export const moduleSupportsItemFiltersSelector = createSelector(moduleSelector, (module) => module.supportsItemFilters)
 
 // module supports sorting
 export const moduleSupportsSortingSelector = createSelector(
-  moduleSortBySelector,
-  (sortBy) => Array.isArray(sortBy) && sortBy.length > 0
+  moduleSortSelector,
+  (sort) => Array.isArray(sort) && sort.length > 0
 )
 
 // module supports filtering
 export const moduleSupportsFilteringSelector = createSelector(
   moduleFilterSectionsSelector,
-  (filterBy) => Array.isArray(filterBy) && filterBy.length > 0
+  (filters) => Array.isArray(filters) && filters.length > 0
 )

@@ -16,6 +16,7 @@ import {
   modalOpenSelector,
   modalItemSelector,
 } from 'selectors/modalSelectors'
+import { itemUrlsSelector } from 'selectors/itemSelectors'
 import { modalSetItem } from 'actions/modalActions'
 import Image from './ImageWithZoom'
 import Video from './Video'
@@ -81,6 +82,7 @@ export default function SlideShow({ animating }) {
   const modalPrev = useSelector(modalPrevSelector)
   const modalOpen = useSelector(modalOpenSelector)
   const item = useSelector(modalItemSelector)
+  const urls = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const swipeConfidenceThreshold = 10000
 
   const handleAnimationEnd = () => {
@@ -127,8 +129,8 @@ export default function SlideShow({ animating }) {
         {item.isVideo ? (
           <Video
             {...commonProps}
-            src={item.url}
-            thumb={item.thumb}
+            sources={urls}
+            poster={item.poster}
             title={item.title}
             width={item.width}
             height={item.height}
@@ -141,7 +143,7 @@ export default function SlideShow({ animating }) {
           <Image
             {...commonProps}
             enableZoom={!animating && modalOpen}
-            src={item.url}
+            sources={urls}
             title={item.title}
             width={item.width}
             height={item.height}

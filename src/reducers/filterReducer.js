@@ -49,8 +49,8 @@ export default produce((draft, action) => {
       const filters = payload
 
       // add filters for modules
-      filters.forEach(({ filterId, ...filter }) => {
-        const filterSectionId = generateFilterSectionId(moduleId, filterId)
+      filters.forEach(({ filterSectionId: filterSectionSiteId, ...filter }) => {
+        const filterSectionId = generateFilterSectionId(moduleId, filterSectionSiteId)
         addFiltersForSection(draft, filterSectionId, filter)
       })
 
@@ -63,8 +63,8 @@ export default produce((draft, action) => {
 
       // add item filters
       items.forEach((item) => {
-        item.filters.forEach(({ filterId, ...filter }) => {
-          const filterSectionId = generateFilterSectionId(moduleId, filterId)
+        item.filters.forEach(({ filterSectionId: filterSectionSiteId, ...filter }) => {
+          const filterSectionId = generateFilterSectionId(moduleId, filterSectionSiteId)
           addFiltersForSection(draft, filterSectionId, filter)
         })
       })

@@ -14,56 +14,63 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function Video({ src, thumb, width, height, title, styleName, ...passThroughProps }) {
+export default function Video({ sources, poster, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
   const videoRef = useRef(null)
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video.querySelector('source').hasAttribute('src')) {
-      video.pause()
-      video.querySelector('source').setAttribute('src', src)
-      video.load()
-    }
-
-    return () => {
-      // based on https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element/40419032
-      video.pause()
-      video.querySelector('source').removeAttribute('src')
-      video.load()
-    }
+    // const video = videoRef.current
+    // if (!video.querySelector('source').hasAttribute('src')) {
+    //   video.pause()
+    //   video.querySelector('source').setAttribute('src', src)
+    //   video.load()
+    // }
+    // return () => {
+    //   // based on https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element/40419032
+    //   video.pause()
+    //   video.querySelector('source').removeAttribute('src')
+    //   video.load()
+    // }
   }, [])
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption
     <motion.video
+      {...passThroughProps}
       ref={videoRef}
       className={clsx(classes.video, styleName)}
       width={width}
       height={height}
       title={title}
-      poster={thumb}
-      {...passThroughProps}
+      poster={poster}
     >
-      <source src={src} type={`video/${extname(src).slice(1).split('?')[0] || 'mp4'}`} />
+      {sources.map(({ url }) => (
+        <source key={url} src={url} type={`video/${extname(url).slice(1).split('?')[0] || 'mp4'}`} />
+      ))}
     </motion.video>
   )
 }
 
 Video.defaultProps = {
   title: '',
-  thumb: null,
+  poster: null,
   styleName: null,
 }
 
 Video.propTypes = {
   // required
-  src: PropTypes.string.isRequired,
+  sources: PropTypes.arrayOf(
+    PropTypes.shape({
+      url: PropTypes.string.isRequired,
+      width: PropTypes.number.isRequired,
+      height: PropTypes.number.isRequired,
+    })
+  ).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 
   // optional
-  thumb: PropTypes.string,
+  poster: PropTypes.string,
   title: PropTypes.string,
   styleName: PropTypes.string,
 }
