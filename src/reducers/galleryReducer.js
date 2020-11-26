@@ -103,7 +103,7 @@ export default produce((draft, action) => {
 
       // add items
       items
-        .filter(({ width, height }) => width && height) // remove any poorly formatted items
+        .filter(({ width, height, urls }) => width && height && Array.isArray(urls) && urls.length > 0) // remove any poorly formatted items
         .forEach((item) => {
           const itemId = generateItemId(galleryId, item.id)
           if (draft.byId[galleryId].items.indexOf(itemId) < 0) {

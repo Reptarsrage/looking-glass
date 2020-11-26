@@ -51,12 +51,12 @@ describe('should handle FETCH_ITEM_FILTERS_SUCCESS', () => {
   it('when given no duplicates', () => {
     // arrange
     const moduleId = 'EXPECTED MODULE ID'
-    const filterId = 'EXPECTED FILTER SECTION ID'
+    const filterSectionId = 'EXPECTED FILTER SECTION ID'
     const itemId = 'EXPECTED ITEM ID'
     const expected = [...Array(3).keys()].map((id) => id.toString())
-    const filters = [...expected].map((id) => ({ id, filterId }))
+    const filters = [...expected].map((id) => ({ id, filterSectionId }))
 
-    let state = { allIds: [filterId], byId: { [filterId]: { values: [] } } }
+    let state = { allIds: [filterSectionId], byId: { [filterSectionId]: { values: [] } } }
     const action = fetchItemFiltersSuccess(moduleId, itemId, filters)
 
     constants.generateFilterId.mockImplementation((_, id) => id)
@@ -66,18 +66,18 @@ describe('should handle FETCH_ITEM_FILTERS_SUCCESS', () => {
     state = reducer(state, action)
 
     // assert
-    expect(state.byId[filterId].values).toEqual(expected)
+    expect(state.byId[filterSectionId].values).toEqual(expected)
   })
 
   it('when given duplicates', () => {
     // arrange
     const moduleId = 'EXPECTED MODULE ID'
-    const filterId = 'EXPECTED FILTER SECTION ID'
+    const filterSectionId = 'EXPECTED FILTER SECTION ID'
     const itemId = 'EXPECTED ITEM ID'
     const expected = [...Array(3).keys()].map((id) => id.toString())
-    const filters = [...expected, ...expected].map((id) => ({ id, filterId }))
+    const filters = [...expected, ...expected].map((id) => ({ id, filterSectionId }))
 
-    let state = { allIds: [filterId], byId: { [filterId]: { values: [] } } }
+    let state = { allIds: [filterSectionId], byId: { [filterSectionId]: { values: [] } } }
     const action = fetchItemFiltersSuccess(moduleId, itemId, filters)
 
     constants.generateFilterId.mockImplementation((_, id) => id)
@@ -87,7 +87,7 @@ describe('should handle FETCH_ITEM_FILTERS_SUCCESS', () => {
     state = reducer(state, action)
 
     // assert
-    expect(state.byId[filterId].values).toEqual(expected)
+    expect(state.byId[filterSectionId].values).toEqual(expected)
   })
 })
 
@@ -147,19 +147,19 @@ it('should handle FETCH_FILTERS_FAILURE', () => {
 describe('should handle FETCH_GALLERY_SUCCESS', () => {
   it('when given no duplicates', () => {
     // arrange
-    const filterId = 'EXPECTED FILTER SECTION ID'
+    const filterSectionId = 'EXPECTED FILTER SECTION ID'
     const moduleId = 'EXPECTED MODULE ID'
     const galleryId = 'EXPECTED GALLERY ID'
     const expected = [...Array(3).keys()].map((id) => id.toString())
     const gallery = {
       items: [
         {
-          filters: [...expected].map((id) => ({ id, filterId })),
+          filters: [...expected].map((id) => ({ id, filterSectionId })),
         },
       ],
     }
 
-    let state = { allIds: [filterId], byId: { [filterId]: { values: [] } } }
+    let state = { allIds: [filterSectionId], byId: { [filterSectionId]: { values: [] } } }
     const action = fetchGallerySuccess(moduleId, galleryId, gallery)
 
     constants.generateFilterId.mockImplementation((_, id) => id)
@@ -169,24 +169,24 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
     state = reducer(state, action)
 
     // assert
-    expect(state.byId[filterId].values).toEqual(expected)
+    expect(state.byId[filterSectionId].values).toEqual(expected)
   })
 
   it('when given duplicates', () => {
     // arrange
-    const filterId = 'EXPECTED FILTER SECTION ID'
+    const filterSectionId = 'EXPECTED FILTER SECTION ID'
     const moduleId = 'EXPECTED MODULE ID'
     const galleryId = 'EXPECTED GALLERY ID'
     const expected = [...Array(3).keys()].map((id) => id.toString())
     const gallery = {
       items: [
         {
-          filters: [...expected, ...expected].map((id) => ({ id, filterId })),
+          filters: [...expected, ...expected].map((id) => ({ id, filterSectionId })),
         },
       ],
     }
 
-    let state = { allIds: [filterId], byId: { [filterId]: { values: [] } } }
+    let state = { allIds: [filterSectionId], byId: { [filterSectionId]: { values: [] } } }
     const action = fetchGallerySuccess(moduleId, galleryId, gallery)
 
     constants.generateFilterId.mockImplementation((_, id) => id)
@@ -196,6 +196,6 @@ describe('should handle FETCH_GALLERY_SUCCESS', () => {
     state = reducer(state, action)
 
     // assert
-    expect(state.byId[filterId].values).toEqual(expected)
+    expect(state.byId[filterSectionId].values).toEqual(expected)
   })
 })

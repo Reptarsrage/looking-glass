@@ -41,9 +41,9 @@ describe('should handle FETCH_MODULES_SUCCESS', () => {
         sort: [
           {
             id: 'EXPECTED PARENT ID',
-            values: expected.map((id) => ({ id, name: 'CHILD' })),
             name: 'PARENT',
           },
+          ...expected.map((id) => ({ id, name: 'CHILD', parentId: 'EXPECTED MODULE ID' })),
         ],
       },
     ]
@@ -57,7 +57,7 @@ describe('should handle FETCH_MODULES_SUCCESS', () => {
     const state = reducer(undefined, action)
 
     // assert
-    expect(state.allIds).toEqual([...expected, 'EXPECTED PARENT ID'])
+    expect(state.allIds).toEqual(['EXPECTED PARENT ID', ...expected])
     expect(Object.keys(state.byId)).toEqual([...expected, 'EXPECTED PARENT ID'])
   })
 })

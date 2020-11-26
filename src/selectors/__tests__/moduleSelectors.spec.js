@@ -17,7 +17,7 @@ it('modulesSelector selects expected', () => {
   const expectedState = {
     module: {
       allIds: expectedModules,
-      byId: expectedModules.reduce((acc, id, i) => ({ ...acc, [id]: { id, title: `TITLE ${3 - i}` } }), {}),
+      byId: expectedModules.reduce((acc, id, i) => ({ ...acc, [id]: { id, name: `TITLE ${3 - i}` } }), {}),
     },
   }
 

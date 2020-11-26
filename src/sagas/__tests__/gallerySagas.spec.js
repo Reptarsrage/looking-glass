@@ -512,4 +512,58 @@ describe('handleFetchGallery', () => {
     )
     expect(gen.next().value).toBeUndefined()
   })
+
+  it('uses default filter', async () => {
+    // arrange
+    const expectedGalleryId = 'EXPECTED GALLERY ID'
+    const expectedModuleId = 'EXPECTED MODULE ID'
+    const expectedSortValueId = 'EXPECTED SORT VALUE ID'
+    const moduleSiteId = 'EXPECTED MODULE SITE ID'
+    const gallerySiteId = 'EXPECTED GALLERY SITE ID'
+    const accessToken = 'EXPECTED ACCESS TOKEN'
+    const offset = 20
+    const after = 'EXPECTED AFTER'
+    const currentSearchQuery = 'EXPECTED SEARCH QUERY'
+    const sortValueSiteId = 'EXPECTED SORT VALUE SITE ID'
+    const expectedData = 'EXPECTED DATA'
+
+    const action = fetchGallery(expectedGalleryId)
+    const galleryProps = { galleryId: expectedGalleryId }
+    const moduleProps = { moduleId: expectedModuleId }
+
+    // act & assert
+    const gen = handleFetchGallery(action)
+    expect(gen.next().value).toEqual(select(galleryModuleIdSelector, galleryProps))
+    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, moduleProps))
+    expect(gen.next('').value).toEqual(select(gallerySiteIdSelector, galleryProps))
+    expect(gen.next(gallerySiteId).value).toEqual(select(moduleSiteIdSelector, moduleProps))
+    expect(gen.next(moduleSiteId).value).toEqual(select(galleryFilterSelector, galleryProps))
+    expect(gen.next(null).value).toEqual(select(gallerySortSelector, galleryProps)) // not defined!
+    expect(gen.next(expectedSortValueId).value).toEqual(select(gallerySearchQuerySelector, galleryProps))
+    expect(gen.next(currentSearchQuery).value).toEqual(select(galleryAfterSelector, galleryProps))
+    expect(gen.next(after).value).toEqual(select(galleryOffsetSelector, galleryProps))
+    expect(gen.next(offset).value).toEqual(select(defaultSortValueSelector, { ...galleryProps, ...moduleProps }))
+    expect(gen.next('').value).toEqual(select(valueSiteIdSelector, { ...galleryProps, valueId: expectedSortValueId }))
+    // no filterSiteIdSelector!
+    expect(gen.next(sortValueSiteId).value).toEqual(call(handleRefresh, expectedModuleId))
+    expect(gen.next().value).toEqual(select(accessTokenSelector, moduleProps))
+    expect(gen.next(accessToken).value).toEqual(
+      call(
+        lookingGlassService.fetchItems,
+        moduleSiteId,
+        gallerySiteId,
+        accessToken,
+        offset,
+        after,
+        currentSearchQuery,
+        sortValueSiteId,
+        undefined
+      )
+    )
+
+    expect(gen.next({ data: expectedData }).value).toEqual(
+      put(fetchGallerySuccess(expectedModuleId, expectedGalleryId, expectedData))
+    )
+    expect(gen.next().value).toBeUndefined()
+  })
 })
