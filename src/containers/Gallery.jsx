@@ -23,7 +23,7 @@ import {
   galleryErrorSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
-import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
+import { fetchGallery, filterAdded, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
 import SortMenu from 'components/SortMenu'
 import Masonry from 'components/Masonry'
@@ -97,7 +97,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
 
   const handleFilterClick = (filterId) => {
     setDrawerOpen(false)
-    dispatch(filterChange(galleryId, filterId))
+    dispatch(filterAdded(galleryId, filterId))
   }
 
   const handleOpenDrawerClick = () => {

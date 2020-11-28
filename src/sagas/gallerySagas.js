@@ -2,13 +2,13 @@ import { put, call, takeLatest, all, select, delay, cancelled, takeEvery } from 
 
 import lookingGlassService from 'services/lookingGlassService'
 import fileSystemService from 'services/fileSystemService'
-import { FETCH_GALLERY, FILTER_CHANGE, SORT_CHANGE, SEARCH_CHANGE } from 'actions/types'
+import { FETCH_GALLERY, FILTER_ADDED, FILTER_REMOVED, SORT_CHANGE, SEARCH_CHANGE } from 'actions/types'
 import { accessTokenSelector } from 'selectors/authSelectors'
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
   gallerySortSelector,
-  galleryFilterSelector,
+  galleryFiltersSelector,
   gallerySearchQuerySelector,
   galleryAfterSelector,
   galleryOffsetSelector,
@@ -21,7 +21,8 @@ import {
   fetchGallery,
   updateSort,
   updateSearch,
-  updateFilter,
+  addFilter,
+  removeFilter,
   fetchGallerySuccess,
   fetchGalleryFailure,
   clearGallery,
@@ -51,16 +52,34 @@ export function* handleSortChange(action) {
  * saga to handle changes in filter value
  * @param {*} action Dispatched action
  */
-export function* handleFilterChange(action) {
+export function* handleFilterAdded(action) {
   const { meta: galleryId, payload: filterId } = action
 
   // select info from the redux store
-  const currentFilterId = yield select(galleryFilterSelector, { galleryId })
+  const filters = yield select(galleryFiltersSelector, { galleryId })
 
   // if changed, clear and fetch new items
-  if (currentFilterId !== filterId) {
+  if (filters.indexOf(filterId) < 0) {
     yield put(clearGallery(galleryId))
-    yield put(updateFilter(galleryId, filterId))
+    yield put(addFilter(galleryId, filterId))
+    yield put(fetchGallery(galleryId))
+  }
+}
+
+/**
+ * saga to handle changes in filter value
+ * @param {*} action Dispatched action
+ */
+export function* handleFilterRemoved(action) {
+  const { meta: galleryId, payload: filterId } = action
+
+  // select info from the redux store
+  const filters = yield select(galleryFiltersSelector, { galleryId })
+
+  // if changed, clear and fetch new items
+  if (filters.indexOf(filterId) >= 0) {
+    yield put(clearGallery(galleryId))
+    yield put(removeFilter(galleryId, filterId))
     yield put(fetchGallery(galleryId))
   }
 }
@@ -104,16 +123,16 @@ export function* handleFetchGallery(action) {
     const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
     const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
-    const currentFilterId = yield select(galleryFilterSelector, { galleryId })
+    const filters = yield select(galleryFiltersSelector, { galleryId })
     const currentValueId = yield select(gallerySortSelector, { galleryId })
     const currentSearchQuery = yield select(gallerySearchQuerySelector, { galleryId })
     const after = yield select(galleryAfterSelector, { galleryId })
     const offset = yield select(galleryOffsetSelector, { galleryId })
     const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId })
     const sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: currentValueId || defaultSort })
-    let filterSiteId
-    if (currentFilterId) {
-      filterSiteId = yield select(filterSiteIdSelector, { filterId: currentFilterId })
+    let filterSiteIds = []
+    if (Array.isArray(filters) && filters.length > 0) {
+      filterSiteIds = yield all(filters.map((filterId) => select(filterSiteIdSelector, { filterId })))
     }
 
     // resolve service
@@ -135,7 +154,7 @@ export function* handleFetchGallery(action) {
       after,
       currentSearchQuery,
       sortValueSiteId,
-      filterSiteId
+      filterSiteIds
     )
 
     // put info into the store
@@ -152,6 +171,7 @@ export default function* watchGallerySagas() {
     takeEvery(FETCH_GALLERY, handleFetchGallery),
     takeLatest(SEARCH_CHANGE, handleSearchChange),
     takeEvery(SORT_CHANGE, handleSortChange),
-    takeEvery(FILTER_CHANGE, handleFilterChange),
+    takeEvery(FILTER_ADDED, handleFilterAdded),
+    takeEvery(FILTER_REMOVED, handleFilterRemoved),
   ])
 }

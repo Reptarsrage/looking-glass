@@ -4,7 +4,8 @@ import {
   fetchGallery,
   updateSearch,
   updateSort,
-  updateFilter,
+  addFilter,
+  removeFilter,
   clearGallery,
   saveScrollPosition,
   setFileSystemDirectory,
@@ -166,19 +167,34 @@ it('should not add the same gallery twice', () => {
   expect(state.allIds).toEqual(['1/DEFAULT GALLERY ID', 'FILE SYSTEM MODULE ID/DEFAULT GALLERY ID'])
 })
 
-it('should handle UPDATE_FILTER', () => {
+it('should handle ADD_FILTER', () => {
   // arrange
   const galleryId = 'GALLERY ID'
   const filterValueId = 'FILTER VALUE ID'
-  const action = updateFilter(galleryId, filterValueId)
-  let state = { byId: { [galleryId]: {} } }
+  const action = addFilter(galleryId, filterValueId)
+  let state = { byId: { [galleryId]: { filters: [] } } }
 
   // act
   state = reducer(state, action)
 
   // assert
   expect(constants.handleAsyncFetch).toHaveBeenCalled()
-  expect(state.byId[galleryId].currentFilter).toEqual(filterValueId)
+  expect(state.byId[galleryId].filters).toEqual([filterValueId])
+})
+
+it('should handle REMOVE_FILTER', () => {
+  // arrange
+  const galleryId = 'GALLERY ID'
+  const filterValueId = 'FILTER VALUE ID'
+  const action = removeFilter(galleryId, filterValueId)
+  let state = { byId: { [galleryId]: { filters: [filterValueId] } } }
+
+  // act
+  state = reducer(state, action)
+
+  // assert
+  expect(constants.handleAsyncFetch).toHaveBeenCalled()
+  expect(state.byId[galleryId].filters).toEqual([])
 })
 
 describe('should handle FETCH_GALLERY_SUCCESS', () => {

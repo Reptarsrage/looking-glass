@@ -65,8 +65,8 @@ class LookingGlassService {
    * @param {string|number} sort Sort value
    * @param {string|number} filter Filter value
    */
-  fetchItems = async (moduleId, galleryId, accessToken, offset, after, query, sort, filter) => {
-    const params = { offset, after, query, sort, filters: filter ? [filter] : undefined }
+  fetchItems = async (moduleId, galleryId, accessToken, offset, after, query, sort, filters) => {
+    const params = { offset, after, query, sort, filters }
     if (galleryId) {
       params.galleryId = galleryId
     }

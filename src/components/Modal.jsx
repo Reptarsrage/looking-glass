@@ -26,7 +26,7 @@ import {
 } from 'selectors/modalSelectors'
 import { moduleDefaultGalleryIdSelector, moduleSupportsItemFiltersSelector } from 'selectors/moduleSelectors'
 import { modalClose, modalClear } from 'actions/modalActions'
-import { filterChange } from 'actions/galleryActions'
+import { filterAdded } from 'actions/galleryActions'
 import ModalTransitionContainer from './ModalTransitionContainer'
 import ItemFilterList from './ItemFilterList'
 
@@ -114,7 +114,7 @@ export default function Modal({ moduleId }) {
     // TODO: Something better than this
     if (filterId) {
       dispatch(modalClose())
-      dispatch(filterChange(defaultGalleryId, filterId))
+      dispatch(filterAdded(defaultGalleryId, filterId))
       history.push(`/gallery/${moduleId}/${defaultGalleryId}`)
     }
   }

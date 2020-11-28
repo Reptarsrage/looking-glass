@@ -6,8 +6,10 @@ import {
   UPDATE_SEARCH,
   SORT_CHANGE,
   UPDATE_SORT,
-  FILTER_CHANGE,
-  UPDATE_FILTER,
+  FILTER_ADDED,
+  FILTER_REMOVED,
+  ADD_FILTER,
+  REMOVE_FILTER,
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
   SET_FILE_SYSTEM_DIRECTORY,
@@ -114,19 +116,41 @@ export const updateSort = (galleryId, valueId) => ({
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} filterId Filter ID
  */
-export const filterChange = (galleryId, filterId) => ({
-  type: FILTER_CHANGE,
+export const filterAdded = (galleryId, filterId) => ({
+  type: FILTER_ADDED,
   payload: filterId,
   meta: galleryId,
 })
 
 /**
- * underlying gallery filter value has been updated
+ * user unselected a filter value
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} filterId Filter ID
  */
-export const updateFilter = (galleryId, filterId) => ({
-  type: UPDATE_FILTER,
+export const filterRemoved = (galleryId, filterId) => ({
+  type: FILTER_REMOVED,
+  payload: filterId,
+  meta: galleryId,
+})
+
+/**
+ * underlying gallery filter value has been added
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} filterId Filter ID
+ */
+export const addFilter = (galleryId, filterId) => ({
+  type: ADD_FILTER,
+  payload: filterId,
+  meta: galleryId,
+})
+
+/**
+ * underlying gallery filter value has been removed
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} filterId Filter ID
+ */
+export const removeFilter = (galleryId, filterId) => ({
+  type: REMOVE_FILTER,
   payload: filterId,
   meta: galleryId,
 })
