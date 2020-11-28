@@ -20,7 +20,7 @@ export const galleryAfterSelector = createSelector(gallerySelector, (gallery) =>
 export const galleryHasNextSelector = createSelector(gallerySelector, (gallery) => gallery.hasNext)
 export const gallerySearchQuerySelector = createSelector(gallerySelector, (gallery) => gallery.searchQuery)
 export const gallerySortSelector = createSelector(gallerySelector, (gallery) => gallery.currentSort)
-export const galleryFilterSelector = createSelector(gallerySelector, (gallery) => gallery.currentFilter)
+export const galleryFiltersSelector = createSelector(gallerySelector, (gallery) => gallery.filters)
 export const galleryItemsSelector = createSelector(gallerySelector, (gallery) => gallery.items)
 export const galleryNameSelector = createSelector(gallerySelector, (gallery) => gallery.name)
 export const gallerySavedScrollPositionSelector = createSelector(

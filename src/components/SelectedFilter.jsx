@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { filterSelector } from 'selectors/filterSelectors'
-import { filterChange } from 'actions/galleryActions'
+import { filterRemoved } from 'actions/galleryActions'
 
 const useStyles = makeStyles((theme) => ({
   filterItem: {
@@ -19,7 +19,7 @@ export default function SelectedFilter({ galleryId, filterId }) {
   const filter = useSelector((state) => filterSelector(state, { filterId }))
 
   const onDelete = () => {
-    dispatch(filterChange(galleryId, null))
+    dispatch(filterRemoved(galleryId, filterId))
   }
 
   return <Chip className={classes.filterItem} color="primary" label={filter.name} onDelete={onDelete} />
