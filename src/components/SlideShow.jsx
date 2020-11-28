@@ -81,7 +81,7 @@ export default function SlideShow({ animating }) {
   const modalNext = useSelector(modalNextSelector)
   const modalPrev = useSelector(modalPrevSelector)
   const modalOpen = useSelector(modalOpenSelector)
-  const item = useSelector(modalItemSelector)
+  const modalItem = useSelector(modalItemSelector)
   const urls = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const swipeConfidenceThreshold = 10000
 
@@ -126,14 +126,14 @@ export default function SlideShow({ animating }) {
   return (
     <div className={classes.slideShow}>
       <AnimatePresence initial={false} custom={direction} onExitComplete={handleAnimationEnd}>
-        {item.isVideo ? (
+        {modalItem.isVideo ? (
           <Video
             {...commonProps}
             sources={urls}
-            poster={item.poster}
-            title={item.title}
-            width={item.width}
-            height={item.height}
+            poster={modalItem.poster}
+            title={modalItem.name}
+            width={modalItem.width}
+            height={modalItem.height}
             controls
             autoPlay
             loop
@@ -144,9 +144,9 @@ export default function SlideShow({ animating }) {
             {...commonProps}
             enableZoom={!animating && modalOpen}
             sources={urls}
-            title={item.title}
-            width={item.width}
-            height={item.height}
+            title={modalItem.name}
+            width={modalItem.width}
+            height={modalItem.height}
           />
         )}
       </AnimatePresence>
