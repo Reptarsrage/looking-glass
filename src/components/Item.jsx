@@ -6,7 +6,17 @@ import CollectionsIcon from '@material-ui/icons/Collections'
 import { useHistory } from 'react-router-dom'
 
 import { modalItemIdSelector } from 'selectors/modalSelectors'
-import { itemByIdSelector, itemGalleryUrlSelector, itemUrlsSelector } from 'selectors/itemSelectors'
+import {
+  itemGalleryUrlSelector,
+  itemUrlsSelector,
+  itemIsGallerySelector,
+  itemPosterSelector,
+  itemWidthSelector,
+  itemHeightSelector,
+  itemIsVideoSelector,
+  itemNameSelector,
+} from 'selectors/itemSelectors'
+
 import { modalOpen, modalBoundsUpdate, modalSetItem } from 'actions/modalActions'
 import Image from './Image'
 import Video from './Video'
@@ -36,10 +46,15 @@ function Item({ itemId, style }) {
   const history = useHistory()
   const itemRef = useRef(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
-  const item = useSelector((state) => itemByIdSelector(state, { itemId }))
   const sources = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const modalItemId = useSelector(modalItemIdSelector)
   const itemGalleryUrl = useSelector((state) => itemGalleryUrlSelector(state, { itemId }))
+  const isGallery = useSelector((state) => itemIsGallerySelector(state, { itemId }))
+  const isVideo = useSelector((state) => itemIsVideoSelector(state, { itemId }))
+  const poster = useSelector((state) => itemPosterSelector(state, { itemId }))
+  const width = useSelector((state) => itemWidthSelector(state, { itemId }))
+  const height = useSelector((state) => itemHeightSelector(state, { itemId }))
+  const name = useSelector((state) => itemNameSelector(state, { itemId }))
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -65,7 +80,7 @@ function Item({ itemId, style }) {
   const handleClick = (event) => {
     event.preventDefault()
 
-    if (item.isGallery) {
+    if (isGallery) {
       history.push(itemGalleryUrl)
       return
     }
@@ -85,15 +100,15 @@ function Item({ itemId, style }) {
     dispatch(modalOpen())
   }
 
-  const renderImage = () => <Image sources={sources} title={item.title} width={item.width} height={item.height} />
+  const renderImage = () => <Image sources={sources} title={name} width={width} height={height} />
 
   const renderVideo = () => (
     <Video
       sources={sources}
-      poster={item.poster}
-      title={item.title}
-      width={item.width}
-      height={item.height}
+      poster={poster}
+      title={name}
+      width={width}
+      height={height}
       muted
       controls={false}
       autoPlay
@@ -111,12 +126,12 @@ function Item({ itemId, style }) {
       onKeyPress={() => {}}
       tabIndex="0"
     >
-      {item.isGallery ? (
+      {isGallery ? (
         <div className={classes.icon}>
           <CollectionsIcon />
         </div>
       ) : null}
-      {item.isVideo ? renderVideo() : renderImage()}
+      {isVideo ? renderVideo() : renderImage()}
     </div>
   )
 }

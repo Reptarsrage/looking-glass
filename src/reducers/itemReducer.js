@@ -26,7 +26,7 @@ export const initialItemState = {
   id: null,
   siteId: null,
   galleryId: null,
-  title: null,
+  name: null,
   width: 0,
   height: 0,
   isVideo: false,
@@ -69,7 +69,7 @@ const addItem = (draft, galleryId, moduleId, item) => {
     // add item
     draft.allIds.push(itemId)
 
-    const { id, title, width, height, isVideo, isGallery, urls, poster, author, date, source } = item
+    const { id, name, width, height, isVideo, isGallery, urls, poster, author, date, source } = item
     draft.byId[itemId] = {
       siteId: id,
       id: itemId,
@@ -79,7 +79,7 @@ const addItem = (draft, galleryId, moduleId, item) => {
       poster,
       isGallery,
       isVideo,
-      title,
+      name,
       width,
       height,
       date,

@@ -44,12 +44,12 @@ it('galleryItemsSelector selects expected', () => {
   expect(gallerySelectors.galleryItemsSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
-it('galleryTitleSelector selects expected', () => {
+it('galleryNameSelector selects expected', () => {
   const expected = 'EXPECTED'
   const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { title: expected } } } }
+  const expectedState = { gallery: { byId: { [galleryId]: { name: expected } } } }
   const expectedProps = { galleryId }
-  expect(gallerySelectors.galleryTitleSelector(expectedState, expectedProps)).toEqual(expected)
+  expect(gallerySelectors.galleryNameSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
 it('galleryFilterSelector selects expected', () => {

@@ -1,68 +1,71 @@
 import { createSelector } from 'reselect'
 
-import { initialState, initialItemState } from 'reducers/itemReducer'
 import { generateGalleryId } from 'reducers/constants'
 import { byIdSelector as galleriesByIdSelector } from './gallerySelectors'
 import { moduleFilterSectionsSelector } from './moduleSelectors'
 import { byIdSelector as filterByIdSelector } from './filterSelectors'
 
+// select props
 const getItemId = (_, props) => props.itemId
 const getFilterSectionId = (_, props) => props.filterSectionId
 const getSearch = (_, props) => props.search
 
-export const itemsStateSelector = (state) => state.item || initialState
+// simple state selectors
+export const byIdSelector = (state) => state.item.byId
+export const allIdsSelector = (state) => state.item.allIds
 
-/** all items */
-export const itemsSelector = createSelector(itemsStateSelector, (state) => state.allIds)
+// select from a specific gallery
+export const itemSelector = createSelector([byIdSelector, getItemId], (byId, itemId) => byId[itemId])
+export const itemSiteIdSelector = createSelector(itemSelector, (item) => item.siteId)
+export const itemGalleryIdSelector = createSelector(itemSelector, (item) => item.galleryId)
+export const itemNameSelector = createSelector(itemSelector, (item) => item.name)
+export const itemWidthSelector = createSelector(itemSelector, (item) => item.width)
+export const itemHeightSelector = createSelector(itemSelector, (item) => item.height)
+export const itemIsVideoSelector = createSelector(itemSelector, (item) => item.isVideo)
+export const itemIsGallerySelector = createSelector(itemSelector, (item) => item.isGallery)
+export const itemPosterSelector = createSelector(itemSelector, (item) => item.poster)
+export const itemDateSelector = createSelector(itemSelector, (item) => item.date)
+export const itemSourceSelector = createSelector(itemSelector, (item) => item.source)
+export const itemAuthorSelector = createSelector(itemSelector, (item) => item.author)
+export const itemFetchingFiltersSelector = createSelector(itemSelector, (item) => item.fetching)
+export const itemFetchedFiltersSelector = createSelector(itemSelector, (item) => item.fetched)
+export const itemFetchFiltersErrorSelector = createSelector(itemSelector, (item) => item.error)
 
-/** specific item */
-export const itemByIdSelector = createSelector(
-  [itemsStateSelector, getItemId],
-  (state, itemId) => state.byId[itemId] || initialItemState
-)
+// item filters
+export const itemFiltersSelector = createSelector([itemSelector, filterByIdSelector], (item, filterById) => {
+  const filters = [...item.filters]
+  filters.sort((a, b) => filterById[a].name.localeCompare(filterById[b].name))
+  return filters
+})
 
-/** item siteId */
-export const itemSiteIdSelector = createSelector(itemByIdSelector, (item) => item.siteId)
-
-/** item dimensions */
-export const itemDimensionsSelector = createSelector(itemByIdSelector, (item) => ({
-  width: item.width,
-  height: item.height,
+// item dimensions
+export const itemDimensionsSelector = createSelector([itemWidthSelector, itemHeightSelector], (width, height) => ({
+  width,
+  height,
 }))
 
-/** item gallery URL */
+// item gallery URL
 export const itemGalleryUrlSelector = createSelector(
-  [itemByIdSelector, galleriesByIdSelector],
-  (item, galleriesById) => {
-    if (!item.isGallery) {
+  [itemIsGallerySelector, galleriesByIdSelector, itemGalleryIdSelector, itemSiteIdSelector],
+  (isGallery, galleriesById, galleryId, siteId) => {
+    if (!isGallery) {
       return null
     }
 
-    const { galleryId, siteId } = item
     const { moduleId } = galleriesById[galleryId]
     const itemGalleryId = generateGalleryId(moduleId, siteId)
     return `/gallery/${moduleId}/${itemGalleryId}`
   }
 )
 
-/** item filters are pending */
-export const itemFetchingFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetching)
-
-export const itemUrlsSelector = createSelector(itemByIdSelector, (item) => {
+// item URLS
+export const itemUrlsSelector = createSelector(itemSelector, (item) => {
   const urls = [...item.urls]
   urls.sort((a, b) => b.width - a.width)
   return urls
 })
 
-/** item filters are fetched */
-export const itemFetchedFiltersSelector = createSelector(itemByIdSelector, (item) => item.fetched)
-
-/** item filters error */
-export const itemFetchFiltersErrorSelector = createSelector(itemByIdSelector, (item) => item.error)
-
-/** item filters */
-export const itemFiltersSelector = createSelector(itemByIdSelector, (item) => item.filters)
-
+// item filter section counts
 export const itemFiltersSectionCountsSelector = createSelector(
   [moduleFilterSectionsSelector, itemFiltersSelector, filterByIdSelector, getSearch],
   (moduleFilterSectionIds, itemFilters, filterById, searchQuery) => {
@@ -88,6 +91,7 @@ export const itemFiltersSectionCountsSelector = createSelector(
   }
 )
 
+// item filter section filters
 export const itemFiltersSectionItemsSelector = createSelector(
   [itemFiltersSelector, filterByIdSelector, getFilterSectionId, getSearch],
   (itemFilters, filterById, filterSectionId, searchQuery) => {

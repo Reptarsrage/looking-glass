@@ -10,19 +10,19 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function BreadcrumbItem({ title, url }) {
+export default function BreadcrumbItem({ name, url }) {
   const classes = useStyles()
 
   // TODO: Scroll to top when user clicks on current link
   return (
     <Link component={RouterLink} color="inherit" to={url} className={classes.link}>
-      {title}
+      {name}
     </Link>
   )
 }
 
 BreadcrumbItem.propTypes = {
   // required
-  title: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
 }

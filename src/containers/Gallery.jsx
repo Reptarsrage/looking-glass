@@ -15,7 +15,7 @@ import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
 import {
   gallerySavedScrollPositionSelector,
-  galleryTitleSelector,
+  galleryNameSelector,
   galleryHasNextSelector,
   galleryItemsSelector,
   galleryFetchingSelector,
@@ -71,7 +71,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
   const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
   const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
-  const title = useSelector((state) => galleryTitleSelector(state, { galleryId }))
+  const name = useSelector((state) => galleryNameSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const dispatch = useDispatch()
 
@@ -83,7 +83,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     fetchInitialItems()
 
     // set window title
-    titleBar.updateTitle(`'The Looking-Glass' - ${title}`)
+    titleBar.updateTitle(`'The Looking-Glass' - ${name}`)
 
     return () => {
       // remove event listeners from componentDidMount
