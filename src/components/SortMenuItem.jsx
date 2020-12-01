@@ -13,6 +13,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
 import { valueSelector, valueIsCurrentlySelectedSelector, nestedSelector } from 'selectors/sortSelectors'
 import NestedSortMenuItem from './NestedSortMenuItem'
+import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles(() => ({
   icon: {
@@ -25,10 +26,12 @@ const useStyles = makeStyles(() => ({
 
 export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) {
   const classes = useStyles()
+  const query = useQuery()
+  const { search, sort } = query
   const value = useSelector((state) => valueSelector(state, { valueId, galleryId }))
-  const nestedValues = useSelector((state) => nestedSelector(state, { valueId, galleryId }))
+  const nestedValues = useSelector((state) => nestedSelector(state, { valueId, galleryId, search }))
   const valueIsCurrentlySelected = useSelector((state) =>
-    valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
+    valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId, sort, search })
   )
 
   const [anchorEl, setAnchorEl] = useState(null)

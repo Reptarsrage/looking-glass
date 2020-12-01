@@ -52,30 +52,6 @@ it('galleryNameSelector selects expected', () => {
   expect(gallerySelectors.galleryNameSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
-it('galleryFiltersSelector selects expected', () => {
-  const expected = ['EXPECTED']
-  const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { filters: expected } } } }
-  const expectedProps = { galleryId }
-  expect(gallerySelectors.galleryFiltersSelector(expectedState, expectedProps)).toEqual(expected)
-})
-
-it('gallerySortSelector selects expected', () => {
-  const expected = 'EXPECTED'
-  const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { currentSort: expected } } } }
-  const expectedProps = { galleryId }
-  expect(gallerySelectors.gallerySortSelector(expectedState, expectedProps)).toEqual(expected)
-})
-
-it('gallerySearchQuerySelector selects expected', () => {
-  const expected = 'EXPECTED'
-  const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { searchQuery: expected } } } }
-  const expectedProps = { galleryId }
-  expect(gallerySelectors.gallerySearchQuerySelector(expectedState, expectedProps)).toEqual(expected)
-})
-
 it('galleryHasNextSelector selects expected', () => {
   const expected = 'EXPECTED'
   const galleryId = 'EXPECTED GALLERY ID'

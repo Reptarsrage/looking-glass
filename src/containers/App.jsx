@@ -9,13 +9,12 @@ import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
-import { useRouteMatch } from 'react-router-dom'
 import { Color } from 'custom-electron-titlebar'
 import Brightness3Icon from '@material-ui/icons/Brightness3'
 import Brightness7Icon from '@material-ui/icons/Brightness7'
 
 import { modalOpenSelector } from 'selectors/modalSelectors'
-import BackButton from 'components/BackButton'
+import NavButtons from 'components/NavButtons'
 import Progress from 'components/Progress'
 import titleBar from '../titleBar'
 
@@ -83,7 +82,6 @@ const useStyles = makeStyles((theme) => ({
 export default function App({ children }) {
   const classes = useStyles()
   const modalOpen = useSelector(modalOpenSelector)
-  const match = useRouteMatch({ path: '/', exact: true })
   const [darkThemeEnabled, toggleDarkTheme] = useState(true)
   const appliedTheme = createMuiTheme(darkThemeEnabled ? darkTheme : lightTheme)
 
@@ -103,7 +101,7 @@ export default function App({ children }) {
 
       <AppBar position="static" color="default" className={classes.appBar} style={{ opacity: modalOpen ? '0' : '1' }}>
         <Toolbar>
-          {match ? null : <BackButton color="inherit" isFab={false} />}
+          <NavButtons />
           <Typography className={classes.title} variant="h6" color="inherit" noWrap>
             Looking Glass
           </Typography>

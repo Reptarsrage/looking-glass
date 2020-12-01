@@ -214,7 +214,7 @@ export const adjustColumnItems = ({
   }
 
   let minHeight = 0
-  for (const column of columns) {
+  columns.forEach((column) => {
     const { id: columnId } = column
     const columnItems = items.filter((itemId) => itemColumnLookup[itemId] === columnId)
 
@@ -236,7 +236,7 @@ export const adjustColumnItems = ({
 
     column.adjustedHeight = adjustedHeight
     minHeight = Math.max(adjustedHeight, minHeight)
-  }
+  })
 
   return minHeight
 }

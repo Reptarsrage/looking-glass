@@ -18,10 +18,25 @@ const Routes = () => (
           <Home />
         </Route>
 
-        <Route path="/login/:moduleId/:galleryId" render={({ match }) => <Login {...match.params} />} />
-        <Route path="/oauth/:moduleId/:galleryId" render={({ match }) => <OAuth {...match.params} />} />
-        <Route path="/implicit/:moduleId/:galleryId" render={({ match }) => <ImplicitAuth {...match.params} />} />
-        <Route path="/gallery/:moduleId/:galleryId" render={({ match }) => <Gallery {...match.params} />} />
+        <Route path="/gallery/:moduleId/:galleryId">
+          <Gallery />
+        </Route>
+
+        <Route path="/search/:moduleId/:galleryId">
+          <Gallery />
+        </Route>
+
+        <Route path="/login/:moduleId/:galleryId">
+          <Login />
+        </Route>
+
+        <Route path="/oauth/:moduleId/:galleryId">
+          <OAuth />
+        </Route>
+
+        <Route path="/implicit/:moduleId/:galleryId">
+          <ImplicitAuth />
+        </Route>
 
         <Route path="*">
           <NotFound />

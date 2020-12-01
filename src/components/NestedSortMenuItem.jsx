@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { valueNameSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
+import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles(() => ({
   icon: {
@@ -17,9 +18,11 @@ const useStyles = makeStyles(() => ({
 
 export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onClick }) {
   const classes = useStyles()
+  const query = useQuery()
+  const { search, sort } = query
   const name = useSelector((state) => valueNameSelector(state, { valueId, galleryId }))
   const valueIsCurrentlySelected = useSelector((state) =>
-    valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId })
+    valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId, sort, search })
   )
 
   return (

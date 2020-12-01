@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -26,7 +25,7 @@ import LoadingIndicator from 'components/LoadingIndicator'
 const useStyles = makeStyles((theme) => ({
   main: {
     width: 'auto',
-    display: 'block', // Fix IE 11 issue.
+    display: 'block', // fix IE 11 issue.
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
     [theme.breakpoints.up(400 + theme.spacing(3) * 2)]: {
@@ -47,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%', // fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -66,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function Login({ moduleId, galleryId }) {
+export default function Login() {
+  const { moduleId, galleryId } = useParams()
   const classes = useStyles()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -99,7 +99,7 @@ export default function Login({ moduleId, galleryId }) {
   }
 
   if (fetched) {
-    // Redirect to whatever gallery the user was on before
+    // redirect to whatever gallery the user was on before
     return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
@@ -177,10 +177,4 @@ export default function Login({ moduleId, galleryId }) {
       </Paper>
     </main>
   )
-}
-
-Login.propTypes = {
-  // required
-  moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
 }
