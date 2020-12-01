@@ -1,4 +1,5 @@
 import { put, call, takeLatest, all, select, delay, cancelled, takeEvery } from 'redux-saga/effects'
+import qs from 'querystring'
 
 import lookingGlassService from 'services/lookingGlassService'
 import fileSystemService from 'services/fileSystemService'
@@ -7,9 +8,6 @@ import { accessTokenSelector } from 'selectors/authSelectors'
 import {
   gallerySiteIdSelector,
   galleryModuleIdSelector,
-  gallerySortSelector,
-  galleryFiltersSelector,
-  gallerySearchQuerySelector,
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
@@ -17,16 +15,7 @@ import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
 import { filterSiteIdSelector } from 'selectors/filterSelectors'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
-import {
-  fetchGallery,
-  updateSort,
-  updateSearch,
-  addFilter,
-  removeFilter,
-  fetchGallerySuccess,
-  fetchGalleryFailure,
-  clearGallery,
-} from 'actions/galleryActions'
+import { fetchGallerySuccess, fetchGalleryFailure, clearGallery } from 'actions/galleryActions'
 import { handleRefresh } from './authSagas'
 import logger from '../logger'
 
@@ -35,16 +24,14 @@ import logger from '../logger'
  * @param {*} action Dispatched action
  */
 export function* handleSortChange(action) {
-  const { meta: galleryId, payload: valueId } = action
+  const { meta, payload: value } = action
+  const { galleryId, history } = meta
+  const { pathname, search } = history.location
+  const query = qs.parse(search.substring(1))
 
-  // select info from the redux store
-  const currentValueId = yield select(gallerySortSelector, { galleryId })
-
-  // if changed, clear and fetch new items
-  if (currentValueId !== valueId) {
+  if (query.sort !== value) {
+    history.push(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
     yield put(clearGallery(galleryId))
-    yield put(updateSort(galleryId, valueId))
-    yield put(fetchGallery(galleryId))
   }
 }
 
@@ -53,16 +40,18 @@ export function* handleSortChange(action) {
  * @param {*} action Dispatched action
  */
 export function* handleFilterAdded(action) {
-  const { meta: galleryId, payload: filterId } = action
+  const { meta, payload: value } = action
+  const { galleryId, history } = meta
+  const { pathname, search } = history.location
+  const query = qs.parse(search.substring(1))
+  const filters = (query.filters || '').split(',').filter(Boolean)
 
-  // select info from the redux store
-  const filters = yield select(galleryFiltersSelector, { galleryId })
+  if (filters.indexOf(value) < 0) {
+    // add it
+    filters.push(value)
 
-  // if changed, clear and fetch new items
-  if (filters.indexOf(filterId) < 0) {
+    history.push(`${pathname}?${qs.stringify({ ...query, filters: filters.join(',') })}`)
     yield put(clearGallery(galleryId))
-    yield put(addFilter(galleryId, filterId))
-    yield put(fetchGallery(galleryId))
   }
 }
 
@@ -71,16 +60,19 @@ export function* handleFilterAdded(action) {
  * @param {*} action Dispatched action
  */
 export function* handleFilterRemoved(action) {
-  const { meta: galleryId, payload: filterId } = action
+  const { meta, payload: value } = action
+  const { galleryId, history } = meta
+  const { pathname, search } = history.location
+  const query = qs.parse(search.substring(1))
+  let filters = (query.filters || '').split(',').filter(Boolean)
 
-  // select info from the redux store
-  const filters = yield select(galleryFiltersSelector, { galleryId })
+  if (filters.indexOf(value) >= 0) {
+    // remove it
+    filters = filters.filter((filter) => filter !== value)
 
-  // if changed, clear and fetch new items
-  if (filters.indexOf(filterId) >= 0) {
+    // TODO: The order here matters, why?
+    history.push(`${pathname}?${qs.stringify({ ...query, filters: filters.join(',') })}`)
     yield put(clearGallery(galleryId))
-    yield put(removeFilter(galleryId, filterId))
-    yield put(fetchGallery(galleryId))
   }
 }
 
@@ -89,24 +81,32 @@ export function* handleFilterRemoved(action) {
  * @param {*} action Dispatched action
  */
 export function* handleSearchChange(action) {
-  const { meta: galleryId, payload: searchQuery } = action
-
-  // select info from the redux store
-  const currentSearchQuery = yield select(gallerySearchQuerySelector, { galleryId })
+  const { meta, payload: value } = action
+  const { galleryId, history } = meta
+  const { pathname, search } = history.location
+  let query = qs.parse(search.substring(1))
 
   // if changed, clear items
-  if (currentSearchQuery !== searchQuery) {
-    yield put(clearGallery(galleryId))
-    yield put(updateSearch(galleryId, searchQuery))
-
+  if (query.search !== value) {
     // wait for user to finish typing
     yield delay(500)
     if (yield cancelled()) {
       return
     }
 
-    // fetch items after user is done typing
-    yield put(fetchGallery(galleryId))
+    query = { ...query, search: value }
+    if (pathname.startsWith('/search') && !value) {
+      // navigate back to gallery
+      history.push(`${pathname.replace('search', 'gallery')}?${qs.stringify(query)}`)
+    } else if (pathname.startsWith('/search')) {
+      // update search in qs
+      history.replace(`${pathname}?${qs.stringify(query)}`)
+    } else {
+      // navigate to search
+      history.push(`${pathname.replace('gallery', 'search')}?${qs.stringify(query)}`)
+    }
+
+    yield put(clearGallery(galleryId))
   }
 }
 
@@ -115,21 +115,25 @@ export function* handleSearchChange(action) {
  * @param {*} action Dispatched action
  */
 export function* handleFetchGallery(action) {
-  const { meta: galleryId } = action
+  const { meta: galleryId, payload } = action
+  const { filters, sort, search } = payload
 
   try {
-    // select info from the redux store
+    // select module info
     const moduleId = yield select(galleryModuleIdSelector, { galleryId })
     const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
-    const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
-    const filters = yield select(galleryFiltersSelector, { galleryId })
-    const currentValueId = yield select(gallerySortSelector, { galleryId })
-    const currentSearchQuery = yield select(gallerySearchQuerySelector, { galleryId })
+
+    // select gallery info
+    const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
     const after = yield select(galleryAfterSelector, { galleryId })
     const offset = yield select(galleryOffsetSelector, { galleryId })
-    const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId })
-    const sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: currentValueId || defaultSort })
+    const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId, search })
+
+    // select sort info
+    const sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: sort || defaultSort })
+
+    // select filter info
     let filterSiteIds = []
     if (Array.isArray(filters) && filters.length > 0) {
       filterSiteIds = yield all(filters.map((filterId) => select(filterSiteIdSelector, { filterId })))
@@ -152,7 +156,7 @@ export function* handleFetchGallery(action) {
       accessToken,
       offset,
       after,
-      currentSearchQuery,
+      search,
       sortValueSiteId,
       filterSiteIds
     )

@@ -114,8 +114,7 @@ export default function Modal({ moduleId }) {
     // TODO: Something better than this
     if (filterId) {
       dispatch(modalClose())
-      dispatch(filterAdded(defaultGalleryId, filterId))
-      history.push(`/gallery/${moduleId}/${defaultGalleryId}`)
+      dispatch(filterAdded(defaultGalleryId, filterId, history))
     }
   }
 

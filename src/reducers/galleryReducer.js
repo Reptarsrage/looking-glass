@@ -5,11 +5,7 @@ import {
   FETCH_GALLERY,
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_FAILURE,
-  UPDATE_SEARCH,
-  UPDATE_SORT,
   FETCH_MODULES_SUCCESS,
-  ADD_FILTER,
-  REMOVE_FILTER,
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
   SET_FILE_SYSTEM_DIRECTORY,
@@ -39,9 +35,6 @@ export const initialGalleryState = {
   offset: 0,
   after: null,
   hasNext: true,
-  searchQuery: null,
-  currentSort: null,
-  filters: [],
   items: [],
   name: null,
   savedScrollPosition: 0,
@@ -126,50 +119,6 @@ export default produce((draft, action) => {
       const error = payload
       const galleryId = meta
       handleAsyncError(draft.byId[galleryId], error)
-      break
-    }
-    case UPDATE_SEARCH: {
-      const searchQuery = payload
-      const galleryId = meta
-
-      // set searchQuery
-      draft.byId[galleryId].searchQuery = searchQuery
-
-      // mark as fetching
-      handleAsyncFetch(draft.byId[galleryId])
-      break
-    }
-    case UPDATE_SORT: {
-      const galleryId = meta
-      const valueId = payload
-
-      // set sort value
-      draft.byId[galleryId].currentSort = valueId
-
-      // mark as fetching
-      handleAsyncFetch(draft.byId[galleryId])
-      break
-    }
-    case REMOVE_FILTER: {
-      const galleryId = meta
-      const filterId = payload
-
-      // set filter value
-      draft.byId[galleryId].filters = draft.byId[galleryId].filters.filter((id) => id !== filterId)
-
-      // mark as fetching
-      handleAsyncFetch(draft.byId[galleryId])
-      break
-    }
-    case ADD_FILTER: {
-      const galleryId = meta
-      const filterId = payload
-
-      // set filter value
-      draft.byId[galleryId].filters.push(filterId)
-
-      // mark as fetching
-      handleAsyncFetch(draft.byId[galleryId])
       break
     }
     case CLEAR_GALLERY: {

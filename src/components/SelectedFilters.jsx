@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { galleryFiltersSelector } from 'selectors/gallerySelectors'
 import SelectedFilter from './SelectedFilter'
+import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   filtersContainer: {
@@ -16,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SelectedFilters({ galleryId }) {
   const classes = useStyles()
-  const filters = useSelector((state) => galleryFiltersSelector(state, { galleryId }))
+  const query = useQuery()
+  const { filters } = query
 
   return (
     <div className={classes.filtersContainer}>
