@@ -135,9 +135,9 @@ export const setColumnItems = ({
   // fill in column items
   // make sure to try and balance column heights in a deterministic way
   // so items don't jump around on the screen after a resize event
-  for (let i = newColumnItemsCount; i < items.length; i += 1) {
+  for (; newColumnItemsCount < items.length; newColumnItemsCount += 1) {
     // get item height
-    const itemId = items[i]
+    const itemId = items[newColumnItemsCount]
     const adjustedDims = memoGetAdjustedItemDimensions({
       id: itemId,
       columnCount,
@@ -149,13 +149,11 @@ export const setColumnItems = ({
     })
 
     // find shortest column
-    const minHeightColumn = columns.reduce((prev, curr) => (prev.adjustedHeight <= curr.adjustedHeight ? prev : curr))
+    const minHeightColumn = columns.reduce((prev, curr) => (curr.adjustedHeight < prev.adjustedHeight ? curr : prev))
 
     // assign the item to the column
     itemColumnLookup[itemId] = minHeightColumn.id
     minHeightColumn.adjustedHeight += adjustedDims.height + gutter
-
-    newColumnItemsCount = i
   }
 
   return newColumnItemsCount
