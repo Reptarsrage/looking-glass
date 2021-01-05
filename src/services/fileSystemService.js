@@ -7,7 +7,7 @@ import logger from '../logger'
 
 class FileSystemService {
   constructor() {
-    let queryString = global.location.search
+    let queryString = window.location.search
     if (queryString.startsWith('?')) {
       queryString = queryString.substring(1)
     }
@@ -50,15 +50,23 @@ class FileSystemService {
 
           return {
             id: Buffer.from(path, 'utf-8').toString('base64'),
-            title,
-            description: '',
+            name: title,
             width,
             height,
-            url,
-            thumb: null,
+            urls: [
+              {
+                url,
+                width,
+                height,
+              },
+            ],
+            poster: null,
             isVideo,
             isGallery,
             filters: [],
+            date: null,
+            source: null,
+            author: null,
           }
         }),
         hasNext: page.length > 0,
