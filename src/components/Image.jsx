@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
@@ -15,17 +15,6 @@ const useStyles = makeStyles(() => ({
 
 export default function Image({ sources, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
-  const imageRef = useRef(null)
-
-  useEffect(() => {
-    // const img = imageRef.current
-    // if (!img.hasAttribute('src')) {
-    //   img.setAttribute('src', src)
-    // }
-    // return () => {
-    //   img.removeAttribute('src')
-    // }
-  }, [])
 
   return (
     <picture>
@@ -35,7 +24,6 @@ export default function Image({ sources, width, height, title, styleName, ...pas
 
       <motion.img
         {...passThroughProps}
-        ref={imageRef}
         src={sources[0].url}
         alt={title}
         width={width}
