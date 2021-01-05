@@ -4,6 +4,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import { extname } from 'path'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
+import { useDispatch, useSelector } from 'react-redux'
+import debounce from 'lodash/debounce'
+
+import { volumeSelector } from '../selectors/appSelectors'
+import { setVolume } from '../actions/appActions'
 
 const useStyles = makeStyles(() => ({
   video: {
@@ -16,33 +21,40 @@ const useStyles = makeStyles(() => ({
 
 export default function Video({ sources, poster, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
-  const videoRef = useRef(null)
+  const volume = useSelector(volumeSelector)
+  const dispatch = useDispatch()
+  const videoRef = useRef()
+  const initRef = useRef({ init: true })
 
   useEffect(() => {
-    // const video = videoRef.current
-    // if (!video.querySelector('source').hasAttribute('src')) {
-    //   video.pause()
-    //   video.querySelector('source').setAttribute('src', src)
-    //   video.load()
-    // }
-    // return () => {
-    //   // based on https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element/40419032
-    //   video.pause()
-    //   video.querySelector('source').removeAttribute('src')
-    //   video.load()
-    // }
+    // set the initial volume
+    const { current } = videoRef
+    current.volume = volume
   }, [])
+
+  const handleVolumechange = debounce((event) => {
+    // ignore the event that is fired from useEffect
+    // (the initial setting of the volume)
+    if (initRef.current.init) {
+      initRef.current.init = false
+      return
+    }
+
+    const { target } = event
+    dispatch(setVolume(target.muted ? 0 : target.volume))
+  }, 200)
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption
     <motion.video
       {...passThroughProps}
-      ref={videoRef}
       className={clsx(classes.video, styleName)}
       width={width}
       height={height}
       title={title}
       poster={poster}
+      ref={videoRef}
+      onVolumeChange={handleVolumechange}
     >
       {sources.map(({ url }) => (
         <source key={url} src={url} type={`video/${extname(url).slice(1).split('?')[0] || 'mp4'}`} />
