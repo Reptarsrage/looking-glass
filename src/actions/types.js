@@ -6,7 +6,7 @@ const actionTyper = (prefix = '', separator = '/') =>
     }
   )
 
-export const { TOGGLE_DARK_THEME } = actionTyper('app')
+export const { SET_VOLUME } = actionTyper('app')
 
 export const { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } = actionTyper('modal')
 
