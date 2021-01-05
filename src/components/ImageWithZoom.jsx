@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, createRef } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
@@ -40,7 +40,7 @@ export default function ImageWithZoom({
   const [translateY, setTranslateY] = useState(0)
   const [isDragging, setIsDragging] = useState(0)
 
-  const imageRef = useRef(null)
+  const imageRef = createRef()
   const refState = useRef({
     previousEvent: null,
     dragging: false,
@@ -49,17 +49,6 @@ export default function ImageWithZoom({
     w: 0,
     h: 0,
   }).current
-
-  // effect to unload image from memory
-  useEffect(() => {
-    // const img = imageRef.current
-    // if (!img.hasAttribute('src')) {
-    //   img.setAttribute('src', src)
-    // }
-    // return () => {
-    //   img.removeAttribute('src')
-    // }
-  }, [])
 
   // effect to bootstrap zooming
   useEffect(() => {
