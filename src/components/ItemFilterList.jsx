@@ -106,7 +106,7 @@ export default function FilterList({ moduleId, itemId, onClick }) {
     }
   }, [fetched, fetching, itemFiltersSupported, moduleId, itemId])
 
-  const handleFilterChange = (event) => {
+  const handleFilterSearchChange = (event) => {
     setSearch(event.target.value)
   }
 
@@ -126,7 +126,7 @@ export default function FilterList({ moduleId, itemId, onClick }) {
         fullWidth
         autoFocus
         value={search}
-        onChange={handleFilterChange}
+        onChange={handleFilterSearchChange}
         margin="dense"
       />
 

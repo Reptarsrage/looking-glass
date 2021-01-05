@@ -5,7 +5,7 @@ import { isValidElementType } from 'react-is'
 import Item from './Item'
 
 /**
- * Performs a binary search on the items to find the closest item to the target.
+ * performs a binary search on the items to find the closest item to the target.
  *
  * @param {*} start The lower bound when searching the items array
  * @param {*} end The upper bound when searching the items array
@@ -44,7 +44,7 @@ function findNearestItem(start, end, target, itemPositions, items) {
 }
 
 /**
- * Computes positions for all items on screen (or above).
+ * computes positions for all items on screen (or above).
  *
  * @param {*} items Array of item IDs
  * @param {*} left The left offset to apply to item positions
@@ -84,7 +84,7 @@ function computePositions(items, left, gutter, height, scrollTop, width, saved, 
 }
 
 /**
- * Computes positions for all items up to the given position.
+ * computes positions for all items up to the given position.
  *
  * @param {*} items Array of item IDs
  * @param {*} left The left offset to apply to item positions
@@ -129,20 +129,20 @@ const Virtualized = ({
     width,
   }).current
 
-  // Compute positions for items in or above the current window
+  // compute positions for items in or above the current window
   computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem)
 
-  // Calculate range of visible items
+  // calculate range of visible items
   const start = findNearestItem(0, saved.lastComputedIdx, scrollTop, saved.computedById, items)
   const end = findNearestItem(start, saved.lastComputedIdx, scrollTop + height, saved.computedById, items)
 
-  // Check if we've been requested to render any additional items outside of the visible window
+  // check if we've been requested to render any additional items outside of the visible window
   if (forceRenderItems.some(([id]) => !(id in saved.computedById))) {
     const toPosition = Math.max(...forceRenderItems.map((id) => items.indexOf(id)))
     computeUpToPosition(items, left, gutter, saved, toPosition, getAdjustedDimensionsForItem)
   }
 
-  // Collect all items to render
+  // collect all items to render
   const itemsToRender = items
     .slice(start, end + 1) // take everything in the visible window
     .concat(forceRenderItems) // add in requested items

@@ -13,10 +13,10 @@ export const breadcrumbsSelector = createSelector(
     let gallery = currentGallery
     const breadcrumbs = []
     while (gallery && gallery.id) {
-      const { id: galleryId, moduleId, parentId, title } = gallery
+      const { id: galleryId, moduleId, parentId, name } = gallery
       breadcrumbs.unshift({
         id: generateBreadcrumbId(moduleId, galleryId),
-        title,
+        name,
         url: `/gallery/${moduleId}/${galleryId}`,
       })
 

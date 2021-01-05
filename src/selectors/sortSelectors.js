@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect'
 
-import { gallerySearchQuerySelector, gallerySortSelector } from './gallerySelectors'
-
 // select props
 const getModuleId = (_, props) => props.moduleId
 const getValueId = (_, props) => props.valueId
+const getSearch = (_, props) => props.search
+const getSort = (_, props) => props.sort
 
 // simple state selectors
 export const byIdSelector = (state) => state.sort.byId
@@ -23,7 +23,7 @@ export const valueSiteIdSelector = createSelector(valueSelector, (value) => valu
 export const valueNameSelector = createSelector(valueSelector, (value) => value.name)
 
 export const nestedSelector = createSelector(
-  [allIdsSelector, byIdSelector, getValueId, gallerySearchQuerySelector],
+  [allIdsSelector, byIdSelector, getValueId, getSearch],
   (allIds, byId, valueId, searchQuery) => {
     let nested = allIds.filter((id) => byId[id].parentId === valueId)
 
@@ -41,7 +41,7 @@ export const nestedSelector = createSelector(
 
 /** all values for a given module */
 export const moduleValuesSelector = createSelector(
-  [getModuleId, allIdsSelector, byIdSelector, gallerySearchQuerySelector],
+  [getModuleId, allIdsSelector, byIdSelector, getSearch],
   (moduleId, allIds, byId, searchQuery) => {
     let values = allIds.filter((id) => byId[id].moduleId === moduleId && !byId[id].parentId)
 
@@ -59,7 +59,7 @@ export const moduleValuesSelector = createSelector(
 
 /** default value */
 export const defaultSortValueSelector = createSelector(
-  [getModuleId, allIdsSelector, byIdSelector, gallerySearchQuerySelector],
+  [getModuleId, allIdsSelector, byIdSelector, getSearch],
   (moduleId, allIds, byId, searchQuery) => {
     let values = allIds.filter((id) => byId[id].moduleId === moduleId)
 
@@ -74,7 +74,7 @@ export const defaultSortValueSelector = createSelector(
 )
 
 export const valueIsCurrentlySelectedSelector = createSelector(
-  [defaultSortValueSelector, gallerySortSelector, nestedSelector, getValueId],
+  [defaultSortValueSelector, getSort, nestedSelector, getValueId],
   (defaultValue, currentlySelectedValue, nested, valueId) => {
     const currentValueId = currentlySelectedValue || defaultValue
     return valueId === currentValueId || nested.some(({ id }) => id === currentValueId)

@@ -7,6 +7,7 @@ const log = require('electron-log')
 const getPort = require('get-port')
 
 const createServer = async () => {
+  const defaultChunkSize = 4096 // lower works better here
   const port = await getPort()
   const server = http.createServer((req, res) => {
     try {
@@ -32,7 +33,7 @@ const createServer = async () => {
       if (range) {
         const parts = range.replace(/bytes=/, '').split('-')
         const start = parseInt(parts[0], 10)
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
+        const end = parts[1] ? parseInt(parts[1], 10) : Math.min(fileSize - 1, start + defaultChunkSize)
         const chunksize = end - start + 1
         const file = fs.createReadStream(filePath, { start, end })
         const head = {

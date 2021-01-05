@@ -35,14 +35,14 @@ const withScroll = (WrappedComponent) => {
       setScrollTop(newScrollTop)
       setScrollDirection(scrollTop < targetScrollTop ? 1 : -1)
 
-      // Callback
+      // callback
       if (onScroll) {
         onScroll({ currentTarget: event.currentTarget })
       }
     }
 
     useEffect(() => {
-      // Scroll to initial position on mount
+      // scroll to initial position on mount
       const outerElt = scrollContainerRef.current
       if (typeof initialScrollTop === 'number') {
         outerElt.scrollTop = initialScrollTop

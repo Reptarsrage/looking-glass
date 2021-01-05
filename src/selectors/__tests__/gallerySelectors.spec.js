@@ -44,36 +44,12 @@ it('galleryItemsSelector selects expected', () => {
   expect(gallerySelectors.galleryItemsSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
-it('galleryTitleSelector selects expected', () => {
+it('galleryNameSelector selects expected', () => {
   const expected = 'EXPECTED'
   const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { title: expected } } } }
+  const expectedState = { gallery: { byId: { [galleryId]: { name: expected } } } }
   const expectedProps = { galleryId }
-  expect(gallerySelectors.galleryTitleSelector(expectedState, expectedProps)).toEqual(expected)
-})
-
-it('galleryFilterSelector selects expected', () => {
-  const expected = 'EXPECTED'
-  const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { currentFilter: expected } } } }
-  const expectedProps = { galleryId }
-  expect(gallerySelectors.galleryFilterSelector(expectedState, expectedProps)).toEqual(expected)
-})
-
-it('gallerySortSelector selects expected', () => {
-  const expected = 'EXPECTED'
-  const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { currentSort: expected } } } }
-  const expectedProps = { galleryId }
-  expect(gallerySelectors.gallerySortSelector(expectedState, expectedProps)).toEqual(expected)
-})
-
-it('gallerySearchQuerySelector selects expected', () => {
-  const expected = 'EXPECTED'
-  const galleryId = 'EXPECTED GALLERY ID'
-  const expectedState = { gallery: { byId: { [galleryId]: { searchQuery: expected } } } }
-  const expectedProps = { galleryId }
-  expect(gallerySelectors.gallerySearchQuerySelector(expectedState, expectedProps)).toEqual(expected)
+  expect(gallerySelectors.galleryNameSelector(expectedState, expectedProps)).toEqual(expected)
 })
 
 it('galleryHasNextSelector selects expected', () => {

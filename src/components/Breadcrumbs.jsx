@@ -32,8 +32,8 @@ export default function CustomBreadcrumbs({ galleryId }) {
         <HomeIcon className={classes.icon} />
         Home
       </Link>
-      {breadcrumbs.map(({ id, title, url }) => (
-        <BreadcrumbItem key={id} title={title} url={url} />
+      {breadcrumbs.map(({ id, name, url }) => (
+        <BreadcrumbItem key={id} name={name} url={url} />
       ))}
     </Breadcrumbs>
   )

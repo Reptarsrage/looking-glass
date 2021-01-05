@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useHistory, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
@@ -15,7 +15,7 @@ import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
 import {
   gallerySavedScrollPositionSelector,
-  galleryTitleSelector,
+  galleryNameSelector,
   galleryHasNextSelector,
   galleryItemsSelector,
   galleryFetchingSelector,
@@ -23,7 +23,7 @@ import {
   galleryErrorSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
-import { fetchGallery, filterChange, saveScrollPosition } from 'actions/galleryActions'
+import { fetchGallery, filterAdded, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
 import SortMenu from 'components/SortMenu'
 import Masonry from 'components/Masonry'
@@ -34,6 +34,7 @@ import LoadingIndicator from 'components/LoadingIndicator'
 import SearchBar from 'components/SearchBar'
 import EndOfScrollToast from 'components/EndOfScrollToast'
 import titleBar from '../titleBar'
+import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -55,8 +56,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function Gallery({ moduleId, galleryId, overlayButtonThreshold }) {
+export default function Gallery({ overlayButtonThreshold }) {
   const classes = useStyles()
+  const query = useQuery()
+  const history = useHistory()
+  const params = useParams()
+
+  const { galleryId, moduleId } = params
+  const { filters, search, sort } = query
+
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
@@ -71,7 +79,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
   const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
   const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
   const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
-  const title = useSelector((state) => galleryTitleSelector(state, { galleryId }))
+  const name = useSelector((state) => galleryNameSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const dispatch = useDispatch()
 
@@ -83,7 +91,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
     fetchInitialItems()
 
     // set window title
-    titleBar.updateTitle(`'The Looking-Glass' - ${title}`)
+    titleBar.updateTitle(`'The Looking-Glass' - ${name}`)
 
     return () => {
       // remove event listeners from componentDidMount
@@ -97,7 +105,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
 
   const handleFilterClick = (filterId) => {
     setDrawerOpen(false)
-    dispatch(filterChange(galleryId, filterId))
+    dispatch(filterAdded(galleryId, filterId, history))
   }
 
   const handleOpenDrawerClick = () => {
@@ -136,7 +144,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
 
     // check if first page is available and not already fetched, and fetch it
     if (!fetching && !fetched && !error) {
-      dispatch(fetchGallery(galleryId))
+      dispatch(fetchGallery(galleryId, filters, sort, search))
     }
   }
 
@@ -148,7 +156,7 @@ export default function Gallery({ moduleId, galleryId, overlayButtonThreshold })
 
     // check if next page is available, and fetch it
     if (hasNext && !fetching) {
-      dispatch(fetchGallery(galleryId))
+      dispatch(fetchGallery(galleryId, filters, sort, search))
     }
   }
 
@@ -210,10 +218,6 @@ Gallery.defaultProps = {
 }
 
 Gallery.propTypes = {
-  // required
-  moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
-
   // optional
   overlayButtonThreshold: PropTypes.number,
 }

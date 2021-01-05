@@ -16,6 +16,7 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
 import { Button } from '@material-ui/core'
+import moment from 'moment'
 
 import {
   modalOpenSelector,
@@ -25,7 +26,7 @@ import {
 } from 'selectors/modalSelectors'
 import { moduleDefaultGalleryIdSelector, moduleSupportsItemFiltersSelector } from 'selectors/moduleSelectors'
 import { modalClose, modalClear } from 'actions/modalActions'
-import { filterChange } from 'actions/galleryActions'
+import { filterAdded } from 'actions/galleryActions'
 import ModalTransitionContainer from './ModalTransitionContainer'
 import ItemFilterList from './ItemFilterList'
 
@@ -113,8 +114,7 @@ export default function Modal({ moduleId }) {
     // TODO: Something better than this
     if (filterId) {
       dispatch(modalClose())
-      dispatch(filterChange(defaultGalleryId, filterId))
-      history.push(`/gallery/${moduleId}/${defaultGalleryId}`)
+      dispatch(filterAdded(defaultGalleryId, filterId, history))
     }
   }
 
@@ -138,6 +138,16 @@ export default function Modal({ moduleId }) {
   }
 
   const renderFilters = supportsItemFilters || modalItemHasFilters
+  const author = modalItem.author || {}
+  const source = modalItem.source || {}
+  const description = [
+    author.name && `by ${author.name}`,
+    source.name && `to ${source.name}`,
+    modalItem.date && `on ${moment.utc(modalItem.date).local().format('LLL')}`,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <>
       {!showCaption && (
@@ -155,10 +165,10 @@ export default function Modal({ moduleId }) {
           <div className={classes.caption}>
             <Typography variant="h4">
               <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>&nbsp;
-              {modalItem.title}
+              {modalItem.name}
             </Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              {modalItem.description}
+              {description}
             </Typography>
           </div>
         </Fade>

@@ -61,7 +61,7 @@ export default function Home() {
       dispatch(fetchModules())
     }
 
-    // Set window title
+    // set window title
     titleBar.updateTitle('The Looking-Glass')
   }, [])
 

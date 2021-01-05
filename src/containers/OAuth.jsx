@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
@@ -56,9 +55,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function OAuth({ galleryId, moduleId }) {
+export default function OAuth() {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const { moduleId, galleryId } = useParams()
   const [modalFetching, setModalFetching] = useState(false)
   const oAuthUrl = useSelector((state) => moduleOAuthUrlSelector(state, { moduleId }))
   const fetched = useSelector((state) => fetchedSelector(state, { moduleId }))
@@ -158,10 +158,4 @@ export default function OAuth({ galleryId, moduleId }) {
       </Paper>
     </main>
   )
-}
-
-OAuth.propTypes = {
-  // route params
-  moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
 }

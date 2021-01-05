@@ -3,11 +3,9 @@ import {
   FETCH_GALLERY_SUCCESS,
   FETCH_GALLERY_FAILURE,
   SEARCH_CHANGE,
-  UPDATE_SEARCH,
   SORT_CHANGE,
-  UPDATE_SORT,
-  FILTER_CHANGE,
-  UPDATE_FILTER,
+  FILTER_ADDED,
+  FILTER_REMOVED,
   SAVE_SCROLL_POSITION,
   CLEAR_GALLERY,
   SET_FILE_SYSTEM_DIRECTORY,
@@ -16,9 +14,13 @@ import {
 /**
  * fetches gallery items
  * @param {string|number} galleryId Gallery ID
+ * @param {string[]} filters Filters
+ * @param {string} sort Sort value
+ * @param {string} search Search query
  */
-export const fetchGallery = (galleryId) => ({
+export const fetchGallery = (galleryId, filters, sort, search) => ({
   type: FETCH_GALLERY,
+  payload: { filters, sort, search },
   meta: galleryId,
 })
 
@@ -58,22 +60,48 @@ export const fetchGalleryFailure = (galleryId, error) => ({
  * user typed in search
  * @param {string|number} galleryId Gallery ID
  * @param {string} searchQuery Search query string
+ * @param {Object} history Router history
  */
-export const searchChange = (galleryId, searchQuery) => ({
+export const searchChange = (galleryId, searchQuery, history) => ({
   type: SEARCH_CHANGE,
   payload: searchQuery,
-  meta: galleryId,
+  meta: { galleryId, history },
 })
 
 /**
- * underlying gallery search query has been updated
+ * user selected a new sort value
  * @param {string|number} galleryId Gallery ID
- * @param {string} searchQuery Search query string
+ * @param {string|number} sortValueId Sort value ID
+ * @param {Object} history Router history
  */
-export const updateSearch = (galleryId, searchQuery) => ({
-  type: UPDATE_SEARCH,
-  payload: searchQuery,
-  meta: galleryId,
+export const sortChange = (galleryId, sortValueId, history) => ({
+  type: SORT_CHANGE,
+  payload: sortValueId,
+  meta: { galleryId, history },
+})
+
+/**
+ * user selected a new filter value
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} filterId Filter ID
+ * @param {Object} history Router history
+ */
+export const filterAdded = (galleryId, filterId, history) => ({
+  type: FILTER_ADDED,
+  payload: filterId,
+  meta: { galleryId, history },
+})
+
+/**
+ * user unselected a filter value
+ * @param {string|number} galleryId Gallery ID
+ * @param {string|number} filterId Filter ID
+ * @param {Object} history Router history
+ */
+export const filterRemoved = (galleryId, filterId, history) => ({
+  type: FILTER_REMOVED,
+  payload: filterId,
+  meta: { galleryId, history },
 })
 
 /**
@@ -84,50 +112,6 @@ export const updateSearch = (galleryId, searchQuery) => ({
 export const saveScrollPosition = (galleryId, scrollPosition) => ({
   type: SAVE_SCROLL_POSITION,
   payload: scrollPosition,
-  meta: galleryId,
-})
-
-/**
- * user selected a new sort value
- * @param {string|number} galleryId Gallery ID
- * @param {string|number} sortValueId Sort value ID
- */
-export const sortChange = (galleryId, sortValueId) => ({
-  type: SORT_CHANGE,
-  payload: sortValueId,
-  meta: galleryId,
-})
-
-/**
- * underlying gallery sort value has been updated
- * @param {string|number} galleryId Gallery ID
- * @param {string|number} sortValueId Sort value ID
- */
-export const updateSort = (galleryId, valueId) => ({
-  type: UPDATE_SORT,
-  payload: valueId,
-  meta: galleryId,
-})
-
-/**
- * user selected a new filter value
- * @param {string|number} galleryId Gallery ID
- * @param {string|number} filterId Filter ID
- */
-export const filterChange = (galleryId, filterId) => ({
-  type: FILTER_CHANGE,
-  payload: filterId,
-  meta: galleryId,
-})
-
-/**
- * underlying gallery filter value has been updated
- * @param {string|number} galleryId Gallery ID
- * @param {string|number} filterId Filter ID
- */
-export const updateFilter = (galleryId, filterId) => ({
-  type: UPDATE_FILTER,
-  payload: filterId,
   meta: galleryId,
 })
 
