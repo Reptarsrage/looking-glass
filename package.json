@@ -26,11 +26,13 @@
   "scripts": {
     "build-main": "webpack --env production --config ./webpack.main.config.js",
     "build-renderer": "webpack --env production --config ./webpack.renderer.config.js",
+    "prebuild": "rimraf dist main.prod.js",
     "build": "cross-env NODE_ENV=production concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "start": "cross-env ELECTRON_IS_DEV=0 NODE_ENV=production electron .",
     "start-dev": "wait-on http://localhost:4000 && electron .",
     "dev-server": "webpack serve --env development --config ./webpack.renderer.config.js",
     "dev": "cross-env NODE_ENV=development ELECTRON_IS_DEV=1 concurrently -k \"yarn dev-server\" \"yarn start-dev\"",
+    "predist": "rimraf release",
     "dist": "rimraf ./release && electron-builder",
     "release": "standard-version",
     "lint": "eslint --cache --format=pretty \"**/*.{js,jsx}\"",
