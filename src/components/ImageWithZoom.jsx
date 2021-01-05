@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, createRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
@@ -40,7 +40,7 @@ export default function ImageWithZoom({
   const [translateY, setTranslateY] = useState(0)
   const [isDragging, setIsDragging] = useState(0)
 
-  const imageRef = createRef()
+  const imageRef = useRef()
   const refState = useRef({
     previousEvent: null,
     dragging: false,
