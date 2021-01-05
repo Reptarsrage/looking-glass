@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 
+import appReducer from './appReducer'
 import authReducer from './authReducer'
 import moduleReducer from './moduleReducer'
 import galleryReducer from './galleryReducer'
@@ -10,6 +11,7 @@ import filterReducer from './filterReducer'
 import modalReducer from './modalReducer'
 
 export default combineReducers({
+  app: appReducer,
   auth: authReducer,
   module: moduleReducer,
   gallery: galleryReducer,
