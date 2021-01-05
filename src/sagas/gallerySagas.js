@@ -131,7 +131,10 @@ export function* handleFetchGallery(action) {
     const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId, search })
 
     // select sort info
-    const sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: sort || defaultSort })
+    let sortValueSiteId = null
+    if (sort || defaultSort) {
+      sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: sort || defaultSort })
+    }
 
     // select filter info
     let filterSiteIds = []
