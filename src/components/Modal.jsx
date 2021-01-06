@@ -13,9 +13,10 @@ import Backdrop from '@material-ui/core/Backdrop'
 import Drawer from '@material-ui/core/Drawer'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import Button from '@material-ui/core/Button'
+import Link from '@material-ui/core/Link'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
-import { Button } from '@material-ui/core'
 import moment from 'moment'
 
 import {
@@ -74,6 +75,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 5,
     margin: theme.spacing(1),
   },
+  link: {
+    cursor: 'pointer',
+  },
 }))
 
 export default function Modal({ moduleId }) {
@@ -111,15 +115,21 @@ export default function Modal({ moduleId }) {
   const drawerClose = (filterId) => {
     setOpen(false)
 
-    // TODO: Something better than this
     if (filterId) {
-      dispatch(modalClose())
       dispatch(filterAdded(defaultGalleryId, filterId, history))
     }
   }
 
   const onAnimationStart = () => {
     setAnimating(true)
+  }
+
+  const handleAuthorClick = () => {
+    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history))
+  }
+
+  const handleSourceClick = () => {
+    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history))
   }
 
   const onAnimationComplete = () => {
@@ -140,13 +150,27 @@ export default function Modal({ moduleId }) {
   const renderFilters = supportsItemFilters || modalItemHasFilters
   const author = modalItem.author || {}
   const source = modalItem.source || {}
-  const description = [
-    author.name && `by ${author.name}`,
-    source.name && `to ${source.name}`,
-    modalItem.date && `on ${moment.utc(modalItem.date).local().format('LLL')}`,
+  const subCaption = [
+    author.name && (
+      <span key="author">
+        by{' '}
+        <Link className={classes.link} role="button" onClick={handleAuthorClick}>
+          {author.name}
+        </Link>
+      </span>
+    ),
+    source.name && (
+      <span key="source">
+        to{' '}
+        <Link className={classes.link} role="button" onClick={handleSourceClick}>
+          {source.name}
+        </Link>
+      </span>
+    ),
+    modalItem.date && <span key="date">on {moment.utc(modalItem.date).local().format('LLL')}</span>,
   ]
     .filter(Boolean)
-    .join(' ')
+    .reduce((prev, curr) => [prev, ' ', curr], [])
 
   return (
     <>
@@ -168,8 +192,13 @@ export default function Modal({ moduleId }) {
               {modalItem.name}
             </Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              {description}
+              {subCaption}
             </Typography>
+            {modalItem.description && (
+              <Typography variant="subtitle1" color="textSecondary">
+                {modalItem.description}
+              </Typography>
+            )}
           </div>
         </Fade>
       )}
