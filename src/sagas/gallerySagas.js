@@ -11,6 +11,7 @@ import {
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
+import { modalOpenSelector } from 'selectors/modalSelectors'
 import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/moduleSelectors'
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
 import { filterSiteIdSelector, filterSectionIdSelector } from 'selectors/filterSelectors'
@@ -20,7 +21,9 @@ import {
 } from 'selectors/filterSectionSelectors'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import { fetchGallerySuccess, fetchGalleryFailure, clearGallery } from 'actions/galleryActions'
+import { modalClose } from 'actions/modalActions'
 import { handleRefresh } from './authSagas'
+import { parseQueryString } from '../hooks/useQuery'
 import logger from '../logger'
 
 /**
@@ -31,7 +34,7 @@ export function* handleSortChange(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
   const { pathname, search } = history.location
-  const query = qs.parse(search.substring(1))
+  const query = parseQueryString(search)
 
   if (query.sort !== value) {
     history.push(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
@@ -46,14 +49,14 @@ export function* handleSortChange(action) {
 export function* handleFilterAdded(action) {
   const { meta, payload: filterId } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  const query = qs.parse(search.substring(1))
-  let filters = (query.filters || '').split(',').filter(Boolean)
-  let searchQuery = query.search || ''
+  const query = parseQueryString(history.location.search)
+  let { filters, search } = query
 
   // check if filter is currently selected
   if (filters.indexOf(filterId) < 0) {
     // check if filter supports multiple
+    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
     const filterSectionId = yield select(filterSectionIdSelector, { filterId })
     const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
     if (!supportsMultiple) {
@@ -66,17 +69,29 @@ export function* handleFilterAdded(action) {
     // check if searching, and filter is available in search
     const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
     if (!supportsSearch) {
-      searchQuery = ''
+      search = ''
     }
 
     // add it
     filters.push(filterId)
 
-    // navigate
-    history.push(`${pathname}?${qs.stringify({ ...query, search: searchQuery, filters: filters.join(',') })}`)
+    // close modal
+    if (yield select(modalOpenSelector)) {
+      yield put(modalClose())
+    }
 
-    // clear gallery
-    yield put(clearGallery(galleryId))
+    // navigate
+    const base = history.location.pathname.split('/')[1]
+    const qParams = { ...query, search, filters: filters.join(',') }
+    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+
+    // clear source gallery (if different)
+    if (galleryId !== defaultGalleryId) {
+      yield put(clearGallery(galleryId))
+    }
+
+    // clear destination gallery
+    yield put(clearGallery(defaultGalleryId))
   }
 }
 
@@ -87,17 +102,28 @@ export function* handleFilterAdded(action) {
 export function* handleFilterRemoved(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  const query = qs.parse(search.substring(1))
-  let filters = (query.filters || '').split(',').filter(Boolean)
+  const query = parseQueryString(history.location.search)
+  let { filters } = query
 
   if (filters.indexOf(value) >= 0) {
+    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+
     // remove it
     filters = filters.filter((filter) => filter !== value)
 
-    // TODO: The order here matters, why?
-    history.push(`${pathname}?${qs.stringify({ ...query, filters: filters.join(',') })}`)
-    yield put(clearGallery(galleryId))
+    // navigate
+    const base = history.location.pathname.split('/')[1]
+    const qParams = { ...query, filters: filters.join(',') }
+    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+
+    // clear source gallery (if different)
+    if (galleryId !== defaultGalleryId) {
+      yield put(clearGallery(galleryId))
+    }
+
+    // clear destination gallery
+    yield put(clearGallery(defaultGalleryId))
   }
 }
 
@@ -108,9 +134,8 @@ export function* handleFilterRemoved(action) {
 export function* handleSearchChange(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  let query = qs.parse(search.substring(1))
-  let filters = (query.filters || '').split(',').filter(Boolean)
+  const query = parseQueryString(history.location.search)
+  let { filters } = query
 
   // if changed, clear items
   if (query.search !== value) {
@@ -123,19 +148,26 @@ export function* handleSearchChange(action) {
     // remove all filters that do not support search
     filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
 
-    query = { ...query, search: value, filters: filters.filter(Boolean) }
-    if (pathname.startsWith('/search') && !value) {
+    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+
+    let base = 'search'
+    if (base === 'search' && !value) {
       // navigate back to gallery
-      history.push(`${pathname.replace('search', 'gallery')}?${qs.stringify(query)}`)
-    } else if (pathname.startsWith('/search')) {
-      // update search in qs
-      history.replace(`${pathname}?${qs.stringify(query)}`)
-    } else {
-      // navigate to search
-      history.push(`${pathname.replace('gallery', 'search')}?${qs.stringify(query)}`)
+      base = 'gallery'
     }
 
-    yield put(clearGallery(galleryId))
+    // navigate
+    const qParams = { ...query, search: value, filters: filters.filter(Boolean) }
+    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+
+    // clear source gallery (if different)
+    if (galleryId !== defaultGalleryId) {
+      yield put(clearGallery(galleryId))
+    }
+
+    // clear destination gallery
+    yield put(clearGallery(defaultGalleryId))
   }
 }
 
