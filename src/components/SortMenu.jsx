@@ -44,10 +44,14 @@ export default function SortMenu({ moduleId, galleryId }) {
     setAnchorEl(null)
   }
 
+  if (!moduleSupportsSorting || sortValues.length === 0) {
+    return null
+  }
+
   const ariaId = `${moduleId}-sort-menu`
   return (
     <>
-      <Button aria-controls={ariaId} aria-haspopup="true" onClick={handleClick} disabled={!moduleSupportsSorting}>
+      <Button aria-controls={ariaId} aria-haspopup="true" onClick={handleClick}>
         <SortIcon className={classes.extendedIcon} />
         <Typography color="textSecondary">Sort By</Typography>
       </Button>
