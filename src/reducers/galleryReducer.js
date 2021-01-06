@@ -131,6 +131,7 @@ export default produce((draft, action) => {
       draft.byId[galleryId].hasNext = true
       draft.byId[galleryId].savedScrollPosition = 0
       draft.byId[galleryId].fetched = false
+      draft.byId[galleryId].error = null
 
       break
     }
