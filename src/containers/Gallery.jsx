@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import Toolbar from '@material-ui/core/Toolbar'
 import TuneIcon from '@material-ui/icons/Tune'
 import Drawer from '@material-ui/core/Drawer'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 
 import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
 import { forceRenderItemsSelector } from 'selectors/modalSelectors'
