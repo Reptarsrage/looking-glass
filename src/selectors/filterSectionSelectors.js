@@ -23,6 +23,15 @@ export const filterSectionFetchingSelector = createSelector(filterSectionSelecto
 export const filterSectionFetchedSelector = createSelector(filterSectionSelector, (section) => section.fetched)
 export const filterSectionErrorSelector = createSelector(filterSectionSelector, (section) => section.errpr)
 export const filterSectionDescriptionSelector = createSelector(filterSectionSelector, (section) => section.description)
+export const filterSectionSupportsMultipleSelector = createSelector(
+  filterSectionSelector,
+  (section) => section.supportsMultiple
+)
+export const filterSectionSupportsSearchSelector = createSelector(
+  filterSectionSelector,
+  (section) => section.supportsSearch
+)
+
 export const filtersFetchingSelector = createSelector(
   [moduleFilterSectionsSelector, byIdSelector],
   (sectionIds, byId) => sectionIds.every((id) => byId[id].fetching)

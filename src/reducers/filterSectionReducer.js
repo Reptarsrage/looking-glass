@@ -30,6 +30,8 @@ export const initialFilterSectionState = {
   name: null,
   description: null,
   values: [],
+  supportsMultiple: false,
+  supportsSearch: false,
   ...initialAsyncState,
 }
 

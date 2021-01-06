@@ -13,7 +13,11 @@ import {
 } from 'selectors/gallerySelectors'
 import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/moduleSelectors'
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
-import { filterSiteIdSelector } from 'selectors/filterSelectors'
+import { filterSiteIdSelector, filterSectionIdSelector } from 'selectors/filterSelectors'
+import {
+  filterSectionSupportsMultipleSelector,
+  filterSectionSupportsSearchSelector,
+} from 'selectors/filterSectionSelectors'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import { fetchGallerySuccess, fetchGalleryFailure, clearGallery } from 'actions/galleryActions'
 import { handleRefresh } from './authSagas'
@@ -40,17 +44,38 @@ export function* handleSortChange(action) {
  * @param {*} action Dispatched action
  */
 export function* handleFilterAdded(action) {
-  const { meta, payload: value } = action
+  const { meta, payload: filterId } = action
   const { galleryId, history } = meta
   const { pathname, search } = history.location
   const query = qs.parse(search.substring(1))
-  const filters = (query.filters || '').split(',').filter(Boolean)
+  let filters = (query.filters || '').split(',').filter(Boolean)
+  let searchQuery = query.search || ''
 
-  if (filters.indexOf(value) < 0) {
+  // check if filter is currently selected
+  if (filters.indexOf(filterId) < 0) {
+    // check if filter supports multiple
+    const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+    const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
+    if (!supportsMultiple) {
+      filters = []
+    } else {
+      // remove all other filters that do not support multiple
+      filters = (yield all(filters.map(filterSupportsMultiple))).filter(Boolean)
+    }
+
+    // check if searching, and filter is available in search
+    const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
+    if (!supportsSearch) {
+      searchQuery = ''
+    }
+
     // add it
-    filters.push(value)
+    filters.push(filterId)
 
-    history.push(`${pathname}?${qs.stringify({ ...query, filters: filters.join(',') })}`)
+    // navigate
+    history.push(`${pathname}?${qs.stringify({ ...query, search: searchQuery, filters: filters.join(',') })}`)
+
+    // clear gallery
     yield put(clearGallery(galleryId))
   }
 }
@@ -85,6 +110,7 @@ export function* handleSearchChange(action) {
   const { galleryId, history } = meta
   const { pathname, search } = history.location
   let query = qs.parse(search.substring(1))
+  let filters = (query.filters || '').split(',').filter(Boolean)
 
   // if changed, clear items
   if (query.search !== value) {
@@ -94,7 +120,10 @@ export function* handleSearchChange(action) {
       return
     }
 
-    query = { ...query, search: value }
+    // remove all filters that do not support search
+    filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
+
+    query = { ...query, search: value, filters: filters.filter(Boolean) }
     if (pathname.startsWith('/search') && !value) {
       // navigate back to gallery
       history.push(`${pathname.replace('search', 'gallery')}?${qs.stringify(query)}`)
@@ -171,6 +200,30 @@ export function* handleFetchGallery(action) {
     logger.error(error, 'Error fetching gallery')
     yield put(fetchGalleryFailure(galleryId, error))
   }
+}
+
+// remove all filters that do not play well with others
+function* filterSupportsMultiple(filterId) {
+  const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+  const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
+
+  if (supportsMultiple) {
+    return filterId
+  }
+
+  return false
+}
+
+// remove all filters that do not support search
+function* filterSupportsSearch(filterId, searchValue) {
+  const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+  const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
+
+  if (!searchValue || supportsSearch) {
+    return filterId
+  }
+
+  return false
 }
 
 export default function* watchGallerySagas() {
