@@ -52,24 +52,18 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const variants = {
-  enter: (direction) => {
-    return {
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-    }
-  },
+  enter: (direction) => ({
+    opacity: 0,
+    x: direction > 0 ? 1000 : -1000,
+  }),
   center: {
-    zIndex: 1,
-    x: 0,
     opacity: 1,
+    x: 0,
   },
-  exit: (direction) => {
-    return {
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    }
-  },
+  exit: (direction) => ({
+    opacity: 0,
+    x: direction < 0 ? 1000 : -1000,
+  }),
 }
 
 export default function SlideShow({ animating }) {
@@ -123,6 +117,9 @@ export default function SlideShow({ animating }) {
     },
   }
 
+  // TODO: Theres a bug with using both AnimatePresence and drag
+  // when the user drags the element before the enter animation completes
+  // the element will teleport for a single frame back to its starting position
   return (
     <div className={classes.slideShow}>
       <AnimatePresence initial={false} custom={direction} onExitComplete={handleAnimationEnd}>
