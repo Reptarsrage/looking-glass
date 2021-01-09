@@ -17,20 +17,14 @@ export default function Image({ sources, width, height, title, styleName, ...pas
   const classes = useStyles()
 
   return (
-    <picture>
-      {sources.map(({ url, width: minWidth }, idx) => (
-        <source key={url} srcSet={url} media={`(min-width: ${idx === sources.length - 1 ? 0 : minWidth}px)`} />
-      ))}
-
-      <motion.img
-        {...passThroughProps}
-        src={sources[0].url}
-        alt={title}
-        width={width}
-        height={height}
-        className={clsx(classes.image, styleName)}
-      />
-    </picture>
+    <motion.img
+      {...passThroughProps}
+      src={sources[0].url}
+      alt={title}
+      width={width}
+      height={height}
+      className={clsx(classes.image, styleName)}
+    />
   )
 }
 
