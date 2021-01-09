@@ -9,8 +9,7 @@ export const parseQueryString = moize(
       queryString = queryString.substring(1)
     }
 
-    const query = qs.parse(search)
-
+    const query = qs.parse(queryString)
     query.search = query.search || ''
     query.sort = query.sort || ''
 
@@ -20,7 +19,7 @@ export const parseQueryString = moize(
 
     return query
   },
-  { maxSize: 1 }
+  { maxAge: 1 }
 )
 
 // a custom hook that builds on useLocation to parse
