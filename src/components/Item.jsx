@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, memo } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
+import Tooltip from '@material-ui/core/Tooltip'
 import CollectionsIcon from '@material-ui/icons/Collections'
 import { useHistory } from 'react-router-dom'
 
@@ -28,10 +29,13 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
+  corner: {
     position: 'absolute',
     top: theme.spacing(1),
     right: theme.spacing(1),
+    minHeight: '40px',
+  },
+  icon: {
     padding: theme.spacing(1),
     background: 'rgba(0, 0, 0, 0.32)',
     borderRadius: '50%',
@@ -45,6 +49,7 @@ function Item({ itemId, style }) {
   const classes = useStyles()
   const history = useHistory()
   const itemRef = useRef(null)
+  const cornerRef = useRef(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
   const sources = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const modalItemId = useSelector(modalItemIdSelector)
@@ -100,39 +105,40 @@ function Item({ itemId, style }) {
     dispatch(modalOpen())
   }
 
-  const renderImage = () => <Image sources={sources} title={name} width={width} height={height} />
+  const renderImage = () => <Image sources={sources} width={width} height={height} />
 
   const renderVideo = () => (
-    <Video
-      sources={sources}
-      poster={poster}
-      title={name}
-      width={width}
-      height={height}
-      muted
-      controls={false}
-      autoPlay
-      loop
-    />
+    <Video sources={sources} poster={poster} width={width} height={height} muted controls={false} autoPlay loop />
   )
 
   return (
-    <div
-      ref={itemRef}
-      className={classes.item}
-      style={{ ...style, visibility: modalItemId === itemId ? 'hidden' : 'visible' }}
-      role="button"
-      onClick={handleClick}
-      onKeyPress={() => {}}
-      tabIndex="0"
+    <Tooltip
+      title={name}
+      placement="left"
+      PopperProps={{
+        anchorEl: cornerRef.current,
+        container: itemRef.current,
+      }}
     >
-      {isGallery ? (
-        <div className={classes.icon}>
-          <CollectionsIcon />
+      <div
+        ref={itemRef}
+        className={classes.item}
+        style={{ ...style, visibility: modalItemId === itemId ? 'hidden' : 'visible' }}
+        role="button"
+        onClick={handleClick}
+        onKeyPress={() => {}}
+        tabIndex="0"
+      >
+        <div ref={cornerRef} className={classes.corner}>
+          {isGallery ? (
+            <div className={classes.icon}>
+              <CollectionsIcon />
+            </div>
+          ) : null}
         </div>
-      ) : null}
-      {isVideo ? renderVideo() : renderImage()}
-    </div>
+        {isVideo ? renderVideo() : renderImage()}
+      </div>
+    </Tooltip>
   )
 }
 
