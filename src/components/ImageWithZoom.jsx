@@ -214,25 +214,20 @@ export default function ImageWithZoom({
 
   return (
     <motion.div className={clsx(classes.container, styleName)} {...otherProps}>
-      <picture>
-        {sources.map(({ url, width: minWidth }, idx) => (
-          <source key={url} srcSet={url} media={`(min-width: ${idx === sources.length - 1 ? 0 : minWidth}px)`} />
-        ))}
-
-        <motion.img
-          ref={imageRef}
-          className={classes.image}
-          role="presentation"
-          alt={title}
-          width={width}
-          height={height}
-          title={title}
-          onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          style={style}
-          draggable={zoomedIn}
-        />
-      </picture>
+      <motion.img
+        ref={imageRef}
+        className={classes.image}
+        role="presentation"
+        alt={title}
+        src={sources[0].url}
+        width={width}
+        height={height}
+        title={title}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        style={style}
+        draggable={zoomedIn}
+      />
     </motion.div>
   )
 }
