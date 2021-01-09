@@ -13,7 +13,6 @@ import Backdrop from '@material-ui/core/Backdrop'
 import Drawer from '@material-ui/core/Drawer'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
@@ -65,18 +64,21 @@ const useStyles = makeStyles((theme) => ({
     background: 'linear-gradient(#000, transparent)',
     zIndex: theme.zIndex.drawer + 4,
     padding: theme.spacing(1),
+    paddingLeft: '88px',
   },
   toggleCaption: {
-    position: 'fixed',
-    top: '30px', // titleBar height
-    left: 0,
-    background: 'rgba(0,0,0,1)',
-    color: '#fff',
-    zIndex: theme.zIndex.drawer + 5,
-    margin: theme.spacing(1),
+    left: '16px',
+    right: 'unset',
   },
   link: {
     cursor: 'pointer',
+  },
+  dark: {
+    color: '#fff',
+    background: 'rgba(0, 0, 0, 0.32)',
+    '&:hover': {
+      background: 'rgba(255, 255, 255, 0.32)',
+    },
   },
 }))
 
@@ -174,23 +176,19 @@ export default function Modal({ moduleId }) {
 
   return (
     <>
-      {!showCaption && (
-        <Fade in={modalOpen}>
-          <div className={classes.toggleCaption}>
-            <Typography variant="h4">
-              <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>
-            </Typography>
-          </div>
-        </Fade>
-      )}
+      <Fade in={modalOpen}>
+        <Fab
+          className={clsx(classes.button, classes.toggleCaption, !showCaption && classes.dark)}
+          onClick={toggleCaption}
+        >
+          {showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </Fab>
+      </Fade>
 
       {showCaption && (
         <Fade in={modalOpen}>
           <div className={classes.caption}>
-            <Typography variant="h4">
-              <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>&nbsp;
-              {modalItem.name}
-            </Typography>
+            <Typography variant="h4">{modalItem.name}</Typography>
             <Typography variant="subtitle1" color="textSecondary">
               {subCaption}
             </Typography>
