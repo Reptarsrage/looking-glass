@@ -37,7 +37,7 @@ export function* handleSortChange(action) {
   const query = parseQueryString(search)
 
   if (query.sort !== value) {
-    history.push(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
+    history.replace(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
     yield put(clearGallery(galleryId))
   }
 }
