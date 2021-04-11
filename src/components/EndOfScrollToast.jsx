@@ -1,37 +1,9 @@
 import React from 'react'
-import IconButton from '@material-ui/core/IconButton'
 import Snackbar from '@material-ui/core/Snackbar'
-import { makeStyles } from '@material-ui/core/styles'
-import SnackbarContent from '@material-ui/core/SnackbarContent'
-import CloseIcon from '@material-ui/icons/Close'
-import InfoIcon from '@material-ui/icons/Info'
-import clsx from 'clsx'
+import Alert from '@material-ui/lab/Alert'
 import PropTypes from 'prop-types'
 
-const useStyles = makeStyles((theme) => ({
-  close: {
-    padding: theme.spacing(0.5),
-  },
-  info: {
-    backgroundColor: theme.palette.info.dark,
-    color: theme.palette.text.light,
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    marginRight: theme.spacing(1),
-    opacity: 0.9,
-  },
-  message: {
-    alignItems: 'center',
-    display: 'flex',
-  },
-}))
-
 export default function EndOfScrollToast({ message, onClose, open }) {
-  const classes = useStyles()
-
   return (
     <Snackbar
       anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
@@ -39,21 +11,9 @@ export default function EndOfScrollToast({ message, onClose, open }) {
       autoHideDuration={3000}
       onClose={onClose}
     >
-      <SnackbarContent
-        className={classes.info}
-        aria-describedby="client-snackbar"
-        message={
-          <span id="client-snackbar" className={classes.message}>
-            <InfoIcon className={clsx(classes.icon, classes.iconVariant)} />
-            {message}
-          </span>
-        }
-        action={[
-          <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-            <CloseIcon className={classes.icon} />
-          </IconButton>,
-        ]}
-      />
+      <Alert severity="info" onClose={onClose}>
+        {message}
+      </Alert>
     </Snackbar>
   )
 }
