@@ -70,7 +70,17 @@ export const sectionItemsSelector = createSelector(
 
     if (searchQuery) {
       const upper = searchQuery.toUpperCase()
-      sectionItems = sectionItems.filter((filterId) => filterById[filterId].name.toUpperCase().includes(upper))
+      sectionItems = sectionItems.map((filterId) => ({
+        index: filterById[filterId].name.toUpperCase().indexOf(upper),
+        filterId,
+      }))
+
+      sectionItems = sectionItems.filter((item) => item.index >= 0)
+      sectionItems.sort((a, b) => {
+        const diff = a.index - b.index
+        return diff || filterById[a.filterId].name.localeCompare(filterById[b.filterId].name)
+      })
+      sectionItems = sectionItems.map((item) => item.filterId)
     } else {
       // sort by name
       sectionItems.sort((a, b) => filterById[a].name.localeCompare(filterById[b].name))
