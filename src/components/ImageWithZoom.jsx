@@ -222,7 +222,6 @@ export default function ImageWithZoom({
         src={sources[0].url}
         width={width}
         height={height}
-        title={title}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         style={style}

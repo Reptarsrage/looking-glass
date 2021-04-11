@@ -51,7 +51,6 @@ export default function Video({ sources, poster, width, height, title, styleName
       className={clsx(classes.video, styleName)}
       width={width}
       height={height}
-      title={title}
       poster={poster}
       ref={videoRef}
       onVolumeChange={handleVolumechange}
