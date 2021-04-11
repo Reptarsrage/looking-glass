@@ -105,7 +105,7 @@ function Item({ itemId, style }) {
     dispatch(modalOpen())
   }
 
-  const renderImage = () => <Image sources={sources} width={width} height={height} />
+  const renderImage = () => <Image sources={sources} title={name} width={width} height={height} />
 
   const renderVideo = () => (
     <Video sources={sources} poster={poster} width={width} height={height} muted controls={false} autoPlay loop />
