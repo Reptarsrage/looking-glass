@@ -146,7 +146,9 @@ export function* handleSearchChange(action) {
     }
 
     // remove all filters that do not support search
-    filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
+    if (filters.length > 0) {
+      filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
+    }
 
     const moduleId = yield select(galleryModuleIdSelector, { galleryId })
     const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
