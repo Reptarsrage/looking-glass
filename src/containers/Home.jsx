@@ -8,7 +8,7 @@ import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import { useDispatch, useSelector } from 'react-redux'
 import FolderIcon from '@material-ui/icons/Folder'
-import { remote } from 'electron'
+import { dialog } from '@electron/remote'
 import { useHistory } from 'react-router-dom'
 
 import ModuleItem from 'components/ModuleItem'
@@ -66,7 +66,7 @@ export default function Home() {
   }, [])
 
   const chooseFolder = () => {
-    remote.dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
+    dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const directoryPath = filePaths[0]
         dispatch(setFileSystemDirectory(directoryPath))

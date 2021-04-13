@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import { parse } from 'url'
-import { remote } from 'electron'
+import { BrowserWindow, getCurrentWindow } from '@electron/remote'
 import qs from 'qs'
 
 import { authorize } from 'actions/authActions'
@@ -69,8 +69,8 @@ export default function OAuth() {
     return new Promise((resolve, reject) => {
       // TODO: load these values from service
       const { state: expectedState } = qs.parse(authUrl)
-      const authWindow = new remote.BrowserWindow({
-        parent: remote.getCurrentWindow(),
+      const authWindow = new BrowserWindow({
+        parent: getCurrentWindow(),
         modal: true,
         show: false,
         alwaysOnTop: true,

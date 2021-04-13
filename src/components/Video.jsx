@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { extname } from 'path'
@@ -23,7 +23,7 @@ export default function Video({ sources, poster, width, height, title, styleName
   const classes = useStyles()
   const volume = useSelector(volumeSelector)
   const dispatch = useDispatch()
-  const videoRef = useRef()
+  const videoRef = useRef(null)
   const initRef = useRef({ init: true })
 
   useEffect(() => {
