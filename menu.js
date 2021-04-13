@@ -3,9 +3,6 @@ const electron = require('electron')
 const { download } = require('electron-dl')
 const isDev = require('electron-is-dev')
 
-const webContents = (win) =>
-  win.webContents || (win.getWebContentsId && electron.remote.webContents.fromId(win.getWebContentsId()))
-
 const decorateMenuItem = (menuItem) => {
   return (options = {}) => {
     if (options.transform && !options.click) {
@@ -56,7 +53,7 @@ class MenuBuilder {
           enabled: can('Cut'),
           visible: isEditable,
           click(menuItem) {
-            const target = webContents(win)
+            const target = win.webContents
 
             if (!menuItem.transform && target) {
               target.cut()
@@ -72,7 +69,7 @@ class MenuBuilder {
           enabled: can('Copy'),
           visible: isEditable || hasText,
           click(menuItem) {
-            const target = webContents(win)
+            const target = win.webContents
 
             if (!menuItem.transform && target) {
               target.copy()
@@ -88,7 +85,7 @@ class MenuBuilder {
           enabled: editFlags.canPaste,
           visible: isEditable,
           click(menuItem) {
-            const target = webContents(win)
+            const target = win.webContents
 
             if (menuItem.transform) {
               let clipboardContent = electron.clipboard.readText(selectionText)
@@ -162,7 +159,7 @@ class MenuBuilder {
           label: 'Cop&y Image',
           visible: mediaType === 'image',
           click() {
-            webContents(win).copyImageAt(x, y)
+            win.webContents.copyImageAt(x, y)
           },
         }),
         copyImageAddress: decorateMenuItem({
@@ -184,8 +181,8 @@ class MenuBuilder {
           click() {
             win.inspectElement(x, y)
 
-            if (webContents(win).isDevToolsOpened()) {
-              webContents(win).devToolsWebContents.focus()
+            if (win.webContents.isDevToolsOpened()) {
+              win.webContents.devToolsWebContents.focus()
             }
           },
         }),
@@ -216,8 +213,8 @@ class MenuBuilder {
       menuTemplate = removeUnusedMenuItems(menuTemplate)
 
       if (menuTemplate.length > 0) {
-        const menu = (electron.remote ? electron.remote.Menu : electron.Menu).buildFromTemplate(menuTemplate)
-        menu.popup(electron.remote ? electron.remote.getCurrentWindow() : win)
+        const menu = electron.Menu.buildFromTemplate(menuTemplate)
+        menu.popup(win)
       }
     })
   }

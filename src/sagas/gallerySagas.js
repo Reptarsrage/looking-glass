@@ -11,12 +11,19 @@ import {
   galleryAfterSelector,
   galleryOffsetSelector,
 } from 'selectors/gallerySelectors'
+import { modalOpenSelector } from 'selectors/modalSelectors'
 import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/moduleSelectors'
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
-import { filterSiteIdSelector } from 'selectors/filterSelectors'
+import { filterSiteIdSelector, filterSectionIdSelector } from 'selectors/filterSelectors'
+import {
+  filterSectionSupportsMultipleSelector,
+  filterSectionSupportsSearchSelector,
+} from 'selectors/filterSectionSelectors'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import { fetchGallerySuccess, fetchGalleryFailure, clearGallery } from 'actions/galleryActions'
+import { modalClose } from 'actions/modalActions'
 import { handleRefresh } from './authSagas'
+import { parseQueryString } from '../hooks/useQuery'
 import logger from '../logger'
 
 /**
@@ -27,10 +34,10 @@ export function* handleSortChange(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
   const { pathname, search } = history.location
-  const query = qs.parse(search.substring(1))
+  const query = parseQueryString(search)
 
   if (query.sort !== value) {
-    history.push(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
+    history.replace(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
     yield put(clearGallery(galleryId))
   }
 }
@@ -40,18 +47,51 @@ export function* handleSortChange(action) {
  * @param {*} action Dispatched action
  */
 export function* handleFilterAdded(action) {
-  const { meta, payload: value } = action
+  const { meta, payload: filterId } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  const query = qs.parse(search.substring(1))
-  const filters = (query.filters || '').split(',').filter(Boolean)
+  const query = parseQueryString(history.location.search)
+  let { filters, search } = query
 
-  if (filters.indexOf(value) < 0) {
+  // check if filter is currently selected
+  if (filters.indexOf(filterId) < 0) {
+    // check if filter supports multiple
+    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+    const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+    const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
+    if (!supportsMultiple) {
+      filters = []
+    } else {
+      // remove all other filters that do not support multiple
+      filters = (yield all(filters.map(filterSupportsMultiple))).filter(Boolean)
+    }
+
+    // check if searching, and filter is available in search
+    const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
+    if (!supportsSearch) {
+      search = ''
+    }
+
     // add it
-    filters.push(value)
+    filters.push(filterId)
 
-    history.push(`${pathname}?${qs.stringify({ ...query, filters: filters.join(',') })}`)
-    yield put(clearGallery(galleryId))
+    // close modal
+    if (yield select(modalOpenSelector)) {
+      yield put(modalClose())
+    }
+
+    // navigate
+    const base = history.location.pathname.split('/')[1]
+    const qParams = { ...query, search, filters: filters.join(',') }
+    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+
+    // clear source gallery (if different)
+    if (galleryId !== defaultGalleryId) {
+      yield put(clearGallery(galleryId))
+    }
+
+    // clear destination gallery
+    yield put(clearGallery(defaultGalleryId))
   }
 }
 
@@ -62,17 +102,28 @@ export function* handleFilterAdded(action) {
 export function* handleFilterRemoved(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  const query = qs.parse(search.substring(1))
-  let filters = (query.filters || '').split(',').filter(Boolean)
+  const query = parseQueryString(history.location.search)
+  let { filters } = query
 
   if (filters.indexOf(value) >= 0) {
+    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+
     // remove it
     filters = filters.filter((filter) => filter !== value)
 
-    // TODO: The order here matters, why?
-    history.push(`${pathname}?${qs.stringify({ ...query, filters: filters.join(',') })}`)
-    yield put(clearGallery(galleryId))
+    // navigate
+    const base = history.location.pathname.split('/')[1]
+    const qParams = { ...query, filters: filters.join(',') }
+    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+
+    // clear source gallery (if different)
+    if (galleryId !== defaultGalleryId) {
+      yield put(clearGallery(galleryId))
+    }
+
+    // clear destination gallery
+    yield put(clearGallery(defaultGalleryId))
   }
 }
 
@@ -83,8 +134,8 @@ export function* handleFilterRemoved(action) {
 export function* handleSearchChange(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  let query = qs.parse(search.substring(1))
+  const query = parseQueryString(history.location.search)
+  let { filters } = query
 
   // if changed, clear items
   if (query.search !== value) {
@@ -94,19 +145,31 @@ export function* handleSearchChange(action) {
       return
     }
 
-    query = { ...query, search: value }
-    if (pathname.startsWith('/search') && !value) {
-      // navigate back to gallery
-      history.push(`${pathname.replace('search', 'gallery')}?${qs.stringify(query)}`)
-    } else if (pathname.startsWith('/search')) {
-      // update search in qs
-      history.replace(`${pathname}?${qs.stringify(query)}`)
-    } else {
-      // navigate to search
-      history.push(`${pathname.replace('gallery', 'search')}?${qs.stringify(query)}`)
+    // remove all filters that do not support search
+    if (filters.length > 0) {
+      filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
     }
 
-    yield put(clearGallery(galleryId))
+    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+
+    let base = 'search'
+    if (base === 'search' && !value) {
+      // navigate back to gallery
+      base = 'gallery'
+    }
+
+    // navigate
+    const qParams = { ...query, search: value, filters: filters.filter(Boolean) }
+    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+
+    // clear source gallery (if different)
+    if (galleryId !== defaultGalleryId) {
+      yield put(clearGallery(galleryId))
+    }
+
+    // clear destination gallery
+    yield put(clearGallery(defaultGalleryId))
   }
 }
 
@@ -171,6 +234,30 @@ export function* handleFetchGallery(action) {
     logger.error(error, 'Error fetching gallery')
     yield put(fetchGalleryFailure(galleryId, error))
   }
+}
+
+// remove all filters that do not play well with others
+function* filterSupportsMultiple(filterId) {
+  const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+  const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
+
+  if (supportsMultiple) {
+    return filterId
+  }
+
+  return false
+}
+
+// remove all filters that do not support search
+function* filterSupportsSearch(filterId, searchValue) {
+  const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+  const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
+
+  if (!searchValue || supportsSearch) {
+    return filterId
+  }
+
+  return false
 }
 
 export default function* watchGallerySagas() {

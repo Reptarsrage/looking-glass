@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { extname } from 'path'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
+import { useDispatch, useSelector } from 'react-redux'
+import debounce from 'lodash/debounce'
+
+import { volumeSelector } from '../selectors/appSelectors'
+import { setVolume } from '../actions/appActions'
 
 const useStyles = makeStyles(() => ({
   video: {
@@ -16,20 +21,28 @@ const useStyles = makeStyles(() => ({
 
 export default function Video({ sources, poster, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
+  const volume = useSelector(volumeSelector)
+  const dispatch = useDispatch()
+  const videoRef = useRef(null)
+  const initRef = useRef({ init: true })
 
-  const handleLoadStart = (event) => {
-    const volume = sessionStorage.getItem('volume')
-    const { target } = event
+  useEffect(() => {
+    // set the initial volume
+    const { current } = videoRef
+    current.volume = volume
+  }, [])
 
-    if (volume !== null) {
-      target.volume = volume
+  const handleVolumechange = debounce((event) => {
+    // ignore the event that is fired from useEffect
+    // (the initial setting of the volume)
+    if (initRef.current.init) {
+      initRef.current.init = false
+      return
     }
-  }
 
-  const handleVolumechange = (event) => {
     const { target } = event
-    sessionStorage.setItem('volume', target.volume)
-  }
+    dispatch(setVolume(target.muted ? 0 : target.volume))
+  }, 200)
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption
@@ -38,9 +51,8 @@ export default function Video({ sources, poster, width, height, title, styleName
       className={clsx(classes.video, styleName)}
       width={width}
       height={height}
-      title={title}
       poster={poster}
-      onLoadStart={handleLoadStart}
+      ref={videoRef}
       onVolumeChange={handleVolumechange}
     >
       {sources.map(({ url }) => (

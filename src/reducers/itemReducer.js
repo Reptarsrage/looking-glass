@@ -27,6 +27,7 @@ export const initialItemState = {
   siteId: null,
   galleryId: null,
   name: null,
+  description: null,
   width: 0,
   height: 0,
   isVideo: false,
@@ -69,7 +70,27 @@ const addItem = (draft, galleryId, moduleId, item) => {
     // add item
     draft.allIds.push(itemId)
 
-    const { id, name, width, height, isVideo, isGallery, urls, poster, author, date, source } = item
+    const { id, name, description, width, height, isVideo, isGallery, urls, poster, date } = item
+    let { author, source } = item
+
+    // convert author filter ids (if given)
+    if (author) {
+      const filterSectionId = generateFilterSectionId(moduleId, author.filterSectionId)
+      author = {
+        id: generateFilterId(filterSectionId, author.id),
+        name: author.name,
+      }
+    }
+
+    // convert source filter ids (if given)
+    if (source) {
+      const filterSectionId = generateFilterSectionId(moduleId, source.filterSectionId)
+      source = {
+        id: generateFilterId(filterSectionId, source.id),
+        name: source.name,
+      }
+    }
+
     draft.byId[itemId] = {
       siteId: id,
       id: itemId,
@@ -80,6 +101,7 @@ const addItem = (draft, galleryId, moduleId, item) => {
       isGallery,
       isVideo,
       name,
+      description,
       width,
       height,
       date,

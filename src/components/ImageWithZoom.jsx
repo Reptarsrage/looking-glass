@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, createRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
@@ -40,7 +40,7 @@ export default function ImageWithZoom({
   const [translateY, setTranslateY] = useState(0)
   const [isDragging, setIsDragging] = useState(0)
 
-  const imageRef = createRef()
+  const imageRef = useRef()
   const refState = useRef({
     previousEvent: null,
     dragging: false,
@@ -214,25 +214,19 @@ export default function ImageWithZoom({
 
   return (
     <motion.div className={clsx(classes.container, styleName)} {...otherProps}>
-      <picture>
-        {sources.map(({ url, width: minWidth }, idx) => (
-          <source key={url} srcSet={url} media={`(min-width: ${idx === sources.length - 1 ? 0 : minWidth}px)`} />
-        ))}
-
-        <motion.img
-          ref={imageRef}
-          className={classes.image}
-          role="presentation"
-          alt={title}
-          width={width}
-          height={height}
-          title={title}
-          onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          style={style}
-          draggable={zoomedIn}
-        />
-      </picture>
+      <motion.img
+        ref={imageRef}
+        className={classes.image}
+        role="presentation"
+        alt={title}
+        src={sources[0].url}
+        width={width}
+        height={height}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        style={style}
+        draggable={zoomedIn}
+      />
     </motion.div>
   )
 }

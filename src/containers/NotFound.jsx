@@ -1,7 +1,8 @@
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 import HomeIcon from '@material-ui/icons/Home'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +21,7 @@ export default function NotFound() {
     <>
       <Typography variant="h1">Not Found</Typography>
       <Typography>
-        <Link>
+        <Link component={RouterLink} to="/">
           <HomeIcon className={classes.icon} /> Home
         </Link>
       </Typography>

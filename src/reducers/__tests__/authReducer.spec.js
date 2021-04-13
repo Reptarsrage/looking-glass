@@ -112,6 +112,8 @@ it('should handle FETCH_MODULES_SUCCESS when given modules with auth', () => {
   constants.generateModuleId.mockImplementation((id) => id)
   const action = fetchModulesSuccess(expectedModules)
 
+  mockStore.get.mockImplementation((_key, defaultValue) => defaultValue)
+
   // act
   const state = reducer(undefined, action, mockStore)
 

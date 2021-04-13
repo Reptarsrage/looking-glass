@@ -13,10 +13,8 @@ let localWebServer
 
 // dev tools installer
 const installExtensions = async () => {
-  // eslint-disable-next-line global-require
   const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
   const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]
-
   return Promise.all(extensions.map(installExtension)).catch(log.error)
 }
 
@@ -45,8 +43,15 @@ const createWindow = async (port) => {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
+      contextIsolation: false,
     },
   })
+
+  // bootstrap store
+  require('electron-store').initRenderer()
+
+  // bootstrap remote
+  require('@electron/remote/main').initialize()
 
   // load the url (or file)
   if (isDev) {
@@ -88,10 +93,6 @@ app.on('ready', async () => {
 
   // create the window
   await createWindow(port)
-
-  // remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater()
 })
 
 // quit when all windows are closed.

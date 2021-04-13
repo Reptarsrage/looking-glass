@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
 
 // this should be memoized
 const getRangeToRender = (scrollOffset, itemSize, height, itemCount, scrollDirection) => {
-  const fwdOverscan = scrollDirection > 0 ? 2 : 0
-  const bkwdOverscan = scrollDirection < 0 ? 2 : 0
+  const fwdOverscan = scrollDirection > 0 ? 4 : 2
+  const bkwdOverscan = scrollDirection < 0 ? 4 : 2
 
   const startIndex = Math.max(0, Math.min(itemCount - 1, Math.floor(scrollOffset / itemSize) - bkwdOverscan))
   const offset = startIndex * itemSize

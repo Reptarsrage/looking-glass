@@ -13,9 +13,9 @@ import Backdrop from '@material-ui/core/Backdrop'
 import Drawer from '@material-ui/core/Drawer'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import Link from '@material-ui/core/Link'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
-import { Button } from '@material-ui/core'
 import moment from 'moment'
 
 import {
@@ -64,15 +64,21 @@ const useStyles = makeStyles((theme) => ({
     background: 'linear-gradient(#000, transparent)',
     zIndex: theme.zIndex.drawer + 4,
     padding: theme.spacing(1),
+    paddingLeft: '88px',
   },
   toggleCaption: {
-    position: 'fixed',
-    top: '30px', // titleBar height
-    left: 0,
-    background: 'rgba(0,0,0,1)',
+    left: '16px',
+    right: 'unset',
+  },
+  link: {
+    cursor: 'pointer',
+  },
+  dark: {
     color: '#fff',
-    zIndex: theme.zIndex.drawer + 5,
-    margin: theme.spacing(1),
+    background: 'rgba(0, 0, 0, 0.32)',
+    '&:hover': {
+      background: 'rgba(255, 255, 255, 0.32)',
+    },
   },
 }))
 
@@ -111,15 +117,21 @@ export default function Modal({ moduleId }) {
   const drawerClose = (filterId) => {
     setOpen(false)
 
-    // TODO: Something better than this
     if (filterId) {
-      dispatch(modalClose())
       dispatch(filterAdded(defaultGalleryId, filterId, history))
     }
   }
 
   const onAnimationStart = () => {
     setAnimating(true)
+  }
+
+  const handleAuthorClick = () => {
+    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history))
+  }
+
+  const handleSourceClick = () => {
+    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history))
   }
 
   const onAnimationComplete = () => {
@@ -140,36 +152,51 @@ export default function Modal({ moduleId }) {
   const renderFilters = supportsItemFilters || modalItemHasFilters
   const author = modalItem.author || {}
   const source = modalItem.source || {}
-  const description = [
-    author.name && `by ${author.name}`,
-    source.name && `to ${source.name}`,
-    modalItem.date && `on ${moment.utc(modalItem.date).local().format('LLL')}`,
+  const subCaption = [
+    author.name && (
+      <span key="author">
+        by{' '}
+        <Link className={classes.link} role="button" onClick={handleAuthorClick}>
+          {author.name}
+        </Link>
+      </span>
+    ),
+    source.name && (
+      <span key="source">
+        to{' '}
+        <Link className={classes.link} role="button" onClick={handleSourceClick}>
+          {source.name}
+        </Link>
+      </span>
+    ),
+    modalItem.date && <span key="date">on {moment.utc(modalItem.date).local().format('LLL')}</span>,
   ]
     .filter(Boolean)
-    .join(' ')
+    .reduce((prev, curr) => [prev, ' ', curr], [])
 
   return (
     <>
-      {!showCaption && (
-        <Fade in={modalOpen}>
-          <div className={classes.toggleCaption}>
-            <Typography variant="h4">
-              <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>
-            </Typography>
-          </div>
-        </Fade>
-      )}
+      <Fade in={modalOpen}>
+        <Fab
+          className={clsx(classes.button, classes.toggleCaption, !showCaption && classes.dark)}
+          onClick={toggleCaption}
+        >
+          {showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </Fab>
+      </Fade>
 
       {showCaption && (
         <Fade in={modalOpen}>
           <div className={classes.caption}>
-            <Typography variant="h4">
-              <Button onClick={toggleCaption}>{showCaption ? <VisibilityOffIcon /> : <VisibilityIcon />}</Button>&nbsp;
-              {modalItem.name}
-            </Typography>
+            <Typography variant="h4">{modalItem.name}</Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              {description}
+              {subCaption}
             </Typography>
+            {modalItem.description && (
+              <Typography variant="subtitle1" color="textSecondary">
+                {modalItem.description}
+              </Typography>
+            )}
           </div>
         </Fade>
       )}

@@ -8,10 +8,9 @@ import Typography from '@material-ui/core/Typography'
 import Toolbar from '@material-ui/core/Toolbar'
 import TuneIcon from '@material-ui/icons/Tune'
 import Drawer from '@material-ui/core/Drawer'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 
 import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from 'selectors/moduleSelectors'
-import { forceRenderItemsSelector } from 'selectors/modalSelectors'
 import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
 import {
   gallerySavedScrollPositionSelector,
@@ -23,6 +22,7 @@ import {
   galleryErrorSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
+import { forceRenderItemsSelector, modalNextSelector, modalOpenSelector } from 'selectors/modalSelectors'
 import { fetchGallery, filterAdded, saveScrollPosition } from 'actions/galleryActions'
 import Breadcrumbs from 'components/Breadcrumbs'
 import SortMenu from 'components/SortMenu'
@@ -81,6 +81,8 @@ export default function Gallery({ overlayButtonThreshold }) {
   const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
   const name = useSelector((state) => galleryNameSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
+  const modalNext = useSelector(modalNextSelector)
+  const modalOpen = useSelector(modalOpenSelector)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -98,6 +100,13 @@ export default function Gallery({ overlayButtonThreshold }) {
       window.removeEventListener('containerScroll', handleScroll)
     }
   })
+
+  useEffect(() => {
+    // show end of the line toast
+    if (!hasNext && !modalNext && modalOpen) {
+      setShowEndOfScrollToast(true)
+    }
+  }, [modalOpen, modalNext, modalOpen])
 
   const handleDrawerClose = () => {
     setDrawerOpen(false)
@@ -131,7 +140,8 @@ export default function Gallery({ overlayButtonThreshold }) {
     dispatch(saveScrollPosition(galleryId, scrollTop))
 
     // show end of the line toast
-    if (scrollTop + clientHeight >= scrollHeight - 10 && !hasNext) {
+    const scrolledToBottom = scrollTop + clientHeight >= scrollHeight - 10
+    if (scrolledToBottom && !hasNext && !modalOpen) {
       setShowEndOfScrollToast(true)
     }
   }
