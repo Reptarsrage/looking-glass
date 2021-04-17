@@ -129,7 +129,7 @@
     "electron-store": "^7.0.0",
     "framer-motion": "^4.0.0",
     "get-port": "^5.1.1",
-    "image-size": "^0.9.3",
+    "image-size": "^1.0.0",
     "immer": "^9.0.1",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.28",
