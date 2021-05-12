@@ -80,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
       background: 'rgba(255, 255, 255, 0.32)',
     },
   },
+  author: {
+    textTransform: 'capitalize',
+  },
 }))
 
 export default function Modal({ moduleId }) {
@@ -156,7 +159,7 @@ export default function Modal({ moduleId }) {
     author.name && (
       <span key="author">
         by{' '}
-        <Link className={classes.link} role="button" onClick={handleAuthorClick}>
+        <Link className={clsx(classes.link, classes.author)} role="button" onClick={handleAuthorClick}>
           {author.name}
         </Link>
       </span>
