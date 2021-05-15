@@ -63,7 +63,7 @@ module.exports = class crawler {
     this.resolvedLookup = {}
     this.start = 0
     this.end = 0
-    this.pageSize = 20
+    this.pageSize = 100
 
     this.promiseResolve = dummy
     this.promiseReject = dummy
