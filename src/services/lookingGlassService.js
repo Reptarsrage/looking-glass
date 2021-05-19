@@ -76,8 +76,7 @@ class LookingGlassService {
       headers: { 'access-token': accessToken },
     }
 
-    const url = `/${moduleId}`
-    return this.instance.post(url, params, config)
+    return this.instance.get(`/${moduleId}?${qs.stringify(params)}`, config)
   }
 
   /**
