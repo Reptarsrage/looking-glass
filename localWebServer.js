@@ -7,7 +7,7 @@ const log = require('electron-log')
 const getPort = require('get-port')
 
 const createServer = async () => {
-  const defaultChunkSize = 4096 // lower works better here
+  const defaultChunkSize = 65536 // lower works better here
   const port = await getPort()
   const server = http.createServer((req, res) => {
     try {
