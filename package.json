@@ -37,7 +37,8 @@
     "release": "standard-version",
     "lint": "eslint --cache --format=pretty \"**/*.{js,jsx}\"",
     "test": "jest",
-    "clean": "rimraf dist release main.prod.js"
+    "clean": "rimraf dist release main.prod.js",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -46,12 +47,6 @@
     "*.{html,md,yml,json,css}": [
       "prettier --ignore-path .eslintignore --write"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
-    }
   },
   "devDependencies": {
     "@babel/core": "7.14.3",
