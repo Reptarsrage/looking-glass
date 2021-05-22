@@ -4,6 +4,9 @@ const isDev = require('electron-is-dev')
 const path = require('path')
 const log = require('electron-log')
 const qs = require('querystring')
+const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
+const Store = require('electron-store')
+const Remote = require('@electron/remote/main')
 
 const MenuBuilder = require('./menu')
 const createLocalWebServer = require('./localWebServer')
@@ -13,7 +16,6 @@ let localWebServer
 
 // dev tools installer
 const installExtensions = async () => {
-  const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
   const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]
   return Promise.all(extensions.map(installExtension)).catch(log.error)
 }
@@ -48,10 +50,10 @@ const createWindow = async (port) => {
   })
 
   // bootstrap store
-  require('electron-store').initRenderer()
+  Store.initRenderer()
 
   // bootstrap remote
-  require('@electron/remote/main').initialize()
+  Remote.initialize()
 
   // load the url (or file)
   if (isDev) {

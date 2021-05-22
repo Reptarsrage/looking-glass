@@ -23,11 +23,15 @@ import {
 import { moduleSiteIdSelector, moduleDefaultGalleryIdSelector } from 'selectors/moduleSelectors'
 import { valueSiteIdSelector, defaultSortValueSelector } from 'selectors/sortSelectors'
 import { filterSiteIdSelector, filterSectionIdSelector } from 'selectors/filterSelectors'
-import { filterSectionSupportsMultipleSelector, filterSectionSupportsSearchSelector } from 'selectors/filterSectionSelectors'
+import {
+  filterSectionSupportsMultipleSelector,
+  filterSectionSupportsSearchSelector,
+} from 'selectors/filterSectionSelectors'
 import { accessTokenSelector } from 'selectors/authSelectors'
 import { FETCH_GALLERY, FILTER_ADDED, FILTER_REMOVED, SORT_CHANGE, SEARCH_CHANGE } from 'actions/types'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import watchGallerySagas, {
+  fetchGalleryKeySelector,
   handleSortChange,
   handleFilterAdded,
   handleFilterRemoved,
@@ -37,21 +41,22 @@ import watchGallerySagas, {
 import { handleRefresh } from '../authSagas'
 import { recordSaga } from './sagaTestHelpers'
 import logger from '../../logger'
-import { modalClose } from 'actions/modalActions'
-import { modalOpenSelector } from 'selectors/modalSelectors'
+import { modalClose } from '../../actions/modalActions'
+import { modalOpenSelector } from '../../selectors/modalSelectors'
+import * as takeLatestPerKey from '../takeLatestPerKey'
 
 jest.mock('services/lookingGlassService')
 jest.mock('services/fileSystemService')
 
 it('should watch for all actions', async () => {
   // arrange & act
+  jest.spyOn(takeLatestPerKey, 'default').mockReturnValue({})
   const gen = watchGallerySagas()
   const { type, payload } = gen.next().value
 
   // assert
   expect(type).toEqual('ALL')
-
-  expect(payload).toContainEqual(takeEvery(FETCH_GALLERY, handleFetchGallery))
+  expect(takeLatestPerKey.default).toHaveBeenCalledWith(FETCH_GALLERY, handleFetchGallery, fetchGalleryKeySelector)
   expect(payload).toContainEqual(takeLatest(SEARCH_CHANGE, handleSearchChange))
   expect(payload).toContainEqual(takeEvery(SORT_CHANGE, handleSortChange))
   expect(payload).toContainEqual(takeEvery(FILTER_ADDED, handleFilterAdded))
@@ -117,49 +122,84 @@ describe('handleFilterAdded', () => {
 
     // act & assert
     const gen = handleFilterAdded(initialAction)
-    expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-    expect(gen.next(expectedDefaultGalleryId).value).toEqual(select(filterSectionIdSelector, { filterId: expectedFilterId }))
-    expect(gen.next(expectedFilterSectionId).value).toEqual(select(filterSectionSupportsMultipleSelector, { filterSectionId: expectedFilterSectionId }))
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(
+      select(filterSectionIdSelector, { filterId: expectedFilterId })
+    )
+    expect(gen.next(expectedFilterSectionId).value).toEqual(
+      select(filterSectionSupportsMultipleSelector, { filterSectionId: expectedFilterSectionId })
+    )
     expect(gen.next(supportsMultiple).value).toEqual(all([]))
-    expect(gen.next([]).value).toEqual(select(filterSectionSupportsSearchSelector, { filterSectionId: expectedFilterSectionId }))
+    expect(gen.next([]).value).toEqual(
+      select(filterSectionSupportsSearchSelector, { filterSectionId: expectedFilterSectionId })
+    )
     expect(gen.next(supportsSearch).value).toEqual(select(modalOpenSelector))
     expect(gen.next(modalOpen).value).toEqual(put(modalClose()))
-    expect(gen.next().value).toEqual(put(clearGallery(expectedGalleryId)))
     expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, [expectedFilterId], '', '')))
     expect(gen.next().value).toBeUndefined()
-    expect(mockHistory.push).toHaveBeenCalledWith(`/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ search: '', sort: '', filters: [expectedFilterId] })}`)
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({
+        search: '',
+        sort: '',
+        filters: [expectedFilterId],
+      })}`
+    )
   })
 
   it('when given different multiple values', async () => {
-   // arrange
-   const expectedModuleId = 'EXPECTED MODULE ID'
-   const expectedGalleryId = 'EXPECTED GALLERY ID'
-   const expectedDefaultGalleryId = 'EXPECTED DEFAULT GALLERY ID'
-   const expectedFilterId = 'EXPECTED FILTER ID'
-   const other = 'OTHER EXPECTED FILTER ID'
-   const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
-   const supportsMultiple = true
-   const supportsSearch = true
-   const modalOpen = true
-   const mockHistory = { location: { pathname: '/gallery/module/gallery', search: `?filters=${other}` }, push: jest.fn() }
-   const initialAction = filterAdded(expectedGalleryId, expectedFilterId, mockHistory)
+    // arrange
+    const expectedModuleId = 'EXPECTED MODULE ID'
+    const expectedGalleryId = 'EXPECTED GALLERY ID'
+    const expectedDefaultGalleryId = 'EXPECTED DEFAULT GALLERY ID'
+    const expectedFilterId = 'EXPECTED FILTER ID'
+    const other = 'OTHER EXPECTED FILTER ID'
+    const expectedFilterSectionId = 'EXPECTED FILTER SECTION ID'
+    const supportsMultiple = true
+    const supportsSearch = true
+    const modalOpen = true
+    const mockHistory = {
+      location: { pathname: '/gallery/module/gallery', search: `?filters=${other}` },
+      push: jest.fn(),
+    }
+    const initialAction = filterAdded(expectedGalleryId, expectedFilterId, mockHistory)
 
-   // act & assert
-   const gen = handleFilterAdded(initialAction)
-   expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-   expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-   expect(gen.next(expectedDefaultGalleryId).value).toEqual(select(filterSectionIdSelector, { filterId: expectedFilterId }))
-   expect(gen.next(expectedFilterSectionId).value).toEqual(select(filterSectionSupportsMultipleSelector, { filterSectionId: expectedFilterSectionId }))
-   gen.next(supportsMultiple) // yield all
-   expect(gen.next([other]).value).toEqual(select(filterSectionSupportsSearchSelector, { filterSectionId: expectedFilterSectionId }))
-   expect(gen.next(supportsSearch).value).toEqual(select(modalOpenSelector))
-   expect(gen.next(modalOpen).value).toEqual(put(modalClose()))
-   expect(gen.next().value).toEqual(put(clearGallery(expectedGalleryId)))
-   expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
-   expect(gen.next().value).toBeUndefined()
-   expect(mockHistory.push).toHaveBeenCalledWith(`/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ filters: [other, expectedFilterId].join(','), search: '', sort: '' })}`)
- })
+    // act & assert
+    const gen = handleFilterAdded(initialAction)
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(
+      select(filterSectionIdSelector, { filterId: expectedFilterId })
+    )
+    expect(gen.next(expectedFilterSectionId).value).toEqual(
+      select(filterSectionSupportsMultipleSelector, { filterSectionId: expectedFilterSectionId })
+    )
+    gen.next(supportsMultiple) // yield all
+    expect(gen.next([other]).value).toEqual(
+      select(filterSectionSupportsSearchSelector, { filterSectionId: expectedFilterSectionId })
+    )
+    expect(gen.next(supportsSearch).value).toEqual(select(modalOpenSelector))
+    expect(gen.next(modalOpen).value).toEqual(put(modalClose()))
+    expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, [other, expectedFilterId], '', '')))
+    expect(gen.next().value).toBeUndefined()
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({
+        filters: [other, expectedFilterId],
+        search: '',
+        sort: '',
+      })}`
+    )
+  })
 
   it('when given same values', async () => {
     // arrange
@@ -205,12 +245,18 @@ describe('handleFilterRemoved', () => {
 
     // act & assert
     const gen = handleFilterRemoved(initialAction, initialState)
-    expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedGalleryId)))
-    expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, [], '', '')))
     expect(gen.next().value).toBeUndefined()
-    expect(mockHistory.push).toHaveBeenCalledWith(`/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ filters: '', search: '', sort: '' })}`)
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ filters: [], search: '', sort: '' })}`
+    )
   })
 
   it('when given another value', async () => {
@@ -232,12 +278,22 @@ describe('handleFilterRemoved', () => {
 
     // act & assert
     const gen = handleFilterRemoved(initialAction, initialState)
-    expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedGalleryId)))
-    expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, ['NOT EXPECTED'], '', '')))
     expect(gen.next().value).toBeUndefined()
-    expect(mockHistory.push).toHaveBeenCalledWith(`/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ filters: ['NOT EXPECTED'], search: '', sort: '' })}`)
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({
+        filters: ['NOT EXPECTED'],
+        search: '',
+        sort: '',
+      })}`
+    )
   })
 
   it('when given non-existing value', async () => {
@@ -285,12 +341,18 @@ describe('handleSearchChange', () => {
     const gen = handleSearchChange(action)
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
     expect(gen.next().value).toEqual(cancelled())
-    expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedGalleryId)))
-    expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, [], '', '')))
     expect(gen.next().value).toBeUndefined()
-    expect(mockHistory.push).toHaveBeenCalledWith(`/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ search: '', sort: '' })}`)
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/gallery/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ filter: [], search: '', sort: '' })}`
+    )
   })
 
   it('when cancelled and given different values', async () => {
@@ -328,11 +390,22 @@ describe('handleSearchChange', () => {
     const gen = handleSearchChange(action)
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
     expect(gen.next().value).toEqual(cancelled())
-    expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedGalleryId)))
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, [], '', expectedSearchQuery)))
     expect(gen.next().value).toBeUndefined()
-    expect(mockHistory.push).toHaveBeenCalledWith(`/search/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ search: expectedSearchQuery, sort: '' })}`)
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/search/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({
+        filters: [],
+        search: expectedSearchQuery,
+        sort: '',
+      })}`
+    )
   })
 
   it('when given same values', async () => {
@@ -373,12 +446,22 @@ describe('handleSearchChange', () => {
     const gen = handleSearchChange(action)
     expect(gen.next().value).toEqual(call(delayP, 500)) // internally, this is how delay is handled by redux-saga
     expect(gen.next().value).toEqual(cancelled())
-    expect(gen.next(false /* not cancelled */).value).toEqual(select(galleryModuleIdSelector, { galleryId: expectedGalleryId }))
-    expect(gen.next(expectedModuleId).value).toEqual(select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId }))
-    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedGalleryId)))
-    expect(gen.next().value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next(false /* not cancelled */).value).toEqual(
+      select(galleryModuleIdSelector, { galleryId: expectedGalleryId })
+    )
+    expect(gen.next(expectedModuleId).value).toEqual(
+      select(moduleDefaultGalleryIdSelector, { moduleId: expectedModuleId })
+    )
+    expect(gen.next(expectedDefaultGalleryId).value).toEqual(put(clearGallery(expectedDefaultGalleryId)))
+    expect(gen.next().value).toEqual(put(fetchGallery(expectedDefaultGalleryId, [], '', expectedSearchQuery)))
     expect(gen.next().value).toBeUndefined()
-    expect(mockHistory.push).toHaveBeenCalledWith(`/search/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({ search: expectedSearchQuery, sort: '' })}`)
+    expect(mockHistory.push).toHaveBeenCalledWith(
+      `/search/${expectedModuleId}/${expectedDefaultGalleryId}?${qs.stringify({
+        filters: [],
+        search: expectedSearchQuery,
+        sort: '',
+      })}`
+    )
   })
 })
 

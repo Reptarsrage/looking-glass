@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: 'babel-eslint',
-  extends: ['airbnb', 'plugin:prettier/recommended', 'prettier/react', 'prettier/standard'],
+  extends: ['airbnb', 'prettier'],
   plugins: ['prettier', 'react', 'import', 'jsx-a11y', 'react-hooks'],
   env: {
     browser: true,
@@ -25,6 +25,11 @@ module.exports = {
     },
   },
   rules: {
+    // https://github.com/prettier/eslint-plugin-prettier#recommended-configuration
+    'prettier/prettier': 'error',
+    'arrow-body-style': 'off',
+    'prefer-arrow-callback': 'off',
+
     // https://eslint.org/docs/rules/
     'no-restricted-syntax': 'warn',
     'no-await-in-loop': 'warn',
@@ -38,9 +43,6 @@ module.exports = {
         ignorePattern: 'TODO|FIXME|HACK|BUG|UNDONE',
       },
     ],
-
-    // https://github.com/prettier/eslint-plugin-prettier
-    'prettier/prettier': 'error',
 
     // https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules
     'import/no-extraneous-dependencies': 'off',
