@@ -2,182 +2,185 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.4.0](https://github.com/reptarsrage/looking-glass/compare/v0.0.4...v0.4.0) (2021-04-13)
-
-
-### ⚠ BREAKING CHANGES
-
-* Chnages made to service required client updates as well
+### [0.4.1](https://github.com/reptarsrage/looking-glass/compare/v0.4.0...v0.4.1) (2021-05-22)
 
 ### Features
 
-* adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
-* adding links for author and source ([b1276ab](https://github.com/reptarsrage/looking-glass/commit/b1276abd323f047ed3aa646491d02818f40e4a15))
-* adding popover with item titles ([3ef581b](https://github.com/reptarsrage/looking-glass/commit/3ef581b88ef2bd949d5ed8604a6245b6210ab5ee))
-* adding support for filters which do not support searching or multiple ([37cb4d0](https://github.com/reptarsrage/looking-glass/commit/37cb4d06aa037c1175a6f3ee4ad1226bd00cacfb))
-* adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
-* persisting the volume across all videos ([c9110c0](https://github.com/reptarsrage/looking-glass/commit/c9110c022e443fd49e04fdcb0e7d16034e684103))
-* persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
-* switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
-
+- adding electron auto updater ([00cfacf](https://github.com/reptarsrage/looking-glass/commit/00cfacfdbcb214813f6de3fc6ee8f57ac8ccccf6))
 
 ### Bug Fixes
 
-* adding better toasts, improving end of scroll logic ([fbda621](https://github.com/reptarsrage/looking-glass/commit/fbda621f45f1984f93b5a446d5ae4fbab075e188))
-* fixing breaking changes with electron 12.0 ([6bd9957](https://github.com/reptarsrage/looking-glass/commit/6bd9957fe301f168ef08e77091af370466073c3b))
-* fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
-* fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
-* fixing history when sorting ([ff94e54](https://github.com/reptarsrage/looking-glass/commit/ff94e54db4645a1437d8b16731086cf50beb0fc8))
-* fixing issue where a transient error would persist across all galleries ([d1a9b80](https://github.com/reptarsrage/looking-glass/commit/d1a9b803d508ca5f140b9e15e6261cf0bef26df3))
-* fixing link on NotFound page ([741e42a](https://github.com/reptarsrage/looking-glass/commit/741e42a6673f84f27fa03e786413408356a5a58c))
-* fixing null ref with motion image zoom ([e430e54](https://github.com/reptarsrage/looking-glass/commit/e430e5447589823ea02db2fa2cd53345e4c753da))
-* fixing order of filter sections and items ([5ad87b3](https://github.com/reptarsrage/looking-glass/commit/5ad87b31219b9ce8cdd54b9bdc212868626c020c))
-* fixing parsing of querystring ([5e06978](https://github.com/reptarsrage/looking-glass/commit/5e06978289ceee18ef2d36bc7b2da9fcd91a4d92))
-* hiding sort menu when empty ([718fb0d](https://github.com/reptarsrage/looking-glass/commit/718fb0d806d31461ccec869aabd3c137f1775545))
-* improving the look of the toggle caption button ([6837754](https://github.com/reptarsrage/looking-glass/commit/68377542bb009ee89f043b86d59bc8bb1fe842ac))
-* increasing overscan ([a825547](https://github.com/reptarsrage/looking-glass/commit/a825547575d5c9212adb599ae416e0c2e6497b2f))
-* removing item titles from images and videos ([a4b3653](https://github.com/reptarsrage/looking-glass/commit/a4b365399e8a89186917fe952482dae31f74645a))
-* **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
-* **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
-* **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
-* **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
-* iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
-* issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
+- husky config ([faed369](https://github.com/reptarsrage/looking-glass/commit/faed369874a6a97a68ab6f12184e118c7a1476b8))
+- main script for local development ([5f5014c](https://github.com/reptarsrage/looking-glass/commit/5f5014ce1ed8a7f94ed5661aee99e2dc411f3cf5))
+- media chunk size supports faster video playback ([68d5691](https://github.com/reptarsrage/looking-glass/commit/68d5691094e1f37de69a1b70be49542c2e2ff7a6))
+- race condition between url change and gallery load ([4008005](https://github.com/reptarsrage/looking-glass/commit/40080056fb15ce415b1ddeef999f8db1adb9172a))
+- **deps:** update dependency electron-store to v8 ([5d13148](https://github.com/reptarsrage/looking-glass/commit/5d131485f3998381f91e8da9c61220f257fb294d))
+- **deps:** update dependency image-size to v1 ([a99757a](https://github.com/reptarsrage/looking-glass/commit/a99757ad1fec78a609c4ea2963b08d2a4bbfe3bd))
 
+## [0.4.0](https://github.com/reptarsrage/looking-glass/compare/v0.0.4...v0.4.0) (2021-04-13)
 
-* changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
+### ⚠ BREAKING CHANGES
+
+- Chnages made to service required client updates as well
+
+### Features
+
+- adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
+- adding links for author and source ([b1276ab](https://github.com/reptarsrage/looking-glass/commit/b1276abd323f047ed3aa646491d02818f40e4a15))
+- adding popover with item titles ([3ef581b](https://github.com/reptarsrage/looking-glass/commit/3ef581b88ef2bd949d5ed8604a6245b6210ab5ee))
+- adding support for filters which do not support searching or multiple ([37cb4d0](https://github.com/reptarsrage/looking-glass/commit/37cb4d06aa037c1175a6f3ee4ad1226bd00cacfb))
+- adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
+- persisting the volume across all videos ([c9110c0](https://github.com/reptarsrage/looking-glass/commit/c9110c022e443fd49e04fdcb0e7d16034e684103))
+- persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
+- switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
+
+### Bug Fixes
+
+- adding better toasts, improving end of scroll logic ([fbda621](https://github.com/reptarsrage/looking-glass/commit/fbda621f45f1984f93b5a446d5ae4fbab075e188))
+- fixing breaking changes with electron 12.0 ([6bd9957](https://github.com/reptarsrage/looking-glass/commit/6bd9957fe301f168ef08e77091af370466073c3b))
+- fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
+- fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
+- fixing history when sorting ([ff94e54](https://github.com/reptarsrage/looking-glass/commit/ff94e54db4645a1437d8b16731086cf50beb0fc8))
+- fixing issue where a transient error would persist across all galleries ([d1a9b80](https://github.com/reptarsrage/looking-glass/commit/d1a9b803d508ca5f140b9e15e6261cf0bef26df3))
+- fixing link on NotFound page ([741e42a](https://github.com/reptarsrage/looking-glass/commit/741e42a6673f84f27fa03e786413408356a5a58c))
+- fixing null ref with motion image zoom ([e430e54](https://github.com/reptarsrage/looking-glass/commit/e430e5447589823ea02db2fa2cd53345e4c753da))
+- fixing order of filter sections and items ([5ad87b3](https://github.com/reptarsrage/looking-glass/commit/5ad87b31219b9ce8cdd54b9bdc212868626c020c))
+- fixing parsing of querystring ([5e06978](https://github.com/reptarsrage/looking-glass/commit/5e06978289ceee18ef2d36bc7b2da9fcd91a4d92))
+- hiding sort menu when empty ([718fb0d](https://github.com/reptarsrage/looking-glass/commit/718fb0d806d31461ccec869aabd3c137f1775545))
+- improving the look of the toggle caption button ([6837754](https://github.com/reptarsrage/looking-glass/commit/68377542bb009ee89f043b86d59bc8bb1fe842ac))
+- increasing overscan ([a825547](https://github.com/reptarsrage/looking-glass/commit/a825547575d5c9212adb599ae416e0c2e6497b2f))
+- removing item titles from images and videos ([a4b3653](https://github.com/reptarsrage/looking-glass/commit/a4b365399e8a89186917fe952482dae31f74645a))
+- **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
+- **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
+- **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
+- **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
+- iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
+- issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
+
+- changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
 
 ## [0.3.0](https://github.com/reptarsrage/looking-glass/compare/v0.0.4...v0.3.0) (2021-04-11)
 
-
 ### ⚠ BREAKING CHANGES
 
-* Chnages made to service required client updates as well
+- Chnages made to service required client updates as well
 
 ### Features
 
-* adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
-* adding links for author and source ([b1db5eb](https://github.com/reptarsrage/looking-glass/commit/b1db5eb7455bbe29c70aff3272e2592b436560f5))
-* adding popover with item titles ([34ea936](https://github.com/reptarsrage/looking-glass/commit/34ea936bda13c0301da0b3969ed646d220832abc))
-* adding support for filters which do not support searching or multiple ([de8873e](https://github.com/reptarsrage/looking-glass/commit/de8873e93b29eae436c076a4f8cedb6b7104dabf))
-* adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
-* persisting the volume across all videos ([b8d9caa](https://github.com/reptarsrage/looking-glass/commit/b8d9caa7ad83708220e190ec48b72558a9ef9e60))
-* persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
-* switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
-
+- adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
+- adding links for author and source ([b1db5eb](https://github.com/reptarsrage/looking-glass/commit/b1db5eb7455bbe29c70aff3272e2592b436560f5))
+- adding popover with item titles ([34ea936](https://github.com/reptarsrage/looking-glass/commit/34ea936bda13c0301da0b3969ed646d220832abc))
+- adding support for filters which do not support searching or multiple ([de8873e](https://github.com/reptarsrage/looking-glass/commit/de8873e93b29eae436c076a4f8cedb6b7104dabf))
+- adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
+- persisting the volume across all videos ([b8d9caa](https://github.com/reptarsrage/looking-glass/commit/b8d9caa7ad83708220e190ec48b72558a9ef9e60))
+- persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
+- switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
 
 ### Bug Fixes
 
-* adding better toasts, improving end of scroll logic ([415d1e5](https://github.com/reptarsrage/looking-glass/commit/415d1e5e097e5dc428d2b39a03f10a051f1bdd3b))
-* fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
-* fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
-* fixing history when sorting ([64dcb0d](https://github.com/reptarsrage/looking-glass/commit/64dcb0dbddcbf472ebf34af0ae9cb8fd357368b4))
-* fixing issue where a transient error would persist across all galleries ([99756ae](https://github.com/reptarsrage/looking-glass/commit/99756aefcbb266ca34baf42ee343c50c27e65da6))
-* fixing link on NotFound page ([0686609](https://github.com/reptarsrage/looking-glass/commit/068660906c0fcb7b8d2d3c75efbd4d2ed91cbf45))
-* fixing null ref with motion image zoom ([d5f4b6a](https://github.com/reptarsrage/looking-glass/commit/d5f4b6abc2018061cc9092e790b7e9a780d306c9))
-* fixing order of filter sections and items ([7251e86](https://github.com/reptarsrage/looking-glass/commit/7251e86381811e842c17a325d6162dbb41535229))
-* fixing parsing of querystring ([fb76aa6](https://github.com/reptarsrage/looking-glass/commit/fb76aa60f09d177c37f627e56265230ea7e6a799))
-* hiding sort menu when empty ([28c915c](https://github.com/reptarsrage/looking-glass/commit/28c915c4150cea48203c3079a00c7617ece68f6c))
-* improving the look of the toggle caption button ([95e41f4](https://github.com/reptarsrage/looking-glass/commit/95e41f4583b7235a7e5b32bb4c2a53f4efdfcf1a))
-* increasing overscan ([5e96856](https://github.com/reptarsrage/looking-glass/commit/5e968568e98fd7680853292fec24982483f80fe7))
-* removing item titles from images and videos ([301c90f](https://github.com/reptarsrage/looking-glass/commit/301c90ff710c67d1f1a2d6900b0a04d07e3ad80b))
-* **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
-* **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
-* **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
-* **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
-* iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
-* issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
+- adding better toasts, improving end of scroll logic ([415d1e5](https://github.com/reptarsrage/looking-glass/commit/415d1e5e097e5dc428d2b39a03f10a051f1bdd3b))
+- fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
+- fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
+- fixing history when sorting ([64dcb0d](https://github.com/reptarsrage/looking-glass/commit/64dcb0dbddcbf472ebf34af0ae9cb8fd357368b4))
+- fixing issue where a transient error would persist across all galleries ([99756ae](https://github.com/reptarsrage/looking-glass/commit/99756aefcbb266ca34baf42ee343c50c27e65da6))
+- fixing link on NotFound page ([0686609](https://github.com/reptarsrage/looking-glass/commit/068660906c0fcb7b8d2d3c75efbd4d2ed91cbf45))
+- fixing null ref with motion image zoom ([d5f4b6a](https://github.com/reptarsrage/looking-glass/commit/d5f4b6abc2018061cc9092e790b7e9a780d306c9))
+- fixing order of filter sections and items ([7251e86](https://github.com/reptarsrage/looking-glass/commit/7251e86381811e842c17a325d6162dbb41535229))
+- fixing parsing of querystring ([fb76aa6](https://github.com/reptarsrage/looking-glass/commit/fb76aa60f09d177c37f627e56265230ea7e6a799))
+- hiding sort menu when empty ([28c915c](https://github.com/reptarsrage/looking-glass/commit/28c915c4150cea48203c3079a00c7617ece68f6c))
+- improving the look of the toggle caption button ([95e41f4](https://github.com/reptarsrage/looking-glass/commit/95e41f4583b7235a7e5b32bb4c2a53f4efdfcf1a))
+- increasing overscan ([5e96856](https://github.com/reptarsrage/looking-glass/commit/5e968568e98fd7680853292fec24982483f80fe7))
+- removing item titles from images and videos ([301c90f](https://github.com/reptarsrage/looking-glass/commit/301c90ff710c67d1f1a2d6900b0a04d07e3ad80b))
+- **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
+- **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
+- **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
+- **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
+- iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
+- issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
 
-
-* changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
+- changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
 
 ## [0.2.0](https://github.com/reptarsrage/looking-glass/compare/v0.0.4...v0.2.0) (2021-04-11)
 
-
 ### ⚠ BREAKING CHANGES
 
-* Chnages made to service required client updates as well
+- Chnages made to service required client updates as well
 
 ### Features
 
-* adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
-* adding links for author and source ([b1db5eb](https://github.com/reptarsrage/looking-glass/commit/b1db5eb7455bbe29c70aff3272e2592b436560f5))
-* adding popover with item titles ([34ea936](https://github.com/reptarsrage/looking-glass/commit/34ea936bda13c0301da0b3969ed646d220832abc))
-* adding support for filters which do not support searching or multiple ([de8873e](https://github.com/reptarsrage/looking-glass/commit/de8873e93b29eae436c076a4f8cedb6b7104dabf))
-* adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
-* persisting the volume across all videos ([b8d9caa](https://github.com/reptarsrage/looking-glass/commit/b8d9caa7ad83708220e190ec48b72558a9ef9e60))
-* persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
-* switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
-
+- adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
+- adding links for author and source ([b1db5eb](https://github.com/reptarsrage/looking-glass/commit/b1db5eb7455bbe29c70aff3272e2592b436560f5))
+- adding popover with item titles ([34ea936](https://github.com/reptarsrage/looking-glass/commit/34ea936bda13c0301da0b3969ed646d220832abc))
+- adding support for filters which do not support searching or multiple ([de8873e](https://github.com/reptarsrage/looking-glass/commit/de8873e93b29eae436c076a4f8cedb6b7104dabf))
+- adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
+- persisting the volume across all videos ([b8d9caa](https://github.com/reptarsrage/looking-glass/commit/b8d9caa7ad83708220e190ec48b72558a9ef9e60))
+- persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
+- switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
 
 ### Bug Fixes
 
-* adding better toasts, improving end of scroll logic ([415d1e5](https://github.com/reptarsrage/looking-glass/commit/415d1e5e097e5dc428d2b39a03f10a051f1bdd3b))
-* fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
-* fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
-* fixing history when sorting ([64dcb0d](https://github.com/reptarsrage/looking-glass/commit/64dcb0dbddcbf472ebf34af0ae9cb8fd357368b4))
-* fixing issue where a transient error would persist across all galleries ([99756ae](https://github.com/reptarsrage/looking-glass/commit/99756aefcbb266ca34baf42ee343c50c27e65da6))
-* fixing link on NotFound page ([0686609](https://github.com/reptarsrage/looking-glass/commit/068660906c0fcb7b8d2d3c75efbd4d2ed91cbf45))
-* fixing null ref with motion image zoom ([d5f4b6a](https://github.com/reptarsrage/looking-glass/commit/d5f4b6abc2018061cc9092e790b7e9a780d306c9))
-* fixing order of filter sections and items ([7251e86](https://github.com/reptarsrage/looking-glass/commit/7251e86381811e842c17a325d6162dbb41535229))
-* fixing parsing of querystring ([fb76aa6](https://github.com/reptarsrage/looking-glass/commit/fb76aa60f09d177c37f627e56265230ea7e6a799))
-* hiding sort menu when empty ([28c915c](https://github.com/reptarsrage/looking-glass/commit/28c915c4150cea48203c3079a00c7617ece68f6c))
-* improving the look of the toggle caption button ([95e41f4](https://github.com/reptarsrage/looking-glass/commit/95e41f4583b7235a7e5b32bb4c2a53f4efdfcf1a))
-* increasing overscan ([5e96856](https://github.com/reptarsrage/looking-glass/commit/5e968568e98fd7680853292fec24982483f80fe7))
-* removing item titles from images and videos ([301c90f](https://github.com/reptarsrage/looking-glass/commit/301c90ff710c67d1f1a2d6900b0a04d07e3ad80b))
-* **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
-* **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
-* **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
-* **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
-* iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
-* issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
+- adding better toasts, improving end of scroll logic ([415d1e5](https://github.com/reptarsrage/looking-glass/commit/415d1e5e097e5dc428d2b39a03f10a051f1bdd3b))
+- fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
+- fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
+- fixing history when sorting ([64dcb0d](https://github.com/reptarsrage/looking-glass/commit/64dcb0dbddcbf472ebf34af0ae9cb8fd357368b4))
+- fixing issue where a transient error would persist across all galleries ([99756ae](https://github.com/reptarsrage/looking-glass/commit/99756aefcbb266ca34baf42ee343c50c27e65da6))
+- fixing link on NotFound page ([0686609](https://github.com/reptarsrage/looking-glass/commit/068660906c0fcb7b8d2d3c75efbd4d2ed91cbf45))
+- fixing null ref with motion image zoom ([d5f4b6a](https://github.com/reptarsrage/looking-glass/commit/d5f4b6abc2018061cc9092e790b7e9a780d306c9))
+- fixing order of filter sections and items ([7251e86](https://github.com/reptarsrage/looking-glass/commit/7251e86381811e842c17a325d6162dbb41535229))
+- fixing parsing of querystring ([fb76aa6](https://github.com/reptarsrage/looking-glass/commit/fb76aa60f09d177c37f627e56265230ea7e6a799))
+- hiding sort menu when empty ([28c915c](https://github.com/reptarsrage/looking-glass/commit/28c915c4150cea48203c3079a00c7617ece68f6c))
+- improving the look of the toggle caption button ([95e41f4](https://github.com/reptarsrage/looking-glass/commit/95e41f4583b7235a7e5b32bb4c2a53f4efdfcf1a))
+- increasing overscan ([5e96856](https://github.com/reptarsrage/looking-glass/commit/5e968568e98fd7680853292fec24982483f80fe7))
+- removing item titles from images and videos ([301c90f](https://github.com/reptarsrage/looking-glass/commit/301c90ff710c67d1f1a2d6900b0a04d07e3ad80b))
+- **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
+- **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
+- **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
+- **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
+- iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
+- issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
 
-
-* changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
+- changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
 
 ## [0.1.0](https://github.com/reptarsrage/looking-glass/compare/v0.0.4...v0.1.0) (2021-04-11)
 
-
 ### ⚠ BREAKING CHANGES
 
-* Chnages made to service required client updates as well
+- Chnages made to service required client updates as well
 
 ### Features
 
-* adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
-* adding links for author and source ([b1db5eb](https://github.com/reptarsrage/looking-glass/commit/b1db5eb7455bbe29c70aff3272e2592b436560f5))
-* adding popover with item titles ([34ea936](https://github.com/reptarsrage/looking-glass/commit/34ea936bda13c0301da0b3969ed646d220832abc))
-* adding support for filters which do not support searching or multiple ([de8873e](https://github.com/reptarsrage/looking-glass/commit/de8873e93b29eae436c076a4f8cedb6b7104dabf))
-* adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
-* persisting the volume across all videos ([b8d9caa](https://github.com/reptarsrage/looking-glass/commit/b8d9caa7ad83708220e190ec48b72558a9ef9e60))
-* persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
-* switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
-
+- adding forward and backward navigation ([3a9c2fc](https://github.com/reptarsrage/looking-glass/commit/3a9c2fce589de12a6db7d843dd2e373c0d3e7b93))
+- adding links for author and source ([b1db5eb](https://github.com/reptarsrage/looking-glass/commit/b1db5eb7455bbe29c70aff3272e2592b436560f5))
+- adding popover with item titles ([34ea936](https://github.com/reptarsrage/looking-glass/commit/34ea936bda13c0301da0b3969ed646d220832abc))
+- adding support for filters which do not support searching or multiple ([de8873e](https://github.com/reptarsrage/looking-glass/commit/de8873e93b29eae436c076a4f8cedb6b7104dabf))
+- adding support for multiple filters ([e06a3c1](https://github.com/reptarsrage/looking-glass/commit/e06a3c1d263903e067949c2d9e3d67201dce9cbe))
+- persisting the volume across all videos ([b8d9caa](https://github.com/reptarsrage/looking-glass/commit/b8d9caa7ad83708220e190ec48b72558a9ef9e60))
+- persisting the volume across all videos ([6652a20](https://github.com/reptarsrage/looking-glass/commit/6652a2024822a162098ba3b60d2210cc868449cc))
+- switching to linear progress for grouped headers ([60e9662](https://github.com/reptarsrage/looking-glass/commit/60e966279015a8e68c88327ac94c9c4d97373b93))
 
 ### Bug Fixes
 
-* adding better toasts, improving end of scroll logic ([415d1e5](https://github.com/reptarsrage/looking-glass/commit/415d1e5e097e5dc428d2b39a03f10a051f1bdd3b))
-* fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
-* fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
-* fixing history when sorting ([64dcb0d](https://github.com/reptarsrage/looking-glass/commit/64dcb0dbddcbf472ebf34af0ae9cb8fd357368b4))
-* fixing issue where a transient error would persist across all galleries ([99756ae](https://github.com/reptarsrage/looking-glass/commit/99756aefcbb266ca34baf42ee343c50c27e65da6))
-* fixing link on NotFound page ([0686609](https://github.com/reptarsrage/looking-glass/commit/068660906c0fcb7b8d2d3c75efbd4d2ed91cbf45))
-* fixing null ref with motion image zoom ([d5f4b6a](https://github.com/reptarsrage/looking-glass/commit/d5f4b6abc2018061cc9092e790b7e9a780d306c9))
-* fixing order of filter sections and items ([7251e86](https://github.com/reptarsrage/looking-glass/commit/7251e86381811e842c17a325d6162dbb41535229))
-* fixing parsing of querystring ([fb76aa6](https://github.com/reptarsrage/looking-glass/commit/fb76aa60f09d177c37f627e56265230ea7e6a799))
-* hiding sort menu when empty ([28c915c](https://github.com/reptarsrage/looking-glass/commit/28c915c4150cea48203c3079a00c7617ece68f6c))
-* improving the look of the toggle caption button ([95e41f4](https://github.com/reptarsrage/looking-glass/commit/95e41f4583b7235a7e5b32bb4c2a53f4efdfcf1a))
-* increasing overscan ([5e96856](https://github.com/reptarsrage/looking-glass/commit/5e968568e98fd7680853292fec24982483f80fe7))
-* removing item titles from images and videos ([301c90f](https://github.com/reptarsrage/looking-glass/commit/301c90ff710c67d1f1a2d6900b0a04d07e3ad80b))
-* **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
-* **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
-* **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
-* **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
-* iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
-* issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
+- adding better toasts, improving end of scroll logic ([415d1e5](https://github.com/reptarsrage/looking-glass/commit/415d1e5e097e5dc428d2b39a03f10a051f1bdd3b))
+- fixing chunk size for large video files ([a58d991](https://github.com/reptarsrage/looking-glass/commit/a58d991a9368739e7b16ea7b82fe2d10a666303a))
+- fixing file system module bugs ([f9735ea](https://github.com/reptarsrage/looking-glass/commit/f9735eaba314a2f9e7dba3485ead194c24d174e9))
+- fixing history when sorting ([64dcb0d](https://github.com/reptarsrage/looking-glass/commit/64dcb0dbddcbf472ebf34af0ae9cb8fd357368b4))
+- fixing issue where a transient error would persist across all galleries ([99756ae](https://github.com/reptarsrage/looking-glass/commit/99756aefcbb266ca34baf42ee343c50c27e65da6))
+- fixing link on NotFound page ([0686609](https://github.com/reptarsrage/looking-glass/commit/068660906c0fcb7b8d2d3c75efbd4d2ed91cbf45))
+- fixing null ref with motion image zoom ([d5f4b6a](https://github.com/reptarsrage/looking-glass/commit/d5f4b6abc2018061cc9092e790b7e9a780d306c9))
+- fixing order of filter sections and items ([7251e86](https://github.com/reptarsrage/looking-glass/commit/7251e86381811e842c17a325d6162dbb41535229))
+- fixing parsing of querystring ([fb76aa6](https://github.com/reptarsrage/looking-glass/commit/fb76aa60f09d177c37f627e56265230ea7e6a799))
+- hiding sort menu when empty ([28c915c](https://github.com/reptarsrage/looking-glass/commit/28c915c4150cea48203c3079a00c7617ece68f6c))
+- improving the look of the toggle caption button ([95e41f4](https://github.com/reptarsrage/looking-glass/commit/95e41f4583b7235a7e5b32bb4c2a53f4efdfcf1a))
+- increasing overscan ([5e96856](https://github.com/reptarsrage/looking-glass/commit/5e968568e98fd7680853292fec24982483f80fe7))
+- removing item titles from images and videos ([301c90f](https://github.com/reptarsrage/looking-glass/commit/301c90ff710c67d1f1a2d6900b0a04d07e3ad80b))
+- **deps:** update dependency electron-is-dev to v2 ([72a891e](https://github.com/reptarsrage/looking-glass/commit/72a891ec815eb6e670672e54d35903e5e756523d))
+- **deps:** update dependency electron-store to v7 ([5ffe4f9](https://github.com/reptarsrage/looking-glass/commit/5ffe4f9c07c64187a1919e8358f9edf0bb0fbb67))
+- **deps:** update dependency framer-motion to v4 ([29171f1](https://github.com/reptarsrage/looking-glass/commit/29171f161562cdb57af9b997efdddfec0430b573))
+- **deps:** update dependency moize to v6 ([c24404c](https://github.com/reptarsrage/looking-glass/commit/c24404cfda9b0824394c2441832c9098b296f16d))
+- iMPORTANT pinning electron to 10.x until video autoplay issue is fixed ([0da04ae](https://github.com/reptarsrage/looking-glass/commit/0da04aee256250c5e16e235044c59b30cf2e35b7))
+- issue with masonry items shifting columns ([ab5db5a](https://github.com/reptarsrage/looking-glass/commit/ab5db5ab53258ccf165ac2727cf801ecb6fa21cb))
 
-
-* changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
+- changing API schema ([0e8c180](https://github.com/reptarsrage/looking-glass/commit/0e8c180c4e538e328f18eeab337a9019ec8865b8))
 
 ### [0.0.4](https://github.com/reptarsrage/looking-glass/compare/v0.0.3...v0.0.4) (2020-11-09)
 
