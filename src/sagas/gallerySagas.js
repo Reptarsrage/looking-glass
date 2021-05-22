@@ -20,10 +20,11 @@ import {
   filterSectionSupportsSearchSelector,
 } from 'selectors/filterSectionSelectors'
 import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
-import { fetchGallerySuccess, fetchGalleryFailure, clearGallery } from 'actions/galleryActions'
+import { fetchGallerySuccess, fetchGalleryFailure, clearGallery, fetchGallery } from 'actions/galleryActions'
 import { modalClose } from 'actions/modalActions'
 import { handleRefresh } from './authSagas'
 import { parseQueryString } from '../hooks/useQuery'
+import takeLatestPerKey from './takeLatestPerKey'
 import logger from '../logger'
 
 /**
@@ -50,49 +51,48 @@ export function* handleFilterAdded(action) {
   const { meta, payload: filterId } = action
   const { galleryId, history } = meta
   const query = parseQueryString(history.location.search)
+  const { sort } = query
   let { filters, search } = query
 
   // check if filter is currently selected
-  if (filters.indexOf(filterId) < 0) {
-    // check if filter supports multiple
-    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
-    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
-    const filterSectionId = yield select(filterSectionIdSelector, { filterId })
-    const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
-    if (!supportsMultiple) {
-      filters = []
-    } else {
-      // remove all other filters that do not support multiple
-      filters = (yield all(filters.map(filterSupportsMultiple))).filter(Boolean)
-    }
-
-    // check if searching, and filter is available in search
-    const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
-    if (!supportsSearch) {
-      search = ''
-    }
-
-    // add it
-    filters.push(filterId)
-
-    // close modal
-    if (yield select(modalOpenSelector)) {
-      yield put(modalClose())
-    }
-
-    // navigate
-    const base = history.location.pathname.split('/')[1]
-    const qParams = { ...query, search, filters: filters.join(',') }
-    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
-
-    // clear source gallery (if different)
-    if (galleryId !== defaultGalleryId) {
-      yield put(clearGallery(galleryId))
-    }
-
-    // clear destination gallery
-    yield put(clearGallery(defaultGalleryId))
+  if (filters.indexOf(filterId) >= 0) {
+    return
   }
+
+  // check if filter supports multiple
+  const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+  const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+  const filterSectionId = yield select(filterSectionIdSelector, { filterId })
+  const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
+  if (!supportsMultiple) {
+    filters = []
+  } else {
+    // remove all other filters that do not support multiple
+    filters = (yield all(filters.map(filterSupportsMultiple))).filter(Boolean)
+  }
+
+  // check if searching, and filter is available in search
+  const supportsSearch = yield select(filterSectionSupportsSearchSelector, { filterSectionId })
+  if (!supportsSearch) {
+    search = ''
+  }
+
+  // add it
+  filters.push(filterId)
+
+  // close modal
+  if (yield select(modalOpenSelector)) {
+    yield put(modalClose())
+  }
+
+  /// clear and fetch next gallery
+  yield put(clearGallery(defaultGalleryId))
+  yield put(fetchGallery(defaultGalleryId, filters, sort, search))
+
+  // navigate
+  const qParams = { ...query, search, filters }
+  const base = supportsSearch ? history.location.pathname.split('/')[1] : 'gallery'
+  history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**
@@ -103,28 +103,26 @@ export function* handleFilterRemoved(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
   const query = parseQueryString(history.location.search)
+  const { sort, search } = query
   let { filters } = query
 
-  if (filters.indexOf(value) >= 0) {
-    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
-    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
-
-    // remove it
-    filters = filters.filter((filter) => filter !== value)
-
-    // navigate
-    const base = history.location.pathname.split('/')[1]
-    const qParams = { ...query, filters: filters.join(',') }
-    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
-
-    // clear source gallery (if different)
-    if (galleryId !== defaultGalleryId) {
-      yield put(clearGallery(galleryId))
-    }
-
-    // clear destination gallery
-    yield put(clearGallery(defaultGalleryId))
+  if (filters.indexOf(value) < 0) {
+    return
   }
+  const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+  const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+
+  // remove it
+  filters = filters.filter((filter) => filter !== value)
+
+  /// clear and fetch next gallery
+  yield put(clearGallery(defaultGalleryId))
+  yield put(fetchGallery(defaultGalleryId, filters, sort, search))
+
+  // navigate
+  const qParams = { ...query, filters }
+  const base = history.location.pathname.split('/')[1]
+  history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**
@@ -132,45 +130,45 @@ export function* handleFilterRemoved(action) {
  * @param {*} action Dispatched action
  */
 export function* handleSearchChange(action) {
-  const { meta, payload: value } = action
+  const { meta, payload } = action
   const { galleryId, history } = meta
   const query = parseQueryString(history.location.search)
+  const { sort, search } = query
   let { filters } = query
+  const value = payload.trim()
 
-  // if changed, clear items
-  if (query.search !== value) {
-    // wait for user to finish typing
-    yield delay(500)
-    if (yield cancelled()) {
-      return
-    }
-
-    // remove all filters that do not support search
-    if (filters.length > 0) {
-      filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
-    }
-
-    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
-    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
-
-    let base = 'search'
-    if (base === 'search' && !value) {
-      // navigate back to gallery
-      base = 'gallery'
-    }
-
-    // navigate
-    const qParams = { ...query, search: value, filters: filters.filter(Boolean) }
-    history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
-
-    // clear source gallery (if different)
-    if (galleryId !== defaultGalleryId) {
-      yield put(clearGallery(galleryId))
-    }
-
-    // clear destination gallery
-    yield put(clearGallery(defaultGalleryId))
+  // if changed
+  if (search === value) {
+    return
   }
+
+  // wait for user to finish typing
+  yield delay(500)
+  if (yield cancelled()) {
+    return
+  }
+
+  // remove all filters that do not support search
+  if (filters.length > 0) {
+    filters = yield all(filters.map((filterId) => filterSupportsSearch(filterId, value)))
+  }
+
+  const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+  const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+
+  let base = 'search'
+  if (base === 'search' && !value) {
+    // navigate back to gallery
+    base = 'gallery'
+  }
+
+  /// clear and fetch next gallery
+  yield put(clearGallery(defaultGalleryId))
+  yield put(fetchGallery(defaultGalleryId, filters, sort, value))
+
+  // navigate
+  const qParams = { ...query, search: value, filters }
+  history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**
@@ -181,33 +179,33 @@ export function* handleFetchGallery(action) {
   const { meta: galleryId, payload } = action
   const { filters, sort, search } = payload
 
+  // select module info
+  const moduleId = yield select(galleryModuleIdSelector, { galleryId })
+  const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
+  const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
+
+  // select gallery info
+  const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
+  const after = yield select(galleryAfterSelector, { galleryId })
+  const offset = yield select(galleryOffsetSelector, { galleryId })
+  const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId, search })
+
+  // select sort info
+  let sortValueSiteId = null
+  if (sort || defaultSort) {
+    sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: sort || defaultSort })
+  }
+
+  // select filter info
+  let filterSiteIds = []
+  if (Array.isArray(filters) && filters.length > 0) {
+    filterSiteIds = yield all(filters.map((filterId) => select(filterSiteIdSelector, { filterId })))
+  }
+
+  // resolve service
+  const service = moduleId === FILE_SYSTEM_MODULE_ID ? fileSystemService : lookingGlassService
+
   try {
-    // select module info
-    const moduleId = yield select(galleryModuleIdSelector, { galleryId })
-    const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
-    const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
-
-    // select gallery info
-    const gallerySiteId = yield select(gallerySiteIdSelector, { galleryId })
-    const after = yield select(galleryAfterSelector, { galleryId })
-    const offset = yield select(galleryOffsetSelector, { galleryId })
-    const defaultSort = yield select(defaultSortValueSelector, { moduleId, galleryId, search })
-
-    // select sort info
-    let sortValueSiteId = null
-    if (sort || defaultSort) {
-      sortValueSiteId = yield select(valueSiteIdSelector, { galleryId, valueId: sort || defaultSort })
-    }
-
-    // select filter info
-    let filterSiteIds = []
-    if (Array.isArray(filters) && filters.length > 0) {
-      filterSiteIds = yield all(filters.map((filterId) => select(filterSiteIdSelector, { filterId })))
-    }
-
-    // resolve service
-    const service = moduleId === FILE_SYSTEM_MODULE_ID ? fileSystemService : lookingGlassService
-
     // refresh token
     yield call(handleRefresh, moduleId)
 
@@ -227,7 +225,6 @@ export function* handleFetchGallery(action) {
       filterSiteIds
     )
 
-    // put info into the store
     yield put(fetchGallerySuccess(moduleId, galleryId, data))
   } catch (error) {
     // encountered an error
@@ -260,9 +257,13 @@ function* filterSupportsSearch(filterId, searchValue) {
   return false
 }
 
+export function fetchGalleryKeySelector(action) {
+  return action.meta
+}
+
 export default function* watchGallerySagas() {
   yield all([
-    takeEvery(FETCH_GALLERY, handleFetchGallery),
+    takeLatestPerKey(FETCH_GALLERY, handleFetchGallery, fetchGalleryKeySelector),
     takeLatest(SEARCH_CHANGE, handleSearchChange),
     takeEvery(SORT_CHANGE, handleSortChange),
     takeEvery(FILTER_ADDED, handleFilterAdded),
