@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.2](https://github.com/reptarsrage/looking-glass/compare/v0.4.0...v0.4.2) (2021-05-24)
+
+### Features
+
+- adding electron auto updater ([0e9061f](https://github.com/reptarsrage/looking-glass/commit/0e9061faaf1dc0aa250d962609a0063246925617))
+- adding image fallback on error ([3178b99](https://github.com/reptarsrage/looking-glass/commit/3178b994457e718dc2aefac996bdbd474164232f))
+
+### Bug Fixes
+
+- adding paper background to items ([3ea434b](https://github.com/reptarsrage/looking-glass/commit/3ea434bfbf4a6cf4d6611ce3448ecaddacb5ca6b))
+- husky config ([faed369](https://github.com/reptarsrage/looking-glass/commit/faed369874a6a97a68ab6f12184e118c7a1476b8))
+- main script for local development ([5f5014c](https://github.com/reptarsrage/looking-glass/commit/5f5014ce1ed8a7f94ed5661aee99e2dc411f3cf5))
+- media chunk size supports faster video playback ([68d5691](https://github.com/reptarsrage/looking-glass/commit/68d5691094e1f37de69a1b70be49542c2e2ff7a6))
+- race condition between url change and gallery load ([4008005](https://github.com/reptarsrage/looking-glass/commit/40080056fb15ce415b1ddeef999f8db1adb9172a))
+- sort change url / state race condition ([93b3132](https://github.com/reptarsrage/looking-glass/commit/93b3132207a5289a2443dab1b1709a5b08b70c89))
+- video mime types when url i proxy ([7f6ed14](https://github.com/reptarsrage/looking-glass/commit/7f6ed144523344bdb9e5fa0fdef8801af2b7e10c))
+- **deps:** update dependency electron-store to v8 ([5d13148](https://github.com/reptarsrage/looking-glass/commit/5d131485f3998381f91e8da9c61220f257fb294d))
+- **deps:** update dependency image-size to v1 ([a99757a](https://github.com/reptarsrage/looking-glass/commit/a99757ad1fec78a609c4ea2963b08d2a4bbfe3bd))
+
 ### [0.4.1](https://github.com/reptarsrage/looking-glass/compare/v0.4.0...v0.4.1) (2021-05-22)
 
 ### Features
