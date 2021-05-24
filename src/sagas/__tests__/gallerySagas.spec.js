@@ -77,6 +77,7 @@ describe('handleSortChange', () => {
 
     // assert
     expect(dispatched).toContainEqual(clearGallery(expectedGalleryId))
+    expect(dispatched).toContainEqual(fetchGallery(expectedGalleryId, [], expectedSortValueId, ''))
     expect(mockHistory.replace).toHaveBeenCalledWith(
       `${mockHistory.location.pathname}?${qs.stringify({ search: '', sort: expectedSortValueId })}`
     )

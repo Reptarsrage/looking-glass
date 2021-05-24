@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { motion } from 'framer-motion'
@@ -15,15 +15,22 @@ const useStyles = makeStyles(() => ({
 
 export default function Image({ sources, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
+  const [index, setIndex] = useState(0)
+
+  const handleError = useCallback(() => {
+    // move to next image, hopefully that one loads
+    setIndex(Math.min(index + 1, sources.length - 1))
+  }, [index])
 
   return (
     <motion.img
       {...passThroughProps}
-      src={sources[0].url}
+      src={sources[index].url}
       alt={title}
       width={width}
       height={height}
       className={clsx(classes.image, styleName)}
+      onError={handleError}
     />
   )
 }

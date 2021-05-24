@@ -25,9 +25,6 @@ const installExtensions = async () => {
   return Promise.all(extensions.map(installExtension)).catch(log.error)
 }
 
-// fix warning https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = true
-
 // keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
