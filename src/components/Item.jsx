@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
 import CollectionsIcon from '@material-ui/icons/Collections'
+import Paper from '@material-ui/core/Paper'
 import { useHistory } from 'react-router-dom'
 
 import { modalItemIdSelector } from 'selectors/modalSelectors'
@@ -120,7 +121,7 @@ function Item({ itemId, style }) {
         container: itemRef.current,
       }}
     >
-      <div
+      <Paper
         ref={itemRef}
         className={classes.item}
         style={{ ...style, visibility: modalItemId === itemId ? 'hidden' : 'visible' }}
@@ -137,7 +138,7 @@ function Item({ itemId, style }) {
           ) : null}
         </div>
         {isVideo ? renderVideo() : renderImage()}
-      </div>
+      </Paper>
     </Tooltip>
   )
 }
