@@ -34,12 +34,14 @@ import logger from '../logger'
 export function* handleSortChange(action) {
   const { meta, payload: value } = action
   const { galleryId, history } = meta
-  const { pathname, search } = history.location
-  const query = parseQueryString(search)
+  const query = parseQueryString(history.location.search)
+  const { filters, sort, search } = query
 
-  if (query.sort !== value) {
-    history.replace(`${pathname}?${qs.stringify({ ...query, sort: value })}`)
+  if (sort !== value) {
     yield put(clearGallery(galleryId))
+    yield put(fetchGallery(galleryId, filters, value, search))
+
+    history.replace(`${history.location.pathname}?${qs.stringify({ ...query, sort: value })}`)
   }
 }
 
