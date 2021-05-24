@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
 import { extname } from 'path'
 import { motion } from 'framer-motion'
@@ -44,6 +45,17 @@ export default function Video({ sources, poster, width, height, title, styleName
     dispatch(setVolume(target.muted ? 0 : target.volume))
   }, 200)
 
+  const extractMimeType = (uri) => {
+    let url = new URL(uri)
+
+    const query = qs.parse(url.search.slice(1))
+    if (query && query.uri) {
+      url = new URL(query.uri)
+    }
+
+    return `video/${extname(url.pathname).slice(1).split('?')[0] || 'mp4'}`
+  }
+
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption
     <motion.video
@@ -56,7 +68,7 @@ export default function Video({ sources, poster, width, height, title, styleName
       onVolumeChange={handleVolumechange}
     >
       {sources.map(({ url }) => (
-        <source key={url} src={url} type={`video/${extname(url).slice(1).split('?')[0] || 'mp4'}`} />
+        <source key={url} src={url} type={extractMimeType(url)} />
       ))}
     </motion.video>
   )
