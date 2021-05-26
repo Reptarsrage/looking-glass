@@ -12,5 +12,6 @@ module.exports = {
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['web.js', 'js', 'json', 'web.jsx', 'jsx', 'node'],
+  testEnvironment: 'jsdom',
   resetMocks: true,
 }
