@@ -1230,7 +1230,7 @@
     jest-util "^27.0.2"
     slash "^3.0.0"
 
-"@jest/core@^27.0.3", "@jest/core@^27.0.4":
+"@jest/core@^27.0.4":
   version "27.0.4"
   resolved "https://registry.yarnpkg.com/@jest/core/-/core-27.0.4.tgz#679bf9ac07900da2ddbb9667bb1afa8029038f53"
   integrity sha512-+dsmV8VUs1h/Szb+rEWk8xBM1fp1I///uFy9nk3wXGvRsF2lBp8EVPmtWc+QFRb3MY2b7u2HbkGF1fzoDzQTLA==
@@ -4557,10 +4557,10 @@ electron-updater@^4.3.9:
     lodash.isequal "^4.5.0"
     semver "^7.3.5"
 
-electron@13.1.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-13.1.0.tgz#6d960bcc0dfb8663dd511b59a697e2fad35b2b6a"
-  integrity sha512-ykRAaPWrVQkm2Lju4O4rMQzahNcxWLeLMrhBw8WnmIiugkvUH0MhZ85jsOTrAoQ2Zl1FC542bloKFWGSkeVjkg==
+electron@13.1.1:
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-13.1.1.tgz#de1ea908bcac2197d7a5a373fb68c0c66043e10e"
+  integrity sha512-kySSb5CbIkWU2Kd9mf2rpGZC9p1nWhVVNl+CJjuOUGeVPXHbojHvTkDU1iC8AvV28eik3gqHisSJss40Caprog==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
@@ -6855,7 +6855,7 @@ jest-circus@^27.0.4:
     stack-utils "^2.0.3"
     throat "^6.0.1"
 
-jest-cli@^27.0.3:
+jest-cli@^27.0.4:
   version "27.0.4"
   resolved "https://registry.yarnpkg.com/jest-cli/-/jest-cli-27.0.4.tgz#491b12c754c0d7c6873b13a66f26b3a80a852910"
   integrity sha512-E0T+/i2lxsWAzV7LKYd0SB7HUAvePqaeIh5vX43/G5jXLhv1VzjYzJAGEkTfvxV774ll9cyE2ljcL73PVMEOXQ==
@@ -7236,14 +7236,14 @@ jest-worker@^27.0.2:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jest@27.0.3:
-  version "27.0.3"
-  resolved "https://registry.yarnpkg.com/jest/-/jest-27.0.3.tgz#0b4ac738c93612f778d58250aee026220487e5a4"
-  integrity sha512-0G9+QqXFIZWgf5rs3yllpaA+13ZawVHfyuhuCV1EnoFbX++rVMRrYWCAnk+dfhwyv9/VTQvn+XG969u8aPRsBg==
+jest@27.0.4:
+  version "27.0.4"
+  resolved "https://registry.yarnpkg.com/jest/-/jest-27.0.4.tgz#91d4d564b36bcf93b98dac1ab19f07089e670f53"
+  integrity sha512-Px1iKFooXgGSkk1H8dJxxBIrM3tsc5SIuI4kfKYK2J+4rvCvPGr/cXktxh0e9zIPQ5g09kOMNfHQEmusBUf/ZA==
   dependencies:
-    "@jest/core" "^27.0.3"
+    "@jest/core" "^27.0.4"
     import-local "^3.0.2"
-    jest-cli "^27.0.3"
+    jest-cli "^27.0.4"
 
 joi@^17.3.0:
   version "17.4.0"
