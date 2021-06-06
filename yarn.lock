@@ -1729,7 +1729,7 @@
     "@types/eslint" "*"
     "@types/estree" "*"
 
-"@types/eslint@*":
+"@types/eslint@*", "@types/eslint@^7.2.13":
   version "7.2.13"
   resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-7.2.13.tgz#e0ca7219ba5ded402062ad6f926d491ebb29dd53"
   integrity sha512-LKmQCWAlnVHvvXq4oasNUMTJJb2GwSyTY8+1C7OH5ILR8mPLaljv1jxL1bXW3xB3jFbQxTKxJAvI8PyjB09aBg==
@@ -4765,11 +4765,12 @@ eslint-config-prettier@8.3.0:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.3.0.tgz#f7471b20b6fe8a9a9254cc684454202886a2dd7a"
   integrity sha512-BgZuLUSeKzvlL/VUjx/Yb787VQ26RU3gGjA3iiFvdsp/2bMfVIWUVP7tjxtjS0e+HP409cPlPvNkQloz8C91ew==
 
-eslint-formatter-pretty@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-formatter-pretty/-/eslint-formatter-pretty-4.0.0.tgz#dc15f3bf4fb51b7ba5fbedb77f57ba8841140ce2"
-  integrity sha512-QgdeZxQwWcN0TcXXNZJiS6BizhAANFhCzkE7Yl9HKB7WjElzwED6+FbbZB2gji8ofgJTGPqKm6VRCNT3OGCeEw==
+eslint-formatter-pretty@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-formatter-pretty/-/eslint-formatter-pretty-4.1.0.tgz#7a6877c14ffe2672066c853587d89603e97c7708"
+  integrity sha512-IsUTtGxF1hrH6lMWiSl1WbGaiP01eT6kzywdY1U+zLc0MP+nwEnUiS9UI8IaOTUhTeQJLlCEWIbXINBH4YJbBQ==
   dependencies:
+    "@types/eslint" "^7.2.13"
     ansi-escapes "^4.2.1"
     chalk "^4.1.0"
     eslint-rule-docs "^1.1.5"
