@@ -91,7 +91,7 @@
     "lint-staged": "11.0.0",
     "mini-css-extract-plugin": "1.6.0",
     "optimize-css-assets-webpack-plugin": "6.0.0",
-    "postcss": "8.3.2",
+    "postcss": "8.3.3",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-loader": "6.1.0",
     "postcss-normalize": "10.0.0",
