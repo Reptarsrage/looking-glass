@@ -1831,9 +1831,9 @@
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
 
 "@types/node@*":
-  version "15.12.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.4.tgz#e1cf817d70a1e118e81922c4ff6683ce9d422e26"
-  integrity sha512-zrNj1+yqYF4WskCMOHwN+w9iuD12+dGm0rQ35HLl9/Ouuq52cEtd0CH9qMgrdNmi5ejC1/V7vKEXYubB+65DkA==
+  version "15.12.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.5.tgz#9a78318a45d75c9523d2396131bd3cca54b2d185"
+  integrity sha512-se3yX7UHv5Bscf8f1ERKvQOD6sTyycH3hdaoozvaLxgUiY5lIGEeH37AD0G0Qi9kPqihPn0HOfd2yaIEN9VwEg==
 
 "@types/node@^14.6.2":
   version "14.17.4"
@@ -4847,9 +4847,9 @@ eslint-plugin-testing-library@4.6.0:
     "@typescript-eslint/experimental-utils" "^4.24.0"
 
 eslint-rule-docs@^1.1.5:
-  version "1.1.228"
-  resolved "https://registry.yarnpkg.com/eslint-rule-docs/-/eslint-rule-docs-1.1.228.tgz#fc04b27f4ae20a6c4a92a4edc916a52406e5a25c"
-  integrity sha512-msP/OPR619Yft3HS4D9OkajQ6djnvWdq/rUgTLPndnmfCFsEtTLsPDSEsqQkpsTIp39mc3TUap3jUs/rsYd0Og==
+  version "1.1.229"
+  resolved "https://registry.yarnpkg.com/eslint-rule-docs/-/eslint-rule-docs-1.1.229.tgz#6a11305084f6671b220858a235cc87a6330d2504"
+  integrity sha512-blQpqOoFiGr9wcH+MEgfMHcxizaXUaXXEc07R0avaZeivVmoPhvepHsh1UfdbtvC/KNZPcLzdpPIEpZIdgUSdQ==
 
 eslint-scope@5.1.1, eslint-scope@^5.1.1:
   version "5.1.1"
