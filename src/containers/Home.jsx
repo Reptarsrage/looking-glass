@@ -17,7 +17,6 @@ import { setFileSystemDirectory } from 'actions/galleryActions'
 import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from 'selectors/moduleSelectors'
 import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from 'reducers/constants'
 import LoadingIndicator from 'components/LoadingIndicator'
-import titleBar from '../titleBar'
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -60,9 +59,6 @@ export default function Home() {
     if (!fetching && !fetched) {
       dispatch(fetchModules())
     }
-
-    // set window title
-    titleBar.updateTitle('The Looking-Glass')
   }, [])
 
   const chooseFolder = () => {

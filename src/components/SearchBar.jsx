@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import IconButton from '@material-ui/core/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation, matchPath } from 'react-router-dom'
 import clsx from 'clsx'
 import Input from '@material-ui/core/Input'
 import Paper from '@material-ui/core/Paper'
+import Fade from '@material-ui/core/Fade'
 
 import { searchChange } from 'actions/galleryActions'
+import { modalOpenSelector } from '../selectors/modalSelectors'
 import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
@@ -18,6 +19,8 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(6),
     display: 'flex',
     justifyContent: 'space-between',
+    '-webkit-app-region': 'no-drag',
+    marginLeft: theme.spacing(2),
   },
   iconButton: {
     color: theme.palette.action.active,
@@ -51,14 +54,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function SearchBar({ moduleId, galleryId }) {
+export default function SearchBar() {
   const classes = useStyles()
   const history = useHistory()
   const query = useQuery()
   const dispatch = useDispatch()
+  const location = useLocation()
+  const path = matchPath(location.pathname, { path: '/(gallery|search)/:moduleId/:galleryId' })
+  const { galleryId, moduleId } = (path && path.params) || {}
   const querySearch = query.search || ''
   const [search, setSearch] = useState(querySearch)
   const disabled = !moduleId || !galleryId
+  const modalOpen = useSelector(modalOpenSelector)
 
   // ensure search is in parity with qs, when qs changes
   useEffect(() => {
@@ -86,41 +93,37 @@ export default function SearchBar({ moduleId, galleryId }) {
   )
 
   return (
-    <Paper className={classes.root}>
-      <div className={classes.searchContainer}>
-        <Input
-          value={search}
-          onChange={handleInput}
-          onKeyUp={handleKeyUp}
-          fullWidth
-          className={classes.input}
-          disableUnderline
+    <Fade in={moduleId && galleryId && !modalOpen}>
+      <Paper className={classes.root}>
+        <div className={classes.searchContainer}>
+          <Input
+            value={search}
+            onChange={handleInput}
+            onKeyUp={handleKeyUp}
+            fullWidth
+            className={classes.input}
+            disableUnderline
+            disabled={disabled}
+          />
+        </div>
+        <IconButton
+          className={clsx(classes.iconButton, classes.searchIconButton, {
+            [classes.iconButtonHidden]: search !== '',
+          })}
           disabled={disabled}
-        />
-      </div>
-      <IconButton
-        className={clsx(classes.iconButton, classes.searchIconButton, {
-          [classes.iconButtonHidden]: search !== '',
-        })}
-        disabled={disabled}
-      >
-        <SearchIcon />
-      </IconButton>
-      <IconButton
-        onClick={handleCancel}
-        className={clsx(classes.iconButton, {
-          [classes.iconButtonHidden]: search === '',
-        })}
-        disabled={disabled}
-      >
-        <ClearIcon />
-      </IconButton>
-    </Paper>
+        >
+          <SearchIcon />
+        </IconButton>
+        <IconButton
+          onClick={handleCancel}
+          className={clsx(classes.iconButton, {
+            [classes.iconButtonHidden]: search === '',
+          })}
+          disabled={disabled}
+        >
+          <ClearIcon />
+        </IconButton>
+      </Paper>
+    </Fade>
   )
-}
-
-SearchBar.propTypes = {
-  // required
-  moduleId: PropTypes.string.isRequired,
-  galleryId: PropTypes.string.isRequired,
 }

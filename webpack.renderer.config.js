@@ -25,7 +25,9 @@ module.exports = (webpackEnv) => {
       chunkFilename: isDevelopment ? '[name].chunk.js' : '[name].[contenthash:8].chunk.js',
     },
     devServer: {
-      contentBase: outputPath,
+      static: {
+        directory: outputPath,
+      },
       hot: true,
       open: false,
       host: '0.0.0.0',
@@ -101,7 +103,11 @@ module.exports = (webpackEnv) => {
           chunkFilename: '[name].[contenthash:8].chunk.css',
         }),
       isDevelopment && new webpack.HotModuleReplacementPlugin(),
-      isDevelopment && new ReactRefreshWebpackPlugin(),
+      isDevelopment &&
+        new ReactRefreshWebpackPlugin({
+          // https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/451
+          overlay: false,
+        }),
     ].filter(Boolean),
   }
 }

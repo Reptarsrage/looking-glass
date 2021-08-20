@@ -18,6 +18,10 @@ export default function SelectedFilters({ galleryId }) {
   const query = useQuery()
   const { filters } = query
 
+  if (filters.length === 0) {
+    return null
+  }
+
   return (
     <div className={classes.filtersContainer}>
       {filters.map((filterId) => (
