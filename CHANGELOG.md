@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.4](https://github.com/reptarsrage/looking-glass/compare/v0.4.2-pre...v0.4.4) (2021-08-20)
+
+### Features
+
+- implementing custom title bar ([7ec4625](https://github.com/reptarsrage/looking-glass/commit/7ec46259a694ac7e3ef4e765463338892708cc12))
+
+### Bug Fixes
+
+- dev server breaking changes and react refresh bug ([22b72bf](https://github.com/reptarsrage/looking-glass/commit/22b72bf5d0d077f8a016754cb3f0e55d3f19b027))
+- removing deprecated createMuiTheme ([a316da3](https://github.com/reptarsrage/looking-glass/commit/a316da3f4286109d2cc23fca586bbc9ab0680a34))
+
 ### [0.4.3](https://github.com/reptarsrage/looking-glass/compare/v0.4.2-pre...v0.4.3) (2021-08-20)
 
 ### Features
