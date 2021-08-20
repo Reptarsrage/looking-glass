@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider } from '@material-ui/core'
-import { createMuiTheme, makeStyles } from '@material-ui/core/styles'
+import { createTheme, makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 
 import Progress from 'components/Progress'
@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App({ children }) {
   const classes = useStyles()
-  const appliedTheme = createMuiTheme(darkTheme || lightTheme)
+  const appliedTheme = createTheme(darkTheme || lightTheme)
 
   return (
     <ThemeProvider theme={appliedTheme}>
