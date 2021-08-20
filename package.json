@@ -117,7 +117,6 @@
     "@mixmaxhq/promise-pool": "^2.0.0",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
-    "custom-electron-titlebar": "^3.2.5",
     "electron-dl": "^3.0.2",
     "electron-is-dev": "^2.0.0",
     "electron-log": "^4.3.1",

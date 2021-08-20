@@ -4,11 +4,20 @@ import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import { makeStyles } from '@material-ui/core/styles'
-import { useDispatch } from 'react-redux'
+import Fade from '@material-ui/core/Fade'
+import { useDispatch, useSelector } from 'react-redux'
+import clsx from 'clsx'
 
+import { modalOpenSelector } from '../selectors/modalSelectors'
 import { clearGallery } from '../actions/galleryActions'
 
 const useStyles = makeStyles((theme) => ({
+  navButtons: {
+    display: 'inline-block',
+  },
+  navButton: {
+    '-webkit-app-region': 'no-drag',
+  },
   back: {
     marginRight: theme.spacing(0.5),
   },
@@ -21,6 +30,7 @@ export default function NavButtons() {
   const history = useHistory()
   const [stack, setStack] = useState([])
   const [ptr, setPtr] = useState(-1)
+  const modalOpen = useSelector(modalOpenSelector)
 
   const { action } = history
   const { pathname, search } = location
@@ -64,14 +74,16 @@ export default function NavButtons() {
   }
 
   return (
-    <span>
-      <IconButton className={classes.back} onClick={handleBack} disabled={!hasBack}>
-        <ChevronLeftIcon />
-      </IconButton>
+    <Fade in={!modalOpen}>
+      <span className={classes.navButtons}>
+        <IconButton className={clsx(classes.navButton, classes.back)} onClick={handleBack} disabled={!hasBack}>
+          <ChevronLeftIcon />
+        </IconButton>
 
-      <IconButton onClick={handleForward} disabled={!hasFwd}>
-        <ChevronRightIcon />
-      </IconButton>
-    </span>
+        <IconButton className={classes.navButton} onClick={handleForward} disabled={!hasFwd}>
+          <ChevronRightIcon />
+        </IconButton>
+      </span>
+    </Fade>
   )
 }

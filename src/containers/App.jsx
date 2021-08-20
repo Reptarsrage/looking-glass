@@ -1,22 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider } from '@material-ui/core'
 import { createMuiTheme, makeStyles } from '@material-ui/core/styles'
-import { useSelector } from 'react-redux'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
-import { Color } from 'custom-electron-titlebar'
-import Brightness3Icon from '@material-ui/icons/Brightness3'
-import Brightness7Icon from '@material-ui/icons/Brightness7'
 
-import { modalOpenSelector } from 'selectors/modalSelectors'
-import NavButtons from 'components/NavButtons'
 import Progress from 'components/Progress'
-import titleBar from '../titleBar'
+import TitleBar from 'components/TitleBar'
 
 // https://material-ui.com/customization/palette/
 const darkTheme = {
@@ -31,6 +21,13 @@ const darkTheme = {
       light: '#f6a5c0',
       main: '#f48fb1',
       dark: '#aa647b',
+    },
+    background: {
+      default: '#202020',
+      paper: '#333333',
+    },
+    grey: {
+      900: '#191919',
     },
   },
   typography: {
@@ -63,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
+    marginTop: '72px',
   },
   grow: {
     flexGrow: '1',
@@ -70,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 3,
     transition: theme.transitions.create('opacity'),
+    position: 'fixed',
+    top: 0,
+    left: 0,
   },
   title: {
     display: 'none',
@@ -81,39 +82,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App({ children }) {
   const classes = useStyles()
-  const modalOpen = useSelector(modalOpenSelector)
-  const [darkThemeEnabled, toggleDarkTheme] = useState(true)
-  const appliedTheme = createMuiTheme(darkThemeEnabled ? darkTheme : lightTheme)
-
-  useEffect(() => {
-    titleBar.updateBackground(Color.fromHex(appliedTheme.palette.background.default))
-  }, [appliedTheme])
-
-  const handleClick = () => {
-    toggleDarkTheme(!darkThemeEnabled)
-  }
+  const appliedTheme = createMuiTheme(darkTheme || lightTheme)
 
   return (
     <ThemeProvider theme={appliedTheme}>
       <CssBaseline />
-
+      <TitleBar />
       <Progress />
-
-      <AppBar position="static" color="default" className={classes.appBar} style={{ opacity: modalOpen ? '0' : '1' }}>
-        <Toolbar>
-          <NavButtons />
-          <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-            Looking Glass
-          </Typography>
-          <div className={classes.grow} />
-          <div>
-            <IconButton color="inherit" onClick={handleClick}>
-              {darkThemeEnabled ? <Brightness3Icon /> : <Brightness7Icon />}
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
-
       <Container maxWidth={false} className={classes.container}>
         {children}
       </Container>

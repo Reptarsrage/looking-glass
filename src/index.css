@@ -16,15 +16,6 @@ html {
   outline: none;
 }
 
-.list {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.container-after-titlebar {
-  overflow: hidden;
-}
-
 /* Fix drawer overlap with title bar */
 .MuiBackdrop-root,
 .MuiDrawer-root,

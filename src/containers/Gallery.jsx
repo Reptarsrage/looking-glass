@@ -14,7 +14,6 @@ import { moduleSupportsSortingSelector, moduleSupportsFilteringSelector } from '
 import { isAuthenticatedSelector, authUrlSelector } from 'selectors/authSelectors'
 import {
   gallerySavedScrollPositionSelector,
-  galleryNameSelector,
   galleryHasNextSelector,
   galleryItemsSelector,
   galleryFetchingSelector,
@@ -31,9 +30,7 @@ import FilterList from 'components/FilterList'
 import SelectedFilters from 'components/SelectedFilters'
 import Modal from 'components/Modal'
 import LoadingIndicator from 'components/LoadingIndicator'
-import SearchBar from 'components/SearchBar'
 import EndOfScrollToast from 'components/EndOfScrollToast'
-import titleBar from '../titleBar'
 import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
@@ -79,7 +76,6 @@ export default function Gallery({ overlayButtonThreshold }) {
   const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
   const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
   const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
-  const name = useSelector((state) => galleryNameSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const modalNext = useSelector(modalNextSelector)
   const modalOpen = useSelector(modalOpenSelector)
@@ -91,9 +87,6 @@ export default function Gallery({ overlayButtonThreshold }) {
 
     // fetch images
     fetchInitialItems()
-
-    // set window title
-    titleBar.updateTitle(`'The Looking-Glass' - ${name}`)
 
     return () => {
       // remove event listeners from componentDidMount
@@ -184,10 +177,6 @@ export default function Gallery({ overlayButtonThreshold }) {
 
       <Toolbar variant="dense">
         <Breadcrumbs galleryId={galleryId} />
-      </Toolbar>
-
-      <Toolbar variant="dense">
-        <SearchBar moduleId={moduleId} galleryId={galleryId} />
         <div className={classes.grow} />
         {supportsSorting && <SortMenu moduleId={moduleId} galleryId={galleryId} />}
         {supportsFiltering && (
