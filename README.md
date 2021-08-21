@@ -1,7 +1,7 @@
 # The Looking-Glass
 
 ![Github](https://github.com/Reptarsrage/looking-glass/workflows/CI/badge.svg)
-![Codecov](https://codecov.io/gh/Reptarsrage/looking-glass/branch/master/graph/badge.svg?token=7j24nkzJrO)
+![Codecov](https://codecov.io/gh/Reptarsrage/looking-glass/branch/main/graph/badge.svg?token=7j24nkzJrO)
 
 ## Description
 
