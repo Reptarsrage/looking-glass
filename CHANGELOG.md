@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.5](https://github.com/reptarsrage/looking-glass/compare/v0.4.4...v0.4.5) (2021-08-21)
+
+### Bug Fixes
+
+- adding app bar box shadow ([82f85cc](https://github.com/reptarsrage/looking-glass/commit/82f85ccee1e24925a5dc73535fe2b29222cd1ec5))
+- fixing search ([c8aeb69](https://github.com/reptarsrage/looking-glass/commit/c8aeb6986b3e89341aef69cef14153964f7d5fdc))
+
 ### [0.4.4](https://github.com/reptarsrage/looking-glass/compare/v0.4.2-pre...v0.4.4) (2021-08-20)
 
 ### Features
