@@ -72,16 +72,19 @@ export default function SearchBar() {
     setSearch(querySearch)
   }, [querySearch])
 
-  const handleInput = React.useCallback((event) => {
-    const { value } = event.target
-    setSearch(value)
-    dispatch(searchChange(galleryId, value, history))
-  }, [])
+  const handleInput = React.useCallback(
+    (event) => {
+      const { value } = event.target
+      setSearch(value)
+      dispatch(searchChange(galleryId, value, history))
+    },
+    [galleryId]
+  )
 
   const handleCancel = React.useCallback(() => {
     setSearch('')
     dispatch(searchChange(galleryId, '', history))
-  }, [])
+  }, [galleryId])
 
   const handleKeyUp = React.useCallback(
     (e) => {
