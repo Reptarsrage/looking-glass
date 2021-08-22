@@ -32,8 +32,9 @@ export const initialGalleryState = {
   siteId: null,
   moduleId: null,
   parentId: null,
-  offset: 0,
-  after: null,
+  offset: 0, // external tracker for paging
+  page: 0, // internal tracker for paging
+  after: null, // alternative external tracker for paging
   hasNext: true,
   items: [],
   name: null,
@@ -93,6 +94,7 @@ export default produce((draft, action) => {
         ...draft.byId[galleryId],
         ...galleryState,
         id: galleryId,
+        page: draft.byId[galleryId].page + 1, // increment page
       }
 
       // add items
@@ -127,6 +129,7 @@ export default produce((draft, action) => {
       // clear gallery
       draft.byId[galleryId].items = []
       draft.byId[galleryId].offset = 0
+      draft.byId[galleryId].page = 0
       draft.byId[galleryId].after = null
       draft.byId[galleryId].hasNext = true
       draft.byId[galleryId].savedScrollPosition = 0
