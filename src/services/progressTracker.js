@@ -4,7 +4,8 @@ class ProgressTrackerInstance {
     this.incCallbacks = []
     this.doneCallbacks = []
     this.errorCallbacks = []
-    this.pastDurations = [3000]
+    this.pastDurations = [1000]
+    this.initialized = false
   }
 
   estimateDuration() {
@@ -43,7 +44,13 @@ class ProgressTrackerInstance {
   }
 
   done(duration) {
-    if (duration > 0) {
+    // ignore cached responses (< 100ms)
+    if (duration > 100) {
+      if (!this.initialized) {
+        this.pastDurations.pop() // remove placeholder estimate
+        this.initialized = true
+      }
+
       this.pastDurations.unshift(duration)
       if (this.pastDurations.length > 10) {
         this.pastDurations.pop()
