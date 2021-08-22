@@ -18,7 +18,6 @@ import {
   galleryItemsSelector,
   galleryFetchingSelector,
   galleryFetchedSelector,
-  galleryErrorSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
 import { forceRenderItemsSelector, modalNextSelector, modalOpenSelector } from 'selectors/modalSelectors'
@@ -75,7 +74,6 @@ export default function Gallery({ overlayButtonThreshold }) {
   const hasNext = useSelector((state) => galleryHasNextSelector(state, { galleryId }))
   const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
   const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
-  const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const modalNext = useSelector(modalNextSelector)
   const modalOpen = useSelector(modalOpenSelector)
@@ -85,14 +83,16 @@ export default function Gallery({ overlayButtonThreshold }) {
     // set event listeners
     window.addEventListener('containerScroll', handleScroll)
 
-    // fetch images
-    fetchInitialItems()
-
     return () => {
       // remove event listeners from componentDidMount
       window.removeEventListener('containerScroll', handleScroll)
     }
-  })
+  }, [])
+
+  useEffect(() => {
+    // fetch images
+    fetchInitialItems()
+  }, [query, params])
 
   useEffect(() => {
     // show end of the line toast
@@ -146,9 +146,7 @@ export default function Gallery({ overlayButtonThreshold }) {
     }
 
     // check if first page is available and not already fetched, and fetch it
-    if (!fetching && !fetched && !error) {
-      dispatch(fetchGallery(galleryId, filters, sort, search))
-    }
+    dispatch(fetchGallery(galleryId, filters, sort, search))
   }
 
   const loadMoreItems = () => {

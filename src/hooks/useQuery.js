@@ -19,7 +19,7 @@ export const parseQueryString = moize(
 
     return query
   },
-  { maxAge: 1 }
+  { maxSize: 1 }
 )
 
 // a custom hook that builds on useLocation to parse
