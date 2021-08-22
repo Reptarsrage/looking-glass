@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.8](https://github.com/reptarsrage/looking-glass/compare/v0.4.7...v0.4.8) (2021-08-22)
+
+### Bug Fixes
+
+- improving request progress bar ([da611e9](https://github.com/reptarsrage/looking-glass/commit/da611e9e8f1c0d61913d49aebe10a9a7f54d2f62))
+
 ### [0.4.7](https://github.com/reptarsrage/looking-glass/compare/v0.4.6...v0.4.7) (2021-08-22)
 
 ### Features
