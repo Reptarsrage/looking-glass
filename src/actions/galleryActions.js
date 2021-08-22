@@ -86,10 +86,10 @@ export const sortChange = (galleryId, sortValueId, history) => ({
  * @param {string|number} filterId Filter ID
  * @param {Object} history Router history
  */
-export const filterAdded = (galleryId, filterId, history) => ({
+export const filterAdded = (galleryId, filterId, history, clearAll = false) => ({
   type: FILTER_ADDED,
   payload: filterId,
-  meta: { galleryId, history },
+  meta: { galleryId, history, clearAll },
 })
 
 /**

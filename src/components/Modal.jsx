@@ -133,11 +133,11 @@ export default function Modal({ moduleId }) {
   }
 
   const handleAuthorClick = () => {
-    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history))
+    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history, true))
   }
 
   const handleSourceClick = () => {
-    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history))
+    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history, true))
   }
 
   const onAnimationComplete = () => {
