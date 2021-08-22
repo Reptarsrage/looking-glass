@@ -18,6 +18,7 @@ import {
   galleryItemsSelector,
   galleryFetchingSelector,
   galleryFetchedSelector,
+  galleryPageSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
 import { forceRenderItemsSelector, modalNextSelector, modalOpenSelector } from 'selectors/modalSelectors'
@@ -72,6 +73,7 @@ export default function Gallery({ overlayButtonThreshold }) {
   const isAuthenticated = useSelector((state) => isAuthenticatedSelector(state, { moduleId }))
   const authUrl = useSelector((state) => authUrlSelector(state, { moduleId, galleryId }))
   const hasNext = useSelector((state) => galleryHasNextSelector(state, { galleryId }))
+  const page = useSelector((state) => galleryPageSelector(state, { galleryId }))
   const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
   const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
@@ -123,9 +125,13 @@ export default function Gallery({ overlayButtonThreshold }) {
       setShowOverlayButtons(false)
     }
 
-    const value = scrollHeight - scrollTop - clientHeight
-    const threshold = Math.max(scrollHeight * 0.1, 1000)
-    if (value < threshold) {
+    // load next page as soon as user has scrolled to
+    // the last loaded page
+    // this works seamlessly assuming pages are tall enough
+    // to take up at least the whole screen
+    const currentScroll = scrollTop + clientHeight
+    const threshold = ((page - 1) / page) * scrollHeight
+    if (currentScroll >= threshold) {
       loadMoreItems()
     }
 

@@ -16,6 +16,7 @@ export const gallerySiteIdSelector = createSelector(gallerySelector, (gallery) =
 export const galleryModuleIdSelector = createSelector(gallerySelector, (gallery) => gallery.moduleId)
 export const galleryParentIdSelector = createSelector(gallerySelector, (gallery) => gallery.parentId)
 export const galleryOffsetSelector = createSelector(gallerySelector, (gallery) => gallery.offset)
+export const galleryPageSelector = createSelector(gallerySelector, (gallery) => gallery.page)
 export const galleryAfterSelector = createSelector(gallerySelector, (gallery) => gallery.after)
 export const galleryHasNextSelector = createSelector(gallerySelector, (gallery) => gallery.hasNext)
 export const galleryItemsSelector = createSelector(gallerySelector, (gallery) => gallery.items)
