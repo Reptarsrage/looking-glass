@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingLeft: '88px',
   },
+  title: {
+    minHeight: '1em',
+  },
   toggleCaption: {
     left: '16px',
     right: 'unset',
@@ -130,11 +133,11 @@ export default function Modal({ moduleId }) {
   }
 
   const handleAuthorClick = () => {
-    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history))
+    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history, true))
   }
 
   const handleSourceClick = () => {
-    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history))
+    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history, true))
   }
 
   const onAnimationComplete = () => {
@@ -191,7 +194,9 @@ export default function Modal({ moduleId }) {
       {showCaption && (
         <Fade in={modalOpen}>
           <div className={classes.caption}>
-            <Typography variant="h4">{modalItem.name}</Typography>
+            <Typography variant="h4" className={classes.title}>
+              {modalItem.name}
+            </Typography>
             <Typography variant="subtitle1" color="textSecondary">
               {subCaption}
             </Typography>

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.6](https://github.com/reptarsrage/looking-glass/compare/v0.4.5...v0.4.6) (2021-08-22)
+
+### Features
+
+- clearing other filters when filtering by author, source ([6085803](https://github.com/reptarsrage/looking-glass/commit/60858034812638a87e6988a6ae54bed799566c0a))
+
+### Bug Fixes
+
+- gallery filters when navigatinng back+fwd ([a6c1a48](https://github.com/reptarsrage/looking-glass/commit/a6c1a48081bd0736fc507272591597ede79f33b4))
+- modal caption missing title height ([5d6b55d](https://github.com/reptarsrage/looking-glass/commit/5d6b55d25952b73211d3c70007225a27cf115b0a))
+
 ### [0.4.5](https://github.com/reptarsrage/looking-glass/compare/v0.4.4...v0.4.5) (2021-08-21)
 
 ### Bug Fixes

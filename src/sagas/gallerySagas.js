@@ -51,7 +51,7 @@ export function* handleSortChange(action) {
  */
 export function* handleFilterAdded(action) {
   const { meta, payload: filterId } = action
-  const { galleryId, history } = meta
+  const { galleryId, history, clearAll } = meta
   const query = parseQueryString(history.location.search)
   const { sort } = query
   let { filters, search } = query
@@ -66,7 +66,7 @@ export function* handleFilterAdded(action) {
   const defaultGalleryId = yield select(moduleDefaultGalleryIdSelector, { moduleId })
   const filterSectionId = yield select(filterSectionIdSelector, { filterId })
   const supportsMultiple = yield select(filterSectionSupportsMultipleSelector, { filterSectionId })
-  if (!supportsMultiple) {
+  if (!supportsMultiple || clearAll) {
     filters = []
   } else {
     // remove all other filters that do not support multiple
