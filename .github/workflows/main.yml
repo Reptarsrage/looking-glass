@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2-beta
       - name: Yarn Install
-        run: yarn install
+        run: yarn install --network-timeout 36000
 
       - name: Run Tests
         run: yarn test --coverage
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-node@v2-beta
 
       - name: Yarn Install
-        run: yarn install
+        run: yarn install --network-timeout 36000
 
       # https://github.com/samuelmeuli/action-electron-builder
       - name: Build & Release Electron app
