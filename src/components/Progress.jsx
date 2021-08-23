@@ -24,9 +24,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Progress() {
   const classes = useStyles()
-  let duration = progressTracker.estimateDuration()
-  let step = 1000 / Math.floor(duration)
-
   const [inProgress, setInProgress] = useState(false)
   const [error, setError] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -34,8 +31,8 @@ export default function Progress() {
 
   useEffect(() => {
     progressTracker.onStart(() => {
-      duration = progressTracker.estimateDuration()
-      step = 1000 / Math.floor(duration)
+      const duration = progressTracker.estimateDuration()
+      const step = 1000 / Math.floor(duration)
 
       setError(false)
       setProgress(0)
