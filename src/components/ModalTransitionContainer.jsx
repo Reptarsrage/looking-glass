@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { motion } from 'framer-motion'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 
 import SlideShow from './SlideShow'
 
@@ -9,8 +9,9 @@ const useStyles = makeStyles((theme) => ({
   modal: {
     top: '30px', // titleBar height
     position: 'fixed',
-    zIndex: theme.zIndex.drawer + 2,
+    zIndex: theme.zIndex.drawer - 3,
     background: 'transparent',
+    overflow: 'hidden',
   },
 }))
 

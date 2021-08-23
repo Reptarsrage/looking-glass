@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import Fade from '@material-ui/core/Fade'
 import Zoom from '@material-ui/core/Zoom'
 import CloseIcon from '@material-ui/icons/Close'
@@ -32,13 +32,12 @@ import ItemFilterList from './ItemFilterList'
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
-    position: 'fixed',
     height: '100%',
     width: '100%',
     top: '30px', // titleBar height
     left: 0,
-    zIndex: theme.zIndex.drawer + 1,
-    background: 'rgba(0,0,0,1)',
+    zIndex: theme.zIndex.drawer - 4,
+    backgroundColor: 'rgba(0,0,0,1) !important',
   },
   drawer: {
     padding: theme.spacing(1),
@@ -46,12 +45,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     minWidth: '360px',
     height: 'calc(100% - 30px)',
+    zIndex: theme.zIndex.drawer,
   },
   button: {
     top: '46px', // 16 + titleBar height
     right: '16px',
-    position: 'fixed',
-    zIndex: theme.zIndex.drawer + 5,
+    position: 'fixed !important',
+    zIndex: theme.zIndex.drawer - 1,
   },
   menuButton: {
     top: '116px',
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: 0,
     background: 'linear-gradient(#000, transparent)',
-    zIndex: theme.zIndex.drawer + 4,
+    zIndex: theme.zIndex.drawer - 2,
     padding: theme.spacing(1),
     paddingLeft: '88px',
   },
@@ -78,9 +78,9 @@ const useStyles = makeStyles((theme) => ({
   },
   dark: {
     color: '#fff',
-    background: 'rgba(0, 0, 0, 0.32)',
+    backgroundColor: 'rgba(0, 0, 0, 0.32)',
     '&:hover': {
-      background: 'rgba(255, 255, 255, 0.32)',
+      backgroundColor: 'rgba(255, 255, 255, 0.32)',
     },
   },
   author: {
@@ -182,7 +182,7 @@ export default function Modal({ moduleId }) {
 
   return (
     <>
-      <Fade in={modalOpen}>
+      <Fade in={modalOpen} unmountOnExit>
         <Fab
           className={clsx(classes.button, classes.toggleCaption, !showCaption && classes.dark)}
           onClick={toggleCaption}
@@ -192,7 +192,7 @@ export default function Modal({ moduleId }) {
       </Fade>
 
       {showCaption && (
-        <Fade in={modalOpen}>
+        <Fade in={modalOpen} unmountOnExit>
           <div className={classes.caption}>
             <Typography variant="h4" className={classes.title}>
               {modalItem.name}
@@ -209,16 +209,16 @@ export default function Modal({ moduleId }) {
         </Fade>
       )}
 
-      <Backdrop className={classes.backdrop} open={modalOpen} />
+      <Backdrop className={classes.backdrop} open={modalOpen} unmountOnExit />
 
-      <Zoom in={modalOpen}>
+      <Zoom in={modalOpen} unmountOnExit>
         <Fab color="default" aria-label="Close" className={classes.button} onClick={close}>
           <CloseIcon />
         </Fab>
       </Zoom>
 
       {renderFilters && (
-        <Zoom in={modalOpen}>
+        <Zoom in={modalOpen} unmountOnExit>
           <Fab color="default" className={clsx(classes.button, classes.menuButton)} onClick={drawerOpen}>
             <MenuIcon />
           </Fab>

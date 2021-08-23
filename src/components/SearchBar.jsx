@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import IconButton from '@material-ui/core/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
@@ -96,7 +96,7 @@ export default function SearchBar() {
   )
 
   return (
-    <Fade in={moduleId && galleryId && !modalOpen}>
+    <Fade in={moduleId && galleryId && !modalOpen} unmountOnExit>
       <Paper className={classes.root}>
         <div className={classes.searchContainer}>
           <Input

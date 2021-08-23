@@ -3,7 +3,7 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import HomeIcon from '@material-ui/icons/Home'
 import { Link as RouterLink } from 'react-router-dom'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles((theme) => ({
   body: {

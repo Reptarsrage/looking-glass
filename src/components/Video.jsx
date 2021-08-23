@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import qs from 'qs'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { extname } from 'path'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'

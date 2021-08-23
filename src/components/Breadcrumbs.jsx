@@ -4,7 +4,7 @@ import Link from '@material-ui/core/Link'
 import HomeIcon from '@material-ui/icons/Home'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { Link as RouterLink } from 'react-router-dom'
 
 import { breadcrumbsSelector } from 'selectors/breadcrumbSelectors'

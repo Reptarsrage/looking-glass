@@ -14,7 +14,12 @@ export default function SectionHeader({ sectionIndex, moduleId }) {
   const fetching = useSelector((state) => filterSectionFetchingSelector(state, { filterSectionId }))
 
   return (
-    <ListSubheader>
+    <ListSubheader
+      style={{
+        backgroundColor: '#333333',
+        backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))',
+      }}
+    >
       {header}
       {fetching && <LinearProgress color="primary" />}
     </ListSubheader>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { getCurrentWindow } from '@electron/remote'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import clsx from 'clsx'
 
 import NavButtons from './NavButtons'

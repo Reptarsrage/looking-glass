@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import PropTypes from 'prop-types'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import SortIcon from '@material-ui/icons/Sort'
 
 import { sortChange } from 'actions/galleryActions'
