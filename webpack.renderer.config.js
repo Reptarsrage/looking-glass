@@ -103,11 +103,7 @@ module.exports = (webpackEnv) => {
           chunkFilename: '[name].[contenthash:8].chunk.css',
         }),
       isDevelopment && new webpack.HotModuleReplacementPlugin(),
-      isDevelopment &&
-        new ReactRefreshWebpackPlugin({
-          // https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/451
-          overlay: false,
-        }),
+      isDevelopment && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
   }
 }
