@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.10](https://github.com/reptarsrage/looking-glass/compare/v0.4.9...v0.4.10) (2021-08-23)
+
+### Features
+
+- upgrading to mui v5 ([b7fbf7c](https://github.com/reptarsrage/looking-glass/commit/b7fbf7c3cbedb0a01ea09f8817d9369cf827db5d))
+
+### Bug Fixes
+
+- fixing z-indexes with modal + drawer ([7274a6a](https://github.com/reptarsrage/looking-glass/commit/7274a6ae1882050b3fbbef4964757afd10985dc3))
+
 ### [0.4.9](https://github.com/reptarsrage/looking-glass/compare/v0.4.7...v0.4.9) (2021-08-23)
 
 ### Bug Fixes
