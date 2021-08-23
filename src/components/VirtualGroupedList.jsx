@@ -1,10 +1,10 @@
 import { createElement, useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { isValidElementType } from 'react-is'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   scroll: {
     overflow: 'auto',
     '&::-webkit-scrollbar': {
@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     WebkitOverflowScrolling: 'touch',
     willChange: 'transform',
-    backgroundColor: theme.palette.background.paper,
   },
   listSection: {
     backgroundColor: 'inherit',

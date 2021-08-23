@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Chip from '@material-ui/core/Chip'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { useHistory } from 'react-router-dom'
 
 import { filterSelector } from 'selectors/filterSelectors'

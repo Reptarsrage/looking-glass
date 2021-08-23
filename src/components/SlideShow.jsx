@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import Fab from '@material-ui/core/Fab'
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     top: 'calc(50% + 30px)', // titleBar height
-    position: 'fixed',
+    position: 'fixed !important',
     transform: 'translate(0, -50%)',
     zIndex: theme.zIndex.drawer + 3,
   },

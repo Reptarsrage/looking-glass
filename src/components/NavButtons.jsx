@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import Fade from '@material-ui/core/Fade'
 import { useDispatch, useSelector } from 'react-redux'
 import clsx from 'clsx'
@@ -74,7 +74,7 @@ export default function NavButtons() {
   }
 
   return (
-    <Fade in={!modalOpen}>
+    <Fade in={!modalOpen} unmountOnExit>
       <span className={classes.navButtons}>
         <IconButton className={clsx(classes.navButton, classes.back)} onClick={handleBack} disabled={!hasBack}>
           <ChevronLeftIcon />

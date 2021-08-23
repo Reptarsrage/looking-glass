@@ -5,7 +5,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import CheckIcon from '@material-ui/icons/Check'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 
 import { valueNameSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 import useQuery from '../hooks/useQuery'

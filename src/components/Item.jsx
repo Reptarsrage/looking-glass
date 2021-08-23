@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, memo } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import Tooltip from '@material-ui/core/Tooltip'
 import CollectionsIcon from '@material-ui/icons/Collections'
 import Paper from '@material-ui/core/Paper'

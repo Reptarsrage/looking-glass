@@ -7,7 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 
