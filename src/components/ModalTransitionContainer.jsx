@@ -9,8 +9,9 @@ const useStyles = makeStyles((theme) => ({
   modal: {
     top: '30px', // titleBar height
     position: 'fixed',
-    zIndex: theme.zIndex.drawer + 2,
+    zIndex: theme.zIndex.drawer - 3,
     background: 'transparent',
+    overflow: 'hidden',
   },
 }))
 

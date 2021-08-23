@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     top: 'calc(50% + 30px)', // titleBar height
     position: 'fixed !important',
     transform: 'translate(0, -50%)',
-    zIndex: theme.zIndex.drawer + 3,
+    zIndex: theme.zIndex.drawer - 2,
   },
   prev: {
     left: '0.5rem',

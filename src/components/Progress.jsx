@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import clsx from 'clsx'
+import { useSelector } from 'react-redux'
 
+import { modalOpenSelector } from 'selectors/modalSelectors'
 import progressTracker from 'services/progressTracker'
 
 const useStyles = makeStyles((theme) => ({
@@ -14,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     transition: 'width 100ms linear, opacity 400ms linear',
     backgroundColor: theme.palette.primary.main,
-    zIndex: theme.zIndex.drawer + 4,
+    zIndex: theme.zIndex.drawer - 1,
     pointerEvents: 'none',
   },
   failed: {
@@ -28,6 +30,7 @@ export default function Progress() {
   const [error, setError] = useState(false)
   const [progress, setProgress] = useState(0)
   const [intervalId, setIntervalId] = useState(0)
+  const modalOpen = useSelector(modalOpenSelector)
 
   useEffect(() => {
     progressTracker.onStart(() => {
@@ -60,12 +63,16 @@ export default function Progress() {
     return () => {
       progressTracker.removeEventListeners()
     }
-  })
+  }, [])
 
   return (
     <div
       className={clsx(classes.bar, error ? classes.failed : undefined)}
-      style={{ opacity: inProgress ? '1' : '0', width: `${progress}%` }}
+      style={{
+        opacity: inProgress ? '1' : '0',
+        width: `${progress}%`,
+        top: modalOpen ? '30px' : '64px',
+      }}
     />
   )
 }

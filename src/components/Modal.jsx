@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     top: '30px', // titleBar height
     left: 0,
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer - 4,
     backgroundColor: 'rgba(0,0,0,1) !important',
   },
   drawer: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     top: '46px', // 16 + titleBar height
     right: '16px',
     position: 'fixed !important',
-    zIndex: theme.zIndex.drawer + 5,
+    zIndex: theme.zIndex.drawer - 1,
   },
   menuButton: {
     top: '116px',
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: 0,
     background: 'linear-gradient(#000, transparent)',
-    zIndex: theme.zIndex.drawer + 4,
+    zIndex: theme.zIndex.drawer - 2,
     padding: theme.spacing(1),
     paddingLeft: '88px',
   },
@@ -225,13 +225,7 @@ export default function Modal({ moduleId }) {
         </Zoom>
       )}
 
-      <Drawer
-        unmountOnExit
-        classes={{ paper: classes.drawer }}
-        anchor="right"
-        open={open}
-        onClose={() => drawerClose()}
-      >
+      <Drawer classes={{ paper: classes.drawer }} anchor="right" open={open} onClose={() => drawerClose()}>
         {modalItem.id && <ItemFilterList moduleId={moduleId} itemId={modalItem.id} onClick={drawerClose} />}
       </Drawer>
 
