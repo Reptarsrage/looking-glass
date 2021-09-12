@@ -2950,9 +2950,9 @@ boolean@^3.0.1:
   integrity sha512-3hx0kwU3uzG6ReQ3pnaFQPSktpBw6RHN3/ivDKEuU8g1XSfafowyvDnadjv1xp8IZqhtSukxlwv9bF6FhX8m0w==
 
 boxen@^5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/boxen/-/boxen-5.0.1.tgz#657528bdd3f59a772b8279b831f27ec2c744664b"
-  integrity sha512-49VBlw+PrWEF51aCmy7QIteYPIFZxSpvqBdP/2itCPPlJ49kj9zg/XPRFrdkne2W+CfwXUls8exMvu1RysZpKA==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/boxen/-/boxen-5.1.0.tgz#2ca8d7ffdd4e4e6158bc1584ae35de4d55fcc4c7"
+  integrity sha512-tibA+fVC5RtJm+qQxRLU4/GfuO1K0Zx6cTSxjc49h1px7AyZEjFx88aKJmwIo0a6RDSm2FG00s/odEQYoSltbQ==
   dependencies:
     ansi-align "^3.0.0"
     camelcase "^6.2.0"
