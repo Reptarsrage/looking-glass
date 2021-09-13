@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.11](https://github.com/reptarsrage/looking-glass/compare/v0.4.10...v0.4.11) (2021-09-13)
+
+### Features
+
+- using system preferred theme ([add7975](https://github.com/reptarsrage/looking-glass/commit/add79752c6c6d140ee28bc362af4a2433d542590))
+
 ### [0.4.10](https://github.com/reptarsrage/looking-glass/compare/v0.4.9...v0.4.10) (2021-08-23)
 
 ### Features
