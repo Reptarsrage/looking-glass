@@ -1,6 +1,7 @@
 import React from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider, createTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 // https://material-ui.com/customization/palette/
 const darkTheme = {
@@ -42,6 +43,9 @@ const lightTheme = {
       main: '#dc004e',
       dark: '#9a0036',
     },
+    grey: {
+      900: '#EBEBEB',
+    },
   },
   typography: {
     useNextVariants: true,
@@ -49,7 +53,8 @@ const lightTheme = {
 }
 
 const withTheme = (WrappedComponent) => (props) => {
-  const appliedTheme = createTheme(darkTheme || lightTheme)
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const appliedTheme = React.useMemo(() => createTheme(prefersDarkMode ? darkTheme : lightTheme), [prefersDarkMode])
 
   return (
     <ThemeProvider theme={appliedTheme}>

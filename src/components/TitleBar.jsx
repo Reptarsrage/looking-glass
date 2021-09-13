@@ -40,10 +40,10 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     userSelect: 'none',
     '&:hover': {
-      backgroundColor: ' rgba(255, 255, 255, .1)',
+      backgroundColor: theme.palette.action.hover,
     },
     '&:active': {
-      backgroundColor: 'rgba(0, 0, 0, .1)',
+      backgroundColor: theme.palette.action.hover,
     },
   },
   buttonClose: {
@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
     maskSize: '23.1%',
-    backgroundColor: '#eeeeee',
+    backgroundColor: theme.palette.text.primary,
   },
 }))
 
