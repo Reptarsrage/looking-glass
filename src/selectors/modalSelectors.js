@@ -9,6 +9,8 @@ const modalState = (state) => state.modal || initialState
 
 export const modalOpenSelector = createSelector(modalState, (state) => state.modalOpen)
 
+export const drawerOpenSelector = createSelector(modalState, (state) => state.drawerOpen)
+
 export const modalItemIdSelector = createSelector(modalState, (state) => state.modalItemId)
 
 export const modalBoundsSelector = createSelector(modalState, (state) => state.modalBounds)

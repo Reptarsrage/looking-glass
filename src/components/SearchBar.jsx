@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper'
 import Fade from '@material-ui/core/Fade'
 
 import { searchChange } from 'actions/galleryActions'
-import { modalOpenSelector } from '../selectors/modalSelectors'
+import { modalOpenSelector, drawerOpenSelector } from '../selectors/modalSelectors'
 import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
@@ -66,6 +66,7 @@ export default function SearchBar() {
   const [search, setSearch] = useState(querySearch)
   const disabled = !moduleId || !galleryId
   const modalOpen = useSelector(modalOpenSelector)
+  const drawerOpen = useSelector(drawerOpenSelector)
 
   // ensure search is in parity with qs, when qs changes
   useEffect(() => {
@@ -96,7 +97,7 @@ export default function SearchBar() {
   )
 
   return (
-    <Fade in={moduleId && galleryId && !modalOpen} unmountOnExit>
+    <Fade in={moduleId && galleryId && !modalOpen && !drawerOpen} unmountOnExit>
       <Paper className={classes.root}>
         <div className={classes.searchContainer}>
           <Input

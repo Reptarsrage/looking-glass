@@ -8,7 +8,7 @@ import Fade from '@material-ui/core/Fade'
 import { useDispatch, useSelector } from 'react-redux'
 import clsx from 'clsx'
 
-import { modalOpenSelector } from '../selectors/modalSelectors'
+import { modalOpenSelector, drawerOpenSelector } from '../selectors/modalSelectors'
 import { clearGallery } from '../actions/galleryActions'
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +31,7 @@ export default function NavButtons() {
   const [stack, setStack] = useState([])
   const [ptr, setPtr] = useState(-1)
   const modalOpen = useSelector(modalOpenSelector)
+  const drawerOpen = useSelector(drawerOpenSelector)
 
   const { action } = history
   const { pathname, search } = location
@@ -74,7 +75,7 @@ export default function NavButtons() {
   }
 
   return (
-    <Fade in={!modalOpen} unmountOnExit>
+    <Fade in={!modalOpen && !drawerOpen} unmountOnExit>
       <span className={classes.navButtons}>
         <IconButton className={clsx(classes.navButton, classes.back)} onClick={handleBack} disabled={!hasBack}>
           <ChevronLeftIcon />
