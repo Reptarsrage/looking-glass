@@ -54,8 +54,9 @@ const createWindow = async (port) => {
   // bootstrap store
   Store.initRenderer()
 
-  // bootstrap remote
+  // bootstrap remote & enable webContents
   Remote.initialize()
+  Remote.enable(mainWindow.webContents)
 
   // load the url (or file)
   if (isDev) {
