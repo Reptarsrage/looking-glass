@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.12](https://github.com/reptarsrage/looking-glass/compare/v0.4.10...v0.4.12) (2021-09-26)
+
+### Features
+
+- using system preferred theme ([e1b77af](https://github.com/reptarsrage/looking-glass/commit/e1b77af79bb7f2af4b3eb1be5afad77d4ab8265a))
+
+### Bug Fixes
+
+- **deps:** update dependency @electron/remote to v2 ([3b5dcfc](https://github.com/reptarsrage/looking-glass/commit/3b5dcfc56faa5bfaacf7460f42d03c2b2a7334f2))
+- fixing breaking change with remote webcontents ([c36713c](https://github.com/reptarsrage/looking-glass/commit/c36713c206473758a9fdbf4e140a0dfb5c05b6a4))
+- fixing filter lsit subheader colors in light theme ([13190fc](https://github.com/reptarsrage/looking-glass/commit/13190fce3201a46f6fbbcaa57d5e31fac8bfbe1a))
+- fixing modal caption colors in light theme ([20d029a](https://github.com/reptarsrage/looking-glass/commit/20d029a6439a1ba56cf396110d2f38feb64c60a8))
+- hiding app bar actions when drawer is open ([d06cd58](https://github.com/reptarsrage/looking-glass/commit/d06cd58573151fcfc53b5153b691f61f42a4831b))
+- making appbar primary, search less wumbo ([a8352f2](https://github.com/reptarsrage/looking-glass/commit/a8352f286261b79795182012e8ff6f81519157e6))
+- using default colors for background ([7e18fc4](https://github.com/reptarsrage/looking-glass/commit/7e18fc4f589ada9e45d0fb971fc3301910d40e5f))
+
 ### [0.4.11](https://github.com/reptarsrage/looking-glass/compare/v0.4.10...v0.4.11) (2021-09-13)
 
 ### Features
