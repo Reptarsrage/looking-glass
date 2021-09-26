@@ -123,6 +123,7 @@ export default function FilterList({ moduleId, onClick }) {
         value={search}
         onChange={handleFilterSearchChange}
         margin="dense"
+        variant="standard"
       />
 
       <div className={classes.main}>

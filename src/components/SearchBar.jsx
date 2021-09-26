@@ -1,61 +1,52 @@
 import React, { useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/styles'
 import { useDispatch, useSelector } from 'react-redux'
-import IconButton from '@material-ui/core/IconButton'
-import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
 import { useHistory, useLocation, matchPath } from 'react-router-dom'
-import clsx from 'clsx'
-import Input from '@material-ui/core/Input'
-import Paper from '@material-ui/core/Paper'
 import Fade from '@material-ui/core/Fade'
+import { styled, alpha } from '@material-ui/core/styles'
+import InputBase from '@material-ui/core/InputBase'
 
 import { searchChange } from 'actions/galleryActions'
 import { modalOpenSelector, drawerOpenSelector } from '../selectors/modalSelectors'
 import useQuery from '../hooks/useQuery'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: theme.spacing(6),
-    display: 'flex',
-    justifyContent: 'space-between',
-    '-webkit-app-region': 'no-drag',
-    marginLeft: theme.spacing(2),
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  '-webkit-app-region': 'no-drag',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  iconButton: {
-    color: theme.palette.action.active,
-    transform: 'scale(1, 1)',
-    transition: theme.transitions.create(['transform', 'color'], {
-      duration: theme.transitions.duration.shorter,
-      easing: theme.transitions.easing.easeInOut,
-    }),
-  },
-  iconButtonHidden: {
-    transform: 'scale(0, 0)',
-    '& > $icon': {
-      opacity: 0,
+  marginLeft: theme.spacing(1),
+  width: 'auto',
+}))
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}))
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '16ch',
+    '&:focus': {
+      width: '28ch',
     },
-  },
-  searchIconButton: {
-    marginRight: theme.spacing(-6),
-  },
-  icon: {
-    transition: theme.transitions.create(['opacity'], {
-      duration: theme.transitions.duration.shorter,
-      easing: theme.transitions.easing.easeInOut,
-    }),
-  },
-  input: {
-    width: '100%',
-  },
-  searchContainer: {
-    margin: 'auto 16px',
-    width: `calc(100% - ${theme.spacing(6 + 4)}px)`, // 6 button + 4 margin
   },
 }))
 
 export default function SearchBar() {
-  const classes = useStyles()
   const history = useHistory()
   const query = useQuery()
   const dispatch = useDispatch()
@@ -98,36 +89,19 @@ export default function SearchBar() {
 
   return (
     <Fade in={moduleId && galleryId && !modalOpen && !drawerOpen} unmountOnExit>
-      <Paper className={classes.root}>
-        <div className={classes.searchContainer}>
-          <Input
-            value={search}
-            onChange={handleInput}
-            onKeyUp={handleKeyUp}
-            fullWidth
-            className={classes.input}
-            disableUnderline
-            disabled={disabled}
-          />
-        </div>
-        <IconButton
-          className={clsx(classes.iconButton, classes.searchIconButton, {
-            [classes.iconButtonHidden]: search !== '',
-          })}
-          disabled={disabled}
-        >
+      <Search>
+        <SearchIconWrapper>
           <SearchIcon />
-        </IconButton>
-        <IconButton
-          onClick={handleCancel}
-          className={clsx(classes.iconButton, {
-            [classes.iconButtonHidden]: search === '',
-          })}
+        </SearchIconWrapper>
+        <StyledInputBase
+          placeholder="Search…"
+          inputProps={{ 'aria-label': 'search' }}
+          value={search}
+          onChange={handleInput}
+          onKeyUp={handleKeyUp}
           disabled={disabled}
-        >
-          <ClearIcon />
-        </IconButton>
-      </Paper>
+        />
+      </Search>
     </Fade>
   )
 }
