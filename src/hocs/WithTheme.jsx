@@ -17,10 +17,6 @@ const darkTheme = {
       main: '#f48fb1',
       dark: '#aa647b',
     },
-    background: {
-      default: '#202020',
-      paper: '#333333',
-    },
     grey: {
       900: '#191919',
     },
