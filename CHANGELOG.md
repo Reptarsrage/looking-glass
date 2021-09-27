@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.13](https://github.com/reptarsrage/looking-glass/compare/v0.4.12...v0.4.13) (2021-09-27)
+
+### Bug Fixes
+
+- touching up colors a bit ([3452662](https://github.com/reptarsrage/looking-glass/commit/34526622097c8ccd3b71a29a9d3eb877355a8c02))
+
 ### [0.4.12](https://github.com/reptarsrage/looking-glass/compare/v0.4.10...v0.4.12) (2021-09-26)
 
 ### Features
