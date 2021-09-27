@@ -62,9 +62,13 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: 0,
     background: 'linear-gradient(#000, transparent)',
+    color: theme.palette.grey[50],
     zIndex: theme.zIndex.drawer - 2,
     padding: theme.spacing(1),
     paddingLeft: '88px',
+  },
+  subCaption: {
+    color: theme.palette.grey[400],
   },
   title: {
     minHeight: '1em',
@@ -197,11 +201,11 @@ export default function Modal({ moduleId }) {
             <Typography variant="h4" className={classes.title}>
               {modalItem.name}
             </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Typography className={classes.subCaption} variant="subtitle1">
               {subCaption}
             </Typography>
             {modalItem.description && (
-              <Typography variant="subtitle1" color="textSecondary">
+              <Typography className={classes.subCaption} variant="subtitle1">
                 {modalItem.description}
               </Typography>
             )}

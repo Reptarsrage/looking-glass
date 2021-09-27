@@ -1,4 +1,4 @@
-import { MODAL_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } from './types'
+import { MODAL_OPEN, SET_DRAWER_OPEN, MODAL_BOUNDS_UPDATE, MODAL_CLOSE, MODAL_CLEAR, MODAL_SET_ITEM } from './types'
 
 /**
  * sets the current modal item
@@ -37,4 +37,9 @@ export const modalBoundsUpdate = (modalBounds) => ({
  */
 export const modalOpen = () => ({
   type: MODAL_OPEN,
+})
+
+export const setDrawerOpen = (isOpen) => ({
+  type: SET_DRAWER_OPEN,
+  payload: isOpen,
 })

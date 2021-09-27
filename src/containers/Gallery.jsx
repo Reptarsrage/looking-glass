@@ -21,8 +21,14 @@ import {
   galleryPageSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
-import { forceRenderItemsSelector, modalNextSelector, modalOpenSelector } from 'selectors/modalSelectors'
+import {
+  forceRenderItemsSelector,
+  modalNextSelector,
+  modalOpenSelector,
+  drawerOpenSelector,
+} from 'selectors/modalSelectors'
 import { fetchGallery, filterAdded, saveScrollPosition } from 'actions/galleryActions'
+import { setDrawerOpen } from 'actions/modalActions'
 import Breadcrumbs from 'components/Breadcrumbs'
 import SortMenu from 'components/SortMenu'
 import Masonry from 'components/Masonry'
@@ -63,7 +69,6 @@ export default function Gallery({ overlayButtonThreshold }) {
   const { filters, search, sort } = query
 
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
   const items = useSelector((state) => galleryItemsSelector(state, { galleryId }))
   const itemDimensionsSelectorFunc = useSelector((state) => (itemId) => itemDimensionsSelector(state, { itemId }))
@@ -79,6 +84,7 @@ export default function Gallery({ overlayButtonThreshold }) {
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const modalNext = useSelector(modalNextSelector)
   const modalOpen = useSelector(modalOpenSelector)
+  const drawerOpen = useSelector(drawerOpenSelector)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -104,16 +110,16 @@ export default function Gallery({ overlayButtonThreshold }) {
   }, [modalOpen, modalNext, modalOpen])
 
   const handleDrawerClose = () => {
-    setDrawerOpen(false)
+    dispatch(setDrawerOpen(false))
   }
 
   const handleFilterClick = (filterId) => {
-    setDrawerOpen(false)
+    dispatch(setDrawerOpen(false))
     dispatch(filterAdded(galleryId, filterId, history))
   }
 
   const handleOpenDrawerClick = () => {
-    setDrawerOpen(true)
+    dispatch(setDrawerOpen(true))
   }
 
   const handleScroll = (event) => {

@@ -14,11 +14,13 @@ const useStyles = makeStyles((theme) => ({
   link: {
     display: 'flex',
     cursor: 'pointer',
+    color: theme.palette.text.main,
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
   },
   icon: {
     marginRight: theme.spacing(0.5),
-    width: 20,
-    height: 20,
   },
 }))
 

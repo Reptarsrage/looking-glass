@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { makeStyles } from '@material-ui/styles'
 import { isValidElementType } from 'react-is'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   scroll: {
     overflow: 'auto',
     '&::-webkit-scrollbar': {
@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
       backgroundColor: 'transparent',
     },
     '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#d5d5d5',
+      backgroundColor: theme.palette.secondary.main,
       borderRadius: '4px',
     },
   },

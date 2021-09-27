@@ -1,7 +1,7 @@
 {
   "name": "looking-glass",
   "productName": "The Looking-Glass",
-  "version": "0.4.11",
+  "version": "0.4.13",
   "description": "Electron application to browse various website content from one app. Built for development practice only.",
   "main": "./main.prod.js",
   "repository": {
