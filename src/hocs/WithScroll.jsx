@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/styles'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     position: 'relative',
     overflow: 'auto',
@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
       backgroundColor: 'transparent',
     },
     '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#d5d5d5',
+      backgroundColor: theme.palette.secondary.main,
       borderRadius: '4px',
     },
   },

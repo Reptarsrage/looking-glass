@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import SearchIcon from '@material-ui/icons/Search'
 import { useHistory, useLocation, matchPath } from 'react-router-dom'
 import Fade from '@material-ui/core/Fade'
-import { styled, alpha } from '@material-ui/core/styles'
+import { styled } from '@material-ui/core/styles'
 import InputBase from '@material-ui/core/InputBase'
 
 import { searchChange } from 'actions/galleryActions'
@@ -14,10 +14,7 @@ const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   '-webkit-app-region': 'no-drag',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
+  backgroundColor: theme.palette.background.default,
   marginLeft: theme.spacing(1),
   width: 'auto',
 }))

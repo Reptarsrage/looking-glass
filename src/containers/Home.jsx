@@ -39,8 +39,14 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: 'transparent',
     },
     '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#d5d5d5',
+      backgroundColor: theme.palette.secondary.main,
       borderRadius: '4px',
+    },
+  },
+  item: {
+    color: theme.palette.text.main,
+    '&:hover': {
+      color: theme.palette.primary.main,
     },
   },
 }))
@@ -87,7 +93,7 @@ export default function Home() {
     return (
       <List className={classes.list}>
         {modules.filter((id) => id !== FILE_SYSTEM_MODULE_ID).map(renderModule)}
-        <ListItem key="fs" button onClick={chooseFolder}>
+        <ListItem key="fs" button onClick={chooseFolder} className={classes.item}>
           <ListItemAvatar>
             <Avatar>
               <FolderIcon />

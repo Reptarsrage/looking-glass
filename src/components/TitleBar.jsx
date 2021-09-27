@@ -12,8 +12,8 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     height: '64px',
     width: 'calc(100% - 2px)',
-    background: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    background: theme.palette.grey[900],
+    color: theme.palette.getContrastText(theme.palette.grey[900]),
     boxShadow: '0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)',
   },
   dragRegion: {
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
     maskSize: '23.1%',
-    backgroundColor: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.getContrastText(theme.palette.grey[900]),
   },
 }))
 

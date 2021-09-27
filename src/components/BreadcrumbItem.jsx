@@ -4,9 +4,13 @@ import Link from '@material-ui/core/Link'
 import { makeStyles } from '@material-ui/styles'
 import { Link as RouterLink } from 'react-router-dom'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   link: {
     display: 'flex',
+    color: theme.palette.text.main,
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
   },
 }))
 
