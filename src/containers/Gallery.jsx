@@ -158,7 +158,9 @@ export default function Gallery({ overlayButtonThreshold }) {
     }
 
     // check if first page is available and not already fetched, and fetch it
-    dispatch(fetchGallery(galleryId, filters, sort, search))
+    if (!fetched && !fetching) {
+      dispatch(fetchGallery(galleryId, filters, sort, search))
+    }
   }
 
   const loadMoreItems = () => {
