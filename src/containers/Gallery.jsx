@@ -36,7 +36,7 @@ import FilterList from 'components/FilterList'
 import SelectedFilters from 'components/SelectedFilters'
 import Modal from 'components/Modal'
 import LoadingIndicator from 'components/LoadingIndicator'
-import EndOfScrollToast from 'components/EndOfScrollToast'
+import Toast from 'components/Toast'
 import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
@@ -158,7 +158,9 @@ export default function Gallery({ overlayButtonThreshold }) {
     }
 
     // check if first page is available and not already fetched, and fetch it
-    dispatch(fetchGallery(galleryId, filters, sort, search))
+    if (!fetched && !fetching) {
+      dispatch(fetchGallery(galleryId, filters, sort, search))
+    }
   }
 
   const loadMoreItems = () => {
@@ -201,7 +203,12 @@ export default function Gallery({ overlayButtonThreshold }) {
 
       <Modal moduleId={moduleId} />
 
-      <EndOfScrollToast open={showEndOfScrollToast} onClose={() => setShowEndOfScrollToast(false)} />
+      <Toast
+        open={showEndOfScrollToast}
+        severity="info"
+        message="You've reached the end!"
+        onClose={() => setShowEndOfScrollToast(false)}
+      />
 
       {fetching && !fetched && <LoadingIndicator />}
 
