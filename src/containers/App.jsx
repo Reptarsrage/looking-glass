@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/styles'
-import Container from '@material-ui/core/Container'
+import { makeStyles } from '@mui/styles'
+import Container from '@mui/material/Container'
 
 import Progress from 'components/Progress'
 import TitleBar from 'components/TitleBar'

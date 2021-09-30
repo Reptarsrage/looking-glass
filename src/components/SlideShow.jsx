@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import Fab from '@material-ui/core/Fab'
+import { makeStyles } from '@mui/styles'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import Fab from '@mui/material/Fab'
 import clsx from 'clsx'
-import Zoom from '@material-ui/core/Zoom'
+import Zoom from '@mui/material/Zoom'
 
 import {
   modalItemIdSelector,

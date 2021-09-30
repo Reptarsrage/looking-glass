@@ -1,7 +1,7 @@
 import React from 'react'
-import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/styles'
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied'
+import Typography from '@mui/material/Typography'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(() => ({
   wrapper: {

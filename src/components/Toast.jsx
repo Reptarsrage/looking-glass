@@ -1,6 +1,6 @@
 import React from 'react'
-import Snackbar from '@material-ui/core/Snackbar'
-import Alert from '@material-ui/core/Alert'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 import PropTypes from 'prop-types'
 
 const Toast = ({ message, onClose, open, severity }) => (

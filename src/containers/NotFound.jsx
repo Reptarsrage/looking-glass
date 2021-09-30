@@ -1,9 +1,9 @@
 import React from 'react'
-import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
-import HomeIcon from '@material-ui/icons/Home'
+import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
+import HomeIcon from '@mui/icons-material/Home'
 import { Link as RouterLink } from 'react-router-dom'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   body: {
