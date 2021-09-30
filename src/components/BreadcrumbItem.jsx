@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Link from '@material-ui/core/Link'
-import { makeStyles } from '@material-ui/styles'
+import Link from '@mui/material/Link'
+import { makeStyles } from '@mui/styles'
 import { Link as RouterLink } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({

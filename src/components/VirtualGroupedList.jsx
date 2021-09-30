@@ -1,7 +1,7 @@
 import { createElement, useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 import { isValidElementType } from 'react-is'
 
 const useStyles = makeStyles((theme) => ({
@@ -137,13 +137,16 @@ export default function VirtualGroupedList({
             height: (sectionCount + 1) * itemSize, // +1 for section header
           },
         },
-        createElement('ul', {
-          children: items,
-          className: classes.listSectionInner,
-          style: {
-            height: (sectionCount + 1) * itemSize, // +1 for section header
+        createElement(
+          'ul',
+          {
+            className: classes.listSectionInner,
+            style: {
+              height: (sectionCount + 1) * itemSize, // +1 for section header
+            },
           },
-        })
+          items
+        )
       )
     )
 
@@ -151,13 +154,16 @@ export default function VirtualGroupedList({
   })
 
   // wrap all sections in an outer list
-  return createElement(listComponent || 'ul', {
-    onScroll,
-    children: sections,
-    className: clsx(classes.outerList, classes.scroll),
-    style: { width, height },
-    subheader: createElement('li'),
-  })
+  return createElement(
+    listComponent || 'ul',
+    {
+      onScroll,
+      className: clsx(classes.outerList, classes.scroll),
+      style: { width, height },
+      subheader: createElement('li'),
+    },
+    sections
+  )
 }
 
 VirtualGroupedList.defaultProps = {

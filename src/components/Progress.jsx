@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 import clsx from 'clsx'
 import { useSelector } from 'react-redux'
 

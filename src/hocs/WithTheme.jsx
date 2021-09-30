@@ -1,7 +1,7 @@
 import React from 'react'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { ThemeProvider, createTheme } from '@material-ui/core/styles'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 // https://material-ui.com/customization/palette/
 const darkTheme = {

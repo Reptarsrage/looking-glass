@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ListSubheader from '@material-ui/core/ListSubheader'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import ListSubheader from '@mui/material/ListSubheader'
+import LinearProgress from '@mui/material/LinearProgress'
 import { useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 
 import { filterSectionNameSelector, filterSectionFetchingSelector } from 'selectors/filterSectionSelectors'
 import { moduleFilterSectionsSelector } from 'selectors/moduleSelectors'
