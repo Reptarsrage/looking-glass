@@ -247,6 +247,7 @@ const Masonry = ({
   height,
   scrollTop,
   gutter,
+  overscan,
   scrollDirection,
   forceRenderItems,
   scrollBarSize,
@@ -320,6 +321,7 @@ const Masonry = ({
             width={columnWidth}
             height={height}
             left={left}
+            overscan={overscan}
             getAdjustedDimensionsForItem={(id) =>
               memoGetAdjustedItemDimensions({
                 id,
@@ -349,6 +351,7 @@ Masonry.defaultProps = {
   scrollTop: 0,
   scrollBarSize: 10,
   gutter: 8,
+  overscan: 1000,
   columnCount: 3,
   scrollDirection: 0,
   forceRenderItems: [],
@@ -366,6 +369,7 @@ Masonry.propTypes = {
   columnCount: PropTypes.number,
   scrollTop: PropTypes.number,
   gutter: PropTypes.number,
+  overscan: PropTypes.number,
   scrollBarSize: PropTypes.number,
   scrollDirection: PropTypes.number,
   forceRenderItems: PropTypes.arrayOf(PropTypes.string),

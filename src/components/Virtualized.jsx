@@ -51,11 +51,12 @@ function findNearestItem(start, end, target, itemPositions, items) {
  * @param {*} gutter The space between items
  * @param {*} height The container height
  * @param {*} scrollTop The container's current scroll position
+ * @param {*} overscan The overscan value
  * @param {*} width The container's width
  * @param {*} saved A collection of all previously computed positions
  * @param {*} getItemDimensions Function that takes an item ID and returns dimensions for the item
  */
-function computePositions(items, left, gutter, height, scrollTop, width, saved, getItemDimensions) {
+function computePositions(items, left, gutter, height, scrollTop, overscan, width, saved, getItemDimensions) {
   // if width has changed, or items have changed (besides growing, which is ok)
   if (
     width !== saved.width ||
@@ -67,7 +68,7 @@ function computePositions(items, left, gutter, height, scrollTop, width, saved, 
     saved.width = width
   }
 
-  const bottom = scrollTop + height
+  const bottom = scrollTop + height + overscan
   let top = gutter
   if (saved.lastComputedIdx >= 0) {
     const lastComputedItem = saved.computedById[items[saved.lastComputedIdx]]
@@ -117,6 +118,7 @@ const Virtualized = ({
   items,
   scrollTop,
   gutter,
+  overscan,
   scrollDirection,
   forceRenderItems,
   ChildComponent,
@@ -130,11 +132,13 @@ const Virtualized = ({
   }).current
 
   // compute positions for items in or above the current window
-  computePositions(items, left, gutter, height, scrollTop, width, saved, getAdjustedDimensionsForItem)
+  computePositions(items, left, gutter, height, scrollTop, overscan, width, saved, getAdjustedDimensionsForItem)
 
   // calculate range of visible items
-  const start = findNearestItem(0, saved.lastComputedIdx, scrollTop, saved.computedById, items)
-  const end = findNearestItem(start, saved.lastComputedIdx, scrollTop + height, saved.computedById, items)
+  const startPos = scrollDirection > 0 ? scrollTop : scrollTop - overscan
+  const endPos = scrollDirection > 0 ? scrollTop + height + overscan : scrollTop + height
+  const start = findNearestItem(0, saved.lastComputedIdx, startPos, saved.computedById, items, 0)
+  const end = findNearestItem(start, saved.lastComputedIdx, endPos, saved.computedById, items)
 
   // check if we've been requested to render any additional items outside of the visible window
   if (forceRenderItems.some(([id]) => !(id in saved.computedById))) {
@@ -168,6 +172,7 @@ const Virtualized = ({
 
 Virtualized.defaultProps = {
   ChildComponent: Item,
+  overscan: 1000,
 }
 
 Virtualized.propTypes = {
@@ -185,6 +190,7 @@ Virtualized.propTypes = {
   height: PropTypes.number.isRequired,
   scrollTop: PropTypes.number.isRequired,
   gutter: PropTypes.number.isRequired,
+  overscan: PropTypes.number,
   scrollDirection: PropTypes.number.isRequired,
   forceRenderItems: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
 }
