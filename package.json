@@ -56,7 +56,7 @@
     "@commitlint/cli": "13.2.0",
     "@commitlint/config-conventional": "13.2.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.1",
-    "@testing-library/dom": "8.7.0",
+    "@testing-library/dom": "8.7.1",
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "12.1.1",
     "@testing-library/user-event": "13.2.1",
