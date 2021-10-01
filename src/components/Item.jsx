@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, memo } from 'react'
+import React, { useEffect, useState, memo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@mui/styles'
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 function Item({ itemId, style }) {
   const classes = useStyles()
   const history = useHistory()
-  const itemRef = useRef(null)
-  const cornerRef = useRef(null)
+  const [itemEl, setItemEl] = useState(null)
+  const [cornerEl, setCornerEl] = useState(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
   const sources = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const modalItemId = useSelector(modalItemIdSelector)
@@ -112,13 +112,25 @@ function Item({ itemId, style }) {
     <Video sources={sources} poster={poster} width={width} height={height} muted controls={false} autoPlay loop />
   )
 
+  const cornerRef = useCallback((node) => {
+    if (node !== null) {
+      setCornerEl(node)
+    }
+  }, [])
+
+  const itemRef = useCallback((node) => {
+    if (node !== null) {
+      setItemEl(node)
+    }
+  }, [])
+
   return (
     <Tooltip
       title={name}
       placement="left"
       PopperProps={{
-        anchorEl: cornerRef.current,
-        container: itemRef.current,
+        anchorEl: cornerEl,
+        container: itemEl,
       }}
     >
       <Paper
