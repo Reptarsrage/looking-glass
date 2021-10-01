@@ -64,7 +64,7 @@
     "babel-jest": "27.2.4",
     "babel-loader": "8.2.2",
     "babel-plugin-module-resolver": "4.1.0",
-    "browserslist": "4.17.1",
+    "browserslist": "4.17.2",
     "concurrently": "6.2.2",
     "cross-env": "7.0.3",
     "css-loader": "6.3.0",
