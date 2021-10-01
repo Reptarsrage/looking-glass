@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Redirect, useParams } from 'react-router-dom'
 import Avatar from '@mui/material/Avatar'
@@ -104,7 +104,7 @@ export default function OAuth() {
     })
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     setModalFetching(true)
 
     try {
@@ -114,7 +114,7 @@ export default function OAuth() {
     } catch (e) {
       setModalFetching(false)
     }
-  }
+  }, [moduleId, oAuthUrl])
 
   if (fetched) {
     // redirect to whatever gallery the user was on before

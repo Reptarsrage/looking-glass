@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { getCurrentWindow } from '@electron/remote'
 import { makeStyles } from '@mui/styles'
 import clsx from 'clsx'
@@ -83,9 +83,9 @@ const useStyles = makeStyles((theme) => ({
 export default function TitleBar() {
   const classes = useStyles()
   const win = getCurrentWindow()
-  const [maximized, setMaximized] = React.useState(win.isMaximized())
+  const [maximized, setMaximized] = useState(win.isMaximized())
 
-  React.useEffect(() => {
+  useEffect(() => {
     win.on('maximize', toggleMaxRestoreButtons)
     win.on('unmaximize', toggleMaxRestoreButtons)
 
@@ -95,27 +95,27 @@ export default function TitleBar() {
     }
   }, [win])
 
-  const toggleMaxRestoreButtons = React.useCallback(() => {
+  const toggleMaxRestoreButtons = useCallback(() => {
     setMaximized(win.isMaximized())
   }, [win])
 
-  const minimize = React.useCallback(() => {
+  const minimize = useCallback(() => {
     win.minimize()
   }, [win])
 
-  const maximize = React.useCallback(() => {
+  const maximize = useCallback(() => {
     win.maximize()
   }, [win])
 
-  const unmaximize = React.useCallback(() => {
+  const unmaximize = useCallback(() => {
     win.unmaximize()
   }, [win])
 
-  const close = React.useCallback(() => {
+  const close = useCallback(() => {
     win.close()
   }, [win])
 
-  const handleKeyPress = React.useCallback(() => {})
+  const handleKeyPress = useCallback(() => {})
 
   return (
     <header className={classes.titleBar}>

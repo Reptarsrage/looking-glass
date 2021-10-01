@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -54,7 +54,7 @@ export default function NavButtons() {
     }
   }, [pathname, search])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     const galleryId = parseGalleryIdFromPathname(stack[ptr].pathname)
     const nextGalleryId = ptr === 0 ? null : parseGalleryIdFromPathname(stack[ptr - 1].pathname)
     if (galleryId === nextGalleryId) {
@@ -63,9 +63,9 @@ export default function NavButtons() {
 
     setPtr(ptr - 1)
     history.goBack()
-  }
+  }, [stack, ptr])
 
-  const handleForward = () => {
+  const handleForward = useCallback(() => {
     const galleryId = ptr === -1 ? null : parseGalleryIdFromPathname(stack[ptr].pathname)
     const nextGalleryId = parseGalleryIdFromPathname(stack[ptr + 1].pathname)
     if (galleryId === nextGalleryId) {
@@ -74,7 +74,7 @@ export default function NavButtons() {
 
     setPtr(ptr + 1)
     history.goForward()
-  }
+  }, [stack, ptr])
 
   return (
     <Fade in={!modalOpen && !drawerOpen} unmountOnExit>

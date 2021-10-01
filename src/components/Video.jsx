@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import qs from 'qs'
 import { makeStyles } from '@mui/styles'
@@ -20,6 +20,25 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+function Source({ uri }) {
+  const mimeType = useMemo(() => {
+    let url = new URL(uri)
+
+    const query = qs.parse(url.search.slice(1))
+    if (query && query.uri) {
+      url = new URL(query.uri)
+    }
+
+    return `video/${extname(url.pathname).slice(1).split('?')[0] || 'mp4'}`
+  }, [uri])
+
+  return <source src={uri} type={mimeType} />
+}
+
+Source.propTypes = {
+  uri: PropTypes.string.isRequired,
+}
+
 export default function Video({ sources, poster, width, height, title, styleName, ...passThroughProps }) {
   const classes = useStyles()
   const volume = useSelector(volumeSelector)
@@ -33,28 +52,20 @@ export default function Video({ sources, poster, width, height, title, styleName
     current.volume = volume
   }, [])
 
-  const handleVolumechange = debounce((event) => {
-    // ignore the event that is fired from useEffect
-    // (the initial setting of the volume)
-    if (initRef.current.init) {
-      initRef.current.init = false
-      return
-    }
+  const handleVolumechange = useCallback(
+    debounce((event) => {
+      // ignore the event that is fired from useEffect
+      // (the initial setting of the volume)
+      if (initRef.current.init) {
+        initRef.current.init = false
+        return
+      }
 
-    const { target } = event
-    dispatch(setVolume(target.muted ? 0 : target.volume))
-  }, 200)
-
-  const extractMimeType = (uri) => {
-    let url = new URL(uri)
-
-    const query = qs.parse(url.search.slice(1))
-    if (query && query.uri) {
-      url = new URL(query.uri)
-    }
-
-    return `video/${extname(url.pathname).slice(1).split('?')[0] || 'mp4'}`
-  }
+      const { target } = event
+      dispatch(setVolume(target.muted ? 0 : target.volume))
+    }, 200),
+    [initRef.current.init]
+  )
 
   return (
     // eslint-disable-next-line jsx-a11y/media-has-caption
@@ -68,7 +79,7 @@ export default function Video({ sources, poster, width, height, title, styleName
       onVolumeChange={handleVolumechange}
     >
       {sources.map(({ url }) => (
-        <source key={url} src={url} type={extractMimeType(url)} />
+        <Source key={url} uri={url} />
       ))}
     </motion.video>
   )

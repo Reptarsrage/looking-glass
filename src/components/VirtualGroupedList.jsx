@@ -1,4 +1,4 @@
-import { createElement, useState, useMemo } from 'react'
+import { createElement, useState, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { makeStyles } from '@mui/styles'
@@ -65,12 +65,15 @@ export default function VirtualGroupedList({
   const [scrollDirection, setScrollDirection] = useState(0)
 
   // keep track of scroll offset to render only the items on screen
-  const onScroll = (event) => {
-    const { clientHeight, scrollHeight, scrollTop } = event.currentTarget
-    const newScrollOffset = Math.max(0, Math.min(scrollTop, scrollHeight - clientHeight))
-    setScrollDirection(newScrollOffset > scrollOffset ? 1 : -1)
-    setScrollOffset(newScrollOffset)
-  }
+  const onScroll = useCallback(
+    (event) => {
+      const { clientHeight, scrollHeight, scrollTop } = event.currentTarget
+      const newScrollOffset = Math.max(0, Math.min(scrollTop, scrollHeight - clientHeight))
+      setScrollDirection(newScrollOffset > scrollOffset ? 1 : -1)
+      setScrollOffset(newScrollOffset)
+    },
+    [scrollOffset]
+  )
 
   // calculate range of visible items
   let totalItems = sectionCounts.reduce((acc, cur) => acc + cur + 1, 0)

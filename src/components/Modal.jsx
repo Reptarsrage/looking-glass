@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
@@ -106,47 +106,50 @@ export default function Modal({ moduleId }) {
   const modalItemHasFilters = useSelector(modalItemHasFiltersSelector)
   const supportsItemFilters = useSelector((state) => moduleSupportsItemFiltersSelector(state, { moduleId }))
 
-  const handleAnimationComplete = () => {
+  const handleAnimationComplete = useCallback(() => {
     if (!modalOpen) {
       dispatch(modalClear())
     }
-  }
+  }, [modalOpen])
 
-  const close = () => {
+  const close = useCallback(() => {
     dispatch(modalClose())
-  }
+  }, [])
 
-  const drawerOpen = () => {
+  const drawerOpen = useCallback(() => {
     setOpen(true)
-  }
+  }, [])
 
-  const toggleCaption = () => {
-    setShowCaption(!showCaption)
-  }
+  const toggleCaption = useCallback(() => {
+    setShowCaption((prevValue) => !prevValue)
+  }, [])
 
-  const drawerClose = (filterId) => {
-    setOpen(false)
+  const drawerClose = useCallback(
+    (filterId) => {
+      setOpen(false)
 
-    if (filterId) {
-      dispatch(filterAdded(defaultGalleryId, filterId, history))
-    }
-  }
+      if (filterId) {
+        dispatch(filterAdded(defaultGalleryId, filterId, history))
+      }
+    },
+    [defaultGalleryId]
+  )
 
-  const onAnimationStart = () => {
+  const onAnimationStart = useCallback(() => {
     setAnimating(true)
-  }
+  }, [])
 
-  const handleAuthorClick = () => {
+  const handleAuthorClick = useCallback(() => {
     dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history, true))
-  }
+  }, [defaultGalleryId, modalItem])
 
-  const handleSourceClick = () => {
+  const handleSourceClick = useCallback(() => {
     dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history, true))
-  }
+  }, [defaultGalleryId, modalItem])
 
-  const onAnimationComplete = () => {
+  const onAnimationComplete = useCallback(() => {
     setAnimating(false)
-  }
+  }, [])
 
   let initial = false
   if (modalBounds) {

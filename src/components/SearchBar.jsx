@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchIcon from '@mui/icons-material/Search'
 import { useHistory, useLocation, matchPath } from 'react-router-dom'
@@ -62,7 +62,7 @@ export default function SearchBar() {
     setSearch(querySearch)
   }, [querySearch])
 
-  const handleInput = React.useCallback(
+  const handleInput = useCallback(
     (event) => {
       const { value } = event.target
       setSearch(value)
@@ -71,12 +71,12 @@ export default function SearchBar() {
     [galleryId]
   )
 
-  const handleCancel = React.useCallback(() => {
+  const handleCancel = useCallback(() => {
     setSearch('')
     dispatch(searchChange(galleryId, '', history))
   }, [galleryId])
 
-  const handleKeyUp = React.useCallback(
+  const handleKeyUp = useCallback(
     (e) => {
       if (e.charCode === 27 || e.key === 'Escape') {
         handleCancel()

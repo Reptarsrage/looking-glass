@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import Button from '@mui/material/Button'
 import Popover from '@mui/material/Popover'
 import List from '@mui/material/List'
@@ -32,17 +32,20 @@ export default function SortMenu({ moduleId, galleryId }) {
   const sortValues = useSelector((state) => moduleValuesSelector(state, { moduleId, galleryId, search }))
   const moduleSupportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))
 
-  const handleClick = (event) => {
+  const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget)
-  }
+  }, [])
 
-  const handleClose = (valueId) => {
-    if (valueId) {
-      dispatch(sortChange(galleryId, valueId, history))
-    }
+  const handleClose = useCallback(
+    (valueId) => {
+      if (valueId) {
+        dispatch(sortChange(galleryId, valueId, history))
+      }
 
-    setAnchorEl(null)
-  }
+      setAnchorEl(null)
+    },
+    [galleryId]
+  )
 
   if (!moduleSupportsSorting || sortValues.length === 0) {
     return null

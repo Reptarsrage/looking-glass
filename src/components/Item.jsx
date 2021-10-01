@@ -83,28 +83,31 @@ function Item({ itemId, style }) {
     }
   }, [modalItemId])
 
-  const handleClick = (event) => {
-    event.preventDefault()
+  const handleClick = useCallback(
+    (event) => {
+      event.preventDefault()
 
-    if (isGallery) {
-      history.push(itemGalleryUrl)
-      return
-    }
+      if (isGallery) {
+        history.push(itemGalleryUrl)
+        return
+      }
 
-    const { currentTarget } = event
-    const bounds = currentTarget.getBoundingClientRect()
-    const initialBounds = {
-      top: bounds.top,
-      left: bounds.left,
-      width: bounds.width,
-      height: bounds.height,
-    }
+      const { currentTarget } = event
+      const bounds = currentTarget.getBoundingClientRect()
+      const initialBounds = {
+        top: bounds.top,
+        left: bounds.left,
+        width: bounds.width,
+        height: bounds.height,
+      }
 
-    setIgnoreEffect(true)
-    dispatch(modalBoundsUpdate(initialBounds))
-    dispatch(modalSetItem(itemId))
-    dispatch(modalOpen())
-  }
+      setIgnoreEffect(true)
+      dispatch(modalBoundsUpdate(initialBounds))
+      dispatch(modalSetItem(itemId))
+      dispatch(modalOpen())
+    },
+    [isGallery]
+  )
 
   const renderImage = () => <Image sources={sources} title={name} width={width} height={height} />
 

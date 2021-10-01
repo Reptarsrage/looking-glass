@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
@@ -109,47 +109,53 @@ export default function Gallery({ overlayButtonThreshold }) {
     }
   }, [modalOpen, modalNext, modalOpen])
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = useCallback(() => {
     dispatch(setDrawerOpen(false))
-  }
+  }, [])
 
-  const handleFilterClick = (filterId) => {
-    dispatch(setDrawerOpen(false))
-    dispatch(filterAdded(galleryId, filterId, history))
-  }
+  const handleFilterClick = useCallback(
+    (filterId) => {
+      dispatch(setDrawerOpen(false))
+      dispatch(filterAdded(galleryId, filterId, history))
+    },
+    [galleryId]
+  )
 
-  const handleOpenDrawerClick = () => {
+  const handleOpenDrawerClick = useCallback(() => {
     dispatch(setDrawerOpen(true))
-  }
+  }, [])
 
-  const handleScroll = (event) => {
-    const { clientHeight, scrollTop, scrollHeight } = event.currentTarget
+  const handleScroll = useCallback(
+    (event) => {
+      const { clientHeight, scrollTop, scrollHeight } = event.currentTarget
 
-    if (scrollTop >= overlayButtonThreshold && !showOverlayButtons) {
-      setShowOverlayButtons(true)
-    } else if (scrollTop < overlayButtonThreshold && showOverlayButtons) {
-      setShowOverlayButtons(false)
-    }
+      if (scrollTop >= overlayButtonThreshold && !showOverlayButtons) {
+        setShowOverlayButtons(true)
+      } else if (scrollTop < overlayButtonThreshold && showOverlayButtons) {
+        setShowOverlayButtons(false)
+      }
 
-    // load next page as soon as user has scrolled to
-    // the last loaded page
-    // this works seamlessly assuming pages are tall enough
-    // to take up at least the whole screen
-    const currentScroll = scrollTop + clientHeight
-    const threshold = ((page - 1) / page) * scrollHeight
-    if (currentScroll >= threshold) {
-      loadMoreItems()
-    }
+      // load next page as soon as user has scrolled to
+      // the last loaded page
+      // this works seamlessly assuming pages are tall enough
+      // to take up at least the whole screen
+      const currentScroll = scrollTop + clientHeight
+      const threshold = ((page - 1) / page) * scrollHeight
+      if (currentScroll >= threshold) {
+        loadMoreItems()
+      }
 
-    // save position for later
-    dispatch(saveScrollPosition(galleryId, scrollTop))
+      // save position for later
+      dispatch(saveScrollPosition(galleryId, scrollTop))
 
-    // show end of the line toast
-    const scrolledToBottom = scrollTop + clientHeight >= scrollHeight - 10
-    if (scrolledToBottom && !hasNext && !modalOpen) {
-      setShowEndOfScrollToast(true)
-    }
-  }
+      // show end of the line toast
+      const scrolledToBottom = scrollTop + clientHeight >= scrollHeight - 10
+      if (scrolledToBottom && !hasNext && !modalOpen) {
+        setShowEndOfScrollToast(true)
+      }
+    },
+    [galleryId, page, hasNext, modalOpen, overlayButtonThreshold, showOverlayButtons]
+  )
 
   const fetchInitialItems = () => {
     // abort if waiting for authentication

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -25,8 +25,12 @@ export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onCli
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId, sort, search })
   )
 
+  const handleClick = useCallback(() => {
+    onClick(valueId)
+  }, [onClick, valueId])
+
   return (
-    <ListItem button onClick={onClick}>
+    <ListItem button onClick={handleClick}>
       <ListItemText primary={name} />
       {valueIsCurrentlySelected && (
         <ListItemIcon className={classes.icon}>

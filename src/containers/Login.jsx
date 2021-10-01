@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Redirect, useParams } from 'react-router-dom'
 import Avatar from '@mui/material/Avatar'
@@ -77,26 +77,29 @@ export default function Login() {
   const error = useSelector((state) => errorSelector(state, { moduleId }))
   const dispatch = useDispatch()
 
-  const handleClickShowPassword = () => {
+  const handleClickShowPassword = useCallback(() => {
     setShowPassword((prev) => !prev)
-  }
+  }, [])
 
-  const handleRememberMeChange = (event) => {
+  const handleRememberMeChange = useCallback((event) => {
     setRememberMe(event.target.checked)
-  }
+  }, [])
 
-  const handleUsernameChange = (event) => {
+  const handleUsernameChange = useCallback((event) => {
     setUsername(event.target.value)
-  }
+  }, [])
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = useCallback((event) => {
     setPassword(event.target.value)
-  }
+  }, [])
 
-  const handleSubmit = (event) => {
-    dispatch(login(moduleId, username, password))
-    event.preventDefault()
-  }
+  const handleSubmit = useCallback(
+    (event) => {
+      dispatch(login(moduleId, username, password))
+      event.preventDefault()
+    },
+    [moduleId, username, password]
+  )
 
   if (fetched) {
     // redirect to whatever gallery the user was on before

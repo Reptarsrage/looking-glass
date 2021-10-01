@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@mui/styles'
 
@@ -24,22 +24,25 @@ const withScroll = (WrappedComponent) => {
     const [scrollTop, setScrollTop] = useState(initialScrollTop || 0)
     const [scrollDirection, setScrollDirection] = useState(1)
 
-    const handleScroll = (event) => {
-      const { clientHeight, scrollTop: targetScrollTop, scrollHeight: targetScrollHeight } = event.currentTarget
-      if (targetScrollTop === scrollTop) {
-        return
-      }
+    const handleScroll = useCallback(
+      (event) => {
+        const { clientHeight, scrollTop: targetScrollTop, scrollHeight: targetScrollHeight } = event.currentTarget
+        if (targetScrollTop === scrollTop) {
+          return
+        }
 
-      const newScrollTop = Math.max(0, Math.min(targetScrollTop, targetScrollHeight - clientHeight))
+        const newScrollTop = Math.max(0, Math.min(targetScrollTop, targetScrollHeight - clientHeight))
 
-      setScrollTop(newScrollTop)
-      setScrollDirection(scrollTop < targetScrollTop ? 1 : -1)
+        setScrollTop(newScrollTop)
+        setScrollDirection(scrollTop < targetScrollTop ? 1 : -1)
 
-      // callback
-      if (onScroll) {
-        onScroll({ currentTarget: event.currentTarget })
-      }
-    }
+        // callback
+        if (onScroll) {
+          onScroll({ currentTarget: event.currentTarget })
+        }
+      },
+      [scrollTop, scrollDirection]
+    )
 
     useEffect(() => {
       // scroll to initial position on mount

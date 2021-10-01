@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import Popover from '@mui/material/Popover'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -38,18 +38,24 @@ export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) 
   const ariaId = `${valueId}-nested-sort-menu`
   const hasNestedValues = Array.isArray(nestedValues) && nestedValues.length > 0
 
-  const handleClick = (event) => {
-    if (hasNestedValues) {
-      setAnchorEl(event.currentTarget)
-    } else {
-      onClick(valueId)
-    }
-  }
+  const handleClick = useCallback(
+    (event) => {
+      if (hasNestedValues) {
+        setAnchorEl(event.currentTarget)
+      } else {
+        onClick(valueId)
+      }
+    },
+    [valueId, hasNestedValues, onClick]
+  )
 
-  const handleClose = (id) => {
-    setAnchorEl(null)
-    onClick(id)
-  }
+  const handleClose = useCallback(
+    (id) => {
+      setAnchorEl(null)
+      onClick(id)
+    },
+    [onClick]
+  )
 
   return (
     <ListItem button onClick={handleClick}>
@@ -84,7 +90,7 @@ export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) 
             {nestedValues.map((nestedValueId) => (
               <NestedSortMenuItem
                 key={nestedValueId}
-                onClick={() => handleClose(nestedValueId)}
+                onClick={handleClose}
                 valueId={nestedValueId}
                 moduleId={moduleId}
                 galleryId={galleryId}

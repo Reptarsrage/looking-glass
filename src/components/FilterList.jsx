@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@mui/styles'
 import ListItem from '@mui/material/ListItem'
@@ -40,9 +40,9 @@ function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick
   const filterId = sectionItems[itemIndex]
   const name = useSelector((state) => filterNameSelector(state, { filterId }))
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     onClick(filterId)
-  }
+  }, [onClick])
 
   return (
     <ListItem button style={style} onClick={handleClick}>
@@ -101,9 +101,9 @@ export default function FilterList({ moduleId, onClick }) {
     }
   }, [fetched, fetching, moduleId])
 
-  const handleFilterSearchChange = (event) => {
+  const handleFilterSearchChange = useCallback((event) => {
     setSearch(event.target.value)
-  }
+  }, [])
 
   if (fetching) {
     return <LoadingIndicator size={50} />

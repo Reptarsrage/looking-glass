@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { makeStyles } from '@mui/styles'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -67,7 +67,7 @@ export default function Home() {
     }
   }, [])
 
-  const chooseFolder = () => {
+  const chooseFolder = useCallback(() => {
     dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const directoryPath = filePaths[0]
@@ -77,7 +77,7 @@ export default function Home() {
         history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
       }
     })
-  }
+  }, [])
 
   const renderModule = (moduleId) => <ModuleItem key={moduleId} moduleId={moduleId} />
 
