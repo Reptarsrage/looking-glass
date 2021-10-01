@@ -1,49 +1,50 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import SearchIcon from '@material-ui/icons/Search'
+import SearchIcon from '@mui/icons-material/Search'
 import { useHistory, useLocation, matchPath } from 'react-router-dom'
-import Fade from '@material-ui/core/Fade'
-import { styled } from '@material-ui/core/styles'
-import InputBase from '@material-ui/core/InputBase'
+import Fade from '@mui/material/Fade'
+import InputBase from '@mui/material/InputBase'
+import { makeStyles } from '@mui/styles'
 
 import { searchChange } from 'actions/galleryActions'
 import { modalOpenSelector, drawerOpenSelector } from '../selectors/modalSelectors'
 import useQuery from '../hooks/useQuery'
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  '-webkit-app-region': 'no-drag',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.background.default,
-  marginLeft: theme.spacing(1),
-  width: 'auto',
-}))
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}))
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '16ch',
-    '&:focus': {
-      width: '28ch',
+const useStyles = makeStyles((theme) => ({
+  search: {
+    position: 'relative',
+    '-webkit-app-region': 'no-drag',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.background.default,
+    marginLeft: theme.spacing(1),
+    width: 'auto',
+  },
+  searchIconWrapper: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchInput: {
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create('width'),
+      width: '16ch',
+      '&:focus': {
+        width: '28ch',
+      },
     },
   },
 }))
 
 export default function SearchBar() {
+  const classes = useStyles()
   const history = useHistory()
   const query = useQuery()
   const dispatch = useDispatch()
@@ -61,7 +62,7 @@ export default function SearchBar() {
     setSearch(querySearch)
   }, [querySearch])
 
-  const handleInput = React.useCallback(
+  const handleInput = useCallback(
     (event) => {
       const { value } = event.target
       setSearch(value)
@@ -70,12 +71,12 @@ export default function SearchBar() {
     [galleryId]
   )
 
-  const handleCancel = React.useCallback(() => {
+  const handleCancel = useCallback(() => {
     setSearch('')
     dispatch(searchChange(galleryId, '', history))
   }, [galleryId])
 
-  const handleKeyUp = React.useCallback(
+  const handleKeyUp = useCallback(
     (e) => {
       if (e.charCode === 27 || e.key === 'Escape') {
         handleCancel()
@@ -86,11 +87,13 @@ export default function SearchBar() {
 
   return (
     <Fade in={moduleId && galleryId && !modalOpen && !drawerOpen} unmountOnExit>
-      <Search>
-        <SearchIconWrapper>
+      <div className={classes.search}>
+        <div className={classes.searchIconWrapper}>
           <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
+        </div>
+
+        <InputBase
+          className={classes.searchInput}
           placeholder="Search…"
           inputProps={{ 'aria-label': 'search' }}
           value={search}
@@ -98,7 +101,7 @@ export default function SearchBar() {
           onKeyUp={handleKeyUp}
           disabled={disabled}
         />
-      </Search>
+      </div>
     </Fade>
   )
 }

@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Redirect, useParams } from 'react-router-dom'
-import Avatar from '@material-ui/core/Avatar'
-import Button from '@material-ui/core/Button'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/styles'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import { makeStyles } from '@mui/styles'
 import { parse } from 'url'
 import { BrowserWindow, getCurrentWindow } from '@electron/remote'
 import qs from 'qs'
@@ -104,7 +104,7 @@ export default function OAuth() {
     })
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     setModalFetching(true)
 
     try {
@@ -114,7 +114,7 @@ export default function OAuth() {
     } catch (e) {
       setModalFetching(false)
     }
-  }
+  }, [moduleId, oAuthUrl])
 
   if (fetched) {
     // redirect to whatever gallery the user was on before

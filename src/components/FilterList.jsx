@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/styles'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import TextField from '@material-ui/core/TextField'
+import { makeStyles } from '@mui/styles'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import TextField from '@mui/material/TextField'
 import { useDispatch, useSelector } from 'react-redux'
-import List from '@material-ui/core/List'
+import List from '@mui/material/List'
 
 import { filterNameSelector } from 'selectors/filterSelectors'
 import { fetchFilters } from 'actions/filterActions'
@@ -40,9 +40,9 @@ function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick
   const filterId = sectionItems[itemIndex]
   const name = useSelector((state) => filterNameSelector(state, { filterId }))
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     onClick(filterId)
-  }
+  }, [onClick])
 
   return (
     <ListItem button style={style} onClick={handleClick}>
@@ -101,9 +101,9 @@ export default function FilterList({ moduleId, onClick }) {
     }
   }, [fetched, fetching, moduleId])
 
-  const handleFilterSearchChange = (event) => {
+  const handleFilterSearchChange = useCallback((event) => {
     setSearch(event.target.value)
-  }
+  }, [])
 
   if (fetching) {
     return <LoadingIndicator size={50} />

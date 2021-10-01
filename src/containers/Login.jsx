@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Redirect, useParams } from 'react-router-dom'
-import Avatar from '@material-ui/core/Avatar'
-import Visibility from '@material-ui/icons/Visibility'
-import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import Button from '@material-ui/core/Button'
-import FormControl from '@material-ui/core/FormControl'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Input from '@material-ui/core/Input'
-import InputLabel from '@material-ui/core/InputLabel'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import IconButton from '@material-ui/core/IconButton'
-import { makeStyles } from '@material-ui/styles'
+import Avatar from '@mui/material/Avatar'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import Input from '@mui/material/Input'
+import InputLabel from '@mui/material/InputLabel'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
+import { makeStyles } from '@mui/styles'
 
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
 import { login } from 'actions/authActions'
@@ -77,26 +77,29 @@ export default function Login() {
   const error = useSelector((state) => errorSelector(state, { moduleId }))
   const dispatch = useDispatch()
 
-  const handleClickShowPassword = () => {
+  const handleClickShowPassword = useCallback(() => {
     setShowPassword((prev) => !prev)
-  }
+  }, [])
 
-  const handleRememberMeChange = (event) => {
+  const handleRememberMeChange = useCallback((event) => {
     setRememberMe(event.target.checked)
-  }
+  }, [])
 
-  const handleUsernameChange = (event) => {
+  const handleUsernameChange = useCallback((event) => {
     setUsername(event.target.value)
-  }
+  }, [])
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = useCallback((event) => {
     setPassword(event.target.value)
-  }
+  }, [])
 
-  const handleSubmit = (event) => {
-    dispatch(login(moduleId, username, password))
-    event.preventDefault()
-  }
+  const handleSubmit = useCallback(
+    (event) => {
+      dispatch(login(moduleId, username, password))
+      event.preventDefault()
+    },
+    [moduleId, username, password]
+  )
 
   if (fetched) {
     // redirect to whatever gallery the user was on before

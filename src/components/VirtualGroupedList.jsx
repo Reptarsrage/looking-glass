@@ -1,7 +1,7 @@
-import { createElement, useState, useMemo } from 'react'
+import { createElement, useState, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 import { isValidElementType } from 'react-is'
 
 const useStyles = makeStyles((theme) => ({
@@ -65,12 +65,15 @@ export default function VirtualGroupedList({
   const [scrollDirection, setScrollDirection] = useState(0)
 
   // keep track of scroll offset to render only the items on screen
-  const onScroll = (event) => {
-    const { clientHeight, scrollHeight, scrollTop } = event.currentTarget
-    const newScrollOffset = Math.max(0, Math.min(scrollTop, scrollHeight - clientHeight))
-    setScrollDirection(newScrollOffset > scrollOffset ? 1 : -1)
-    setScrollOffset(newScrollOffset)
-  }
+  const onScroll = useCallback(
+    (event) => {
+      const { clientHeight, scrollHeight, scrollTop } = event.currentTarget
+      const newScrollOffset = Math.max(0, Math.min(scrollTop, scrollHeight - clientHeight))
+      setScrollDirection(newScrollOffset > scrollOffset ? 1 : -1)
+      setScrollOffset(newScrollOffset)
+    },
+    [scrollOffset]
+  )
 
   // calculate range of visible items
   let totalItems = sectionCounts.reduce((acc, cur) => acc + cur + 1, 0)
@@ -137,13 +140,16 @@ export default function VirtualGroupedList({
             height: (sectionCount + 1) * itemSize, // +1 for section header
           },
         },
-        createElement('ul', {
-          children: items,
-          className: classes.listSectionInner,
-          style: {
-            height: (sectionCount + 1) * itemSize, // +1 for section header
+        createElement(
+          'ul',
+          {
+            className: classes.listSectionInner,
+            style: {
+              height: (sectionCount + 1) * itemSize, // +1 for section header
+            },
           },
-        })
+          items
+        )
       )
     )
 
@@ -151,13 +157,16 @@ export default function VirtualGroupedList({
   })
 
   // wrap all sections in an outer list
-  return createElement(listComponent || 'ul', {
-    onScroll,
-    children: sections,
-    className: clsx(classes.outerList, classes.scroll),
-    style: { width, height },
-    subheader: createElement('li'),
-  })
+  return createElement(
+    listComponent || 'ul',
+    {
+      onScroll,
+      className: clsx(classes.outerList, classes.scroll),
+      style: { width, height },
+      subheader: createElement('li'),
+    },
+    sections
+  )
 }
 
 VirtualGroupedList.defaultProps = {

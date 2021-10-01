@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import { makeStyles } from '@material-ui/styles'
-import Fade from '@material-ui/core/Fade'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { makeStyles } from '@mui/styles'
+import Fade from '@mui/material/Fade'
 import { useDispatch, useSelector } from 'react-redux'
 import clsx from 'clsx'
-import Fab from '@material-ui/core/Fab'
+import Fab from '@mui/material/Fab'
 
 import { modalOpenSelector, drawerOpenSelector } from '../selectors/modalSelectors'
 import { clearGallery } from '../actions/galleryActions'
@@ -54,7 +54,7 @@ export default function NavButtons() {
     }
   }, [pathname, search])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     const galleryId = parseGalleryIdFromPathname(stack[ptr].pathname)
     const nextGalleryId = ptr === 0 ? null : parseGalleryIdFromPathname(stack[ptr - 1].pathname)
     if (galleryId === nextGalleryId) {
@@ -63,9 +63,9 @@ export default function NavButtons() {
 
     setPtr(ptr - 1)
     history.goBack()
-  }
+  }, [stack, ptr])
 
-  const handleForward = () => {
+  const handleForward = useCallback(() => {
     const galleryId = ptr === -1 ? null : parseGalleryIdFromPathname(stack[ptr].pathname)
     const nextGalleryId = parseGalleryIdFromPathname(stack[ptr + 1].pathname)
     if (galleryId === nextGalleryId) {
@@ -74,7 +74,7 @@ export default function NavButtons() {
 
     setPtr(ptr + 1)
     history.goForward()
-  }
+  }, [stack, ptr])
 
   return (
     <Fade in={!modalOpen && !drawerOpen} unmountOnExit>

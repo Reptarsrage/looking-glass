@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import Chip from '@material-ui/core/Chip'
+import Chip from '@mui/material/Chip'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 import { useHistory } from 'react-router-dom'
 
 import { filterSelector } from 'selectors/filterSelectors'
@@ -20,9 +20,9 @@ export default function SelectedFilter({ galleryId, filterId }) {
   const dispatch = useDispatch()
   const filter = useSelector((state) => filterSelector(state, { filterId }))
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
     dispatch(filterRemoved(galleryId, filterId, history))
-  }
+  }, [galleryId, filterId])
 
   return <Chip className={classes.filterItem} color="primary" label={filter.name} onDelete={onDelete} />
 }

@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.16](https://github.com/reptarsrage/looking-glass/compare/v0.4.14...v0.4.16) (2021-10-01)
+
+### Features
+
+- adding overscan to virtualized componen ([d648087](https://github.com/reptarsrage/looking-glass/commit/d6480875aaf2726a2c780374efbcbb03733c4c3d))
+
+### Bug Fixes
+
+- console error due to emotion styling conflicts with searchbar ([78d9a9d](https://github.com/reptarsrage/looking-glass/commit/78d9a9d8c5cb6f841d2785ace106868b5392a35d))
+- console errors due to tooltip anchorEl ([2ef7f0e](https://github.com/reptarsrage/looking-glass/commit/2ef7f0e22d4817d14ab0b3d7b8b222f921faaef0))
+
+### [0.4.15](https://github.com/reptarsrage/looking-glass/compare/v0.4.14...v0.4.15) (2021-10-01)
+
+### Features
+
+- adding overscan to virtualized componen ([fadcc8f](https://github.com/reptarsrage/looking-glass/commit/fadcc8fb218663242dff4e1771b933e011c852cc))
+
+### Bug Fixes
+
+- console error due to emotion styling conflicts with searchbar ([53b7d48](https://github.com/reptarsrage/looking-glass/commit/53b7d48c1eddc762e07772b361cdec430be385b5))
+- console errors due to tooltip anchorEl ([69e0f14](https://github.com/reptarsrage/looking-glass/commit/69e0f1404c38fbda19609bb600f98658d859851d))
+
 ### [0.4.14](https://github.com/reptarsrage/looking-glass/compare/v0.4.13...v0.4.14) (2021-09-28)
 
 ### Bug Fixes

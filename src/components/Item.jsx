@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState, memo } from 'react'
+import React, { useEffect, useState, memo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
-import Tooltip from '@material-ui/core/Tooltip'
-import CollectionsIcon from '@material-ui/icons/Collections'
-import Paper from '@material-ui/core/Paper'
+import { makeStyles } from '@mui/styles'
+import Tooltip from '@mui/material/Tooltip'
+import CollectionsIcon from '@mui/icons-material/Collections'
+import Paper from '@mui/material/Paper'
 import { useHistory } from 'react-router-dom'
 
 import { modalItemIdSelector } from 'selectors/modalSelectors'
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 function Item({ itemId, style }) {
   const classes = useStyles()
   const history = useHistory()
-  const itemRef = useRef(null)
-  const cornerRef = useRef(null)
+  const [itemEl, setItemEl] = useState(null)
+  const [cornerEl, setCornerEl] = useState(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
   const sources = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const modalItemId = useSelector(modalItemIdSelector)
@@ -70,8 +70,8 @@ function Item({ itemId, style }) {
     }
 
     if (modalItemId === itemId) {
-      itemRef.current.scrollIntoView()
-      const bounds = itemRef.current.getBoundingClientRect()
+      itemEl.scrollIntoView()
+      const bounds = itemEl.getBoundingClientRect()
       const initialBounds = {
         top: bounds.top,
         left: bounds.left,
@@ -83,28 +83,31 @@ function Item({ itemId, style }) {
     }
   }, [modalItemId])
 
-  const handleClick = (event) => {
-    event.preventDefault()
+  const handleClick = useCallback(
+    (event) => {
+      event.preventDefault()
 
-    if (isGallery) {
-      history.push(itemGalleryUrl)
-      return
-    }
+      if (isGallery) {
+        history.push(itemGalleryUrl)
+        return
+      }
 
-    const { currentTarget } = event
-    const bounds = currentTarget.getBoundingClientRect()
-    const initialBounds = {
-      top: bounds.top,
-      left: bounds.left,
-      width: bounds.width,
-      height: bounds.height,
-    }
+      const { currentTarget } = event
+      const bounds = currentTarget.getBoundingClientRect()
+      const initialBounds = {
+        top: bounds.top,
+        left: bounds.left,
+        width: bounds.width,
+        height: bounds.height,
+      }
 
-    setIgnoreEffect(true)
-    dispatch(modalBoundsUpdate(initialBounds))
-    dispatch(modalSetItem(itemId))
-    dispatch(modalOpen())
-  }
+      setIgnoreEffect(true)
+      dispatch(modalBoundsUpdate(initialBounds))
+      dispatch(modalSetItem(itemId))
+      dispatch(modalOpen())
+    },
+    [isGallery]
+  )
 
   const renderImage = () => <Image sources={sources} title={name} width={width} height={height} />
 
@@ -112,13 +115,25 @@ function Item({ itemId, style }) {
     <Video sources={sources} poster={poster} width={width} height={height} muted controls={false} autoPlay loop />
   )
 
+  const cornerRef = useCallback((node) => {
+    if (node !== null) {
+      setCornerEl(node)
+    }
+  }, [])
+
+  const itemRef = useCallback((node) => {
+    if (node !== null) {
+      setItemEl(node)
+    }
+  }, [])
+
   return (
     <Tooltip
       title={name}
       placement="left"
       PopperProps={{
-        anchorEl: cornerRef.current,
-        container: itemRef.current,
+        anchorEl: cornerEl,
+        container: itemEl,
       }}
     >
       <Paper

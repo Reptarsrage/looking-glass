@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import Fab from '@material-ui/core/Fab'
+import { makeStyles } from '@mui/styles'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import Fab from '@mui/material/Fab'
 import clsx from 'clsx'
-import Zoom from '@material-ui/core/Zoom'
+import Zoom from '@mui/material/Zoom'
 
 import {
   modalItemIdSelector,
@@ -79,9 +79,9 @@ export default function SlideShow({ animating }) {
   const urls = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const swipeConfidenceThreshold = 10000
 
-  const handleAnimationEnd = () => {
+  const handleAnimationEnd = useCallback(() => {
     setLeaving(false)
-  }
+  }, [])
 
   const swipePower = (offset, velocity) => Math.abs(offset) * velocity
 
@@ -106,16 +106,27 @@ export default function SlideShow({ animating }) {
     drag: 'x',
     dragConstraints: { left: 0, right: 0 },
     dragElastic: 1,
-    onDragEnd: (_, { offset, velocity }) => {
-      const swipe = swipePower(offset.x, velocity.x)
+    onDragEnd: useCallback(
+      (_, { offset, velocity }) => {
+        const swipe = swipePower(offset.x, velocity.x)
 
-      if (modalNext !== null && swipe < -swipeConfidenceThreshold) {
-        paginate(modalNext, 1)
-      } else if (modalPrev !== null && swipe > swipeConfidenceThreshold) {
-        paginate(modalPrev, -1)
-      }
-    },
+        if (modalNext !== null && swipe < -swipeConfidenceThreshold) {
+          paginate(modalNext, 1)
+        } else if (modalPrev !== null && swipe > swipeConfidenceThreshold) {
+          paginate(modalPrev, -1)
+        }
+      },
+      [modalNext, modalPrev, swipeConfidenceThreshold]
+    ),
   }
+
+  const handlePrevClick = useCallback(() => {
+    paginate(modalPrev, -1)
+  }, [modalPrev])
+
+  const handleNextClick = useCallback(() => {
+    paginate(modalNext, 1)
+  }, [modalNext])
 
   // TODO: Theres a bug with using both AnimatePresence and drag
   // when the user drags the element before the enter animation completes
@@ -153,19 +164,14 @@ export default function SlideShow({ animating }) {
           color="default"
           aria-label="Previous"
           className={clsx(classes.prev, classes.button)}
-          onClick={() => paginate(modalPrev, -1)}
+          onClick={handlePrevClick}
         >
           <ChevronLeftIcon />
         </Fab>
       </Zoom>
 
       <Zoom in={modalOpen && modalNext !== null}>
-        <Fab
-          color="default"
-          aria-label="Next"
-          className={clsx(classes.next, classes.button)}
-          onClick={() => paginate(modalNext, 1)}
-        >
+        <Fab color="default" aria-label="Next" className={clsx(classes.next, classes.button)} onClick={handleNextClick}>
           <ChevronRightIcon />
         </Fab>
       </Zoom>

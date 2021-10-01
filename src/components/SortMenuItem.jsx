@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
-import Popover from '@material-ui/core/Popover'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
+import React, { useState, useCallback } from 'react'
+import Popover from '@mui/material/Popover'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/styles'
-import CheckIcon from '@material-ui/icons/Check'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import { makeStyles } from '@mui/styles'
+import CheckIcon from '@mui/icons-material/Check'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 
 import { valueSelector, valueIsCurrentlySelectedSelector, nestedSelector } from 'selectors/sortSelectors'
 import NestedSortMenuItem from './NestedSortMenuItem'
@@ -38,18 +38,24 @@ export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) 
   const ariaId = `${valueId}-nested-sort-menu`
   const hasNestedValues = Array.isArray(nestedValues) && nestedValues.length > 0
 
-  const handleClick = (event) => {
-    if (hasNestedValues) {
-      setAnchorEl(event.currentTarget)
-    } else {
-      onClick(valueId)
-    }
-  }
+  const handleClick = useCallback(
+    (event) => {
+      if (hasNestedValues) {
+        setAnchorEl(event.currentTarget)
+      } else {
+        onClick(valueId)
+      }
+    },
+    [valueId, hasNestedValues, onClick]
+  )
 
-  const handleClose = (id) => {
-    setAnchorEl(null)
-    onClick(id)
-  }
+  const handleClose = useCallback(
+    (id) => {
+      setAnchorEl(null)
+      onClick(id)
+    },
+    [onClick]
+  )
 
   return (
     <ListItem button onClick={handleClick}>
@@ -84,7 +90,7 @@ export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) 
             {nestedValues.map((nestedValueId) => (
               <NestedSortMenuItem
                 key={nestedValueId}
-                onClick={() => handleClose(nestedValueId)}
+                onClick={handleClose}
                 valueId={nestedValueId}
                 moduleId={moduleId}
                 galleryId={galleryId}

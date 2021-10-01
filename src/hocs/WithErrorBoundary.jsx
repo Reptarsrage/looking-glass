@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import Typography from '@material-ui/core/Typography'
-import HomeIcon from '@material-ui/icons/Home'
-import Button from '@material-ui/core/Button'
+import Typography from '@mui/material/Typography'
+import HomeIcon from '@mui/icons-material/Home'
+import Button from '@mui/material/Button'
 
 // see https://reactjs.org/docs/error-boundaries.html
 const withErrorBoundary = (WrappedComponent) => {

@@ -1,11 +1,11 @@
-import React from 'react'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import CheckIcon from '@material-ui/icons/Check'
+import React, { useCallback } from 'react'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import CheckIcon from '@mui/icons-material/Check'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 
 import { valueNameSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
 import useQuery from '../hooks/useQuery'
@@ -25,8 +25,12 @@ export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onCli
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId, sort, search })
   )
 
+  const handleClick = useCallback(() => {
+    onClick(valueId)
+  }, [onClick, valueId])
+
   return (
-    <ListItem button onClick={onClick}>
+    <ListItem button onClick={handleClick}>
       <ListItemText primary={name} />
       {valueIsCurrentlySelected && (
         <ListItemIcon className={classes.icon}>

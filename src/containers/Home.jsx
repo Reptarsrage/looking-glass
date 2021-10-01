@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react'
-import { makeStyles } from '@material-ui/styles'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import Avatar from '@material-ui/core/Avatar'
-import Typography from '@material-ui/core/Typography'
+import React, { useEffect, useCallback } from 'react'
+import { makeStyles } from '@mui/styles'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Avatar from '@mui/material/Avatar'
+import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from 'react-redux'
-import FolderIcon from '@material-ui/icons/Folder'
+import FolderIcon from '@mui/icons-material/Folder'
 import { dialog } from '@electron/remote'
 import { useHistory } from 'react-router-dom'
 
@@ -67,7 +67,7 @@ export default function Home() {
     }
   }, [])
 
-  const chooseFolder = () => {
+  const chooseFolder = useCallback(() => {
     dialog.showOpenDialog({ properties: ['openDirectory'] }).then(({ canceled, filePaths }) => {
       if (!canceled && filePaths) {
         const directoryPath = filePaths[0]
@@ -77,7 +77,7 @@ export default function Home() {
         history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
       }
     })
-  }
+  }, [])
 
   const renderModule = (moduleId) => <ModuleItem key={moduleId} moduleId={moduleId} />
 

@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import Button from '@material-ui/core/Button'
-import Popover from '@material-ui/core/Popover'
-import List from '@material-ui/core/List'
-import Typography from '@material-ui/core/Typography'
+import React, { useState, useCallback } from 'react'
+import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover'
+import List from '@mui/material/List'
+import Typography from '@mui/material/Typography'
 import PropTypes from 'prop-types'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { makeStyles } from '@material-ui/styles'
-import SortIcon from '@material-ui/icons/Sort'
+import { makeStyles } from '@mui/styles'
+import SortIcon from '@mui/icons-material/Sort'
 
 import { sortChange } from 'actions/galleryActions'
 import { moduleSupportsSortingSelector } from 'selectors/moduleSelectors'
@@ -32,17 +32,20 @@ export default function SortMenu({ moduleId, galleryId }) {
   const sortValues = useSelector((state) => moduleValuesSelector(state, { moduleId, galleryId, search }))
   const moduleSupportsSorting = useSelector((state) => moduleSupportsSortingSelector(state, { moduleId }))
 
-  const handleClick = (event) => {
+  const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget)
-  }
+  }, [])
 
-  const handleClose = (valueId) => {
-    if (valueId) {
-      dispatch(sortChange(galleryId, valueId, history))
-    }
+  const handleClose = useCallback(
+    (valueId) => {
+      if (valueId) {
+        dispatch(sortChange(galleryId, valueId, history))
+      }
 
-    setAnchorEl(null)
-  }
+      setAnchorEl(null)
+    },
+    [galleryId]
+  )
 
   if (!moduleSupportsSorting || sortValues.length === 0) {
     return null
