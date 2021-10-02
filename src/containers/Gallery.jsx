@@ -18,6 +18,7 @@ import {
   galleryItemsSelector,
   galleryFetchingSelector,
   galleryFetchedSelector,
+  galleryErrorSelector,
   galleryPageSelector,
 } from 'selectors/gallerySelectors'
 import { itemDimensionsSelector } from 'selectors/itemSelectors'
@@ -37,6 +38,7 @@ import SelectedFilters from 'components/SelectedFilters'
 import Modal from 'components/Modal'
 import LoadingIndicator from 'components/LoadingIndicator'
 import Toast from 'components/Toast'
+import NoResults from 'components/NoResults'
 import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
@@ -81,6 +83,7 @@ export default function Gallery({ overlayButtonThreshold }) {
   const page = useSelector((state) => galleryPageSelector(state, { galleryId }))
   const fetching = useSelector((state) => galleryFetchingSelector(state, { galleryId }))
   const fetched = useSelector((state) => galleryFetchedSelector(state, { galleryId }))
+  const error = useSelector((state) => galleryErrorSelector(state, { galleryId }))
   const savedScrollPosition = useSelector((state) => gallerySavedScrollPositionSelector(state, { galleryId }))
   const modalNext = useSelector(modalNextSelector)
   const modalOpen = useSelector(modalOpenSelector)
@@ -184,6 +187,10 @@ export default function Gallery({ overlayButtonThreshold }) {
   // redirect to authenticate
   if (!isAuthenticated) {
     return <Redirect to={authUrl} />
+  }
+
+  if (fetched && !fetching && !error && items.length === 0) {
+    return <NoResults />
   }
 
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/

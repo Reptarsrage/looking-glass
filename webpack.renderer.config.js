@@ -46,6 +46,10 @@ module.exports = (webpackEnv) => {
         {
           oneOf: [
             {
+              test: /\.svg$/,
+              use: ['@svgr/webpack'],
+            },
+            {
               test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
               loader: 'url-loader',
               options: {
