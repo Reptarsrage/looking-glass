@@ -5,7 +5,6 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
-import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from 'react-redux'
 import FolderIcon from '@mui/icons-material/Folder'
 import { dialog } from '@electron/remote'
@@ -17,6 +16,7 @@ import { setFileSystemDirectory } from 'actions/galleryActions'
 import { fetchedSelector, fetchingSelector, errorSelector, modulesSelector } from 'selectors/moduleSelectors'
 import { FILE_SYSTEM_MODULE_ID, generateGalleryId } from 'reducers/constants'
 import LoadingIndicator from 'components/LoadingIndicator'
+import ServerDown from 'components/ServerDown'
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -87,7 +87,7 @@ export default function Home() {
     }
 
     if (error) {
-      return <Typography color="error">An Error occurred</Typography>
+      return <ServerDown />
     }
 
     return (
