@@ -62,6 +62,7 @@ function Item({ itemId, style }) {
   const height = useSelector((state) => itemHeightSelector(state, { itemId }))
   const name = useSelector((state) => itemNameSelector(state, { itemId }))
   const dispatch = useDispatch()
+  const isModal = modalItemId === itemId
 
   useEffect(() => {
     if (ignoreEffect) {
@@ -69,7 +70,7 @@ function Item({ itemId, style }) {
       return
     }
 
-    if (modalItemId === itemId) {
+    if (isModal) {
       itemEl.scrollIntoView()
       const bounds = itemEl.getBoundingClientRect()
       const initialBounds = {
@@ -81,7 +82,7 @@ function Item({ itemId, style }) {
 
       dispatch(modalBoundsUpdate(initialBounds))
     }
-  }, [modalItemId])
+  }, [isModal])
 
   const handleClick = useCallback(
     (event) => {
@@ -139,7 +140,7 @@ function Item({ itemId, style }) {
       <Paper
         ref={itemRef}
         className={classes.item}
-        style={{ ...style, visibility: modalItemId === itemId ? 'hidden' : 'visible' }}
+        style={{ ...style, visibility: isModal ? 'hidden' : 'visible' }}
         role="button"
         onClick={handleClick}
         onKeyPress={() => {}}
