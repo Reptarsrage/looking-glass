@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.18](https://github.com/reptarsrage/looking-glass/compare/v0.4.17...v0.4.18) (2021-10-19)
+
+### Features
+
+- adding subtle progress bar to videos ([8670606](https://github.com/reptarsrage/looking-glass/commit/8670606242bb6b26f8c2470005d12acf9019f491))
+
+### Bug Fixes
+
+- **deps:** update dependency axios to ^0.22.0 ([ce50a09](https://github.com/reptarsrage/looking-glass/commit/ce50a09d77ff01e2a8903661d50901135550685c))
+- **deps:** update dependency axios to ^0.23.0 ([a426249](https://github.com/reptarsrage/looking-glass/commit/a426249ad37db60e444e03339b7b9c3c8198baa4))
+- **deps:** update dependency get-port to v6 ([1f2b4d1](https://github.com/reptarsrage/looking-glass/commit/1f2b4d181f87d544a93e52f24323090c6bcc4f9d))
+
 ### [0.4.17](https://github.com/reptarsrage/looking-glass/compare/v0.4.16...v0.4.17) (2021-10-02)
 
 ### Features
