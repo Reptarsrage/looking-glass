@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
+import { screen } from '@testing-library/react'
 
 import { render } from './componentTestHelpers'
 import Virtualized from '../Virtualized'
@@ -25,12 +26,12 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { getByTestId } = render(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
 
     // assert
-    expect(getByTestId('1')).toBeInTheDocument()
-    expect(getByTestId('2')).toBeInTheDocument()
-    expect(getByTestId('3')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(3)
     expect(mockItemDimensions).toHaveBeenCalledWith('1')
@@ -58,12 +59,12 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId } = render(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).not.toBeInTheDocument()
-    expect(queryByTestId('3')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(1)
     expect(mockItemDimensions).toHaveBeenCalledWith('1')
@@ -89,12 +90,12 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId } = render(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
 
     // assert
-    expect(queryByTestId('1')).not.toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('1')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(2)
     expect(mockItemDimensions).toHaveBeenCalledWith('1')
@@ -121,12 +122,12 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId } = render(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(2)
     expect(mockItemDimensions).toHaveBeenCalledWith('1')
@@ -153,13 +154,13 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} scrollTop={120} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} scrollTop={120} />)
 
     // assert
-    expect(queryByTestId('1')).not.toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('1')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(2)
     expect(mockItemDimensions).toHaveBeenCalledWith('1')
@@ -186,13 +187,13 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} width={101} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} width={101} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(6)
   })
@@ -217,14 +218,14 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} items={[]} />)
-    rerender(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} items={[]} />)
+    screen.rerender(<Virtualized {...props} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(6)
   })
@@ -249,13 +250,13 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} items={['4', '5', '6']} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} items={['4', '5', '6']} />)
 
     // assert
-    expect(queryByTestId('4')).toBeInTheDocument()
-    expect(queryByTestId('5')).toBeInTheDocument()
-    expect(queryByTestId('6')).toBeInTheDocument()
+    expect(screen.queryByTestId('4')).toBeInTheDocument()
+    expect(screen.queryByTestId('5')).toBeInTheDocument()
+    expect(screen.queryByTestId('6')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(6)
   })
@@ -280,13 +281,13 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId } = render(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).not.toBeInTheDocument()
-    expect(queryByTestId('3')).not.toBeInTheDocument()
-    expect(queryByTestId('4')).toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('3')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('4')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(4)
   })
@@ -311,13 +312,13 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} forceRenderItems={[]} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} forceRenderItems={[]} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(5)
   })
@@ -342,20 +343,20 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} forceRenderItems={['2', '3']} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} forceRenderItems={['2', '3']} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).toBeInTheDocument()
-    expect(queryByTestId('4')).not.toBeInTheDocument()
-    expect(queryByTestId('5')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).toBeInTheDocument()
+    expect(screen.queryByTestId('4')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('5')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(5)
   })
 
-  it("doesn't rerender when props are equal", () => {
+  it("doesn't screen.rerender when props are equal", () => {
     // arrange
     const mockItemDimensions = jest.fn()
     const props = {
@@ -375,14 +376,14 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender } = render(<Virtualized {...props} />)
-    rerender(<Virtualized {...props} />)
+    render(<Virtualized {...props} />)
+    screen.rerender(<Virtualized {...props} />)
 
     // assert
-    expect(queryByTestId('1')).toBeInTheDocument()
-    expect(queryByTestId('2')).toBeInTheDocument()
-    expect(queryByTestId('3')).toBeInTheDocument()
-    expect(queryByTestId('4')).toBeInTheDocument()
+    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.queryByTestId('3')).toBeInTheDocument()
+    expect(screen.queryByTestId('4')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(4)
   })

@@ -37,6 +37,7 @@ node_modules
 dist
 release
 main.prod.js
+main.dev.js
 
 .idea
 npm-debug.log.*

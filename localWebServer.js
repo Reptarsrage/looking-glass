@@ -1,10 +1,10 @@
-const http = require('http')
-const url = require('url')
-const fs = require('fs')
-const qs = require('qs')
-const mime = require('mime-types')
-const log = require('electron-log')
-const getPort = require('get-port')
+import http from 'http'
+import url from 'url'
+import fs from 'fs'
+import qs from 'qs'
+import mime from 'mime-types'
+import log from 'electron-log'
+import getPort from 'get-port'
 
 const createServer = async () => {
   const defaultChunkSize = 65536 // lower works better here
@@ -70,4 +70,4 @@ const createServer = async () => {
   }
 }
 
-module.exports = createServer
+export default createServer

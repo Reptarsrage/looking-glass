@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
+import { screen } from '@testing-library/react'
 
 // eslint-disable-next-line jest/no-mocks-import
 import './__mocks__/ResizeObserver'
@@ -28,11 +29,11 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { getByTestId } = render(<JustMasonry {...props} />)
+    render(<JustMasonry {...props} />)
 
     // assert
     props.items.forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
   })
 
@@ -57,15 +58,15 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, getByTestId } = render(<JustMasonry {...props} />)
+    render(<JustMasonry {...props} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(6).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -90,16 +91,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} scrollTop={224} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} scrollTop={224} />)
 
     // assert
     props.items.slice(6).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(0, 6).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -124,16 +125,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} width={192} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} width={192} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(6).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -158,16 +159,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} height={115} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} height={115} />)
 
     // assert
     props.items.slice(0, 3).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(3).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -192,16 +193,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} scrollBarSize={20} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} scrollBarSize={20} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(6).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -226,16 +227,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} gutter={7} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} gutter={7} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(6).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -260,16 +261,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} columnCount={4} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} columnCount={4} />)
 
     // assert
     props.items.slice(0, 8).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     props.items.slice(8).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -295,16 +296,16 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    const { queryByTestId, rerender, getByTestId } = render(<JustMasonry {...props} />)
-    rerender(<JustMasonry {...props} items={newItems} />)
+    render(<JustMasonry {...props} />)
+    screen.rerender(<JustMasonry {...props} items={newItems} />)
 
     // assert
     newItems.slice(0, 6).forEach((key) => {
-      expect(getByTestId(key)).toBeInTheDocument()
+      expect(screen.getByTestId(key)).toBeInTheDocument()
     })
 
     newItems.slice(6).forEach((key) => {
-      expect(queryByTestId(key)).not.toBeInTheDocument()
+      expect(screen.queryByTestId(key)).not.toBeInTheDocument()
     })
   })
 
@@ -329,15 +330,15 @@ describe('<Masonry />', () => {
 
     // act
     render(<JustMasonry {...props} />)
-    const { queryAllByTestId } = render(<JustMasonry {...props} height={116} />)
+    render(<JustMasonry {...props} height={116} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
-      expect(queryAllByTestId(key)).toHaveLength(2)
+      expect(screen.queryAllByTestId(key)).toHaveLength(2)
     })
 
     props.items.slice(6).forEach((key) => {
-      expect(queryAllByTestId(key)).toHaveLength(1)
+      expect(screen.queryAllByTestId(key)).toHaveLength(1)
     })
   })
 })
