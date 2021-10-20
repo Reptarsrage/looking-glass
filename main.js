@@ -1,16 +1,16 @@
 // modules to control application life and create native browser window
-const { app, BrowserWindow, screen } = require('electron')
-const isDev = require('electron-is-dev')
-const path = require('path')
-const log = require('electron-log')
-const qs = require('querystring')
-const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer')
-const Store = require('electron-store')
-const Remote = require('@electron/remote/main')
-const { autoUpdater } = require('electron-updater')
+import { app, BrowserWindow, screen } from 'electron'
+import isDev from 'electron-is-dev'
+import path from 'path'
+import log from 'electron-log'
+import qs from 'querystring'
+import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import Store from 'electron-store'
+import * as Remote from '@electron/remote/main'
+import { autoUpdater } from 'electron-updater'
 
-const MenuBuilder = require('./menu')
-const createLocalWebServer = require('./localWebServer')
+import MenuBuilder from './menu'
+import createLocalWebServer from './localWebServer'
 
 // auto-update logging
 autoUpdater.logger = log

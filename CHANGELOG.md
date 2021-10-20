@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.20](https://github.com/reptarsrage/looking-glass/compare/v0.4.18...v0.4.20) (2021-10-20)
+
+### Bug Fixes
+
+- downgrading broken "get-port" package ([7eacf86](https://github.com/reptarsrage/looking-glass/commit/7eacf864550b17ec3483c25eec2a77842d016e70))
+- upgrading eslint parser, adding electron main ESM support ([76fe8cf](https://github.com/reptarsrage/looking-glass/commit/76fe8cfd49ac5231ff5309aa305b9b478b677633))
+
+### [0.4.19](https://github.com/reptarsrage/looking-glass/compare/v0.4.18...v0.4.19) (2021-10-20)
+
+### Bug Fixes
+
+- downgrading broken "get-port" package ([7122a85](https://github.com/reptarsrage/looking-glass/commit/7122a851f11a4db2d578f055eaa4a2ab791edbe7))
+
 ### [0.4.18](https://github.com/reptarsrage/looking-glass/compare/v0.4.17...v0.4.18) (2021-10-19)
 
 ### Features

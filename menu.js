@@ -1,7 +1,7 @@
 // based on https://github.com/sindresorhus/electron-context-menu
-const electron = require('electron')
-const { download } = require('electron-dl')
-const isDev = require('electron-is-dev')
+import electron from 'electron'
+import { download } from 'electron-dl'
+import isDev from 'electron-is-dev'
 
 const decorateMenuItem = (menuItem) => {
   return (options = {}) => {
@@ -220,4 +220,4 @@ class MenuBuilder {
   }
 }
 
-module.exports = MenuBuilder
+export default MenuBuilder

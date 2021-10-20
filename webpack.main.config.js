@@ -16,7 +16,7 @@ module.exports = (webpackEnv) => {
     entry: entryPath,
     output: {
       path: outPath,
-      filename: 'main.prod.js',
+      filename: `main.${isDevelopment ? 'dev' : 'prod'}.js`,
     },
     optimization: {
       minimize: isProduction,
