@@ -91,8 +91,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} scrollTop={224} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} scrollTop={224} />)
 
     // assert
     props.items.slice(6).forEach((key) => {
@@ -125,8 +125,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} width={192} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} width={192} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
@@ -159,8 +159,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} height={115} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} height={115} />)
 
     // assert
     props.items.slice(0, 3).forEach((key) => {
@@ -193,8 +193,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} scrollBarSize={20} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} scrollBarSize={20} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
@@ -227,8 +227,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} gutter={7} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} gutter={7} />)
 
     // assert
     props.items.slice(0, 6).forEach((key) => {
@@ -261,8 +261,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} columnCount={4} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} columnCount={4} />)
 
     // assert
     props.items.slice(0, 8).forEach((key) => {
@@ -296,8 +296,8 @@ describe('<Masonry />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<JustMasonry {...props} />)
-    screen.rerender(<JustMasonry {...props} items={newItems} />)
+    const { rerender } = render(<JustMasonry {...props} />)
+    rerender(<JustMasonry {...props} items={newItems} />)
 
     // assert
     newItems.slice(0, 6).forEach((key) => {

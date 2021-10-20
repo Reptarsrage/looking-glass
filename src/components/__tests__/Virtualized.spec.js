@@ -154,8 +154,8 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} scrollTop={120} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} scrollTop={120} />)
 
     // assert
     expect(screen.queryByTestId('1')).not.toBeInTheDocument()
@@ -187,8 +187,8 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} width={101} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} width={101} />)
 
     // assert
     expect(screen.queryByTestId('1')).toBeInTheDocument()
@@ -218,9 +218,9 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} items={[]} />)
-    screen.rerender(<Virtualized {...props} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} items={[]} />)
+    rerender(<Virtualized {...props} />)
 
     // assert
     expect(screen.queryByTestId('1')).toBeInTheDocument()
@@ -250,8 +250,8 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} items={['4', '5', '6']} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} items={['4', '5', '6']} />)
 
     // assert
     expect(screen.queryByTestId('4')).toBeInTheDocument()
@@ -312,8 +312,8 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} forceRenderItems={[]} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} forceRenderItems={[]} />)
 
     // assert
     expect(screen.queryByTestId('1')).toBeInTheDocument()
@@ -343,8 +343,8 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} forceRenderItems={['2', '3']} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} forceRenderItems={['2', '3']} />)
 
     // assert
     expect(screen.queryByTestId('1')).toBeInTheDocument()
@@ -356,7 +356,7 @@ describe('<Virtualized />', () => {
     expect(mockItemDimensions).toHaveBeenCalledTimes(5)
   })
 
-  it("doesn't screen.rerender when props are equal", () => {
+  it("doesn't rerender when props are equal", () => {
     // arrange
     const mockItemDimensions = jest.fn()
     const props = {
@@ -376,8 +376,8 @@ describe('<Virtualized />', () => {
     mockItemDimensions.mockImplementation(() => ({ width: 100, height: 100, top: 0, left: 0 }))
 
     // act
-    render(<Virtualized {...props} />)
-    screen.rerender(<Virtualized {...props} />)
+    const { rerender } = render(<Virtualized {...props} />)
+    rerender(<Virtualized {...props} />)
 
     // assert
     expect(screen.queryByTestId('1')).toBeInTheDocument()
