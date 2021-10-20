@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.19](https://github.com/reptarsrage/looking-glass/compare/v0.4.18...v0.4.19) (2021-10-20)
+
+### Bug Fixes
+
+- downgrading broken "get-port" package ([7122a85](https://github.com/reptarsrage/looking-glass/commit/7122a851f11a4db2d578f055eaa4a2ab791edbe7))
+
 ### [0.4.18](https://github.com/reptarsrage/looking-glass/compare/v0.4.17...v0.4.18) (2021-10-19)
 
 ### Features
