@@ -127,7 +127,7 @@
     "electron-log": "^4.3.1",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
-    "framer-motion": "^4.0.0",
+    "framer-motion": "^5.0.0",
     "get-port": "6.0.0",
     "image-size": "^1.0.0",
     "immer": "^9.0.1",
