@@ -16,6 +16,9 @@ import createLocalWebServer from './localWebServer'
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
 
+// TODO: temporary fix for washed out videos in latest chrome versions
+app.commandLine.appendSwitch('-force-color-profile', 'hdr10')
+
 // web Server
 let localWebServer
 
