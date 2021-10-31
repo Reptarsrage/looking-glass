@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.21](https://github.com/reptarsrage/looking-glass/compare/v0.4.18...v0.4.21) (2021-10-31)
+
+### Bug Fixes
+
+- adding fix for washed out videos in chrome ([1e1681e](https://github.com/reptarsrage/looking-glass/commit/1e1681e76713e324c154a7eade30f1b342c16131))
+- **deps:** update dependency axios to ^0.24.0 ([67bf8d4](https://github.com/reptarsrage/looking-glass/commit/67bf8d4edf76eaf609b6a5d8d92f163309301aa8))
+- **deps:** update dependency framer-motion to v5 ([98d57f3](https://github.com/reptarsrage/looking-glass/commit/98d57f3932ff2aa9b2cd9f3f3717e8b4b66ec7c5))
+- downgrading broken "get-port" package ([7eacf86](https://github.com/reptarsrage/looking-glass/commit/7eacf864550b17ec3483c25eec2a77842d016e70))
+- upgrading eslint parser, adding electron main ESM support ([76fe8cf](https://github.com/reptarsrage/looking-glass/commit/76fe8cfd49ac5231ff5309aa305b9b478b677633))
+
 ### [0.4.20](https://github.com/reptarsrage/looking-glass/compare/v0.4.18...v0.4.20) (2021-10-20)
 
 ### Bug Fixes
