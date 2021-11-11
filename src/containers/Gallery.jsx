@@ -39,6 +39,7 @@ import Modal from 'components/Modal'
 import LoadingIndicator from 'components/LoadingIndicator'
 import Toast from 'components/Toast'
 import NoResults from 'components/NoResults'
+import Error from 'components/Error'
 import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
@@ -189,10 +190,6 @@ export default function Gallery({ overlayButtonThreshold }) {
     return <Redirect to={authUrl} />
   }
 
-  if (fetched && !fetching && !error && items.length === 0) {
-    return <NoResults />
-  }
-
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/
   return (
     <>
@@ -223,9 +220,13 @@ export default function Gallery({ overlayButtonThreshold }) {
         onClose={() => setShowEndOfScrollToast(false)}
       />
 
+      {fetched && !fetching && !error && items.length === 0 && <NoResults />}
+
+      {fetched && !fetching && error && <Error />}
+
       {fetching && !fetched && <LoadingIndicator />}
 
-      {fetched && (
+      {fetched && items.length > 0 && !error && (
         <Masonry
           key={galleryId}
           items={items}

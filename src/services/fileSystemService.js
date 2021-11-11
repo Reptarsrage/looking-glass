@@ -31,16 +31,17 @@ class FileSystemService {
     }
   }
 
-  fetchItems = async (_moduleId, galleryId, _accessToken, offset) => {
+  fetchItems = async (_moduleId, galleryId, _accessToken, offset, _after, _search, sort, filters) => {
     try {
       const dirPath = Buffer.from(galleryId, 'base64').toString('utf-8')
-      if (!this.cacheContains(dirPath)) {
-        this.addCache(dirPath, new Crawler(dirPath))
+      const cacheKey = `${filters.join('__')}__${sort}___${dirPath}`
+      if (!this.cacheContains(cacheKey)) {
+        this.addCache(cacheKey, new Crawler(dirPath))
       }
 
-      const crawler = this.getCache(dirPath)
+      const crawler = this.getCache(cacheKey)
       const pageNumber = Math.max(offset, 0)
-      const page = await crawler.getPage(pageNumber)
+      const page = await crawler.getPage(pageNumber, sort, filters)
       const data = {
         items: page.map(({ file, width, height, isFile, path }) => {
           const title = isFile ? basename(file, extname(file)) : basename(path)
@@ -82,8 +83,41 @@ class FileSystemService {
     }
   }
 
-  fetchFilters = async () => {
-    return { data: [] } // TODO: Implement this
+  fetchFilters = async (_moduleId, filterSectionId) => {
+    switch (filterSectionId) {
+      case 'fileType':
+        return {
+          data: [
+            {
+              id: 'type|file',
+              filterSectionId: 'fileType',
+              name: 'File',
+            },
+            {
+              id: 'type|directory',
+              filterSectionId: 'fileType',
+              name: 'Directory',
+            },
+          ],
+        }
+      case 'contentType':
+        return {
+          data: [
+            {
+              id: 'contentType|image',
+              filterSectionId: 'contentType',
+              name: 'Image',
+            },
+            {
+              id: 'contentType|video',
+              filterSectionId: 'contentType',
+              name: 'Video',
+            },
+          ],
+        }
+      default:
+        return { data: [] }
+    }
   }
 }
 

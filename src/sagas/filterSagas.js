@@ -1,6 +1,8 @@
 import { put, call, takeEvery, select, all } from 'redux-saga/effects'
 
 import lookingGlassService from 'services/lookingGlassService'
+import fileSystemService from 'services/fileSystemService'
+import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import { FETCH_FILTERS, FETCH_ITEM_FILTERS } from 'actions/types'
 import { accessTokenSelector } from 'selectors/authSelectors'
 import { filterSectionSiteIdSelector } from 'selectors/filterSectionSelectors'
@@ -22,8 +24,11 @@ function* fetchFilterSection(moduleId, filterSectionId) {
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
     const accessToken = yield select(accessTokenSelector, { moduleId })
 
+    // resolve service
+    const service = moduleId === FILE_SYSTEM_MODULE_ID ? fileSystemService : lookingGlassService
+
     // fetch filters
-    const { data } = yield call(lookingGlassService.fetchFilters, moduleSiteId, filterSectionSiteId, accessToken)
+    const { data } = yield call(service.fetchFilters, moduleSiteId, filterSectionSiteId, accessToken)
 
     // put info into the store
     yield put(fetchFiltersSuccess(filterSectionId, data))
@@ -51,8 +56,11 @@ export function* handleFetchItemFilters(action) {
     const moduleSiteId = yield select(moduleSiteIdSelector, { moduleId })
     const accessToken = yield select(accessTokenSelector, { moduleId })
 
+    // resolve service
+    const service = moduleId === FILE_SYSTEM_MODULE_ID ? fileSystemService : lookingGlassService
+
     // fetch item filters
-    const { data } = yield call(lookingGlassService.fetchItemFilters, moduleSiteId, itemSiteId, accessToken)
+    const { data } = yield call(service.fetchItemFilters, moduleSiteId, itemSiteId, accessToken)
 
     // put info into the store
     yield put(fetchItemFiltersSuccess(moduleId, itemId, data))

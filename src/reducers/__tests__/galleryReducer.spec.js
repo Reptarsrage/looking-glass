@@ -98,7 +98,6 @@ it('should handle FETCH_MODULES_SUCCESS', () => {
   const action = fetchModulesSuccess(expectedModules)
   let state = { allIds: [], byId: {} }
 
-  constants.FILE_SYSTEM_MODULE_ID = 'FILE SYSTEM MODULE ID'
   constants.DEFAULT_GALLERY_ID = 'DEFAULT GALLERY ID'
   constants.generateGalleryId.mockImplementation((moduleId, galleryId) => `${moduleId}/${galleryId}`)
   constants.generateModuleId.mockImplementation((moduleId) => moduleId)
@@ -107,10 +106,7 @@ it('should handle FETCH_MODULES_SUCCESS', () => {
   state = reducer(state, action)
 
   // assert
-  expect(state.allIds).toEqual([
-    ...expectedModuleIds.map((id) => `${id}/DEFAULT GALLERY ID`),
-    'FILE SYSTEM MODULE ID/DEFAULT GALLERY ID',
-  ])
+  expect(state.allIds).toEqual([...expectedModuleIds.map((id) => `${id}/DEFAULT GALLERY ID`)])
 })
 
 it('should not add the same gallery twice', () => {
@@ -121,7 +117,6 @@ it('should not add the same gallery twice', () => {
   const action = fetchModulesSuccess(expectedModules)
   let state = { allIds: [], byId: {} }
 
-  constants.FILE_SYSTEM_MODULE_ID = 'FILE SYSTEM MODULE ID'
   constants.DEFAULT_GALLERY_ID = 'DEFAULT GALLERY ID'
   constants.generateGalleryId.mockImplementation((moduleId, galleryId) => `${moduleId}/${galleryId}`)
   constants.generateModuleId.mockImplementation((moduleId) => moduleId)
@@ -130,7 +125,7 @@ it('should not add the same gallery twice', () => {
   state = reducer(state, action)
 
   // assert
-  expect(state.allIds).toEqual(['1/DEFAULT GALLERY ID', 'FILE SYSTEM MODULE ID/DEFAULT GALLERY ID'])
+  expect(state.allIds).toEqual([`1/${constants.DEFAULT_GALLERY_ID}`])
 })
 
 describe('should handle FETCH_GALLERY_SUCCESS', () => {
