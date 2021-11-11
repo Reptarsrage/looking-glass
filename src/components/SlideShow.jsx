@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { AnimatePresence } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
@@ -17,7 +17,7 @@ import {
   modalItemSelector,
 } from 'selectors/modalSelectors'
 import { itemUrlsSelector } from 'selectors/itemSelectors'
-import { modalSetItem } from 'actions/modalActions'
+import { modalSetItem, modalClose } from 'actions/modalActions'
 import Image from './ImageWithZoom'
 import Video from './Video'
 
@@ -79,6 +79,14 @@ export default function SlideShow({ animating }) {
   const urls = useSelector((state) => itemUrlsSelector(state, { itemId }))
   const swipeConfidenceThreshold = 10000
 
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  })
+
   const handleAnimationEnd = useCallback(() => {
     setLeaving(false)
   }, [])
@@ -128,11 +136,31 @@ export default function SlideShow({ animating }) {
     paginate(modalNext, 1)
   }, [modalNext])
 
+  const handleKeyDown = useCallback(
+    (event) => {
+      if (event.keyCode === 37) {
+        // ->
+        if (modalOpen && modalPrev !== null) paginate(modalPrev, -1)
+      } else if (event.keyCode === 39) {
+        // <-
+        if (modalOpen && modalNext !== null) paginate(modalNext, 1)
+      } else if (event.keyCode === 27) {
+        // esc
+        dispatch(modalClose())
+      }
+
+      event.preventDefault()
+      event.stopPropagation()
+    },
+    [modalNext]
+  )
+
   // TODO: Theres a bug with using both AnimatePresence and drag
   // when the user drags the element before the enter animation completes
   // the element will teleport for a single frame back to its starting position
   return (
-    <div className={classes.slideShow}>
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+    <div className={classes.slideShow} onKeyDown={handleKeyDown}>
       <AnimatePresence initial={false} custom={direction} onExitComplete={handleAnimationEnd}>
         {modalItem.isVideo ? (
           <Video
