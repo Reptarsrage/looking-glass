@@ -31,16 +31,17 @@ class FileSystemService {
     }
   }
 
-  fetchItems = async (_moduleId, galleryId, _accessToken, offset) => {
+  fetchItems = async (_moduleId, galleryId, _accessToken, offset, _after, _search, sort) => {
     try {
       const dirPath = Buffer.from(galleryId, 'base64').toString('utf-8')
-      if (!this.cacheContains(dirPath)) {
-        this.addCache(dirPath, new Crawler(dirPath))
+      const cacheKey = `${sort}___${dirPath}`
+      if (!this.cacheContains(cacheKey)) {
+        this.addCache(cacheKey, new Crawler(dirPath))
       }
 
-      const crawler = this.getCache(dirPath)
+      const crawler = this.getCache(cacheKey)
       const pageNumber = Math.max(offset, 0)
-      const page = await crawler.getPage(pageNumber)
+      const page = await crawler.getPage(pageNumber, sort)
       const data = {
         items: page.map(({ file, width, height, isFile, path }) => {
           const title = isFile ? basename(file, extname(file)) : basename(path)

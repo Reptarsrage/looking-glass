@@ -3,7 +3,6 @@ import produce from 'immer'
 import { FETCH_MODULES, FETCH_MODULES_SUCCESS, FETCH_MODULES_FAILURE } from 'actions/types'
 import {
   DEFAULT_GALLERY_ID,
-  FILE_SYSTEM_MODULE_ID,
   generateGalleryId,
   generateModuleId,
   handleAsyncError,
@@ -81,17 +80,6 @@ export default produce((draft, action) => {
           defaultGalleryId,
         }
       })
-
-      // add file system module
-      draft.allIds.push(FILE_SYSTEM_MODULE_ID)
-
-      draft.byId[FILE_SYSTEM_MODULE_ID] = {
-        ...initialModuleState,
-        id: FILE_SYSTEM_MODULE_ID,
-        name: 'Local files',
-        description: 'Choose a directory',
-        defaultGalleryId: generateGalleryId(FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID),
-      }
 
       handleAsyncSuccess(draft)
       break

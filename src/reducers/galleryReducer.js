@@ -74,8 +74,6 @@ export default produce((draft, action) => {
         addGallery(draft, moduleId, DEFAULT_GALLERY_ID, name)
       })
 
-      // add file system default module galleries
-      addGallery(draft, FILE_SYSTEM_MODULE_ID, DEFAULT_GALLERY_ID, 'Local Files')
       break
     }
     case FETCH_GALLERY: {

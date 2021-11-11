@@ -35,7 +35,6 @@ it('should handle FETCH_MODULES_FAILURE', () => {
 it('should handle FETCH_MODULES_SUCCESS', () => {
   // arrange
   const expectedLength = 3
-  const expectedFileSystemId = expectedLength.toString()
   const expectedModuleIds = [...Array(expectedLength).keys()].map((i) => i.toString())
   const expectedModules = expectedModuleIds.map((id) => ({
     id,
@@ -49,15 +48,14 @@ it('should handle FETCH_MODULES_SUCCESS', () => {
 
   const action = fetchModulesSuccess(expectedModules)
   constants.generateModuleId.mockImplementation((id) => id)
-  constants.FILE_SYSTEM_MODULE_ID = expectedFileSystemId
 
   // act
   const state = reducer(undefined, action)
 
   // assert
   expect(constants.handleAsyncSuccess).toHaveBeenCalled()
-  expect(state.allIds).toEqual([...expectedModuleIds, expectedFileSystemId])
-  expect(Object.keys(state.byId)).toEqual([...expectedModuleIds, expectedFileSystemId])
+  expect(state.allIds).toEqual(expectedModuleIds)
+  expect(Object.keys(state.byId)).toEqual(expectedModuleIds)
 })
 
 it('should handle FETCH_MODULES_SUCCESS with sort values', () => {

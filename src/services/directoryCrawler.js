@@ -39,16 +39,51 @@ function videoSizeOf(fPath) {
   )
 }
 
+/* sort by:
+ * none
+ * name: dirent.name
+ * size: stats.size
+ * modified: stats.mtimeMs
+ * created: stats.birthtimeMs
+ * random
+ */
+
 // gets all files in a directory
-async function* getFiles(dirPath) {
+async function getFiles(dirPath, sort) {
   const dir = await fs.promises.opendir(dirPath)
+  const items = []
   for await (const dirent of dir) {
+    const path = pathModule.join(dirPath, dirent.name)
+    const { size, mtimeMs, birthtimeMs } = await fs.promises.stat(path)
+
     if (dirent.isFile()) {
-      yield { path: pathModule.join(dirPath, dirent.name), isFile: true }
+      items.push({ path, isFile: true, size, mtimeMs, birthtimeMs })
     } else if (dirent.isDirectory()) {
-      yield { path: pathModule.join(dirPath, dirent.name), isFile: false }
+      items.push({ path, isFile: false, size, mtimeMs, birthtimeMs })
     }
   }
+
+  switch (sort) {
+    case 'name':
+      items.sort((a, b) => a.name.localeCompare(b.name))
+      break
+    case 'size':
+      items.sort((a, b) => a.size - b.size)
+      break
+    case 'modified':
+      items.sort((a, b) => a.mtimeMs - b.mtimeMs)
+      break
+    case 'created':
+      items.sort((a, b) => a.birthtimeMs - b.birthtimeMs)
+      break
+    case 'random':
+      items.sort(() => Math.random() - Math.random())
+      break
+    default:
+      break
+  }
+
+  return items
 }
 
 // dummy function for callbacks
@@ -73,7 +108,7 @@ module.exports = class crawler {
     this.pool = new PromisePool({ numConcurrent })
   }
 
-  getPage = async (page) => {
+  getPage = async (page, sort) => {
     this.start = page * this.pageSize
     this.end = this.start + this.pageSize
 
@@ -85,7 +120,7 @@ module.exports = class crawler {
       })
 
       this.started = true
-      this.getDimensionsForDirectory()
+      this.getDimensionsForDirectory(sort)
       return pagePromise
     }
 
@@ -160,8 +195,9 @@ module.exports = class crawler {
     }
   }
 
-  getDimensionsForDirectory = async () => {
-    for await (const item of getFiles(this.directory)) {
+  getDimensionsForDirectory = async (sort) => {
+    const items = await getFiles(this.directory, sort)
+    for (const item of items) {
       await this.pool.start(() => this.getDimensions(item))
     }
 

@@ -8,6 +8,7 @@ import { recordSaga } from './sagaTestHelpers'
 import logger from '../../logger'
 
 jest.mock('services/lookingGlassService')
+jest.mock('../../fileSystemModule', () => 'EXPECTED FS MODULE')
 
 it('should watch for all actions', async () => {
   const gen = watchModuleSagas()
@@ -17,7 +18,7 @@ it('should watch for all actions', async () => {
 describe('handleFetchModules', () => {
   it('should run successfully', async () => {
     // arrange
-    const expectedData = 'EXPECTED DATA'
+    const expectedData = ['EXPECTED DATA']
 
     lookingGlassService.fetchModules.mockImplementation(() => Promise.resolve({ data: expectedData }))
 
@@ -25,7 +26,7 @@ describe('handleFetchModules', () => {
     const dispatched = await recordSaga(handleFetchModules, fetchModules())
 
     // assert
-    expect(dispatched).toContainEqual(fetchModulesSuccess(expectedData))
+    expect(dispatched).toContainEqual(fetchModulesSuccess([...expectedData, 'EXPECTED FS MODULE']))
     expect(lookingGlassService.fetchModules).toHaveBeenCalled()
   })
 

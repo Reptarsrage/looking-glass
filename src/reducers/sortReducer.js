@@ -46,8 +46,6 @@ export default produce((draft, action) => {
 
       // add sort options for modules
       modules.forEach((module) => addSortForModule(draft, module))
-
-      // TODO: add file system sort options
       break
     }
 
