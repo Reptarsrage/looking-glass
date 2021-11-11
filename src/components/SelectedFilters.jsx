@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@mui/styles'
+import { useSearchParams } from 'react-router-dom'
 
 import SelectedFilter from './SelectedFilter'
-import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   filtersContainer: {
@@ -15,8 +15,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SelectedFilters({ galleryId }) {
   const classes = useStyles()
-  const query = useQuery()
-  const { filters } = query
+  const [searchParams] = useSearchParams()
+  let filters = searchParams.get('filters') || ''
+  filters = filters.split(',').filter(Boolean)
 
   if (filters.length === 0) {
     return null

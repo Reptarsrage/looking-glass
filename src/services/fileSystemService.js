@@ -1,6 +1,6 @@
 import { basename, extname } from 'path'
 import { lookup } from 'mime-types'
-import { stringify, parse } from 'querystring'
+import { stringify, parse } from 'qs'
 
 import Crawler from './directoryCrawler'
 import logger from '../logger'

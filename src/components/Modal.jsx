@@ -15,7 +15,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import Link from '@mui/material/Link'
 import clsx from 'clsx'
-import { useHistory } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -97,7 +97,9 @@ export default function Modal({ moduleId }) {
   const [open, setOpen] = useState(false)
   const [animating, setAnimating] = useState(true)
   const [showCaption, setShowCaption] = useState(true)
-  const history = useHistory()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const dispatch = useDispatch()
   const modalItem = useSelector(modalItemSelector)
   const modalOpen = useSelector(modalOpenSelector)
@@ -129,10 +131,10 @@ export default function Modal({ moduleId }) {
       setOpen(false)
 
       if (filterId) {
-        dispatch(filterAdded(defaultGalleryId, filterId, history))
+        dispatch(filterAdded(defaultGalleryId, filterId, navigate, location, searchParams))
       }
     },
-    [defaultGalleryId]
+    [defaultGalleryId, searchParams]
   )
 
   const onAnimationStart = useCallback(() => {
@@ -140,12 +142,12 @@ export default function Modal({ moduleId }) {
   }, [])
 
   const handleAuthorClick = useCallback(() => {
-    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, history, true))
-  }, [defaultGalleryId, modalItem])
+    dispatch(filterAdded(defaultGalleryId, modalItem.author.id, navigate, location, searchParams, true))
+  }, [defaultGalleryId, modalItem, searchParams])
 
   const handleSourceClick = useCallback(() => {
-    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, history, true))
-  }, [defaultGalleryId, modalItem])
+    dispatch(filterAdded(defaultGalleryId, modalItem.source.id, navigate, location, searchParams, true))
+  }, [defaultGalleryId, modalItem, searchParams])
 
   const onAnimationComplete = useCallback(() => {
     setAnimating(false)

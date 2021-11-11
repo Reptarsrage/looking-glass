@@ -4,7 +4,7 @@ import Popover from '@mui/material/Popover'
 import List from '@mui/material/List'
 import Typography from '@mui/material/Typography'
 import PropTypes from 'prop-types'
-import { useHistory } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@mui/styles'
 import SortIcon from '@mui/icons-material/Sort'
@@ -13,7 +13,6 @@ import { sortChange } from 'actions/galleryActions'
 import { moduleSupportsSortingSelector } from 'selectors/moduleSelectors'
 import { moduleValuesSelector } from 'selectors/sortSelectors'
 import SortMenuItem from './SortMenuItem'
-import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   extendedIcon: {
@@ -24,9 +23,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SortMenu({ moduleId, galleryId }) {
   const classes = useStyles()
-  const query = useQuery()
-  const history = useHistory()
-  const { search } = query
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const search = searchParams.get('search') || ''
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const sortValues = useSelector((state) => moduleValuesSelector(state, { moduleId, galleryId, search }))
@@ -39,7 +39,7 @@ export default function SortMenu({ moduleId, galleryId }) {
   const handleClose = useCallback(
     (valueId) => {
       if (valueId) {
-        dispatch(sortChange(galleryId, valueId, history))
+        dispatch(sortChange(galleryId, valueId, navigate, location, searchParams))
       }
 
       setAnchorEl(null)

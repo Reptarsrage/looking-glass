@@ -10,10 +10,10 @@ import clsx from 'clsx'
 import { makeStyles } from '@mui/styles'
 import CheckIcon from '@mui/icons-material/Check'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { useSearchParams } from 'react-router-dom'
 
 import { valueSelector, valueIsCurrentlySelectedSelector, nestedSelector } from 'selectors/sortSelectors'
 import NestedSortMenuItem from './NestedSortMenuItem'
-import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles(() => ({
   icon: {
@@ -26,8 +26,9 @@ const useStyles = makeStyles(() => ({
 
 export default function SortMenuItem({ onClick, valueId, galleryId, moduleId }) {
   const classes = useStyles()
-  const query = useQuery()
-  const { search, sort } = query
+  const [searchParams] = useSearchParams()
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || ''
   const value = useSelector((state) => valueSelector(state, { valueId, galleryId }))
   const nestedValues = useSelector((state) => nestedSelector(state, { valueId, galleryId, search }))
   const valueIsCurrentlySelected = useSelector((state) =>

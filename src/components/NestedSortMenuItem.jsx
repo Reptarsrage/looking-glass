@@ -6,9 +6,9 @@ import CheckIcon from '@mui/icons-material/Check'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import { makeStyles } from '@mui/styles'
+import { useSearchParams } from 'react-router-dom'
 
 import { valueNameSelector, valueIsCurrentlySelectedSelector } from 'selectors/sortSelectors'
-import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles(() => ({
   icon: {
@@ -18,8 +18,9 @@ const useStyles = makeStyles(() => ({
 
 export default function NestedSortMenuItem({ moduleId, galleryId, valueId, onClick }) {
   const classes = useStyles()
-  const query = useQuery()
-  const { search, sort } = query
+  const [searchParams] = useSearchParams()
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || ''
   const name = useSelector((state) => valueNameSelector(state, { valueId, galleryId }))
   const valueIsCurrentlySelected = useSelector((state) =>
     valueIsCurrentlySelectedSelector(state, { valueId, moduleId, galleryId, sort, search })

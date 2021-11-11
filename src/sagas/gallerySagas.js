@@ -1,5 +1,5 @@
 import { put, call, takeLatest, all, select, delay, cancelled, takeEvery } from 'redux-saga/effects'
-import qs from 'querystring'
+import qs from 'qs'
 
 import lookingGlassService from 'services/lookingGlassService'
 import fileSystemService from 'services/fileSystemService'
@@ -23,9 +23,17 @@ import { FILE_SYSTEM_MODULE_ID } from 'reducers/constants'
 import { fetchGallerySuccess, fetchGalleryFailure, clearGallery, fetchGallery } from 'actions/galleryActions'
 import { modalClose } from 'actions/modalActions'
 import { handleRefresh } from './authSagas'
-import { parseQueryString } from '../hooks/useQuery'
 import takeLatestPerKey from './takeLatestPerKey'
 import logger from '../logger'
+
+/**
+ * converts URLSearchParams entries to an object
+ */
+const paramsToObject = (searchParams) =>
+  [...searchParams.entries()].reduce((acc, [key, value]) => {
+    acc[key] = value
+    return acc
+  }, {})
 
 /**
  * saga to handle changes in sort value
@@ -33,15 +41,19 @@ import logger from '../logger'
  */
 export function* handleSortChange(action) {
   const { meta, payload: value } = action
-  const { galleryId, history } = meta
-  const query = parseQueryString(history.location.search)
-  const { filters, sort, search } = query
+  const { galleryId, navigate, location, searchParams } = meta
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || ''
+  let filters = searchParams.get('filters') || ''
+  filters = filters.split(',').filter(Boolean)
 
   if (sort !== value) {
     yield put(clearGallery(galleryId))
     yield put(fetchGallery(galleryId, filters, value, search))
 
-    history.replace(`${history.location.pathname}?${qs.stringify({ ...query, sort: value })}`)
+    navigate(`${location.pathname}?${qs.stringify({ ...paramsToObject(searchParams), sort: value })}`, {
+      replace: true,
+    })
   }
 }
 
@@ -51,10 +63,11 @@ export function* handleSortChange(action) {
  */
 export function* handleFilterAdded(action) {
   const { meta, payload: filterId } = action
-  const { galleryId, history, clearAll } = meta
-  const query = parseQueryString(history.location.search)
-  const { sort } = query
-  let { filters, search } = query
+  const { galleryId, navigate, location, searchParams, clearAll } = meta
+  const sort = searchParams.get('sort') || ''
+  let search = searchParams.get('search') || ''
+  let filters = searchParams.get('filters') || ''
+  filters = filters.split(',').filter(Boolean)
 
   // check if filter is currently selected
   if (filters.indexOf(filterId) >= 0) {
@@ -93,9 +106,9 @@ export function* handleFilterAdded(action) {
   yield put(fetchGallery(nextGalleryId, filters, sort, search))
 
   // navigate
-  const qParams = { ...query, search, filters }
-  const base = supportsSearch ? history.location.pathname.split('/')[1] : 'gallery'
-  history.push(`/${base}/${moduleId}/${nextGalleryId}?${qs.stringify(qParams)}`)
+  const qParams = { ...paramsToObject(searchParams), search, filters: filters.join(',') }
+  const base = supportsSearch ? location.pathname.split('/')[1] : 'gallery'
+  navigate(`/${base}/${moduleId}/${nextGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**
@@ -104,10 +117,11 @@ export function* handleFilterAdded(action) {
  */
 export function* handleFilterRemoved(action) {
   const { meta, payload: value } = action
-  const { galleryId, history } = meta
-  const query = parseQueryString(history.location.search)
-  const { sort, search } = query
-  let { filters } = query
+  const { galleryId, navigate, location, searchParams } = meta
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || ''
+  let filters = searchParams.get('filters') || ''
+  filters = filters.split(',').filter(Boolean)
 
   if (filters.indexOf(value) < 0) {
     return
@@ -124,9 +138,9 @@ export function* handleFilterRemoved(action) {
   yield put(fetchGallery(nextGalleryId, filters, sort, search))
 
   // navigate
-  const qParams = { ...query, filters }
-  const base = history.location.pathname.split('/')[1]
-  history.push(`/${base}/${moduleId}/${nextGalleryId}?${qs.stringify(qParams)}`)
+  const qParams = { ...paramsToObject(searchParams), filters: filters.join(',') }
+  const base = location.pathname.split('/')[1]
+  navigate(`/${base}/${moduleId}/${nextGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**
@@ -135,10 +149,11 @@ export function* handleFilterRemoved(action) {
  */
 export function* handleSearchChange(action) {
   const { meta, payload } = action
-  const { galleryId, history } = meta
-  const query = parseQueryString(history.location.search)
-  const { sort, search } = query
-  let { filters } = query
+  const { galleryId, navigate, searchParams } = meta
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || ''
+  let filters = searchParams.get('filters') || ''
+  filters = filters.split(',').filter(Boolean)
   const value = payload.trim()
 
   // if changed
@@ -171,8 +186,8 @@ export function* handleSearchChange(action) {
   yield put(fetchGallery(defaultGalleryId, filters, sort, value))
 
   // navigate
-  const qParams = { ...query, search: value, filters }
-  history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+  const qParams = { ...paramsToObject(searchParams), search: value, filters: filters.join(',') }
+  navigate(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**

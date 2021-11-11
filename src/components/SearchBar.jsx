@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SearchIcon from '@mui/icons-material/Search'
-import { useHistory, useLocation, matchPath } from 'react-router-dom'
+import { useNavigate, useLocation, matchPath, useSearchParams } from 'react-router-dom'
 import Fade from '@mui/material/Fade'
 import InputBase from '@mui/material/InputBase'
 import { makeStyles } from '@mui/styles'
 
 import { searchChange } from 'actions/galleryActions'
 import { modalOpenSelector, drawerOpenSelector } from '../selectors/modalSelectors'
-import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -45,13 +44,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SearchBar() {
   const classes = useStyles()
-  const history = useHistory()
-  const query = useQuery()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const dispatch = useDispatch()
   const location = useLocation()
-  const path = matchPath(location.pathname, { path: '/(gallery|search)/:moduleId/:galleryId' })
+  let path = matchPath('/gallery/:moduleId/:galleryId', location.pathname)
+  path = path ?? matchPath('/search/:moduleId/:galleryId', location.pathname)
   const { galleryId, moduleId } = (path && path.params) || {}
-  const querySearch = query.search || ''
+  const querySearch = searchParams.get('search') || ''
   const [search, setSearch] = useState(querySearch)
   const disabled = !moduleId || !galleryId
   const modalOpen = useSelector(modalOpenSelector)
@@ -66,14 +66,14 @@ export default function SearchBar() {
     (event) => {
       const { value } = event.target
       setSearch(value)
-      dispatch(searchChange(galleryId, value, history))
+      dispatch(searchChange(galleryId, value, navigate, location, searchParams))
     },
     [galleryId]
   )
 
   const handleCancel = useCallback(() => {
     setSearch('')
-    dispatch(searchChange(galleryId, '', history))
+    dispatch(searchChange(galleryId, '', navigate, location, searchParams))
   }, [galleryId])
 
   const handleKeyUp = useCallback(

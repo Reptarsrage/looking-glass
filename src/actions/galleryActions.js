@@ -60,48 +60,56 @@ export const fetchGalleryFailure = (galleryId, error) => ({
  * user typed in search
  * @param {string|number} galleryId Gallery ID
  * @param {string} searchQuery Search query string
- * @param {Object} history Router history
+ * @param {Object} navigate React router navigate
+ * @param {Object} location React router location
+ * @param {Object} searchParams React router searchParams
  */
-export const searchChange = (galleryId, searchQuery, history) => ({
+export const searchChange = (galleryId, searchQuery, navigate, location, searchParams) => ({
   type: SEARCH_CHANGE,
   payload: searchQuery,
-  meta: { galleryId, history },
+  meta: { galleryId, navigate, location, searchParams },
 })
 
 /**
  * user selected a new sort value
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} sortValueId Sort value ID
- * @param {Object} history Router history
+ * @param {Object} navigate React router navigate
+ * @param {Object} location React router location
+ * @param {Object} searchParams React router searchParams
  */
-export const sortChange = (galleryId, sortValueId, history) => ({
+export const sortChange = (galleryId, sortValueId, navigate, location, searchParams) => ({
   type: SORT_CHANGE,
   payload: sortValueId,
-  meta: { galleryId, history },
+  meta: { galleryId, navigate, location, searchParams },
 })
 
 /**
  * user selected a new filter value
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} filterId Filter ID
- * @param {Object} history Router history
+ * @param {Object} navigate React router navigate
+ * @param {Object} location React router location
+ * @param {Object} searchParams React router searchParams
  */
-export const filterAdded = (galleryId, filterId, history, clearAll = false) => ({
+export const filterAdded = (galleryId, filterId, navigate, location, searchParams, clearAll = false) => ({
   type: FILTER_ADDED,
   payload: filterId,
-  meta: { galleryId, history, clearAll },
+  meta: { galleryId, navigate, location, searchParams, clearAll },
 })
 
 /**
  * user unselected a filter value
  * @param {string|number} galleryId Gallery ID
  * @param {string|number} filterId Filter ID
- * @param {Object} history Router history
+ * @param {Object} navigate React router navigate
+ * @param {Object} location React router location
+ * @param {Object} searchParams React router searchParams
  */
-export const filterRemoved = (galleryId, filterId, history) => ({
+export const filterRemoved = (galleryId, filterId, navigate, location, searchParams) => ({
   type: FILTER_REMOVED,
   payload: filterId,
-  meta: { galleryId, history },
+  meta: { galleryId, navigate, location, searchParams },
 })
 
 /**
