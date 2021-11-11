@@ -1,4 +1,4 @@
-import { createElement, useState, useMemo, useCallback } from 'react'
+import { createElement, useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { makeStyles } from '@mui/styles'
@@ -59,10 +59,39 @@ export default function VirtualGroupedList({
   listComponent,
   headerComponent,
   itemComponent,
+  active,
 }) {
   const classes = useStyles()
   const [scrollOffset, setScrollOffset] = useState(0)
   const [scrollDirection, setScrollDirection] = useState(0)
+  const listRef = useRef(null)
+
+  // scroll to active
+  useEffect(() => {
+    if (active < 0) {
+      return
+    }
+
+    let sectionIdx = 0
+    let counter = 0
+    while (counter < active) {
+      while (counter > sectionCounts[sectionIdx]) {
+        sectionIdx += 1
+        counter += 1 // section header
+      }
+
+      counter += 1 // section item
+    }
+
+    const bounds = listRef.current.getBoundingClientRect()
+    if (listRef.current && listRef.current.scrollTop >= counter * itemSize) {
+      // desired scroll above off screen
+      listRef.current.scrollTo({ top: counter * itemSize, behavior: 'smooth' })
+    } else if (listRef.current && listRef.current.scrollTop + bounds.height / 2 <= (counter + 1) * itemSize) {
+      // desired scroll below off screen
+      listRef.current.scrollTo({ top: (counter + 2) * itemSize - bounds.height / 2, behavior: 'smooth' })
+    }
+  }, [active])
 
   // keep track of scroll offset to render only the items on screen
   const onScroll = useCallback(
@@ -77,6 +106,7 @@ export default function VirtualGroupedList({
 
   // calculate range of visible items
   let totalItems = sectionCounts.reduce((acc, cur) => acc + cur + 1, 0)
+  let toalItemIndex = 0 // used to calculate active item
   const [startIndex, stopIndex] = useMemo(
     () => getRangeToRender(scrollOffset, itemSize, height, totalItems, scrollDirection),
     [scrollOffset, itemSize, height, totalItems, scrollDirection]
@@ -114,6 +144,7 @@ export default function VirtualGroupedList({
             ...itemData,
             key: i,
             itemIndex: i,
+            active: active === toalItemIndex,
             sectionIndex,
             style: {
               position: 'absolute',
@@ -125,6 +156,8 @@ export default function VirtualGroupedList({
           })
         )
       }
+
+      toalItemIndex += 1
     }
 
     // create section to wrap items
@@ -164,6 +197,7 @@ export default function VirtualGroupedList({
       className: clsx(classes.outerList, classes.scroll),
       style: { width, height },
       subheader: createElement('li'),
+      ref: listRef,
     },
     sections
   )
@@ -171,6 +205,7 @@ export default function VirtualGroupedList({
 
 VirtualGroupedList.defaultProps = {
   itemData: {},
+  active: -1,
 }
 
 const component = {
@@ -189,6 +224,7 @@ VirtualGroupedList.propTypes = {
   sectionCounts: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
   itemSize: PropTypes.number.isRequired,
   itemData: PropTypes.object,
+  active: PropTypes.number,
   listComponent: component.isRequired,
   headerComponent: component.isRequired,
   itemComponent: component.isRequired,
