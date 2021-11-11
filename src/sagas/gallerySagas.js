@@ -88,13 +88,14 @@ export function* handleFilterAdded(action) {
   }
 
   /// clear and fetch next gallery
-  yield put(clearGallery(defaultGalleryId))
-  yield put(fetchGallery(defaultGalleryId, filters, sort, search))
+  const nextGalleryId = moduleId === FILE_SYSTEM_MODULE_ID ? galleryId : defaultGalleryId
+  yield put(clearGallery(nextGalleryId))
+  yield put(fetchGallery(nextGalleryId, filters, sort, search))
 
   // navigate
   const qParams = { ...query, search, filters }
   const base = supportsSearch ? history.location.pathname.split('/')[1] : 'gallery'
-  history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+  history.push(`/${base}/${moduleId}/${nextGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**
@@ -118,13 +119,14 @@ export function* handleFilterRemoved(action) {
   filters = filters.filter((filter) => filter !== value)
 
   /// clear and fetch next gallery
-  yield put(clearGallery(defaultGalleryId))
-  yield put(fetchGallery(defaultGalleryId, filters, sort, search))
+  const nextGalleryId = moduleId === FILE_SYSTEM_MODULE_ID ? galleryId : defaultGalleryId
+  yield put(clearGallery(nextGalleryId))
+  yield put(fetchGallery(nextGalleryId, filters, sort, search))
 
   // navigate
   const qParams = { ...query, filters }
   const base = history.location.pathname.split('/')[1]
-  history.push(`/${base}/${moduleId}/${defaultGalleryId}?${qs.stringify(qParams)}`)
+  history.push(`/${base}/${moduleId}/${nextGalleryId}?${qs.stringify(qParams)}`)
 }
 
 /**

@@ -8,7 +8,22 @@ const fileSystemModule = {
   supportsItemFilters: false,
   supportsAuthorFilter: false,
   supportsSourceFilter: false,
-  filters: [], // TODO
+  filters: [
+    {
+      id: 'fileType',
+      name: 'File Type',
+      description: 'File or directory',
+      supportsMultiple: true,
+      supportsSearch: true,
+    },
+    {
+      id: 'contentType',
+      name: 'Content Type',
+      description: 'Content type',
+      supportsMultiple: true,
+      supportsSearch: true,
+    },
+  ],
   sort: [
     {
       id: 'none',

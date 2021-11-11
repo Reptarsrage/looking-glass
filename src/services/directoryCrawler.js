@@ -49,17 +49,21 @@ function videoSizeOf(fPath) {
  */
 
 // gets all files in a directory
-async function getFiles(dirPath, sort) {
+async function getFiles(dirPath, sort, filters) {
   const dir = await fs.promises.opendir(dirPath)
+  const typeFilters = filters.filter((text) => text.startsWith('type'))
+  const filesAllowed = typeFilters.length === 0 || typeFilters[0] !== 'type|file'
+  const directoriesAllowed = typeFilters.length === 0 || typeFilters[0] !== 'type|directory'
+
   const items = []
   for await (const dirent of dir) {
     const path = pathModule.join(dirPath, dirent.name)
     const { size, mtimeMs, birthtimeMs } = await fs.promises.stat(path)
 
-    if (dirent.isFile()) {
-      items.push({ path, isFile: true, size, mtimeMs, birthtimeMs })
-    } else if (dirent.isDirectory()) {
-      items.push({ path, isFile: false, size, mtimeMs, birthtimeMs })
+    if (dirent.isFile() && directoriesAllowed) {
+      items.push({ path, isFile: true, size, mtimeMs, birthtimeMs, name: dirent.name })
+    } else if (dirent.isDirectory() && filesAllowed) {
+      items.push({ path, isFile: false, size, mtimeMs, birthtimeMs, name: dirent.name })
     }
   }
 
@@ -108,7 +112,7 @@ module.exports = class crawler {
     this.pool = new PromisePool({ numConcurrent })
   }
 
-  getPage = async (page, sort) => {
+  getPage = async (page, sort, filters) => {
     this.start = page * this.pageSize
     this.end = this.start + this.pageSize
 
@@ -120,7 +124,7 @@ module.exports = class crawler {
       })
 
       this.started = true
-      this.getDimensionsForDirectory(sort)
+      this.getDimensionsForDirectory(sort, filters)
       return pagePromise
     }
 
@@ -163,12 +167,12 @@ module.exports = class crawler {
     }
   }
 
-  getDimensions = async (item) => {
+  getDimensions = async (item, filters) => {
     const { path, isFile } = item
     let file = path
 
     if (!isFile) {
-      file = await this.getThumbnailForDirectory(path)
+      file = await this.getThumbnailForDirectory(path, filters)
     }
 
     // check if we were successful in finding a suitable file
@@ -179,34 +183,41 @@ module.exports = class crawler {
     try {
       let size
       const type = mimeTypes.lookup(file)
-      if (type && type.startsWith('image')) {
+      const contentTypeFilters = filters.filter((text) => text.startsWith('contentType'))
+      const imagesAllowed = contentTypeFilters.length === 0 || contentTypeFilters[0] === 'contentType|image'
+      const videosAllowed = contentTypeFilters.length === 0 || contentTypeFilters[0] === 'contentType|video'
+
+      if (type && type.startsWith('image') && imagesAllowed) {
         size = await imageSizeOf(file)
-      } else if (type && type.startsWith('video')) {
+        this.markComplete(file, size, isFile, path)
+      } else if (type && type.startsWith('video') && videosAllowed) {
         size = await videoSizeOf(file)
-      } else {
+        this.markComplete(file, size, isFile, path)
+      } else if (!imagesAllowed || !videosAllowed) {
         // TODO: log?
         logger.warn('Unable to measure file', file)
         return
       }
-
-      this.markComplete(file, size, isFile, path)
     } catch (err) {
       logger.error('Error getting file dimensions', err)
     }
   }
 
-  getDimensionsForDirectory = async (sort) => {
-    const items = await getFiles(this.directory, sort)
+  getDimensionsForDirectory = async (sort, filters) => {
+    const items = await getFiles(this.directory, sort, filters)
     for (const item of items) {
-      await this.pool.start(() => this.getDimensions(item))
+      await this.pool.start(() => this.getDimensions(item, filters))
     }
 
     await this.pool.flush()
     this.markComplete(null)
   }
 
-  getThumbnailForDirectory = async (rootPath) => {
+  getThumbnailForDirectory = async (rootPath, filters) => {
     // search all directories recursively until a file that can be shown is found
+    const contentTypeFilters = filters.filter((text) => text.startsWith('contentType'))
+    const imagesAllowed = contentTypeFilters.length === 0 || contentTypeFilters[0] === 'contentType|image'
+    const videosAllowed = contentTypeFilters.length === 0 || contentTypeFilters[0] === 'contentType|video'
     const queue = [rootPath]
     while (queue.length > 0) {
       const dirPath = queue.shift()
@@ -218,7 +229,7 @@ module.exports = class crawler {
           // if file, check for correct type
           if (dirent.isFile()) {
             const type = mimeTypes.lookup(dirent.name)
-            if (type && (type.startsWith('image') || type.startsWith('video'))) {
+            if (type && ((type.startsWith('image') && imagesAllowed) || (type.startsWith('video') && videosAllowed))) {
               return pathModule.join(dirPath, dirent.name)
             }
           }
