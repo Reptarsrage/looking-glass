@@ -89,3 +89,35 @@ export const sectionItemsSelector = createSelector(
     return sectionItems
   }
 )
+
+// select a flat list of filterIds
+export const sectionItemIdsSelector = createSelector(
+  [moduleFilterSectionsSelector, byIdSelector, filterByIdSelector, getSearch],
+  (moduleFilterSectionIds, sectionById, filterById, searchQuery) => {
+    return moduleFilterSectionIds
+      .map((filterSectionId) => {
+        const section = sectionById[filterSectionId]
+        let sectionItems = [...section.values]
+        if (searchQuery) {
+          const upper = searchQuery.toUpperCase()
+          sectionItems = sectionItems.map((filterId) => ({
+            index: filterById[filterId].name.toUpperCase().indexOf(upper),
+            filterId,
+          }))
+
+          sectionItems = sectionItems.filter((item) => item.index >= 0)
+          sectionItems.sort((a, b) => {
+            const diff = a.index - b.index
+            return diff || filterById[a.filterId].name.localeCompare(filterById[b.filterId].name)
+          })
+          sectionItems = sectionItems.map((item) => item.filterId)
+        } else {
+          // sort by name
+          sectionItems.sort((a, b) => filterById[a].name.localeCompare(filterById[b].name))
+        }
+
+        return sectionItems
+      })
+      .flat()
+  }
+)
