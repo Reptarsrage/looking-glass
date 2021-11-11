@@ -1,5 +1,5 @@
 import React from 'react'
-import { HashRouter, Route, Switch } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 
 import App from './containers/App'
 import Home from './containers/Home'
@@ -10,40 +10,20 @@ import ImplicitAuth from './containers/ImplicitAuth'
 import NotFound from './containers/NotFound'
 import withErrorBoundary from './hocs/WithErrorBoundary'
 
-const Routes = () => (
+const Router = () => (
   <HashRouter>
     <App>
-      <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
-
-        <Route path="/gallery/:moduleId/:galleryId">
-          <Gallery />
-        </Route>
-
-        <Route path="/search/:moduleId/:galleryId">
-          <Gallery />
-        </Route>
-
-        <Route path="/login/:moduleId/:galleryId">
-          <Login />
-        </Route>
-
-        <Route path="/oauth/:moduleId/:galleryId">
-          <OAuth />
-        </Route>
-
-        <Route path="/implicit/:moduleId/:galleryId">
-          <ImplicitAuth />
-        </Route>
-
-        <Route path="*">
-          <NotFound />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/gallery/:moduleId/:galleryId" element={<Gallery />} />
+        <Route path="/search/:moduleId/:galleryId" element={<Gallery />} />
+        <Route path="/login/:moduleId/:galleryId" element={<Login />} />
+        <Route path="/oauth/:moduleId/:galleryId" element={<OAuth />} />
+        <Route path="/implicit/:moduleId/:galleryId" element={<ImplicitAuth />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </App>
   </HashRouter>
 )
 
-export default withErrorBoundary(Routes)
+export default withErrorBoundary(Router)

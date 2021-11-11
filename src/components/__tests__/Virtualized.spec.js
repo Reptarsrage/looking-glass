@@ -62,7 +62,7 @@ describe('<Virtualized />', () => {
     render(<Virtualized {...props} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
     expect(screen.queryByTestId('2')).not.toBeInTheDocument()
     expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
@@ -94,7 +94,7 @@ describe('<Virtualized />', () => {
 
     // assert
     expect(screen.queryByTestId('1')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
     expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(2)
@@ -125,8 +125,8 @@ describe('<Virtualized />', () => {
     render(<Virtualized {...props} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
     expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(2)
@@ -159,7 +159,7 @@ describe('<Virtualized />', () => {
 
     // assert
     expect(screen.queryByTestId('1')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
     expect(screen.queryByTestId('3')).not.toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(2)
@@ -191,9 +191,9 @@ describe('<Virtualized />', () => {
     rerender(<Virtualized {...props} width={101} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
-    expect(screen.queryByTestId('3')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(6)
   })
@@ -223,9 +223,9 @@ describe('<Virtualized />', () => {
     rerender(<Virtualized {...props} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
-    expect(screen.queryByTestId('3')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(6)
   })
@@ -254,9 +254,9 @@ describe('<Virtualized />', () => {
     rerender(<Virtualized {...props} items={['4', '5', '6']} />)
 
     // assert
-    expect(screen.queryByTestId('4')).toBeInTheDocument()
-    expect(screen.queryByTestId('5')).toBeInTheDocument()
-    expect(screen.queryByTestId('6')).toBeInTheDocument()
+    expect(screen.getByTestId('4')).toBeInTheDocument()
+    expect(screen.getByTestId('5')).toBeInTheDocument()
+    expect(screen.getByTestId('6')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(6)
   })
@@ -284,10 +284,10 @@ describe('<Virtualized />', () => {
     render(<Virtualized {...props} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
     expect(screen.queryByTestId('2')).not.toBeInTheDocument()
     expect(screen.queryByTestId('3')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('4')).toBeInTheDocument()
+    expect(screen.getByTestId('4')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(4)
   })
@@ -316,9 +316,9 @@ describe('<Virtualized />', () => {
     rerender(<Virtualized {...props} forceRenderItems={[]} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
-    expect(screen.queryByTestId('3')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('3')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(5)
   })
@@ -347,9 +347,9 @@ describe('<Virtualized />', () => {
     rerender(<Virtualized {...props} forceRenderItems={['2', '3']} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
-    expect(screen.queryByTestId('3')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('3')).toBeInTheDocument()
     expect(screen.queryByTestId('4')).not.toBeInTheDocument()
     expect(screen.queryByTestId('5')).not.toBeInTheDocument()
 
@@ -380,10 +380,10 @@ describe('<Virtualized />', () => {
     rerender(<Virtualized {...props} />)
 
     // assert
-    expect(screen.queryByTestId('1')).toBeInTheDocument()
-    expect(screen.queryByTestId('2')).toBeInTheDocument()
-    expect(screen.queryByTestId('3')).toBeInTheDocument()
-    expect(screen.queryByTestId('4')).toBeInTheDocument()
+    expect(screen.getByTestId('1')).toBeInTheDocument()
+    expect(screen.getByTestId('2')).toBeInTheDocument()
+    expect(screen.getByTestId('3')).toBeInTheDocument()
+    expect(screen.getByTestId('4')).toBeInTheDocument()
 
     expect(mockItemDimensions).toHaveBeenCalledTimes(4)
   })

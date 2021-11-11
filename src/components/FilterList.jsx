@@ -42,7 +42,7 @@ function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick
 
   const handleClick = useCallback(() => {
     onClick(filterId)
-  }, [onClick])
+  }, [filterId, onClick])
 
   return (
     <ListItem button style={style} onClick={handleClick}>

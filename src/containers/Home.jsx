@@ -8,7 +8,7 @@ import Avatar from '@mui/material/Avatar'
 import { useDispatch, useSelector } from 'react-redux'
 import FolderIcon from '@mui/icons-material/Folder'
 import { dialog } from '@electron/remote'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import ModuleItem from 'components/ModuleItem'
 import { fetchModules } from 'actions/moduleActions'
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const modules = useSelector(modulesSelector)
   const fetched = useSelector(fetchedSelector)
   const fetching = useSelector(fetchingSelector)
@@ -74,7 +74,7 @@ export default function Home() {
         dispatch(setFileSystemDirectory(directoryPath))
         const siteId = Buffer.from(directoryPath, 'utf-8').toString('base64')
         const galleryId = generateGalleryId(FILE_SYSTEM_MODULE_ID, siteId)
-        history.push(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
+        navigate(`/gallery/${FILE_SYSTEM_MODULE_ID}/${galleryId}`)
       }
     })
   }, [])

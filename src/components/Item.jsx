@@ -5,7 +5,7 @@ import { makeStyles } from '@mui/styles'
 import Tooltip from '@mui/material/Tooltip'
 import CollectionsIcon from '@mui/icons-material/Collections'
 import Paper from '@mui/material/Paper'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { modalItemIdSelector } from 'selectors/modalSelectors'
 import {
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Item({ itemId, style }) {
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [itemEl, setItemEl] = useState(null)
   const [cornerEl, setCornerEl] = useState(null)
   const [ignoreEffect, setIgnoreEffect] = useState(false)
@@ -89,7 +89,7 @@ function Item({ itemId, style }) {
       event.preventDefault()
 
       if (isGallery) {
-        history.push(itemGalleryUrl)
+        navigate(itemGalleryUrl)
         return
       }
 

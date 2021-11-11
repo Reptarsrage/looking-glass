@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Redirect, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import Avatar from '@mui/material/Avatar'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
@@ -103,7 +103,7 @@ export default function Login() {
 
   if (fetched) {
     // redirect to whatever gallery the user was on before
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
+    return <Navigate to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
   return (

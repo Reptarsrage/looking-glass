@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Redirect, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
@@ -118,7 +118,7 @@ export default function OAuth() {
 
   if (fetched) {
     // redirect to whatever gallery the user was on before
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}`} />
+    return <Navigate to={`/gallery/${moduleId}/${galleryId}`} />
   }
 
   const isFetching = modalFetching || fetching

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.23](https://github.com/reptarsrage/looking-glass/compare/v0.4.22...v0.4.23) (2021-11-11)
+
+### Bug Fixes
+
+- adding missing useCallback deps ([4637b29](https://github.com/reptarsrage/looking-glass/commit/4637b2933d31d7c0e431130cd0023dc030ed3015))
+- upgrading to react router v6 ([f6db151](https://github.com/reptarsrage/looking-glass/commit/f6db151e2fd862f341d72569ed43f92339a0de52))
+
 ### [0.4.22](https://github.com/reptarsrage/looking-glass/compare/v0.4.21...v0.4.22) (2021-11-11)
 
 ### Features

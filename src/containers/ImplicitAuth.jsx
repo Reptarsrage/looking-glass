@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Redirect, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 
 import { fetchedSelector, fetchingSelector, errorSelector } from 'selectors/authSelectors'
 import { login } from 'actions/authActions'
@@ -20,7 +20,7 @@ export default function ImplicitAuth() {
   }, [fetching, fetched, login, moduleId])
 
   if (fetched && !error) {
-    return <Redirect to={`/gallery/${moduleId}/${galleryId}/`} />
+    return <Navigate to={`/gallery/${moduleId}/${galleryId}/`} />
   }
 
   return <LoadingIndicator />

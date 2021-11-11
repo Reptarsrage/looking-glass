@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Redirect, useHistory, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useLocation, useSearchParams, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@mui/styles'
@@ -40,7 +40,6 @@ import LoadingIndicator from 'components/LoadingIndicator'
 import Toast from 'components/Toast'
 import NoResults from 'components/NoResults'
 import Error from 'components/Error'
-import useQuery from '../hooks/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -64,12 +63,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Gallery({ overlayButtonThreshold }) {
   const classes = useStyles()
-  const query = useQuery()
-  const history = useHistory()
-  const params = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const routeParams = useParams()
 
-  const { galleryId, moduleId } = params
-  const { filters, search, sort } = query
+  const { galleryId, moduleId } = routeParams
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || ''
+  let filters = searchParams.get('filters') || ''
+  filters = filters.split(',').filter(Boolean)
 
   const [showOverlayButtons, setShowOverlayButtons] = useState(false)
   const [showEndOfScrollToast, setShowEndOfScrollToast] = useState(false)
@@ -104,7 +107,7 @@ export default function Gallery({ overlayButtonThreshold }) {
   useEffect(() => {
     // fetch images
     fetchInitialItems()
-  }, [query, params])
+  }, [searchParams, routeParams])
 
   useEffect(() => {
     // show end of the line toast
@@ -120,9 +123,9 @@ export default function Gallery({ overlayButtonThreshold }) {
   const handleFilterClick = useCallback(
     (filterId) => {
       dispatch(setDrawerOpen(false))
-      dispatch(filterAdded(galleryId, filterId, history))
+      dispatch(filterAdded(galleryId, filterId, navigate, location, searchParams))
     },
-    [galleryId]
+    [galleryId, navigate, location, searchParams]
   )
 
   const handleOpenDrawerClick = useCallback(() => {
@@ -187,7 +190,7 @@ export default function Gallery({ overlayButtonThreshold }) {
 
   // redirect to authenticate
   if (!isAuthenticated) {
-    return <Redirect to={authUrl} />
+    return <Navigate to={authUrl} />
   }
 
   // TODO: Implement Desktop/mobile menus as per the demo here https://material-ui.com/components/app-bar/

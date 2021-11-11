@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useNavigate, useNavigationType, useLocation } from 'react-router-dom'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { makeStyles } from '@mui/styles'
@@ -29,13 +29,13 @@ export default function NavButtons() {
   const classes = useStyles()
   const location = useLocation()
   const dispatch = useDispatch()
-  const history = useHistory()
+  const action = useNavigationType()
+  const navigate = useNavigate()
   const [stack, setStack] = useState([])
   const [ptr, setPtr] = useState(-1)
   const modalOpen = useSelector(modalOpenSelector)
   const drawerOpen = useSelector(drawerOpenSelector)
 
-  const { action } = history
   const { pathname, search } = location
   const hasBack = ptr >= 0
   const hasFwd = stack.length > 0 && ptr < stack.length - 1
@@ -62,7 +62,7 @@ export default function NavButtons() {
     }
 
     setPtr(ptr - 1)
-    history.goBack()
+    navigate(-1)
   }, [stack, ptr])
 
   const handleForward = useCallback(() => {
@@ -73,7 +73,7 @@ export default function NavButtons() {
     }
 
     setPtr(ptr + 1)
-    history.goForward()
+    navigate(1)
   }, [stack, ptr])
 
   return (
