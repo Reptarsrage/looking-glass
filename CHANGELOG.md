@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.22](https://github.com/reptarsrage/looking-glass/compare/v0.4.21...v0.4.22) (2021-11-11)
+
+### Features
+
+- adding filters to file system service ([89a648b](https://github.com/reptarsrage/looking-glass/commit/89a648bbc8010d1a4c861427183b6cc4f31913b3))
+- adding sorting to file system module ([2e393ed](https://github.com/reptarsrage/looking-glass/commit/2e393eda19951ec719f34b938be3c24a6173f572))
+
+### Bug Fixes
+
+- **deps:** update dependency react-router-dom to v6 ([5dd8ec6](https://github.com/reptarsrage/looking-glass/commit/5dd8ec64f76c2c980f1c7752b68931e5461f0c37))
+- fixing no items & error displays in galleries ([379850d](https://github.com/reptarsrage/looking-glass/commit/379850d775c57db95bc16a91439e96190ec916bc))
+
 ### [0.4.21](https://github.com/reptarsrage/looking-glass/compare/v0.4.18...v0.4.21) (2021-10-31)
 
 ### Bug Fixes
