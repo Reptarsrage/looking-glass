@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.24](https://github.com/reptarsrage/looking-glass/compare/v0.4.23...v0.4.24) (2021-11-11)
+
+### Features
+
+- adding shortcut keys for slideshow ([e25636b](https://github.com/reptarsrage/looking-glass/commit/e25636bb14e0712a74f777b2722ebb16bca0ba17))
+- keyboard shortcuts for selecting filter ([ada2637](https://github.com/reptarsrage/looking-glass/commit/ada26370600005ba42226d62aebbd40158a19030))
+
+### Bug Fixes
+
+- fixing filters not being applied ([561904d](https://github.com/reptarsrage/looking-glass/commit/561904d4b6e58ab94755cef6e035b606601f7c4c))
+
 ### [0.4.23](https://github.com/reptarsrage/looking-glass/compare/v0.4.22...v0.4.23) (2021-11-11)
 
 ### Bug Fixes
