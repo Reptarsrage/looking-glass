@@ -44,7 +44,7 @@ export default function SortMenu({ moduleId, galleryId }) {
 
       setAnchorEl(null)
     },
-    [galleryId]
+    [galleryId, navigate, location, searchParams]
   )
 
   if (!moduleSupportsSorting || sortValues.length === 0) {

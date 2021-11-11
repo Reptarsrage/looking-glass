@@ -134,7 +134,7 @@ export default function Modal({ moduleId }) {
         dispatch(filterAdded(defaultGalleryId, filterId, navigate, location, searchParams))
       }
     },
-    [defaultGalleryId, searchParams]
+    [defaultGalleryId, searchParams, navigate, location, searchParams]
   )
 
   const onAnimationStart = useCallback(() => {
@@ -143,11 +143,11 @@ export default function Modal({ moduleId }) {
 
   const handleAuthorClick = useCallback(() => {
     dispatch(filterAdded(defaultGalleryId, modalItem.author.id, navigate, location, searchParams, true))
-  }, [defaultGalleryId, modalItem, searchParams])
+  }, [defaultGalleryId, modalItem, navigate, location, searchParams])
 
   const handleSourceClick = useCallback(() => {
     dispatch(filterAdded(defaultGalleryId, modalItem.source.id, navigate, location, searchParams, true))
-  }, [defaultGalleryId, modalItem, searchParams])
+  }, [defaultGalleryId, modalItem, navigate, location, searchParams])
 
   const onAnimationComplete = useCallback(() => {
     setAnimating(false)

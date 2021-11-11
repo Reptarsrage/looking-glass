@@ -125,7 +125,7 @@ export default function Gallery({ overlayButtonThreshold }) {
       dispatch(setDrawerOpen(false))
       dispatch(filterAdded(galleryId, filterId, navigate, location, searchParams))
     },
-    [galleryId, searchParams]
+    [galleryId, navigate, location, searchParams]
   )
 
   const handleOpenDrawerClick = useCallback(() => {

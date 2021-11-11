@@ -68,13 +68,13 @@ export default function SearchBar() {
       setSearch(value)
       dispatch(searchChange(galleryId, value, navigate, location, searchParams))
     },
-    [galleryId]
+    [galleryId, navigate, location, searchParams]
   )
 
   const handleCancel = useCallback(() => {
     setSearch('')
     dispatch(searchChange(galleryId, '', navigate, location, searchParams))
-  }, [galleryId])
+  }, [galleryId, navigate, location, searchParams])
 
   const handleKeyUp = useCallback(
     (e) => {

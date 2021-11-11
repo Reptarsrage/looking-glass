@@ -24,7 +24,7 @@ export default function SelectedFilter({ galleryId, filterId }) {
 
   const onDelete = useCallback(() => {
     dispatch(filterRemoved(galleryId, filterId, navigate, location, searchParams))
-  }, [galleryId, filterId, searchParams])
+  }, [galleryId, filterId, navigate, location, searchParams])
 
   return (
     <span className={classes.filterItem}>

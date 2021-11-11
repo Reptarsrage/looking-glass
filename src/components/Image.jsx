@@ -20,7 +20,7 @@ export default function Image({ sources, width, height, title, styleName, ...pas
   const handleError = useCallback(() => {
     // move to next image, hopefully that one loads
     setIndex(Math.min(index + 1, sources.length - 1))
-  }, [index])
+  }, [index, sources.length])
 
   return (
     <motion.img
