@@ -67,7 +67,6 @@ export default function Gallery({ overlayButtonThreshold }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const routeParams = useParams()
-
   const { galleryId, moduleId } = routeParams
   const search = searchParams.get('search') || ''
   const sort = searchParams.get('sort') || ''

@@ -15,6 +15,7 @@ import {
   filtersFetchingSelector,
   filtersFetchedSelector,
   filtersErrorSelector,
+  sectionItemIdsSelector,
 } from 'selectors/filterSectionSelectors'
 import { moduleFilterSectionsSelector } from 'selectors/moduleSelectors'
 import withResize from 'hocs/WithResize'
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick }) {
+function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick, active }) {
   const sections = useSelector((state) => moduleFilterSectionsSelector(state, { moduleId }))
   const filterSectionId = sections[sectionIndex]
   const sectionItems = useSelector((state) => sectionItemsSelector(state, { moduleId, filterSectionId, search }))
@@ -45,7 +46,7 @@ function SectionItem({ itemIndex, sectionIndex, style, moduleId, search, onClick
   }, [filterId, onClick])
 
   return (
-    <ListItem button style={style} onClick={handleClick}>
+    <ListItem button selected={active} style={style} onClick={handleClick}>
       <ListItemText primary={name} />
     </ListItem>
   )
@@ -58,9 +59,10 @@ SectionItem.propTypes = {
   moduleId: PropTypes.string.isRequired,
   search: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  active: PropTypes.bool.isRequired,
 }
 
-function Inner({ moduleId, search, width, height, onClick }) {
+function Inner({ moduleId, search, width, height, onClick, active }) {
   const sectionCounts = useSelector((state) => sectionCountsSelector(state, { moduleId, search }))
 
   return (
@@ -72,6 +74,7 @@ function Inner({ moduleId, search, width, height, onClick }) {
       listComponent={List}
       headerComponent={FilterSectionHeader}
       itemComponent={SectionItem}
+      active={active}
       itemData={{ moduleId, search, onClick }}
     />
   )
@@ -83,6 +86,7 @@ Inner.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
+  active: PropTypes.number.isRequired,
 }
 
 const InnerWithResize = withResize(Inner)
@@ -94,6 +98,16 @@ export default function FilterList({ moduleId, onClick }) {
   const fetched = useSelector((state) => filtersFetchedSelector(state, { moduleId }))
   const error = useSelector((state) => filtersErrorSelector(state, { moduleId }))
   const [search, setSearch] = useState('')
+  const [active, setActive] = useState(-1)
+  const filterIds = useSelector((state) => sectionItemIdsSelector(state, { moduleId, search }))
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  })
 
   useEffect(() => {
     if (!fetched && !fetching) {
@@ -101,9 +115,29 @@ export default function FilterList({ moduleId, onClick }) {
     }
   }, [fetched, fetching, moduleId])
 
+  useEffect(() => {
+    setActive(-1)
+  }, [filterIds])
+
   const handleFilterSearchChange = useCallback((event) => {
     setSearch(event.target.value)
   }, [])
+
+  const handleKeyDown = (event) => {
+    if (event.keyCode === 38 && active > 0) {
+      // ↑
+      setActive(active - 1)
+    } else if (event.keyCode === 40 && active < filterIds.length - 1) {
+      // ↓
+      setActive(active + 1)
+    } else if (event.keyCode === 13 && active >= 0) {
+      // enter
+      onClick(filterIds[active])
+    }
+
+    event.preventDefault()
+    event.stopPropagation()
+  }
 
   if (fetching) {
     return <LoadingIndicator size={50} />
@@ -114,6 +148,7 @@ export default function FilterList({ moduleId, onClick }) {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <>
       <TextField
         id="filter"
@@ -127,7 +162,7 @@ export default function FilterList({ moduleId, onClick }) {
       />
 
       <div className={classes.main}>
-        <InnerWithResize moduleId={moduleId} search={search} onClick={onClick} />
+        <InnerWithResize moduleId={moduleId} search={search} onClick={onClick} active={active} />
       </div>
     </>
   )

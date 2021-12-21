@@ -66,7 +66,7 @@ class LookingGlassService {
    * @param {string|number} filter Filter value
    */
   fetchItems = async (moduleId, galleryId, accessToken, offset, after, query, sort, filters) => {
-    const params = { offset, after, query, sort, filters }
+    const params = { offset, after, query, sort, filters: filters.join(',') }
     if (galleryId) {
       params.galleryId = galleryId
     }
