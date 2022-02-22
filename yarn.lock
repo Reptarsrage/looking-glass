@@ -5838,10 +5838,10 @@ get-pkg-repo@^4.0.0:
     through2 "^2.0.0"
     yargs "^16.2.0"
 
-get-port@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/get-port/-/get-port-6.0.0.tgz#eeac06c17b9d22c2949d4ce5abcc80753afe9be1"
-  integrity sha512-qSVkVF6Eq1GdL/cBNiFuP4nUHMF7OEMTqEjC6alR2N90u8BFOoO0PFhNTX2QtAUoGrz8NnrSWj85TZ8YXZ6LOA==
+get-port@6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/get-port/-/get-port-6.1.1.tgz#0ca06d9de3bfaca47d423aac897490b493f7715d"
+  integrity sha512-RQOsDPSd2PcoLwakY1dwEtLiAbTR7IfmnxsKswfcHEfRKKbhWAG2R5Qo7C8ga6Ne4Mq4lFbogXfDGNfqFxwAaw==
 
 get-stream@^4.1.0:
   version "4.1.0"
