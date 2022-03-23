@@ -64,7 +64,7 @@
     "@testing-library/react": "12.1.4",
     "@testing-library/user-event": "13.5.0",
     "babel-jest": "27.5.1",
-    "babel-loader": "8.2.3",
+    "babel-loader": "8.2.4",
     "babel-plugin-module-resolver": "4.1.0",
     "browserslist": "4.20.2",
     "concurrently": "7.0.0",
