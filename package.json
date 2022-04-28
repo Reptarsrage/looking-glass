@@ -120,7 +120,7 @@
     "@mui/icons-material": "^5.2.5",
     "@mui/material": "^5.2.5",
     "@mui/styles": "^5.0.1",
-    "axios": "^0.26.0",
+    "axios": "^0.27.0",
     "clsx": "^1.1.1",
     "electron-dl": "^3.0.2",
     "electron-is-dev": "^2.0.0",
