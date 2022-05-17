@@ -103,7 +103,7 @@
     "react-refresh": "0.13.0",
     "redux-mock-store": "1.5.4",
     "rimraf": "3.0.2",
-    "standard-version": "9.3.2",
+    "standard-version": "9.5.0",
     "style-loader": "3.3.1",
     "terser-webpack-plugin": "5.3.1",
     "url-loader": "4.1.1",
