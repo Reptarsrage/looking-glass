@@ -90,3 +90,4 @@ npm package
 - [x] End of scroll indidicator
 - [x] Avoid fetching more when navigating back
 - [x] Fix modal title on light theme
+- [ ] TESTS

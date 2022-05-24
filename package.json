@@ -35,7 +35,7 @@
     "dist": "npm run build",
     "release": "standard-version",
     "test": "jest",
-    "prepare": "npx simple-git-hooks"
+    "prepare": "husky install"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
@@ -77,11 +77,11 @@
     "electron": "^18.2.0",
     "electron-builder": "^23.0.3",
     "electron-devtools-installer": "^3.2.0",
+    "husky": "^7.0.0",
     "jest": "^28.1.0",
     "jest-environment-jsdom": "^28.1.0",
     "nano-staged": "^0.8.0",
     "prettier": "^2.6.1",
-    "simple-git-hooks": "^2.7.0",
     "standard-version": "^9.5.0",
     "ts-jest": "^28.0.3",
     "typescript": "^4.6.4",
@@ -91,10 +91,6 @@
   },
   "prettier": {
     "printWidth": 120
-  },
-  "simple-git-hooks": {
-    "pre-commit": "./node_modules/.bin/nano-staged",
-    "commit-msg": "npx --no -- commitlint --edit"
   },
   "nano-staged": {
     "*.{js,ts,jsx,tsx,json,yml,md}": "prettier --write"
