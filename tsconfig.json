@@ -16,6 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["svg.d.ts", "src"],
+  "include": ["svg.d.ts", "jest.d.ts", "src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
