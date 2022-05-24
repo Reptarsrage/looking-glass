@@ -1,11 +1,11 @@
 {
   "productName": "The Looking-Glass",
   "appId": "looking-glass",
-  "files": ["main.prod.js"],
+  "files": "electron",
   "extraFiles": ["dist"],
   "directories": {
-    "buildResources": "resources",
-    "output": "release"
+    "buildResources": "assets",
+    "output": "dist_electron"
   },
   "mac": {
     "category": "public.app-category.entertainment",

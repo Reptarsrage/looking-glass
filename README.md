@@ -11,11 +11,11 @@ A client for use with the [looking glass service application](https://github.com
 
 ## Install
 
-Install the dependencies with `yarn`.
+Install the dependencies with `npm`.
 
 ```bash
-cd your-project-name
-yarn install
+cd looking-glass
+npm install
 ```
 
 ## Starting Development
@@ -23,22 +23,22 @@ yarn install
 Start the app in the `dev` environment. This starts the renderer process in [**hot-module-replacement**](https://webpack.js.org/guides/hmr-react/) mode and starts a webpack dev server that sends hot updates to the renderer process:
 
 ```bash
-yarn dev
+npm run dev
 ```
 
 ## Test
 
-Run unit tests using the `jest-cli` via `yarn` scripts:
+Run unit tests using the `jest-cli` via `npm` scripts:
 
 ```bash
 # unit tests
-yarn test
+npm test
 
 # watch
-yarn test --watch
+npm test --watch
 
 # test coverage
-yarn test --coverage
+npm test --coverage
 ```
 
 > NOTE: More on the `jest-cli` here: https://jestjs.io/docs/en/cli
@@ -48,12 +48,12 @@ yarn test --coverage
 To package apps for the local platform:
 
 ```bash
-yarn package
+npm package
 ```
 
 ## Release
 
-1. Run `yarn release` to run the semver release process
+1. Run `npm release` to run the semver release process
 2. Run `git push --follow-tags origin <branch>`
 3. Craft a new _draft_ release on GitHub with the tag created in Step 1
 4. Create a PR and merge changes
@@ -61,37 +61,32 @@ yarn package
 
 ## TODO (In no particular order)
 
-- [x] Add Scroll bar
-- [ ] Fix modal to open from masonry item (continuous video)
-- [x] Fix modal next/prev scrolls page (update item bounds)
-- [x] Fix for search and switching galleries
-- [x] Add Filters/Tags
-- [ ] Add "The End" notification or something
-- [x] Fix thumbnails/outline showing after image load (the size should be known right?)
-- [x] Fix breadcrumbs during search
-- [ ] Gif Scrubber
-- [x] Fix updating view when switching galleries, and restoring scroll position
-- [x] Add window title change based on current page
-- [ ] Add settings for various customization (colors, autoplay, default sort, ect.)
-- [ ] Better Unit Testing
-- [ ] Better E2E Testing
-- [ ] Add alternate tile view for home
-- [ ] Improve file explorer with sorting/filters
-- [ ] Improve file explorer with nested directory previews and parent navigation
-- [ ] Fix images which fail to load breaking the view (remove them from items)
-- [ ] Add more gallery information
-- [ ] Add more custom context menu items
-- [ ] Add custom menu items
-- [ ] Fix configured server address for different environments
-- [ ] Add custom icon
-- [x] Modal close button instead of clicking anywhere
-- [ ] Add keyboard navigation
-- [ ] Add support for html5 pictures with multiple sources based on screen size
-- [ ] Add support for multiple filters
-- [ ] Add dedicated search page
-- [ ] Add forward and backward navigation buttons
-- [ ] Redesign app bar
-- [ ] Add more consistent "Loading", "Error", "No results" indicators
-- [ ] Add some fun art for the Not Found, Error boundary, ect. screens
-- [ ] Make filters a separate url so navigation works
-- [ ] Add bookmarks and/or favorites
+- [x] Top Bar
+- [x] Modal Controls
+- [x] Gallery Nav
+- [x] Search
+- [x] Sort
+- [x] Modules
+- [x] Auth
+- [x] Themes
+- [x] Local file system
+- [ ] Breadcrumbs
+- [x] Column Slider + Settings
+- [x] Error Handling + Images
+- [ ] Route TRansitions?
+- [x] Fix item tags
+- [x] Fetch item tags
+- [x] Fix video sources loading errors
+- [ ] prev/next button hiding + search hiding
+- [x] clear stuff when navigating
+- [ ] hide sort/filter buttons when necessary
+- [ ] Use skeletons instead of spinner
+- [ ] add snackbar (toasts) for End of scroll + Errors + Download
+- [x] video volume sync
+- [x] update all zustand syntax
+- [ ] use route for modal: https://stackblitz.com/github/remix-run/react-router/tree/main/examples/modal?file=src/App.tsx
+- [ ] Pause videos when modal opens
+- [ ] Start modal video at same time (maybe pause when zooming instead of showing poster?)
+- [x] End of scroll indidicator
+- [x] Avoid fetching more when navigating back
+- [x] Fix modal title on light theme
