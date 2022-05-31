@@ -47,7 +47,6 @@ const HomePageOuter: React.FC<React.PropsWithChildren<any>> = ({ children }) => 
 );
 
 const HomePage: React.FC = () => {
-  const app = window.require("@electron/remote");
   const navigate = useNavigate();
   const modules = useModulesStore((state) => state.modules);
   const fetched = useModulesStore((state) => state.fetched);
@@ -62,22 +61,17 @@ const HomePage: React.FC = () => {
   }, []);
 
   async function handleLocalClick() {
-    try {
-      const dialogue: Electron.Dialog = app.dialog;
-      const result = await dialogue.showOpenDialog({ properties: ["openDirectory"] });
-      if (result.canceled) {
-        return;
-      }
-
-      navigate(
-        `/gallery/local?${new URLSearchParams([
-          ["galleryId", result.filePaths[0]],
-          ["sort", "name"],
-        ]).toString()}`
-      );
-    } catch (error) {
-      console.warn("Error while choosing a directory", error);
+    const filePath = await window.electronAPI.chooseFolder();
+    if (!filePath) {
+      return;
     }
+
+    navigate(
+      `/gallery/local?${new URLSearchParams([
+        ["galleryId", filePath],
+        ["sort", "name"],
+      ]).toString()}`
+    );
   }
 
   if (error) {

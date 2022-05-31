@@ -1,15 +1,13 @@
-const { app, BrowserWindow, screen } = require("electron");
+const { app, BrowserWindow, screen, ipcMain, dialog } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
 const Store = require("electron-store");
-const Remote = require("@electron/remote/main");
 const { autoUpdater } = require("electron-updater");
-
-Remote.initialize();
 
 const log = require("./logger");
 const MenuBuilder = require("./menu");
 const createLocalWebServer = require("./localWebServer");
+const ipc = require("./ipc");
 
 // auto-update logging
 autoUpdater.logger = log;
@@ -41,18 +39,15 @@ const createWindow = async (port) => {
     icon: path.resolve(__dirname, "..", "assets", "icon.png"),
     frame: false,
     webPreferences: {
-      preload: path.resolve(__dirname, "preload.js"),
-      nodeIntegration: true,
-      enableRemoteModule: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
   // bootstrap store
   Store.initRenderer();
-
-  // bootstrap remote & enable webContents
-  Remote.enable(mainWindow.webContents);
 
   // load the url (or file)
   if (isDev) {
@@ -72,6 +67,14 @@ const createWindow = async (port) => {
   // configure Menu
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildContextMenu();
+
+  mainWindow.on("maximize", () => {
+    mainWindow.webContents.send("maximize");
+  });
+
+  mainWindow.on("unmaximize", () => {
+    mainWindow.webContents.send("unmaximize");
+  });
 
   // wait until window is presentable to show
   mainWindow.once("ready-to-show", () => {
@@ -127,6 +130,9 @@ app.on("ready", async () => {
 
   // create the window
   await createWindow(port);
+
+  // initialize IPC channels
+  ipc.init();
 
   // check for updates
   autoUpdater.checkForUpdatesAndNotify();

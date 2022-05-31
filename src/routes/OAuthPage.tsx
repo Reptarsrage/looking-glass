@@ -15,7 +15,6 @@ import { useAuthStore } from "../store/auth";
 import * as lookingGlassService from "../services/lookingGlassService";
 
 const OAuthPage: React.FC = () => {
-  const app = window.require("@electron/remote");
   const moduleId = useParams().moduleId!;
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -25,49 +24,6 @@ const OAuthPage: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
   const returnUrl = searchParams.get("returnUrl")!;
-
-  const showOauthModal = (uri: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const url = new URL(uri);
-      const searchParams = new URLSearchParams(url.search);
-      const expectedState = searchParams.get("state");
-      const authWindow: Electron.BrowserWindow = new app.BrowserWindow({
-        parent: app.getCurrentWindow(),
-        modal: true,
-        show: false,
-        autoHideMenuBar: true,
-        webPreferences: {
-          devTools: false,
-        },
-      });
-
-      const handleRedirect = (uri: string) => {
-        const url = new URL(uri);
-        const searchParams = new URLSearchParams(url.search);
-        const state = searchParams.get("state");
-        const code = searchParams.get("code");
-        const error = searchParams.get("error");
-
-        if (error) {
-          reject(new Error(error));
-        }
-
-        if (state === expectedState && code) {
-          authWindow.removeAllListeners("closed");
-          setImmediate(() => authWindow.close());
-          resolve(code);
-        }
-      };
-
-      authWindow.on("closed", () => reject(new Error("Auth window was closed by user")));
-      authWindow.webContents.on("will-redirect", (_, newUrl) => handleRedirect(newUrl));
-      authWindow.webContents.on("will-navigate", (_, newUrl) => handleRedirect(newUrl));
-
-      console.log("uri", uri);
-      authWindow.loadURL(uri);
-      authWindow.show();
-    });
-  };
 
   function handleClose() {
     navigate(-1);
@@ -81,8 +37,7 @@ const OAuthPage: React.FC = () => {
     setFetching(true);
 
     try {
-      const code = await showOauthModal(module.oAuthUrl);
-      console.log("code", code);
+      const code = await window.electronAPI.oauth(module.oAuthUrl);
       const response = await lookingGlassService.authorize(moduleId, code);
       setAuth(moduleId, response);
     } catch (error: unknown) {

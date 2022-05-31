@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { styled } from "@mui/system";
-import type { BrowserWindow } from "electron";
 import Box from "@mui/material/Box";
 
 import NavigationControls from "./NavigationControls";
@@ -107,39 +106,45 @@ const IconClose = styled("div")(({ theme }) => ({
 }));
 
 const TitleBar: React.FC = () => {
-  const app = window.require("@electron/remote");
-  const win: BrowserWindow = app.getCurrentWindow();
   const [maximized, setMaximized] = useState(false);
 
+  // set initial value
   useEffect(() => {
-    win.on("maximize", toggleMaxRestoreButtons);
-    win.on("unmaximize", toggleMaxRestoreButtons);
+    window.electronAPI.isMaximized().then(setMaximized);
+  }, []);
+
+  // subscribe to changes
+  useEffect(() => {
+    window.electronAPI.on("maximize", toggleMaxRestoreButtons);
+    window.electronAPI.on("unmaximize", toggleMaxRestoreButtons);
 
     return () => {
-      win.off("maximize", toggleMaxRestoreButtons);
-      win.off("unmaximize", toggleMaxRestoreButtons);
+      window.electronAPI.off("maximize", toggleMaxRestoreButtons);
+      window.electronAPI.off("unmaximize", toggleMaxRestoreButtons);
     };
-  }, [win]);
+  }, []);
 
-  const toggleMaxRestoreButtons = useCallback(() => {
-    setMaximized(win.isMaximized());
-  }, [win]);
+  const toggleMaxRestoreButtons = useCallback(async () => {
+    const isMaximized = await window.electronAPI.isMaximized();
+    console.log("><>><", isMaximized);
+    setMaximized(isMaximized);
+  }, []);
 
   const minimize = useCallback(() => {
-    win.minimize();
-  }, [win]);
+    window.electronAPI.minimize();
+  }, []);
 
   const maximize = useCallback(() => {
-    win.maximize();
-  }, [win]);
+    window.electronAPI.maximize();
+  }, []);
 
   const unmaximize = useCallback(() => {
-    win.unmaximize();
-  }, [win]);
+    window.electronAPI.unmaximize();
+  }, []);
 
   const close = useCallback(() => {
-    win.close();
-  }, [win]);
+    window.electronAPI.close();
+  }, []);
 
   const handleKeyPress = useCallback(() => {}, []);
 
