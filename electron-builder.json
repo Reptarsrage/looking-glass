@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/electron-builder.json",
   "productName": "The Looking-Glass",
   "appId": "looking-glass",
   "files": "electron",

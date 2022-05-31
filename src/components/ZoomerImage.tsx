@@ -7,6 +7,7 @@ import Fade from "@mui/material/Fade";
 import { Post } from "../store/gallery";
 
 const Img = styled("img")({
+  touchAction: "none",
   WebkitUserSelect: "none",
   WebkitUserDrag: "none",
 });

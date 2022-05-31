@@ -1,5 +1,5 @@
 import create from "zustand";
-import { persist, devtools, StateStorage } from "zustand/middleware";
+import { persist, devtools } from "zustand/middleware";
 import produce from "immer";
 
 export interface Auth {

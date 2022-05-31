@@ -91,3 +91,4 @@ npm package
 - [x] Avoid fetching more when navigating back
 - [x] Fix modal title on light theme
 - [ ] TESTS
+- [ ] Masonry title popovers
