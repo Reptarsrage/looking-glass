@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useCallback, useRef, useState, useContext } from "react";
 import styled from "@mui/system/styled";
 import { useDrag } from "@use-gesture/react";
 import { animated, useSprings } from "@react-spring/web";
@@ -7,16 +6,17 @@ import Fab from "@mui/material/Fab";
 import Zoom from "@mui/material/Zoom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import Box from "@mui/material/Box";
 
 import { useModalStore } from "../store/modal";
-import { useGalleryStore, getKey } from "../store/gallery";
 import { useMasonryStore } from "../store/masonry";
 import useKeyPress from "../hooks/useKeyPress";
 import { useResize } from "./ResizeObserver";
-import Video from "./Video";
-import ZoomerImage from "./ZoomerImage";
-import { useVolumeStore } from "../store/volume";
+import PinchZoomPan from "./PinchZoomPan";
+import { ModalContext } from "./ContentMasonry/context";
+import Post from "./Post";
+
+const TitleBarHeight = 30;
+const Gutter = 16;
 
 const Animated = styled(animated.div)({
   touchAction: "none",
@@ -79,28 +79,23 @@ function getPos(i: number, shownIndex: number, originalIndex: number) {
   return -2;
 }
 
-const Slideshow: React.FC = () => {
+interface SlideshowProps {
+  modalIsTransitioning: boolean;
+}
+
+const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
   const [width, height] = useResize();
   const [isDragging, setIsDragging] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
   const scrollMasonryTo = useMasonryStore((state) => state.scrollMasonryTo);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const location = useLocation();
-  const galleryKey = getKey(location);
-  const posts = useGalleryStore(
-    useCallback((state) => state.galleriesByLocation[galleryKey]?.items ?? [], [galleryKey])
-  );
+  const posts = useContext(ModalContext);
   const open = useModalStore((state) => state.modalIsOpen);
   const setCurrentModalItem = useModalStore((state) => state.setCurrentModalItem);
   const postId = useModalStore((state) => state.modalItem);
   const shownIndex = useModalStore(
     useCallback((state) => (state.modalItem ? posts.findIndex((i) => i.id === state.modalItem) : 0), [posts, postId])
   );
-
-  // video volume
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const volume = useVolumeStore((state) => state.volume);
-  const setVolume = useVolumeStore((state) => state.setVolume);
 
   function update(i: number, active: boolean = false, xDelta: number = 0) {
     const pos = getPos(i, shownIndex, originalIndex);
@@ -176,21 +171,20 @@ const Slideshow: React.FC = () => {
   useKeyPress("ArrowLeft", goPrevModalItem);
   useKeyPress("ArrowRight", goNextModalItem);
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.volume = volume;
-    }
-  }, [volume]);
+  if (modalIsTransitioning) {
+    const post = posts[shownIndex];
 
-  const handleVolumeChange: React.ReactEventHandler<HTMLVideoElement> = (e) => {
-    if (open && !isTransitioning) {
-      setVolume(e.currentTarget.muted ? 0 : e.currentTarget.volume);
-    }
-  };
-
-  const handleCanPlay: React.ReactEventHandler<HTMLVideoElement> = (e) => {
-    e.currentTarget.volume = volume;
-  };
+    return (
+      <Post
+        isVideo={post.isVideo}
+        urls={post.urls}
+        name={post.name}
+        width={post.width}
+        height={post.height}
+        poster={post.poster}
+      />
+    );
+  }
 
   return (
     <>
@@ -218,7 +212,7 @@ const Slideshow: React.FC = () => {
         }
 
         const post = posts[idx];
-        const [post_width, post_height] = capBounds(post.width, post.height, width, height - 30 - 16);
+        const [post_width, post_height] = capBounds(post.width, post.height, width, height - TitleBarHeight - Gutter);
 
         return (
           <Animated
@@ -227,40 +221,16 @@ const Slideshow: React.FC = () => {
             style={style}
             key={i}
           >
-            {post.isVideo ? (
-              <Box
-                sx={{
-                  boxShadow: 1,
-                  borderRadius: 2,
-                  width: post_width,
-                  height: post_height,
-                  overflow: "hidden",
-                }}
-              >
-                <Video
-                  ref={videoRef}
-                  preload="metadata"
-                  autoPlay
-                  controls
-                  loop
-                  muted={isTransitioning || pos !== 0}
-                  poster={post.poster}
-                  width={post_width}
-                  height={post_height}
-                  sources={post.urls}
-                  onVolumeChange={!isTransitioning && pos === 0 ? handleVolumeChange : undefined}
-                  onLoadedMetadata={handleCanPlay}
-                />
-              </Box>
-            ) : (
-              <ZoomerImage
-                post={post}
-                enableZoom={!isDragging && !isTransitioning && pos === 0}
-                onZoom={setIsZooming}
-                width={post_width}
-                height={post_height}
+            <PinchZoomPan width={post_width} height={post_height}>
+              <Post
+                isVideo={post.isVideo}
+                urls={post.urls}
+                name={post.name}
+                width={post.width}
+                height={post.height}
+                poster={post.poster}
               />
-            )}
+            </PinchZoomPan>
           </Animated>
         );
       })}

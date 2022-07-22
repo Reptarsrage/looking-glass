@@ -56,7 +56,7 @@ export const getEstimatedTotalSize = (itemCount: number, instanceProps: MasonryI
   }
 
   const numUnmeasuredItems = itemCount - lastMeasuredIndex - 1;
-  const totalSizeOfUnmeasuredItems = numUnmeasuredItems * estimatedItemSize;
+  const totalSizeOfUnmeasuredItems = numUnmeasuredItems * (estimatedItemSize + instanceProps.gutter);
 
   return totalSizeOfMeasuredItems + totalSizeOfUnmeasuredItems;
 };
@@ -107,7 +107,7 @@ const getItemMetadata = (
     let offset = 0;
     if (lastMeasuredIndex >= 0) {
       const itemMetadata = itemMetadataMap[lastMeasuredIndex];
-      offset = itemMetadata.offset + itemMetadata.size;
+      offset = itemMetadata.offset + itemMetadata.size + instanceProps.gutter;
     }
 
     for (let i = lastMeasuredIndex + 1; i <= index; i++) {
@@ -117,7 +117,7 @@ const getItemMetadata = (
         size,
       };
 
-      offset += size;
+      offset += size + instanceProps.gutter;
     }
 
     instanceProps.lastMeasuredIndex = index;

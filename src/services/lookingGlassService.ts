@@ -42,7 +42,7 @@ export async function fetchGallery(
   if (sort) params.set("sort", sort);
   if (filters) {
     filters.forEach((filter) => {
-      params.append("filters", filter);
+      params.append("filters", filter.split("|")[0]);
     });
   }
 

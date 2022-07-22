@@ -6,6 +6,7 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import CircularProgress from "@mui/material/CircularProgress";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import ErrorBoundary from "./components/ErrorBoundary";
 import TitleBar from "./components/TitleBar";
@@ -68,6 +69,14 @@ const lightTheme: ThemeOptions = {
   },
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 const App: React.FC = () => {
   const preferredTheme = useSettingsStore((state) => state.preferredTheme);
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -82,34 +91,36 @@ const App: React.FC = () => {
   );
 
   return (
-    <ThemeProvider theme={appliedTheme}>
-      <CssBaseline />
-      <HashRouter>
-        <TitleBar />
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={appliedTheme}>
+        <CssBaseline />
+        <HashRouter>
+          <TitleBar />
 
-        <Box sx={{ mt: "72px", flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <ErrorBoundary fallback={<AnErrorOccurred />}>
-            <Suspense
-              fallback={
-                <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
-                  <CircularProgress size="6rem" />
-                </Box>
-              }
-            >
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/gallery/:moduleId" element={<GalleryPage />} />
-                <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
-                <Route path="/oauth/:moduleId" element={<OAuthPage />} />
-                <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </ErrorBoundary>
-        </Box>
-      </HashRouter>
-    </ThemeProvider>
+          <Box sx={{ mt: "72px", flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <ErrorBoundary fallback={<AnErrorOccurred />}>
+              <Suspense
+                fallback={
+                  <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
+                    <CircularProgress size="6rem" />
+                  </Box>
+                }
+              >
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/gallery/:moduleId" element={<GalleryPage />} />
+                  <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
+                  <Route path="/oauth/:moduleId" element={<OAuthPage />} />
+                  <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
+          </Box>
+        </HashRouter>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

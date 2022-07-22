@@ -1,5 +1,7 @@
 const { BrowserWindow, dialog, ipcMain } = require("electron");
 
+const log = require("./logger");
+
 async function handleChooseFolder() {
   const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ["openDirectory"] });
   if (canceled) {

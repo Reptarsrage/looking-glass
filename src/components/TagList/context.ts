@@ -9,6 +9,7 @@ export interface TagSection {
   supportsMultiple: boolean;
   supportsSearch: boolean;
   loading: boolean;
+  error: boolean;
   itemId?: string;
   items: Tag[];
 }

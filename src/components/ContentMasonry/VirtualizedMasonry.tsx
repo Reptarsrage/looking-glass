@@ -126,6 +126,7 @@ function VirtualizedMasonry<TItemData>({
       <div
         style={{
           display: "flex",
+          paddingLeft: gutter / 2,
         }}
       >
         {columns.map((column, columnIndex) => (

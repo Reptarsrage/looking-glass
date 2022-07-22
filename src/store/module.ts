@@ -1,7 +1,5 @@
 import create from "zustand";
-import { persist, devtools } from "zustand/middleware";
-
-import * as lookingGlassService from "../services/lookingGlassService";
+import { devtools } from "zustand/middleware";
 
 export enum ModuleAuthType {
   None = "",
@@ -42,19 +40,8 @@ export interface Module {
   supportsGalleryFilters: boolean;
 }
 
-export interface State {
-  readonly fetched: boolean;
-  readonly fetching: boolean;
-  readonly error: unknown | null;
-  readonly modules: Module[];
-}
-
-export interface Mutations {
-  fetchModules: () => Promise<void>;
-}
-
 export const FILE_SYSTEM_MODULE_ID = "local";
-const fileSystemModule: Module = {
+export const fileSystemModule: Module = {
   id: FILE_SYSTEM_MODULE_ID,
   name: "Local Files",
   description: "Choose a directory",
@@ -126,41 +113,20 @@ const fileSystemModule: Module = {
   ],
 };
 
+interface State {
+  readonly modules: Module[];
+  setModules: (modules: Module[]) => void;
+}
+
 const name = "module";
-export const useModulesStore = create<State & Mutations>(
-  persist(
-    devtools(
-      (set, get) => ({
-        modules: [],
-        fetched: false,
-        fetching: false,
-        error: null,
-
-        fetchModules: async () => {
-          const { fetched, fetching } = get();
-          if (fetched || fetching) {
-            return;
-          }
-
-          // set fetching
-          set({ fetching: true }, false, `${name}/fetchModulesPending`);
-
-          try {
-            // fetch modules
-            let modules = await lookingGlassService.fetchModules();
-            modules = modules.concat(fileSystemModule);
-            set({ modules, fetched: true }, false, `${name}/fetchModulesSuccess`);
-          } catch (error: unknown) {
-            console.error("An error ocurred while fetching modules", error);
-            set({ fetching: false, error }, false, `${name}/fetchModulesFailure`);
-          }
-        },
-      }),
-      { name }
-    ),
-    {
-      name,
-      getStorage: () => sessionStorage,
-    }
+export const useModulesStore = create<State>(
+  devtools(
+    (set) => ({
+      modules: [],
+      setModules: (modules) => {
+        set({ modules }, false, `${name}/setModules`);
+      },
+    }),
+    { name }
   )
 );

@@ -7,3 +7,5 @@ export interface Column {
 }
 
 export const MasonryContext = createContext<Column[]>([]);
+
+export const ModalContext = createContext<Post[]>([]);

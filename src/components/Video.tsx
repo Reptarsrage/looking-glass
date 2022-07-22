@@ -1,9 +1,9 @@
-import { forwardRef, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import styled from "@mui/system/styled";
 
 const VideoElt = styled("video")({
-  maxWidth: "100%",
-  maxHeight: "100%",
+  width: "100%",
+  height: "100%",
 });
 
 interface Source {
@@ -13,52 +13,35 @@ interface Source {
 }
 
 interface VideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
-  sources: Source[];
+  source: Source;
 }
 
-interface VideoSourceProps extends Omit<React.SourceHTMLAttributes<HTMLSourceElement>, "src" | "type"> {
-  src: string;
-}
+const Video: React.FC<VideoProps> = ({ source, ...passThroughProps }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-function getExtension(filename: string) {
-  var i = filename.lastIndexOf(".");
-  return i < 0 ? "" : filename.substring(i);
-}
+  // Unload video so chrome stops loading it when it does off page
+  useEffect(() => {
+    const videoElement = videoRef.current;
 
-const VideoSource: React.FC<VideoSourceProps> = ({ src, ...passThroughProps }) => {
-  const mimeType = useMemo(() => {
-    let url = new URL(src);
+    if (videoElement != null) {
+      if (!videoElement.hasAttribute("src")) {
+        videoElement.setAttribute("src", source.url);
+        videoElement.load();
+      }
 
-    const query = new URLSearchParams(url.search.slice(1));
-    const uri = query.get("uri");
-    if (uri !== null) {
-      url = new URL(uri);
+      return () => {
+        videoElement.pause();
+        videoElement.removeAttribute("src");
+        videoElement.load();
+      };
     }
+  }, []);
 
-    let ext = getExtension(url.pathname).slice(1).split("?")[0];
-    if (!ext || ext === "gif") {
-      ext = "mp4";
-    }
-
-    return `video/${ext}`;
-  }, [src]);
-
-  return <source {...passThroughProps} src={src} type={mimeType} />;
-};
-
-const Video = forwardRef<HTMLVideoElement, VideoProps>(({ sources, ...passThroughProps }, ref) => {
-  const sorted = useMemo(() => [...sources].sort((a, b) => b.width - a.width), [sources]);
-  if (sources.length === 0) {
+  if (!source) {
     return null;
   }
 
-  return (
-    <VideoElt ref={ref} {...passThroughProps}>
-      {sorted.map((source, idx) => (
-        <VideoSource key={idx} src={source.url} />
-      ))}
-    </VideoElt>
-  );
-});
+  return <VideoElt {...passThroughProps} autoPlay muted ref={videoRef} src={source.url} />;
+};
 
 export default Video;

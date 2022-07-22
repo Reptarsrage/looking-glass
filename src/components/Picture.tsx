@@ -1,18 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef } from "react";
 import styled from "@mui/system/styled";
 
-const Pic = styled("picture")({
-  width: "100%",
-  height: "100%",
-});
-
-const Img = styled("img")(({ theme }) => ({
-  objectFit: "contain",
+const Img = styled("img")({
   width: "100%",
   height: "100%",
   WebkitUserSelect: "none",
   WebkitUserDrag: "none",
-}));
+});
 
 interface Source {
   url: string;
@@ -21,32 +15,35 @@ interface Source {
 }
 
 interface PictureProps extends React.HTMLAttributes<HTMLPictureElement> {
-  sources: Source[];
+  source: Source;
   alt: string;
-  width?: number;
-  height?: number;
-  loading?: "eager" | "lazy";
+  width: number;
+  height: number;
 }
 
-const Picture: React.FC<PictureProps> = ({ sources, alt, loading, width, height, ...passThroughProps }) => {
-  const sorted = useMemo(() => [...sources].sort((a, b) => a.width - b.width), [sources]);
-  if (sources.length === 0) {
+const Picture: React.FC<PictureProps> = ({ source, alt, width, height, ...passThroughProps }) => {
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  // Unload video so chrome stops loading it when it does off page
+  useEffect(() => {
+    const imageElement = imageRef.current;
+
+    if (imageElement != null) {
+      if (!imageElement.hasAttribute("src")) {
+        imageElement.setAttribute("src", source.url);
+      }
+
+      return () => {
+        imageElement.removeAttribute("src");
+      };
+    }
+  }, []);
+
+  if (!source) {
     return null;
   }
 
-  return (
-    <Pic {...passThroughProps}>
-      {sorted.slice(1).map((source, idx) => (
-        <source key={idx} srcSet={source.url} media={`(min-width: ${source.width}px)`} />
-      ))}
-
-      <Img src={`${sorted[0].url}`} alt={alt} loading={loading} width={width} height={height} />
-    </Pic>
-  );
-};
-
-Picture.defaultProps = {
-  loading: "lazy",
+  return <Img {...passThroughProps} ref={imageRef} src={source.url} alt={alt} width={width} height={height} />;
 };
 
 export default Picture;

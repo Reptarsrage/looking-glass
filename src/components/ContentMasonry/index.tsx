@@ -1,145 +1,94 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import { useInfiniteQuery } from "react-query";
 
 import ResizeObserver from "../ResizeObserver";
 import VirtualizedMasonry from "./VirtualizedMasonry";
 import ContentListItem from "./ContentListItem";
-import type { MasonryOnItemsRenderedParams, MasonryOnScrollParams } from "./VirtualizedMasonryColumn";
-import { useGalleryStore, getKey, Gallery } from "../../store/gallery";
-import { useTagsStore } from "../../store/tag";
+import type { MasonryOnItemsRenderedParams } from "./VirtualizedMasonryColumn";
+import { Gallery, Post } from "../../store/gallery";
 import { useAuthStore } from "../../store/auth";
 import { useSettingsStore } from "../../store/settings";
-import useAppSearchParams from "../../hooks/useAppSearchParams";
+import useAppSearchParams, { AppSearchParams } from "../../hooks/useAppSearchParams";
 import * as lookingGlassService from "../../services/lookingGlassService";
 import * as fileSystemService from "../../services/fileSystemService";
-import { MasonryContext, Column } from "./context";
+import { MasonryContext, ModalContext, Column } from "./context";
+import Modal from "../Modal";
 import NoResults from "../Status/NoResults";
 import { FILE_SYSTEM_MODULE_ID } from "../../store/module";
+import AnErrorOccurred from "../Status/AnErrorOccurred";
+
+interface QueryKey extends Omit<AppSearchParams, "toString"> {
+  moduleId: string;
+}
+
+interface ReactQueryParams {
+  pageParam?: {
+    offset: number;
+    after: string;
+  };
+  queryKey: (string | QueryKey)[];
+}
 
 // Constants
 // TODO: These should probably not be hardcoded 😁
-const scrollBarWidth = 17;
-const gutter = 4;
-const estimatedItemSize = 500;
-const overscanCount = 3;
+const ScrollBarWidth = 17;
+const Gutter = 8;
+const EstimatedItemSize = 500;
+const OverscanCount = 1;
 
 const ContentMasonry: React.FC = () => {
   // Use the location to determine what to render
   const moduleId = useParams().moduleId!;
-  const location = useLocation();
-  const [searchParams] = useAppSearchParams();
+  const [{ query, sort, filters, galleryId }] = useAppSearchParams();
 
   // Use the store for gallery and auth information
-  const galleryKey = getKey(location);
+  const setAuth = useAuthStore((state) => state.setAuth);
   const columnCount = useSettingsStore((s) => s.masonryColumnCount);
-  const galleryExists = useGalleryStore((s) => galleryKey in s.galleriesByLocation);
-  const items = useGalleryStore((s) => s.galleriesByLocation[galleryKey]?.items ?? []);
-  const offset = useGalleryStore((s) => s.galleriesByLocation[galleryKey]?.offset ?? 0);
-  const after = useGalleryStore((s) => s.galleriesByLocation[galleryKey]?.after ?? undefined);
-  const hasNext = useGalleryStore((s) => s.galleriesByLocation[galleryKey]?.hasNext ?? true);
-  const startIndexOfLastPage = useGalleryStore((s) => s.galleriesByLocation[galleryKey]?.startIndexOfLastPage ?? 0);
-  const initialScrollOffset = useGalleryStore((s) => s.galleriesByLocation[galleryKey]?.scrollOffset ?? 0);
   const auth = useAuthStore((s) => s.authByModule[moduleId]);
 
-  // Mutators
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const updateGallery = useGalleryStore((state) => state.updateGallery);
-  const setTags = useTagsStore((state) => state.setTags);
-  const updateGalleryStartIndexOfLastPage = useGalleryStore((state) => state.updateGalleryStartIndexOfLastPage);
-  const updateGalleryScrollOffset = useGalleryStore((state) => state.updateGalleryScrollOffset);
-
-  // Some state to keep track of pagination
-  const [fetching, setFetching] = useState(false); // Fetching more
-  const blockFetchMoreRef = useRef(true); // Don't fetch more on initial render
-
-  // Use local variable to store scroll offset as it changes VERY often
-  const scrollOffsetTracker = useRef(initialScrollOffset);
-
-  async function fetchGallery() {
-    try {
-      const { query, sort, filters, galleryId } = searchParams;
-      let response: Gallery;
-      if (moduleId === FILE_SYSTEM_MODULE_ID) {
-        // Fetch from local file system server
-        response = await fileSystemService.fetchGallery(galleryId, offset, sort, filters);
-      } else {
-        // Refresh auth token if necessary
-        let token = auth?.accessToken;
-        if (lookingGlassService.needsRefresh(auth?.expires, auth?.refreshToken)) {
-          const authResponse = await lookingGlassService.refreshAuth(moduleId, auth.refreshToken);
-          setAuth(moduleId, authResponse);
-          token = authResponse.accessToken;
-        }
-
-        // Query for gallery page
-        response = await lookingGlassService.fetchGallery(
-          moduleId,
-          token,
-          galleryId,
-          offset,
-          after,
-          query,
-          sort,
-          filters
-        );
-      }
-
-      // Set state
-      updateGallery(galleryKey, response);
-
-      // Update with item tags
-      const allTags = response.items.map((i) => i.filters).flat();
-      setTags(moduleId, allTags);
-    } catch (error) {
-      console.error("ERROR fetching items", error);
-    } finally {
-      setFetching(false);
+  // React query
+  async function fetchGallery(params: ReactQueryParams): Promise<Gallery> {
+    const { offset = 0, after = "" } = params.pageParam ?? {};
+    const { moduleId, galleryId, query, sort, filters } = params.queryKey[1] as QueryKey;
+    if (moduleId === FILE_SYSTEM_MODULE_ID) {
+      // Fetch from local file system server
+      return await fileSystemService.fetchGallery(galleryId, offset, sort, filters);
     }
+
+    // Refresh auth token if necessary
+    let token = auth?.accessToken;
+    if (lookingGlassService.needsRefresh(auth?.expires, auth?.refreshToken)) {
+      const authResponse = await lookingGlassService.refreshAuth(moduleId, auth.refreshToken);
+      setAuth(moduleId, authResponse);
+      token = authResponse.accessToken;
+    }
+
+    // Query for gallery page
+    return await lookingGlassService.fetchGallery(moduleId, token, galleryId, offset, after, query, sort, filters);
   }
 
-  // Effect to fetch initial items
-  useEffect(() => {
-    blockFetchMoreRef.current = true;
-    if (!galleryExists) {
-      setFetching(true);
-      fetchGallery();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery(
+    ["gallery", { moduleId, galleryId, query, sort, filters }],
+    fetchGallery,
+    {
+      getNextPageParam: (lastPage) =>
+        lastPage.hasNext ? { offset: lastPage.offset, after: lastPage.after } : undefined,
     }
-
-    const currentLoc = galleryKey;
-    scrollOffsetTracker.current = initialScrollOffset;
-    return () => {
-      // Persist scroll offset
-      updateGalleryScrollOffset(currentLoc, scrollOffsetTracker.current);
-    };
-  }, [galleryKey]);
-
-  // Effect to save + restore scroll position
-  useEffect(() => {
-    const currentLoc = galleryKey;
-    scrollOffsetTracker.current = initialScrollOffset;
-
-    return () => {
-      // Persist scroll offset
-      updateGalleryScrollOffset(currentLoc, scrollOffsetTracker.current);
-    };
-  }, [galleryKey]);
-
-  // Effect to fetch additional items
-  useEffect(() => {
-    if (!blockFetchMoreRef.current && galleryExists && hasNext && startIndexOfLastPage > 0 && !fetching) {
-      setFetching(true);
-      fetchGallery();
-    }
-
-    blockFetchMoreRef.current = false;
-  }, [startIndexOfLastPage]);
+  );
 
   // Memoize masonry columns
-  const columns = useMemo<Column[]>(() => {
+  const { items, columns } = useMemo<{ columns: Column[]; items: Post[] }>(() => {
+    const items =
+      data?.pages
+        .flat()
+        .map((g) => g.items)
+        .flat() ?? [];
+
     const columns: Column[] = [...Array(columnCount)].map((_, idx) => ({
-      id: `${galleryKey}$${idx}`,
+      id: `${galleryId}$${idx}`,
       items: [],
     }));
 
@@ -147,24 +96,20 @@ const ContentMasonry: React.FC = () => {
       columns[idx % columns.length].items.push(item);
     });
 
-    return columns;
-  }, [galleryKey, items, columnCount]);
+    return { items, columns };
+  }, [data, columnCount]);
 
   // When items are rendered, check if we need to fetch more
   const handleItemsRendered = (params: MasonryOnItemsRenderedParams) => {
     // If within one page of the end, fetch more!
-    if (params.visibleStartIndex > startIndexOfLastPage) {
-      const idx = Math.min(...columns.map((col) => col.items.length));
-      updateGalleryStartIndexOfLastPage(galleryKey, idx);
+    const startIndexOfLastPage =
+      (data?.pages.slice(0, -1).reduce((acc, cur) => acc + cur.items.length, 0) ?? 0) / columnCount;
+    if (hasNextPage && !isFetchingNextPage && params.visibleStartIndex > startIndexOfLastPage) {
+      fetchNextPage();
     }
   };
 
-  // When scrolling, persist value to store
-  const handleScroll = (params: MasonryOnScrollParams) => {
-    scrollOffsetTracker.current = params.scrollOffset;
-  };
-
-  if (!galleryExists) {
+  if (status === "loading") {
     return (
       <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
         <CircularProgress size="6rem" />
@@ -172,36 +117,43 @@ const ContentMasonry: React.FC = () => {
     );
   }
 
-  if (items.length === 0) {
+  if (status === "error") {
+    return <AnErrorOccurred />;
+  }
+
+  if (data === undefined || data.pages.length === 0) {
     return <NoResults />;
   }
 
+  // TODO: Scroll restoration
   return (
-    <MasonryContext.Provider value={columns}>
-      <ResizeObserver>
-        {({ height, width }) => (
-          <VirtualizedMasonry
-            onItemsRendered={handleItemsRendered}
-            onScroll={handleScroll}
-            initialScrollOffset={initialScrollOffset}
-            overscanCount={overscanCount}
-            estimatedItemSize={estimatedItemSize}
-            height={height}
-            width={width}
-            gutter={gutter}
-            end={!hasNext}
-            itemSize={(column, index) => {
-              // this callback could be memoized but it needs to know width
-              // and it would change a lot anyways so meh
-              const { width: w, height: h } = columns[column].items[index];
-              return ((width - scrollBarWidth) / columnCount - gutter) * (h / w) + gutter;
-            }}
-          >
-            {ContentListItem}
-          </VirtualizedMasonry>
-        )}
-      </ResizeObserver>
-    </MasonryContext.Provider>
+    <ModalContext.Provider value={items}>
+      <Modal />
+
+      <MasonryContext.Provider value={columns}>
+        <ResizeObserver>
+          {({ height, width }) => (
+            <VirtualizedMasonry
+              onItemsRendered={handleItemsRendered}
+              overscanCount={OverscanCount}
+              estimatedItemSize={EstimatedItemSize}
+              height={height}
+              width={width}
+              gutter={Gutter}
+              end={!hasNextPage}
+              itemSize={(column, index) => {
+                // this callback could be memoized but it needs to know width
+                // and it would change a lot anyways so meh
+                const { width: w, height: h } = columns[column].items[index];
+                return ((width - ScrollBarWidth) / columnCount - Gutter) * (h / w);
+              }}
+            >
+              {ContentListItem}
+            </VirtualizedMasonry>
+          )}
+        </ResizeObserver>
+      </MasonryContext.Provider>
+    </ModalContext.Provider>
   );
 };
 

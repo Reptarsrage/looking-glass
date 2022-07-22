@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import List from "@mui/material/List";
@@ -11,11 +11,12 @@ import Typography from "@mui/material/Typography";
 import FolderIcon from "@mui/icons-material/Folder";
 import Skeleton from "@mui/material/Skeleton";
 
-import { FILE_SYSTEM_MODULE_ID, useModulesStore } from "../store/module";
+import { FILE_SYSTEM_MODULE_ID, Module, fileSystemModule, useModulesStore } from "../store/module";
 import ModuleListItem from "../components/ModuleListItem";
 import { ReactComponent as SVG } from "../assets/undraw_lighthouse_frb8.svg";
 import ThemedSVG from "../components/Status/ThemedSVG";
 import AnErrorOccurred from "../components/Status/AnErrorOccurred";
+import * as lookingGlassService from "../services/lookingGlassService";
 
 const HomePageOuter: React.FC<React.PropsWithChildren<any>> = ({ children }) => (
   <Box sx={{ overflow: "auto" }}>
@@ -48,17 +49,17 @@ const HomePageOuter: React.FC<React.PropsWithChildren<any>> = ({ children }) => 
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const modules = useModulesStore((state) => state.modules);
-  const fetched = useModulesStore((state) => state.fetched);
-  const error = useModulesStore((state) => state.error);
-  const fetchModules = useModulesStore((state) => state.fetchModules);
-
-  // TODO: Once react router supports preload, move this
-  // see: https://github.com/remix-run/react-router/discussions/8009
-  // the ultimate goal here would be to utilize suspense for async data fetching
-  useEffect(() => {
-    fetchModules();
-  }, []);
+  const setModules = useModulesStore((state) => state.setModules);
+  const { data, status } = useQuery({
+    onSuccess: setModules,
+    queryKey: ["modules"],
+    queryFn: async () => {
+      let modules = await lookingGlassService.fetchModules();
+      modules.sort((a, b) => a.name.localeCompare(b.name)); // sort alphabetically
+      modules = modules.concat(fileSystemModule); // concat file system module
+      return modules;
+    },
+  });
 
   async function handleLocalClick() {
     const filePath = await window.electronAPI.chooseFolder();
@@ -66,19 +67,15 @@ const HomePage: React.FC = () => {
       return;
     }
 
-    navigate(
-      `/gallery/local?${new URLSearchParams([
-        ["galleryId", filePath],
-        ["sort", "name"],
-      ]).toString()}`
-    );
+    const params = new URLSearchParams([
+      ["galleryId", filePath],
+      ["sort", "name"],
+    ]);
+
+    navigate(`/gallery/local?${params.toString()}`);
   }
 
-  if (error) {
-    throw error;
-  }
-
-  if (!fetched) {
+  if (status === "loading") {
     return (
       <HomePageOuter>
         {[...Array(10)].map((_, i) => (
@@ -93,9 +90,13 @@ const HomePage: React.FC = () => {
     );
   }
 
+  if (status === "error" || data === undefined) {
+    return <AnErrorOccurred />;
+  }
+
   return (
     <HomePageOuter>
-      {modules
+      {data
         .filter((module) => module.id !== FILE_SYSTEM_MODULE_ID)
         .map((module) => <ModuleListItem key={module.id} module={module} />)
         .concat(

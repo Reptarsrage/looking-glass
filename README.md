@@ -11,11 +11,11 @@ A client for use with the [looking glass service application](https://github.com
 
 ## Install
 
-Install the dependencies with `npm`.
+Install the dependencies with `yarn`.
 
 ```bash
 cd looking-glass
-npm install
+yarn install
 ```
 
 ## Starting Development
@@ -23,22 +23,22 @@ npm install
 Start the app in the `dev` environment. This starts the renderer process in [**hot-module-replacement**](https://webpack.js.org/guides/hmr-react/) mode and starts a webpack dev server that sends hot updates to the renderer process:
 
 ```bash
-npm run dev
+yarn run dev
 ```
 
 ## Test
 
-Run unit tests using the `jest-cli` via `npm` scripts:
+Run unit tests using the `jest-cli` via `yarn` scripts:
 
 ```bash
 # unit tests
-npm test
+yarn test
 
 # watch
-npm test --watch
+yarn test --watch
 
 # test coverage
-npm test --coverage
+yarn test --coverage
 ```
 
 > NOTE: More on the `jest-cli` here: https://jestjs.io/docs/en/cli
@@ -48,12 +48,12 @@ npm test --coverage
 To package apps for the local platform:
 
 ```bash
-npm package
+yarn package
 ```
 
 ## Release
 
-1. Run `npm release` to run the semver release process
+1. Run `yarn release` to run the semver release process
 2. Run `git push --follow-tags origin <branch>`
 3. Craft a new _draft_ release on GitHub with the tag created in Step 1
 4. Create a PR and merge changes

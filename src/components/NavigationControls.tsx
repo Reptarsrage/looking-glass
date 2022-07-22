@@ -9,13 +9,11 @@ import Fab from "@mui/material/Fab";
 import Fade from "@mui/material/Fade";
 
 import { useModalStore } from "../store/modal";
-import { useDrawerStore } from "../store/drawer";
 
 const NavigationControls: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const modalIsOpen = useModalStore((state) => state.modalIsOpen);
-  const drawerIsOpen = useDrawerStore((state) => state.open);
   const navigationType = useNavigationType();
   const [stack, setStack] = useState<string[]>([]);
   const [stackPointer, setStackPointer] = useState(0);
@@ -65,7 +63,7 @@ const NavigationControls: React.FC = () => {
   const hasForward = stackPointer < stack.length - 1;
 
   return (
-    <Fade in={!modalIsOpen && !drawerIsOpen}>
+    <Fade in={!modalIsOpen}>
       <Box component="span" sx={{ mx: 1, whiteSpace: "no-wrap" }}>
         <Fab component={Link} size="small" to="/settings" sx={{ mr: 1, WebkitAppRegion: "no-drag" }}>
           <MoreVertIcon />

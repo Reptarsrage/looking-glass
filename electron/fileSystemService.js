@@ -27,7 +27,7 @@ class FileSystemService {
   fetchItems = async (galleryId, offset, sort, filters) => {
     try {
       const dirPath = galleryId;
-      const cacheKey = `${filters.join("__")}__${sort}___${dirPath}`;
+      const cacheKey = `${filters.map((filter) => filter.split("|")[0]).join("__")}__${sort}___${dirPath}`;
       if (!this.cacheContains(cacheKey)) {
         this.addCache(cacheKey, new Crawler(dirPath));
       }

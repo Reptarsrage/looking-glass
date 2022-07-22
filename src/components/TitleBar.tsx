@@ -126,7 +126,6 @@ const TitleBar: React.FC = () => {
 
   const toggleMaxRestoreButtons = useCallback(async () => {
     const isMaximized = await window.electronAPI.isMaximized();
-    console.log("><>><", isMaximized);
     setMaximized(isMaximized);
   }, []);
 

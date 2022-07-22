@@ -7,7 +7,6 @@ import Fade from "@mui/material/Fade";
 import { useModalStore } from "../store/modal";
 import useAppSearchParams from "../hooks/useAppSearchParams";
 import useDebounce from "../hooks/useDebounce";
-import { useDrawerStore } from "../store/drawer";
 
 const Search = styled("div")(({ theme }) => ({
   WebkitAppRegion: "no-drag",
@@ -55,7 +54,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const SearchBar: React.FC = () => {
   const [searchParams, setSearchParams] = useAppSearchParams();
   const modalIsOpen = useModalStore((state) => state.modalIsOpen);
-  const drawerIsOpen = useDrawerStore((state) => state.open);
   const [query, setQuery] = useState(searchParams.query);
 
   // Keep state in parity with search params
@@ -79,7 +77,7 @@ const SearchBar: React.FC = () => {
   };
 
   return (
-    <Fade in={!modalIsOpen && !drawerIsOpen}>
+    <Fade in={!modalIsOpen}>
       <Search>
         <SearchIconWrapper>
           <SearchIcon />
