@@ -85,11 +85,11 @@ const Modal: React.FC = () => {
   const boundingRect = useModalStore((state) => state.modalBoundingRect);
   const closeModal = useModalStore((state) => state.closeModal);
   const exitModal = useModalStore((state) => state.exitModal);
-  const modalIsExited = useModalStore((state) => state.modalIsExited);
   const postId = useModalStore((state) => state.modalItem);
   const items = useContext(ModalContext);
   const post = items.find((post) => post.id === postId);
 
+  const [entered, setEntered] = useState(false);
   const [entering, setEntering] = useState(false);
   const [exiting, setExiting] = useState(false);
   const [showCaption, setShowCaption] = useState(true);
@@ -101,6 +101,7 @@ const Modal: React.FC = () => {
 
   function onModalEntered() {
     setEntering(false);
+    setEntered(true);
   }
 
   function onModalClose() {
@@ -109,6 +110,7 @@ const Modal: React.FC = () => {
 
   function onModalExiting() {
     setExiting(true);
+    setEntered(false);
   }
 
   function onModalExited() {
@@ -267,13 +269,13 @@ const Modal: React.FC = () => {
           to={open ? to : from}
           from={from}
           tabIndex={-1}
-          position={exiting || entering ? "fixed" : "unset"}
+          position={!entered ? "fixed" : "unset"}
           onExited={onModalExited}
           onEnter={onModalEntering}
           onEntered={onModalEntered}
           onExit={onModalExiting}
         >
-          <Slideshow modalIsTransitioning={exiting || entering} />
+          <Slideshow modalIsTransitioning={!entered} />
         </ZoomFromTo>
       </MuiModal>
     </>
