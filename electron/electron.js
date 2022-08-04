@@ -1,6 +1,7 @@
-const { app, BrowserWindow, screen, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, screen } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
+const os = require("os");
 const { autoUpdater } = require("electron-updater");
 
 const log = require("./logger");
@@ -38,16 +39,13 @@ const createWindow = async (port) => {
     icon: path.resolve(__dirname, "..", "assets", "icon.png"),
     frame: false,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      enableRemoteModule: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
   // load the url (or file)
   if (isDev) {
-    mainWindow.loadURL(`http://localhost:3000?${new URLSearchParams([["port", port]]).toString()}`);
+    mainWindow.loadURL(`http://localhost:5173?${new URLSearchParams([["port", port]]).toString()}`);
   } else {
     mainWindow.loadFile(path.resolve("./dist", "index.html"), { query: { port } });
   }
@@ -128,7 +126,7 @@ app.on("ready", async () => {
   await createWindow(port);
 
   // initialize IPC channels
-  ipc.init();
+  ipc.init(app);
 
   // check for updates
   autoUpdater.checkForUpdatesAndNotify();

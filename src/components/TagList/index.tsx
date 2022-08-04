@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "r
 import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { useQuery, useQueries } from "react-query";
+import { useQuery, useQueries } from "@tanstack/react-query";
 
 import ResizeObserver from "../ResizeObserver";
 import TagListInner from "./TagListInner";
@@ -134,13 +134,13 @@ const useSectionTags = (filter: string) => {
     return tags;
   }
 
-  const tagSectionQueries = useQueries(
-    sections.map((section) => ({
+  const tagSectionQueries = useQueries({
+    queries: sections.map((section) => ({
       queryKey: ["tags", moduleId, section.id],
       queryFn: fetchTagSectionById,
       onSuccess: (value: Tag[]) => tagContext.addTags({ moduleId, value }),
-    }))
-  );
+    })),
+  });
 
   return useMemo(() => {
     const included = filter.toLowerCase();

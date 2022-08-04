@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { InfiniteData, useInfiniteQuery } from "react-query";
+import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { Gallery, GalleryContext, Post } from "../../store/gallery";
 import { AuthContext, login } from "../../store/auth";

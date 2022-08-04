@@ -1,6 +1,6 @@
 {
   "name": "looking-glass",
-  "productName": "The Looking-Glass",
+  "productName": "The Looking Glass",
   "version": "0.4.25",
   "description": "Electron application to browse various website content from one app. Built for development practice only.",
   "main": "electron/electron.js",
@@ -44,6 +44,7 @@
     "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.6.4",
     "@react-spring/web": "^9.4.4",
+    "@tanstack/react-query": "^4.0.10",
     "@use-gesture/react": "^10.2.12",
     "electron-dl": "^3.3.1",
     "electron-is-dev": "^2.0.0",
@@ -55,7 +56,6 @@
     "nanoid": "^3.3.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-query": "^3.39.1",
     "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
@@ -67,11 +67,11 @@
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.3",
     "@types/uuid": "^8.3.4",
-    "@vitejs/plugin-react": "^1.3.2",
+    "@vitejs/plugin-react": "^2.0.0",
     "concurrently": "^7.0.0",
     "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
-    "electron": "^19.0.7",
+    "electron": "^20.0.1",
     "electron-builder": "^23.0.3",
     "electron-devtools-installer": "^3.2.0",
     "husky": "^8.0.1",
@@ -82,7 +82,7 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^28.0.3",
     "typescript": "^4.6.4",
-    "vite": "^2.9.7",
+    "vite": "^3.0.4",
     "vite-plugin-svgr": "^2.1.0",
     "wait-on": "^6.0.1"
   },

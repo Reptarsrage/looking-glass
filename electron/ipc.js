@@ -1,6 +1,15 @@
 const { BrowserWindow, dialog, ipcMain } = require("electron");
+const os = require("os");
 
 const log = require("./logger");
+
+function handleGetVersion(app) {
+  return app.getVersion();
+}
+
+function handleGetOs() {
+  return [os.type(), os.arch(), os.release()].filter(Boolean).join(" ");
+}
 
 function handleSetTitle(event, title) {
   const win = BrowserWindow.fromWebContents(event.sender);
@@ -89,8 +98,10 @@ const MAXIMIZE = "MAXIMIZE";
 const UNMAXIMIZE = "UNMAXIMIZE";
 const CLOSE = "CLOSE";
 const IS_MAXIMIZED = "IS_MAXIMIZED";
+const GET_VERSION = "GET_VERSION";
+const GET_OS = "GET_OS";
 
-function init() {
+function init(app) {
   // listen for events from the renderer
   // needs to match exactly the strings configured in preload.js
   ipcMain.handle(SET_TITLE, handleSetTitle);
@@ -101,6 +112,8 @@ function init() {
   ipcMain.handle(UNMAXIMIZE, handleUnmaximize);
   ipcMain.handle(CLOSE, handleClose);
   ipcMain.handle(IS_MAXIMIZED, handleIsMaximized);
+  ipcMain.handle(GET_VERSION, () => handleGetVersion(app));
+  ipcMain.handle(GET_OS, handleGetOs);
 }
 
 module.exports = {
@@ -116,4 +129,6 @@ module.exports = {
   UNMAXIMIZE,
   CLOSE,
   IS_MAXIMIZED,
+  GET_VERSION,
+  GET_OS,
 };

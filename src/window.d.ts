@@ -15,5 +15,14 @@ declare global {
       on: (eventName: string, callback: () => void) => void;
       off: (eventName: string, callback: () => void) => void;
     };
+
+    versions: {
+      node: () => string;
+      chrome: () => string;
+      electron: () => string;
+      v8: () => string;
+      os: () => Promise<string>;
+      app: () => Promise<string>;
+    };
   }
 }

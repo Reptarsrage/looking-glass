@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
@@ -20,6 +20,20 @@ import { PreferredTheme, SettingsContext } from "../store/settings";
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const settings = useContext(SettingsContext);
+  const [version, setVersion] = useState("");
+  const [os, setOs] = useState("");
+
+  useEffect(() => {
+    async function getVersion() {
+      const version = await window.versions.app();
+      const os = await window.versions.os();
+
+      setVersion(version);
+      setOs(os);
+    }
+
+    getVersion();
+  });
 
   const { videoAutoPlay, videoLowDataMode, pictureLowDataMode, masonryColumnCount, preferredTheme } = settings.settings;
 
@@ -108,6 +122,16 @@ const SettingsPage: React.FC = () => {
             onChange={onChange("masonryColumnCount")}
           />
         </Box>
+
+        <FormLabel component="legend" sx={{ mt: 4 }}>
+          Version Info
+        </FormLabel>
+        <Typography sx={{ mt: 1 }}>Version: {version}</Typography>
+        <Typography>Node.js: {window.versions.node()}</Typography>
+        <Typography>Chromium: {window.versions.chrome()}</Typography>
+        <Typography>Electron: {window.versions.electron()}</Typography>
+        <Typography>V8: {window.versions.v8()}</Typography>
+        <Typography>OS: {os}</Typography>
       </FormControl>
     </Container>
   );
