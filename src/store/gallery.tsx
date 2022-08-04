@@ -1,3 +1,5 @@
+import { createContext, useState } from "react";
+
 export interface PostUrl {
   width: number;
   height: number;
@@ -43,6 +45,17 @@ export interface Gallery {
   hasNext: boolean;
   offset: number;
   after?: string;
-  startIndexOfLastPage?: number;
-  scrollOffset?: number;
 }
+
+interface Context {
+  readonly posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+}
+
+export const GalleryContext = createContext<Context>({ posts: [], setPosts: () => {} });
+
+export const GalleryProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  return <GalleryContext.Provider value={{ posts, setPosts }}>{children}</GalleryContext.Provider>;
+};

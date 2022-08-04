@@ -30,11 +30,13 @@ export function getOffsetForIndexAndAlignment(
   if (scrollOffset >= minOffset - height && scrollOffset <= maxOffset + height) {
     if (scrollOffset >= minOffset && scrollOffset <= maxOffset) {
       return scrollOffset;
-    } else if (scrollOffset < minOffset) {
-      return minOffset;
-    } else {
-      return maxOffset;
     }
+
+    if (scrollOffset < minOffset) {
+      return minOffset;
+    }
+
+    return maxOffset;
   }
 
   return Math.round(minOffset + (maxOffset - minOffset) / 2);
@@ -42,10 +44,8 @@ export function getOffsetForIndexAndAlignment(
 
 export const getEstimatedTotalSize = (itemCount: number, instanceProps: MasonryInstanceProps) => {
   let { itemMetadataMap, estimatedItemSize, lastMeasuredIndex } = instanceProps;
-  let totalSizeOfMeasuredItems = 0;
+  let totalSizeOfMeasuredItems = instanceProps.gutter;
 
-  // Edge case check for when the number of items decreases while a scroll is in progress.
-  // https://github.com/bvaughn/react-window/pull/138
   if (lastMeasuredIndex >= itemCount) {
     lastMeasuredIndex = itemCount - 1;
   }
@@ -58,7 +58,7 @@ export const getEstimatedTotalSize = (itemCount: number, instanceProps: MasonryI
   const numUnmeasuredItems = itemCount - lastMeasuredIndex - 1;
   const totalSizeOfUnmeasuredItems = numUnmeasuredItems * (estimatedItemSize + instanceProps.gutter);
 
-  return totalSizeOfMeasuredItems + totalSizeOfUnmeasuredItems;
+  return totalSizeOfMeasuredItems + totalSizeOfUnmeasuredItems + instanceProps.gutter;
 };
 
 export const getItemOffset = (itemSize: MasonryItemSizeFunc, index: number, instanceProps: MasonryInstanceProps) =>
@@ -82,15 +82,16 @@ export const getStopIndexForStartIndex = (
   scrollOffset: number,
   instanceProps: MasonryInstanceProps
 ) => {
+  const { gutter } = instanceProps;
   const itemMetadata = getItemMetadata(itemSize, startIndex, instanceProps);
   const maxOffset = scrollOffset + height;
 
-  let offset = itemMetadata.offset + itemMetadata.size;
+  let offset = itemMetadata.offset + itemMetadata.size + gutter;
   let stopIndex = startIndex;
 
   while (stopIndex < itemCount - 1 && offset < maxOffset) {
     stopIndex++;
-    offset += getItemMetadata(itemSize, stopIndex, instanceProps).size;
+    offset += getItemMetadata(itemSize, stopIndex, instanceProps).size + gutter;
   }
 
   return stopIndex;
@@ -101,23 +102,23 @@ const getItemMetadata = (
   index: number,
   instanceProps: MasonryInstanceProps
 ): MasonryItemMetadata => {
-  const { itemMetadataMap, lastMeasuredIndex } = instanceProps;
+  const { itemMetadataMap, lastMeasuredIndex, gutter, column } = instanceProps;
 
   if (index > lastMeasuredIndex) {
-    let offset = 0;
+    let offset = gutter;
     if (lastMeasuredIndex >= 0) {
       const itemMetadata = itemMetadataMap[lastMeasuredIndex];
-      offset = itemMetadata.offset + itemMetadata.size + instanceProps.gutter;
+      offset = itemMetadata.offset + itemMetadata.size + gutter;
     }
 
     for (let i = lastMeasuredIndex + 1; i <= index; i++) {
-      let size = itemSize(instanceProps.column, i);
+      let size = itemSize(column, i);
       itemMetadataMap[i] = {
         offset,
         size,
       };
 
-      offset += size + instanceProps.gutter;
+      offset += size + gutter;
     }
 
     instanceProps.lastMeasuredIndex = index;
@@ -136,14 +137,10 @@ const findNearestItem = (
   const lastMeasuredItemOffset = lastMeasuredIndex > 0 ? itemMetadataMap[lastMeasuredIndex].offset : 0;
 
   if (lastMeasuredItemOffset >= offset) {
-    // If we've already measured items within this range just use a binary search as it's faster.
     return findNearestItemBinarySearch(itemSize, instanceProps, lastMeasuredIndex, 0, offset);
-  } else {
-    // If we haven't yet measured this high, fallback to an exponential search with an inner binary search.
-    // The exponential search avoids pre-computing sizes for the full set of items as a binary search would.
-    // The overall complexity for this approach is O(log n).
-    return findNearestItemExponentialSearch(itemSize, itemCount, instanceProps, Math.max(0, lastMeasuredIndex), offset);
   }
+
+  return findNearestItemExponentialSearch(itemSize, itemCount, instanceProps, Math.max(0, lastMeasuredIndex), offset);
 };
 
 const findNearestItemBinarySearch = (

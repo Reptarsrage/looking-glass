@@ -2,6 +2,11 @@ const { BrowserWindow, dialog, ipcMain } = require("electron");
 
 const log = require("./logger");
 
+function handleSetTitle(event, title) {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win.setTitle(title ?? "The Looking Glass");
+}
+
 async function handleChooseFolder() {
   const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ["openDirectory"] });
   if (canceled) {
@@ -76,6 +81,7 @@ function handleIsMaximized(event) {
   return BrowserWindow.fromWebContents(event.sender).isMaximized();
 }
 
+const SET_TITLE = "SET_TITLE";
 const CHOOSE_FOLDER = "CHOOSE_FOLDER";
 const OAUTH = "OAUTH";
 const MINIMIZE = "MINIMIZE";
@@ -87,6 +93,7 @@ const IS_MAXIMIZED = "IS_MAXIMIZED";
 function init() {
   // listen for events from the renderer
   // needs to match exactly the strings configured in preload.js
+  ipcMain.handle(SET_TITLE, handleSetTitle);
   ipcMain.handle(CHOOSE_FOLDER, handleChooseFolder);
   ipcMain.handle(OAUTH, handleOauth);
   ipcMain.handle(MINIMIZE, handleMinimize);
@@ -101,6 +108,7 @@ module.exports = {
   init,
 
   // constants
+  SET_TITLE,
   CHOOSE_FOLDER,
   OAUTH,
   MINIMIZE,

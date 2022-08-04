@@ -1,4 +1,4 @@
-import { lazy, useMemo, Suspense } from "react";
+import { lazy, useMemo, Suspense, useContext } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import Box from "@mui/material/Box";
 import createTheme, { ThemeOptions } from "@mui/material/styles/createTheme";
@@ -12,7 +12,12 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import TitleBar from "./components/TitleBar";
 import AnErrorOccurred from "./components/Status/AnErrorOccurred";
 import NotFound from "./components/Status/NotFound";
-import { PreferredTheme, useSettingsStore } from "./store/settings";
+import { AuthProvider } from "./store/auth";
+import { PreferredTheme, SettingsContext } from "./store/settings";
+import { ModuleProvider } from "./store/module";
+import { TagProvider } from "./store/tag";
+import { FullscreenProvider } from "./store/fullscreen";
+import { GalleryProvider } from "./store/gallery";
 
 // Dynamic routes
 const HomePage = lazy(() => import("./routes/HomePage"));
@@ -73,12 +78,15 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
     },
   },
 });
 
 const App: React.FC = () => {
-  const preferredTheme = useSettingsStore((state) => state.preferredTheme);
+  const settingsContext = useContext(SettingsContext);
+  const { preferredTheme } = settingsContext.settings;
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const appliedTheme = useMemo(
     () =>
@@ -93,32 +101,42 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={appliedTheme}>
-        <CssBaseline />
-        <HashRouter>
-          <TitleBar />
+        <FullscreenProvider>
+          <CssBaseline />
+          <HashRouter>
+            <TitleBar />
 
-          <Box sx={{ mt: "72px", flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <ErrorBoundary fallback={<AnErrorOccurred />}>
-              <Suspense
-                fallback={
-                  <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
-                    <CircularProgress size="6rem" />
-                  </Box>
-                }
-              >
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/gallery/:moduleId" element={<GalleryPage />} />
-                  <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
-                  <Route path="/oauth/:moduleId" element={<OAuthPage />} />
-                  <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </ErrorBoundary>
-          </Box>
-        </HashRouter>
+            <Box sx={{ flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <ErrorBoundary fallback={<AnErrorOccurred />}>
+                <Suspense
+                  fallback={
+                    <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
+                      <CircularProgress size="6rem" />
+                    </Box>
+                  }
+                >
+                  <ModuleProvider>
+                    <AuthProvider>
+                      <GalleryProvider>
+                        <TagProvider>
+                          <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/settings" element={<SettingsPage />} />
+                            <Route path="/gallery/:moduleId" element={<GalleryPage />} />
+                            <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
+                            <Route path="/oauth/:moduleId" element={<OAuthPage />} />
+                            <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </TagProvider>
+                      </GalleryProvider>
+                    </AuthProvider>
+                  </ModuleProvider>
+                </Suspense>
+              </ErrorBoundary>
+            </Box>
+          </HashRouter>
+        </FullscreenProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

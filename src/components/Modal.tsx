@@ -1,4 +1,4 @@
-import { useMemo, useState, useContext } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import MuiModal from "@mui/material/Modal";
 import Backdrop from "@mui/material/Backdrop";
 import styled from "@mui/system/styled";
@@ -15,11 +15,13 @@ import MuiDrawer from "@mui/material/Drawer";
 
 import Slideshow from "./Slideshow";
 import ZoomFromTo from "./ZoomFromTo";
-import { useModalStore } from "../store/modal";
+import { ModalContext } from "../store/modal";
+import { GalleryContext } from "../store/gallery";
+import { FullscreenContext } from "../store/fullscreen";
 import useTheme from "@mui/material/styles/useTheme";
 import useAppSearchParams from "../hooks/useAppSearchParams";
 import { PostTagsList } from "./TagList";
-import { ModalContext } from "./ContentMasonry/context";
+import useKeyPress from "../hooks/useKeyPress";
 
 const TitleBarHeight = 30;
 const Gutter = 16;
@@ -81,19 +83,29 @@ function clampImageDimensions(width: number, height: number, maxHeight: number, 
 const Modal: React.FC = () => {
   const theme = useTheme();
   const [searchParams, setSearchParams] = useAppSearchParams();
-  const open = useModalStore((state) => state.modalIsOpen);
-  const boundingRect = useModalStore((state) => state.modalBoundingRect);
-  const closeModal = useModalStore((state) => state.closeModal);
-  const exitModal = useModalStore((state) => state.exitModal);
-  const postId = useModalStore((state) => state.modalItem);
-  const items = useContext(ModalContext);
-  const post = items.find((post) => post.id === postId);
+
+  const galleryContext = useContext(GalleryContext);
+  const modalContext = useContext(ModalContext);
+  const fullscreenContext = useContext(FullscreenContext);
+  const open = modalContext.state.modalIsOpen;
+  const boundingRect = modalContext.state.modalBoundingRect;
+  const postId = modalContext.state.modalItem;
+  const closeModal = () => modalContext.dispatch({ type: "CLOSE_MODAL" });
+  const exitModal = () => modalContext.dispatch({ type: "EXIT_MODAL" });
+  const post = galleryContext.posts.find((post) => post.id === postId);
 
   const [entered, setEntered] = useState(false);
   const [entering, setEntering] = useState(false);
   const [exiting, setExiting] = useState(false);
   const [showCaption, setShowCaption] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useKeyPress("Escape", onModalClose);
+
+  // effect to hide/show full screen elements like nav buttons and search
+  useEffect(() => {
+    fullscreenContext.setFullscreen(drawerOpen || open);
+  }, [drawerOpen, open]);
 
   function onModalEntering() {
     setEntering(true);
@@ -122,10 +134,13 @@ const Modal: React.FC = () => {
     setShowCaption((s) => !s);
   }
 
+  function onItemClicked() {
+    setDrawerOpen(false);
+  }
+
   function onAuthorClicked() {
-    const key = `${post?.author?.id}|${post?.author?.name}`;
-    if (post?.author && searchParams.filters.indexOf(key) < 0) {
-      searchParams.filters.push(key);
+    if (post?.author && searchParams.filters.indexOf(post.author.id) < 0) {
+      searchParams.filters.push(post.author.id);
     }
 
     closeModal();
@@ -134,9 +149,8 @@ const Modal: React.FC = () => {
   }
 
   function onSourceClicked() {
-    const key = `${post?.source?.id}|${post?.source?.name}`;
-    if (post?.source && searchParams.filters.indexOf(key) < 0) {
-      searchParams.filters.push(key);
+    if (post?.source && searchParams.filters.indexOf(post.source.id) < 0) {
+      searchParams.filters.push(post.source.id);
     }
 
     closeModal();
@@ -153,11 +167,12 @@ const Modal: React.FC = () => {
       return [{}, {}];
     }
 
-    const totalHeight = window.innerHeight - TitleBarHeight - Gutter;
+    const totalHeight = window.innerHeight - TitleBarHeight - 2 * Gutter;
+    const totalWidth = window.innerWidth - 2 * Gutter;
     const { width: post_width, height: post_height } = clampImageDimensions(
       post.width,
       post.height,
-      window.innerWidth,
+      totalWidth,
       totalHeight
     );
 
@@ -166,21 +181,17 @@ const Modal: React.FC = () => {
       left: boundingRect?.left ?? 0,
       width: boundingRect?.width ?? 0,
       height: boundingRect?.height ?? 0,
-      paddingLeft: 4,
-      paddingRight: 4,
     };
 
     const to: React.CSSProperties = {
-      top: (totalHeight - post_height) / 2 + TitleBarHeight + Gutter / 2,
-      left: (window.innerWidth - post_width) / 2,
+      top: (totalHeight - post_height) / 2 + TitleBarHeight + Gutter,
+      left: (totalWidth - post_width) / 2 + Gutter,
       width: post_width,
       height: post_height,
-      paddingLeft: 4,
-      paddingRight: 4,
     };
 
     return [from, to];
-  }, [open]);
+  }, [open, boundingRect]);
 
   const subCaptions = [
     post?.author && (
@@ -204,6 +215,7 @@ const Modal: React.FC = () => {
     .filter(Boolean)
     .reduce((prev, curr) => [...prev, " ", curr], [] as React.ReactNode[]);
 
+  console.log("MODLA", { postId, post, open, boundingRect });
   if (!post) {
     return null;
   }
@@ -252,7 +264,7 @@ const Modal: React.FC = () => {
 
       {/* Drawer */}
       <MuiDrawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <PostTagsList overscanCount={3} postTags={post.filters} />
+        <PostTagsList overscanCount={3} postTags={post.filters} onItemClicked={onItemClicked} />
       </MuiDrawer>
 
       {/* Modal Content */}

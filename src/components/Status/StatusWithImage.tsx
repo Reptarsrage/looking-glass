@@ -7,6 +7,7 @@ interface StatusWithImageProps {
   message: React.ReactNode;
   children: React.ReactElement<any>;
   height?: number;
+  marginTop?: string | number;
   variant?:
     | "h1"
     | "h2"
@@ -25,8 +26,8 @@ interface StatusWithImageProps {
     | undefined;
 }
 
-const StatusWithImage: React.FC<StatusWithImageProps> = ({ message, height, variant, children }) => (
-  <Box sx={{ mt: "10%" }}>
+const StatusWithImage: React.FC<StatusWithImageProps> = ({ message, height, variant, marginTop, children }) => (
+  <Box sx={{ mt: marginTop }}>
     <Box sx={{ mb: 4, textAlign: "center" }}>
       <ThemedSVG svg={children} maxHeight={height} />
     </Box>
@@ -38,6 +39,7 @@ const StatusWithImage: React.FC<StatusWithImageProps> = ({ message, height, vari
 
 StatusWithImage.defaultProps = {
   height: 500,
+  marginTop: "10%",
   variant: "h2",
 };
 

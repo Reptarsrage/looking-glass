@@ -1,7 +1,6 @@
 const { app, BrowserWindow, screen, ipcMain, dialog } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
-const Store = require("electron-store");
 const { autoUpdater } = require("electron-updater");
 
 const log = require("./logger");
@@ -45,9 +44,6 @@ const createWindow = async (port) => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-
-  // bootstrap store
-  Store.initRenderer();
 
   // load the url (or file)
   if (isDev) {

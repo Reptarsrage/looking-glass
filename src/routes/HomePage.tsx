@@ -1,3 +1,4 @@
+import { useContext, useEffect } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
@@ -11,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import FolderIcon from "@mui/icons-material/Folder";
 import Skeleton from "@mui/material/Skeleton";
 
-import { FILE_SYSTEM_MODULE_ID, Module, fileSystemModule, useModulesStore } from "../store/module";
+import { FILE_SYSTEM_MODULE_ID, fileSystemModule, ModuleContext } from "../store/module";
 import ModuleListItem from "../components/ModuleListItem";
 import { ReactComponent as SVG } from "../assets/undraw_lighthouse_frb8.svg";
 import ThemedSVG from "../components/Status/ThemedSVG";
@@ -49,9 +50,9 @@ const HomePageOuter: React.FC<React.PropsWithChildren<any>> = ({ children }) => 
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const setModules = useModulesStore((state) => state.setModules);
+  const { setModules } = useContext(ModuleContext);
   const { data, status } = useQuery({
-    onSuccess: setModules,
+    onSuccess: (data) => setModules(data),
     queryKey: ["modules"],
     queryFn: async () => {
       let modules = await lookingGlassService.fetchModules();
@@ -60,6 +61,11 @@ const HomePage: React.FC = () => {
       return modules;
     },
   });
+
+  // effect to set window title
+  useEffect(() => {
+    window.electronAPI.setTitle();
+  }, []);
 
   async function handleLocalClick() {
     const filePath = await window.electronAPI.chooseFolder();

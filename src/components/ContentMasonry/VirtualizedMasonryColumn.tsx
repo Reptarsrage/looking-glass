@@ -1,4 +1,4 @@
-import { createElement, useContext, useEffect, useRef } from "react";
+import { createElement, useEffect, useRef } from "react";
 import memoizeOne from "memoize-one";
 
 import {
@@ -9,17 +9,14 @@ import {
   getStopIndexForStartIndex,
   MasonryInstanceProps,
   MasonryItemSizeFunc,
-  getOffsetForIndexAndAlignment,
 } from "./masonryUtils";
-import { useMasonryStore } from "../../store/masonry";
-import { MasonryContext } from "./context";
+import type { Post } from "../../store/gallery";
+import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 
 export interface MasonryItemProps<TItemData> {
-  columnIndex: number;
-  index: number;
   style: Record<string, any>;
-  isScrolling?: boolean;
-  data?: TItemData;
+  isScrolling: boolean;
+  item: TItemData;
 }
 
 export interface MasonryOnItemsRenderedParams {
@@ -38,42 +35,49 @@ export interface MasonryOnScrollParams {
 
 export interface VirtualizedMasonryColumnProps<TItemData> {
   children: React.FunctionComponent<MasonryItemProps<TItemData>>;
-  itemSize: MasonryItemSizeFunc;
-  itemData?: TItemData;
+  id: number;
+  items: TItemData[];
   width: number;
-  height: number;
-  overscanCount: number;
-  estimatedItemSize?: number;
-  initialScrollOffset?: number;
-  onItemsRendered?: (params: MasonryOnItemsRenderedParams) => void;
-  onScroll?: (params: MasonryOnScrollParams) => void;
   scrollOffset: number;
-  isScrolling: boolean;
   scrollDirection: ScrollDirection;
-  columnIndex: number;
+  isScrolling: boolean;
+  overscanCount: number;
+  estimatedItemSize: number;
   gutter: number;
+  loadMore?: () => void;
+  scrollToItem: string | null;
 }
 
-function VirtualizedMasonryColumn<TItemData>({
+function clampImageDimensions(width: number, height: number, maxWidth: number) {
+  let clampWidth = maxWidth;
+  let clampHeight = (height / width) * clampWidth;
+  return { width: clampWidth, height: clampHeight };
+}
+
+function VirtualizedMasonryColumn({
   children,
-  itemSize,
+  id,
+  items,
   width,
-  height,
+  scrollOffset,
+  scrollDirection,
+  isScrolling,
   overscanCount,
   estimatedItemSize,
-  onItemsRendered,
-  isScrolling,
-  scrollDirection,
-  scrollOffset,
-  columnIndex,
-  itemData,
   gutter,
-}: VirtualizedMasonryColumnProps<TItemData>) {
-  const columns = useContext(MasonryContext);
-  const column = columns[columnIndex];
-  const itemCount = column.items.length;
-  const setMasonryScrollOffset = useMasonryStore((state) => state.setMasonryScrollOffset);
-  const masonryScrollToItemId = useMasonryStore((state) => state.masonryScrollToItemId);
+  loadMore,
+  scrollToItem,
+}: VirtualizedMasonryColumnProps<Post>) {
+  const columnIndex = id;
+  const height = window.innerHeight;
+  const itemCount = items.length;
+  function itemSize(colIdx: number, idx: number) {
+    const { height } = clampImageDimensions(items[idx].width, items[idx].height, width);
+
+    return height;
+  }
+
+  const containerRef = useRef<HTMLDivElement>(null);
   const instanceProps = useRef<MasonryInstanceProps>({
     itemMetadataMap: {},
     estimatedItemSize: estimatedItemSize ?? 50,
@@ -94,8 +98,8 @@ function VirtualizedMasonryColumn<TItemData>({
 
     const startIndex = getStartIndexForOffset(itemSize, itemCount, scrollOffset, instanceProps);
     const stopIndex = getStopIndexForStartIndex(itemSize, height, itemCount, startIndex, scrollOffset, instanceProps);
-    const overscanBackward = !isScrolling || scrollDirection === "backward" ? Math.max(1, overscanCount) : 1;
-    const overscanForward = !isScrolling || scrollDirection === "forward" ? Math.max(1, overscanCount) : 1;
+    const overscanBackward = scrollDirection === "backward" ? Math.max(1, overscanCount) : 1;
+    const overscanForward = scrollDirection === "forward" ? Math.max(1, overscanCount) : 1;
     return [
       Math.max(0, startIndex - overscanBackward),
       Math.max(0, Math.min(itemCount - 1, stopIndex + overscanForward)),
@@ -111,22 +115,19 @@ function VirtualizedMasonryColumn<TItemData>({
       const size = getItemSize(index, instanceProps);
       itemStyleCache[index] = {
         position: "absolute",
-        left: 0,
-        right: undefined,
+        left: gutter / 2,
+        right: gutter / 2,
         top: offset,
         height: size,
-        width: "100%",
-        paddingLeft: gutter / 2,
-        paddingRight: gutter / 2,
       };
     }
 
     return itemStyleCache[index];
   };
 
+  // effect to clear cache
   useEffect(() => {
     if (width !== instanceProps.width || columnIndex !== instanceProps.column || gutter !== instanceProps.gutter) {
-      // reset all cached sizes
       instanceProps.gutter = gutter;
       instanceProps.column = columnIndex;
       instanceProps.width = width;
@@ -135,74 +136,68 @@ function VirtualizedMasonryColumn<TItemData>({
     }
   }, [width, gutter, columnIndex]);
 
+  // effect to scroll to item
+  useEffect(() => {
+    if (scrollToItem === null) {
+      return;
+    }
+
+    const idx = items.findIndex((item) => item.id === scrollToItem);
+    if (idx < 0) {
+      return;
+    }
+
+    const itemStyle = getItemStyle(idx);
+    const offsetTop = containerRef.current?.offsetTop ?? 0;
+    const top = (itemStyle as any)?.top ?? 0;
+    const itemHeight = (itemStyle as any)?.height ?? 0;
+    const itemTop = offsetTop + top;
+    const itemBottom = itemTop + itemHeight;
+    const destination = Math.max(0, offsetTop + top - window.innerHeight / 2);
+    if (itemBottom < window.scrollY || itemTop > window.scrollY + window.innerHeight) {
+      // item is completely off screen, scroll to it
+      window.scrollTo(0, destination);
+    }
+  }, [scrollToItem]);
+
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: loadMore,
+  });
+
   const estimatedTotalSize = getEstimatedTotalSize(itemCount, instanceProps);
   const [startIndex, stopIndex] = getRangeToRender();
 
-  useEffect(() => {
-    if (typeof onItemsRendered === "function") {
-      if (itemCount > 0) {
-        const [overscanStartIndex, overscanStopIndex, visibleStartIndex, visibleStopIndex] = getRangeToRender();
-        onItemsRendered({
-          column: columnIndex,
-          overscanStartIndex,
-          overscanStopIndex,
-          visibleStartIndex,
-          visibleStopIndex,
-        });
-      }
-    }
-  }, [onItemsRendered, startIndex, stopIndex]);
-
-  function scrollToItem(index: number) {
-    index = Math.max(0, Math.min(index, itemCount - 1));
-    setMasonryScrollOffset(
-      getOffsetForIndexAndAlignment(itemSize, itemCount, index, scrollOffset, height, instanceProps)
-    );
-  }
-
-  useEffect(() => {
-    if (masonryScrollToItemId) {
-      const idx = column.items.findIndex((i) => i.id === masonryScrollToItemId);
-      if (idx >= 0) {
-        scrollToItem(idx);
-      }
-    }
-  }, [masonryScrollToItemId]);
-
-  const items = [];
+  const itemsToRender = [];
   if (itemCount > 0) {
     for (let index = startIndex; index <= stopIndex; index++) {
-      items.push(
-        createElement<MasonryItemProps<TItemData>>(children, {
-          key: index,
-          columnIndex,
-          index,
-          isScrolling,
+      itemsToRender.push(
+        createElement(children, {
+          key: items[index].id,
           style: getItemStyle(index),
-          data: itemData,
+          isScrolling,
+          item: items[index],
         })
       );
     }
   }
 
   return (
-    <ul
+    <div
+      ref={containerRef}
       style={{
-        margin: 0,
-        padding: 0,
-        height: estimatedTotalSize,
-        pointerEvents: isScrolling ? "none" : undefined,
-        width: width,
+        display: "flex",
+        flexDirection: "column",
         position: "relative",
+        width,
+        height: estimatedTotalSize,
       }}
     >
-      {items}
-    </ul>
+      {itemsToRender}
+      <div ref={loadMoreRef} style={{ position: "absolute", top: estimatedTotalSize, height: 1 }}></div>
+    </div>
   );
 }
-
-VirtualizedMasonryColumn.defaultProps = {
-  gutter: 8,
-};
 
 export default VirtualizedMasonryColumn;

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
@@ -6,12 +6,13 @@ import List from "@mui/material/List";
 import SortIcon from "@mui/icons-material/Sort";
 
 import SortMenuItem from "./SortMenuItem";
-import { useModulesStore } from "../../store/module";
+import { ModuleContext } from "../../store/module";
 
 const SortBy: React.FC = () => {
   const moduleId = useParams().moduleId!;
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const module = useModulesStore(useCallback((state) => state.modules.find((m) => m.id === moduleId)!, [moduleId]));
+  const moduleContext = useContext(ModuleContext);
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
 
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
     setAnchorEl(event.currentTarget);

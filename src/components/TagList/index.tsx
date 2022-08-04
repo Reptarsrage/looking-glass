@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -8,11 +8,11 @@ import ResizeObserver from "../ResizeObserver";
 import TagListInner from "./TagListInner";
 import { TagsContext, TagSection } from "./context";
 import useAppSearchParams from "../../hooks/useAppSearchParams";
-import { useModulesStore } from "../../store/module";
-import { useModalStore } from "../../store/modal";
+import { ModuleContext } from "../../store/module";
+import { ModalContext } from "../../store/modal";
 import * as lookingGlassService from "../../services/lookingGlassService";
-import { useAuthStore } from "../../store/auth";
-import { Tag } from "../../store/tag";
+import { AuthContext, login } from "../../store/auth";
+import { Tag, TagContext } from "../../store/tag";
 
 interface ReactQueryParams {
   queryKey: (string | null)[];
@@ -22,11 +22,13 @@ interface PostTagsListProps {
   overscanCount: number;
   postTags?: Tag[];
   initialScrollOffset?: number;
+  onItemClicked?: () => void;
 }
 
 interface SectionedTagsListProps {
   overscanCount: number;
   initialScrollOffset?: number;
+  onItemClicked?: () => void;
 }
 
 interface TagListCommonProps {
@@ -34,19 +36,22 @@ interface TagListCommonProps {
   initialScrollOffset?: number;
   filter: string;
   onFilterChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onItemClicked?: () => void;
 }
 
 const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
   const moduleId = useParams().moduleId!;
-  const sections = useModulesStore((state) => state.modules.find((m) => m.id === moduleId)?.filters ?? []);
-  const supportsItemFilters = useModulesStore(
-    (state) => state.modules.find((m) => m.id === moduleId)?.supportsItemFilters ?? false
-  );
-  const postId = useModalStore((state) => state.modalItem);
-  const modalIsOpen = useModalStore((state) => state.modalIsOpen);
+  const moduleContext = useContext(ModuleContext);
+  const authContext = useContext(AuthContext);
+  const modalContext = useContext(ModalContext);
+  const tagContext = useContext(TagContext);
+
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const sections = module?.filters ?? [];
+  const supportsItemFilters = module?.supportsItemFilters ?? false;
+  const postId = modalContext.state.modalItem;
+  const modalIsOpen = modalContext.state.modalIsOpen;
   const usingItemFilters = modalIsOpen && postId;
-  const auth = useAuthStore((state) => state.authByModule[moduleId]);
-  const setAuth = useAuthStore((state) => state.setAuth);
 
   // React query
   async function fetchTagsByPostId(params: ReactQueryParams): Promise<Tag[]> {
@@ -60,16 +65,9 @@ const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
       return postTags ?? [];
     }
 
-    // Refresh auth token if necessary
-    let token = auth?.accessToken;
-    if (lookingGlassService.needsRefresh(auth?.expires, auth?.refreshToken)) {
-      const authResponse = await lookingGlassService.refreshAuth(moduleId, auth.refreshToken);
-      setAuth(moduleId, authResponse);
-      token = authResponse.accessToken;
-    }
-
     // Query for tags for item
-    let tags = await lookingGlassService.fetchItemFilters(moduleId, postId, token);
+    const accessToken = await login(moduleId, authContext);
+    let tags = await lookingGlassService.fetchItemFilters(moduleId, postId, accessToken);
 
     tags = tags.concat(postTags ?? []); // concat post tags
     tags = tags.filter((x, i, arr) => arr.findIndex((y) => y.id === x.id) === i); // remove duplicates
@@ -80,6 +78,7 @@ const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
   const postTagsQuery = useQuery({
     queryKey: ["tags", moduleId, postId],
     queryFn: fetchTagsByPostId,
+    onSuccess: (value: Tag[]) => tagContext.addTags({ moduleId, value }),
   });
 
   return useMemo(() => {
@@ -112,9 +111,11 @@ const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
 
 const useSectionTags = (filter: string) => {
   const moduleId = useParams().moduleId!;
-  const sections = useModulesStore((state) => state.modules.find((m) => m.id === moduleId)?.filters ?? []);
-  const auth = useAuthStore((state) => state.authByModule[moduleId]);
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const authContext = useContext(AuthContext);
+  const moduleContext = useContext(ModuleContext);
+  const tagContext = useContext(TagContext);
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const sections = module?.filters ?? [];
 
   // React query
   async function fetchTagSectionById(params: ReactQueryParams): Promise<Tag[]> {
@@ -124,16 +125,10 @@ const useSectionTags = (filter: string) => {
       return [];
     }
 
-    // Refresh auth token if necessary
-    let token = auth?.accessToken;
-    if (lookingGlassService.needsRefresh(auth?.expires, auth?.refreshToken)) {
-      const authResponse = await lookingGlassService.refreshAuth(moduleId, auth.refreshToken);
-      setAuth(moduleId, authResponse);
-      token = authResponse.accessToken;
-    }
-
     // Query for tags by section
-    const tags = await lookingGlassService.fetchFilters(moduleId, sectionId, token);
+    const accessToken = await login(moduleId, authContext);
+    const tags = await lookingGlassService.fetchFilters(moduleId, sectionId, accessToken);
+
     tags.sort((a, b) => a.name.localeCompare(b.name)); // sort alphabetically
     tags.filter((x, i, arr) => arr.findIndex((y) => y.id === x.id) === i); // remove duplicates
     return tags;
@@ -143,6 +138,7 @@ const useSectionTags = (filter: string) => {
     sections.map((section) => ({
       queryKey: ["tags", moduleId, section.id],
       queryFn: fetchTagSectionById,
+      onSuccess: (value: Tag[]) => tagContext.addTags({ moduleId, value }),
     }))
   );
 
@@ -152,10 +148,12 @@ const useSectionTags = (filter: string) => {
       let sectionQuery = tagSectionQueries[i];
       let loading = sectionQuery.status === "loading";
       let error = sectionQuery.status === "error";
-      let items = sectionQuery.data ?? [];
+      let items = tagContext.tags[moduleId] ?? sectionQuery.data ?? [];
 
       // filter items
-      items = items.filter((tag) => tag.name.toString().toLowerCase().includes(included));
+      items = items.filter(
+        (tag) => tag.filterSectionId === section.id && tag.name.toString().toLowerCase().includes(included)
+      );
 
       acc[section.id] = {
         ...section,
@@ -166,7 +164,7 @@ const useSectionTags = (filter: string) => {
 
       return acc;
     }, {} as Record<string, TagSection>);
-  }, [filter, tagSectionQueries]);
+  }, [moduleId, filter, tagSectionQueries, tagContext.tags]);
 };
 
 const TagListCommon: React.FC<TagListCommonProps> = ({
@@ -174,6 +172,7 @@ const TagListCommon: React.FC<TagListCommonProps> = ({
   initialScrollOffset,
   filter,
   onFilterChange,
+  onItemClicked,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams, setSearchParams] = useAppSearchParams();
@@ -219,6 +218,7 @@ const TagListCommon: React.FC<TagListCommonProps> = ({
               height={height}
               overscanCount={overscanCount}
               initialScrollOffset={initialScrollOffset}
+              onItemClicked={onItemClicked}
             />
           )}
         </ResizeObserver>
@@ -227,7 +227,12 @@ const TagListCommon: React.FC<TagListCommonProps> = ({
   );
 };
 
-export const PostTagsList: React.FC<PostTagsListProps> = ({ postTags, overscanCount, initialScrollOffset }) => {
+export const PostTagsList: React.FC<PostTagsListProps> = ({
+  postTags,
+  overscanCount,
+  initialScrollOffset,
+  onItemClicked,
+}) => {
   const [filter, setFilter] = useState("");
   const filteredTagSections = usePostTags(postTags, filter);
 
@@ -242,12 +247,17 @@ export const PostTagsList: React.FC<PostTagsListProps> = ({ postTags, overscanCo
         initialScrollOffset={initialScrollOffset}
         filter={filter}
         onFilterChange={onFilterChange}
+        onItemClicked={onItemClicked}
       />
     </TagsContext.Provider>
   );
 };
 
-export const SectionedTagsList: React.FC<SectionedTagsListProps> = ({ overscanCount, initialScrollOffset }) => {
+export const SectionedTagsList: React.FC<SectionedTagsListProps> = ({
+  overscanCount,
+  initialScrollOffset,
+  onItemClicked,
+}) => {
   const [filter, setFilter] = useState("");
   const filteredTagSections = useSectionTags(filter);
 
@@ -262,6 +272,7 @@ export const SectionedTagsList: React.FC<SectionedTagsListProps> = ({ overscanCo
         initialScrollOffset={initialScrollOffset}
         filter={filter}
         onFilterChange={onFilterChange}
+        onItemClicked={onItemClicked}
       />
     </TagsContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import Popover from "@mui/material/Popover";
 import List from "@mui/material/List";
@@ -9,7 +9,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import NestedSortMenuItem from "./NestedSortMenuItem";
-import { useModulesStore } from "../../store/module";
+import { ModuleContext } from "../../store/module";
 import useAppSearchParams from "../../hooks/useAppSearchParams";
 
 interface SortMenuItemProps {
@@ -21,25 +21,10 @@ const SortMenuItem: React.FC<SortMenuItemProps> = ({ id, onClick }) => {
   const [searchParams, setSearchParams] = useAppSearchParams();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const moduleId = useParams().moduleId!;
-  const sortValue = useModulesStore(
-    useCallback(
-      (state) => {
-        const module = state.modules.find((m) => m.id === moduleId)!;
-        return module.sort.find((sort) => sort.id === id)!;
-      },
-      [moduleId, id]
-    )
-  );
-
-  const nestedValues = useModulesStore(
-    useCallback(
-      (state) => {
-        const module = state.modules.find((m) => m.id === moduleId)!;
-        return module.sort.filter((sort) => sort.parentId === id);
-      },
-      [moduleId, id]
-    )
-  );
+  const moduleContext = useContext(ModuleContext);
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const sortValue = module?.sort.find((sort) => sort.id === id);
+  const nestedValues = module?.sort.filter((sort) => sort.parentId === id) ?? [];
 
   const handleClick: React.MouseEventHandler<HTMLElement> = (event) => {
     if (nestedValues.length > 0) {

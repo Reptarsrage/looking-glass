@@ -1,11 +1,11 @@
-import { useCallback } from "react";
+import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CheckIcon from "@mui/icons-material/Check";
 
-import { useModulesStore } from "../../store/module";
+import { ModuleContext } from "../../store/module";
 import useAppSearchParams from "../../hooks/useAppSearchParams";
 
 interface NestedSortMenuItemProps {
@@ -16,21 +16,19 @@ interface NestedSortMenuItemProps {
 const NestedSortMenuItem: React.FC<NestedSortMenuItemProps> = ({ id, onClick }) => {
   const [searchParams, setSearchParams] = useAppSearchParams();
   const moduleId = useParams().moduleId!;
-  const sortValue = useModulesStore(
-    useCallback(
-      (state) => {
-        const module = state.modules.find((m) => m.id === moduleId)!;
-        return module.sort.find((sort) => sort.id === id)!;
-      },
-      [moduleId, id]
-    )
-  );
-  const isSelected = searchParams.sort === sortValue.id;
+  const moduleContext = useContext(ModuleContext);
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const sortValue = module?.sort.find((sort) => sort.id === id);
+  const isSelected = searchParams.sort === sortValue?.id;
 
   const handleClick = () => {
     setSearchParams({ ...searchParams, sort: id });
     onClick();
   };
+
+  if (sortValue === undefined) {
+    return null;
+  }
 
   return (
     <ListItem button onClick={handleClick}>

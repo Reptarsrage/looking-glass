@@ -5,31 +5,33 @@ import ListItemText from "@mui/material/ListItemText";
 
 import { TagsContext } from "./context";
 import useAppSearchParams from "../../hooks/useAppSearchParams";
-import { useModalStore } from "../../store/modal";
-import { useModulesStore } from "../../store/module";
+import { ModalContext } from "../../store/modal";
+import { ModuleContext } from "../../store/module";
+import { FullscreenContext } from "../../store/fullscreen";
 
 interface SectionItemProps {
   sectionId: string;
   index: number;
+  onClick?: () => void;
 }
 
-const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index }) => {
+const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index, onClick }) => {
   const [searchParams, setSearchParams] = useAppSearchParams();
-  const closeModal = useModalStore((state) => state.closeModal);
-  const exitModal = useModalStore((state) => state.exitModal);
-
-  const moduleId = useParams().moduleId!;
-  const supportsGalleryFilters = useModulesStore(
-    (state) => state.modules.find((m) => m.id === moduleId)?.supportsGalleryFilters
-  );
-
+  const modalContext = useContext(ModalContext);
+  const fullscreenContext = useContext(FullscreenContext);
+  const moduleContext = useContext(ModuleContext);
   const tagSections = useContext(TagsContext);
+  const moduleId = useParams().moduleId!;
+
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const supportsGalleryFilters = module?.supportsGalleryFilters ?? false;
   const section = tagSections[sectionId];
   const item = section.items[index];
+  const closeModal = () => modalContext.dispatch({ type: "CLOSE_MODAL" });
+  const exitModal = () => modalContext.dispatch({ type: "EXIT_MODAL" });
 
   const handleClick = () => {
-    const key = `${item.id}|${item.name}`;
-    if (searchParams.filters.indexOf(key) >= 0) {
+    if (searchParams.filters.indexOf(item.id) >= 0) {
       return;
     }
 
@@ -37,14 +39,20 @@ const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index }) => {
     const query = section.supportsSearch ? searchParams.query : undefined;
     let filters = searchParams.filters;
     if (section.supportsMultiple) {
-      filters.push(key);
+      filters.push(item.id);
     } else {
-      filters = [key];
+      filters = [item.id];
+    }
+
+    closeModal();
+    exitModal();
+    fullscreenContext.setFullscreen(false);
+
+    if (onClick) {
+      onClick();
     }
 
     setSearchParams({ ...searchParams, galleryId, query, filters });
-    closeModal();
-    exitModal();
   };
 
   const itemHeight = 48;

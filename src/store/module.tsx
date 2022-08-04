@@ -1,5 +1,4 @@
-import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { createContext, useState } from "react";
 
 export enum ModuleAuthType {
   None = "",
@@ -113,20 +112,14 @@ export const fileSystemModule: Module = {
   ],
 };
 
-interface State {
+interface Context {
   readonly modules: Module[];
-  setModules: (modules: Module[]) => void;
+  setModules: React.Dispatch<React.SetStateAction<Module[]>>;
 }
 
-const name = "module";
-export const useModulesStore = create<State>(
-  devtools(
-    (set) => ({
-      modules: [],
-      setModules: (modules) => {
-        set({ modules }, false, `${name}/setModules`);
-      },
-    }),
-    { name }
-  )
-);
+export const ModuleContext = createContext<Context>({ modules: [], setModules: () => {} });
+
+export const ModuleProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  const [modules, setModules] = useState<Module[]>([]);
+  return <ModuleContext.Provider value={{ modules, setModules }}>{children}</ModuleContext.Provider>;
+};

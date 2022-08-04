@@ -24,7 +24,7 @@ interface PictureProps extends React.HTMLAttributes<HTMLPictureElement> {
 const Picture: React.FC<PictureProps> = ({ source, alt, width, height, ...passThroughProps }) => {
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // Unload video so chrome stops loading it when it does off page
+  // Unload image so chrome stops loading it when it does off page
   useEffect(() => {
     const imageElement = imageRef.current;
 

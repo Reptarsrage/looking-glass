@@ -7,12 +7,11 @@ import Zoom from "@mui/material/Zoom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-import { useModalStore } from "../store/modal";
-import { useMasonryStore } from "../store/masonry";
+import { ModalContext } from "../store/modal";
+import { GalleryContext } from "../store/gallery";
 import useKeyPress from "../hooks/useKeyPress";
 import { useResize } from "./ResizeObserver";
 import PinchZoomPan from "./PinchZoomPan";
-import { ModalContext } from "./ContentMasonry/context";
 import Post from "./Post";
 
 const TitleBarHeight = 30;
@@ -51,18 +50,24 @@ function clamp(num: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, num));
 }
 
-function capBounds(originalWidth: number, originalHeight: number, maxHeight: number, maxWidth: number): number[] {
-  const clampTo = Math.min(maxHeight, maxWidth);
-  let clamp_width = Math.min(originalWidth, clampTo);
-  let clamp_height = Math.min(originalHeight, clampTo);
+/**
+ * Resizes image dimensions to fit container, preserving aspect ratio
+ * @param {*} width
+ * @param {*} height
+ * @param {*} maxHeight
+ * @param {*} maxWidth
+ */
+function clampImageDimensions(width: number, height: number, maxHeight: number, maxWidth: number) {
+  let clampTo = Math.min(maxHeight, maxWidth);
+  let clampWidth = Math.min(width, clampTo);
+  let clampHeight = Math.min(height, clampTo);
 
-  if (originalWidth > originalHeight) {
-    clamp_height = (originalHeight / originalWidth) * clamp_width;
+  if (width > height) {
+    clampHeight = (height / width) * clampWidth;
   } else {
-    clamp_width = (originalWidth / originalHeight) * clamp_height;
+    clampWidth = (width / height) * clampHeight;
   }
-
-  return [clamp_width, clamp_height];
+  return { width: clampWidth, height: clampHeight };
 }
 
 const itemsToRender = 5;
@@ -87,15 +92,16 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
   const [width, height] = useResize();
   const [isDragging, setIsDragging] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
-  const scrollMasonryTo = useMasonryStore((state) => state.scrollMasonryTo);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const posts = useContext(ModalContext);
-  const open = useModalStore((state) => state.modalIsOpen);
-  const setCurrentModalItem = useModalStore((state) => state.setCurrentModalItem);
-  const postId = useModalStore((state) => state.modalItem);
-  const shownIndex = useModalStore(
-    useCallback((state) => (state.modalItem ? posts.findIndex((i) => i.id === state.modalItem) : 0), [posts, postId])
-  );
+
+  const galleryContext = useContext(GalleryContext);
+  const modalContext = useContext(ModalContext);
+  const posts = galleryContext.posts;
+  const open = modalContext.state.modalIsOpen;
+  const setCurrentModalItem = (item: string | null) =>
+    modalContext.dispatch({ type: "SET_MODAL_ITEM", payload: { item } });
+  const postId = modalContext.state.modalItem;
+  const shownIndex = modalContext.state.modalItem ? posts.findIndex((i) => i.id === modalContext.state.modalItem) : 0;
 
   function update(i: number, active: boolean = false, xDelta: number = 0) {
     const pos = getPos(i, shownIndex, originalIndex);
@@ -135,7 +141,6 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
       let idx = posts.findIndex((i) => i.id === postId);
       idx = clamp(idx - 1, 0, posts.length - 1);
       setCurrentModalItem(posts[idx].id);
-      scrollMasonryTo(posts[idx].id);
     }
   }, [posts, postId, setCurrentModalItem]);
 
@@ -144,7 +149,6 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
       let idx = posts.findIndex((i) => i.id === postId);
       idx = clamp(idx + 1, 0, posts.length - 1);
       setCurrentModalItem(posts[idx].id);
-      scrollMasonryTo(posts[idx].id);
     }
   }, [posts, postId, setCurrentModalItem]);
 
@@ -172,18 +176,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
   useKeyPress("ArrowRight", goNextModalItem);
 
   if (modalIsTransitioning) {
-    const post = posts[shownIndex];
-
-    return (
-      <Post
-        isVideo={post.isVideo}
-        urls={post.urls}
-        name={post.name}
-        width={post.width}
-        height={post.height}
-        poster={post.poster}
-      />
-    );
+    return <Post post={posts[shownIndex]} />;
   }
 
   return (
@@ -212,7 +205,14 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
         }
 
         const post = posts[idx];
-        const [post_width, post_height] = capBounds(post.width, post.height, width, height - TitleBarHeight - Gutter);
+        const totalHeight = window.innerHeight - TitleBarHeight - 2 * Gutter;
+        const totalWidth = window.innerWidth - 2 * Gutter;
+        const { width: post_width, height: post_height } = clampImageDimensions(
+          post.width,
+          post.height,
+          totalWidth,
+          totalHeight
+        );
 
         return (
           <Animated
@@ -222,14 +222,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
             key={i}
           >
             <PinchZoomPan width={post_width} height={post_height}>
-              <Post
-                isVideo={post.isVideo}
-                urls={post.urls}
-                name={post.name}
-                width={post.width}
-                height={post.height}
-                poster={post.poster}
-              />
+              <Post post={post} />
             </PinchZoomPan>
           </Animated>
         );

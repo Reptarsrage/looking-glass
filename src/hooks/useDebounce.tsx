@@ -10,6 +10,9 @@ function cancelTimeout(timeoutID: TimeoutID) {
   cancelAnimationFrame(timeoutID.id);
 }
 
+/**
+ * debounces given callback function
+ */
 function requestTimeout(callback: (params: any[]) => void, params: any[], delay: number): TimeoutID {
   const start = performance.now();
 

@@ -32,9 +32,16 @@ export interface TagListInnerProps {
   height: number;
   overscanCount: number;
   initialScrollOffset?: number;
+  onItemClicked?: () => void;
 }
 
-const TagListInner: React.FC<TagListInnerProps> = ({ width, height, overscanCount, initialScrollOffset }) => {
+const TagListInner: React.FC<TagListInnerProps> = ({
+  width,
+  height,
+  overscanCount,
+  initialScrollOffset,
+  onItemClicked,
+}) => {
   // Virtualized stuffs
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>("forward");
@@ -96,7 +103,15 @@ const TagListInner: React.FC<TagListInnerProps> = ({ width, height, overscanCoun
         const end = Math.min(count, Math.max(0, stopIndex - offset));
         offset += tagSectionCounts[index] + 1;
 
-        return <Section key={sectionId} sectionId={sectionId} startIndex={start} stopIndex={end} />;
+        return (
+          <Section
+            key={sectionId}
+            sectionId={sectionId}
+            startIndex={start}
+            stopIndex={end}
+            onItemClicked={onItemClicked}
+          />
+        );
       })}
     </List>
   );

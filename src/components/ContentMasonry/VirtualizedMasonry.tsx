@@ -1,162 +1,123 @@
-import { useLayoutEffect, useEffect, useRef, useState, useContext } from "react";
-import Box from "@mui/material/Box";
+import { useEffect, useRef, useState, useMemo, memo } from "react";
 
-import { MasonryItemSizeFunc } from "./masonryUtils";
-import VirtualizedMasonryColumn, {
-  MasonryItemProps,
-  MasonryOnItemsRenderedParams,
-  MasonryOnScrollParams,
-  ScrollDirection,
-} from "./VirtualizedMasonryColumn";
-import { useMasonryStore } from "../../store/masonry";
+import VirtualizedMasonryColumn, { MasonryItemProps, ScrollDirection } from "./VirtualizedMasonryColumn";
+import useSize from "../../hooks/useSize";
+import type { Post } from "../../store/gallery";
 import useDebounce from "../../hooks/useDebounce";
-import { MasonryContext } from "./context";
-import TheEnd from "../Status/TheEnd";
 
-export interface VirtualizedMasonryProps<TItemData> {
+interface VirtualizedMasonryProps<TItemData> {
   children: React.FunctionComponent<MasonryItemProps<TItemData>>;
-  itemSize: MasonryItemSizeFunc;
-  itemData?: TItemData;
-  width: number;
-  height: number;
-  overscanCount: number;
-  estimatedItemSize?: number;
-  initialScrollOffset?: number;
-  gutter: number;
-  end: boolean;
-  onItemsRendered?: (params: MasonryOnItemsRenderedParams) => void;
-  onScroll?: (params: MasonryOnScrollParams) => void;
+  items: TItemData[];
+  loadMore: () => void;
+  scrollToItem: string | null;
 }
 
-function VirtualizedMasonry<TItemData>({
-  children,
-  onItemsRendered,
-  onScroll,
-  width,
-  height,
-  estimatedItemSize,
-  overscanCount,
-  itemSize,
-  itemData,
-  gutter,
-  end,
-  initialScrollOffset,
-}: VirtualizedMasonryProps<TItemData>) {
-  const columns = useContext(MasonryContext);
-  const masonryScrollOffset = useMasonryStore((state) => state.masonryScrollOffset);
-  const [isScrolling, setIsScrolling] = useState<boolean>(false);
+interface Column {
+  id: number;
+  height: number;
+  isMin: boolean;
+  items: Post[];
+}
+
+function VirtualizedMasonry({ children, items, loadMore, scrollToItem }: VirtualizedMasonryProps<Post>) {
+  // constants
+  const columnCount = 3;
+  const gutter = 6;
+  const overscanCount = 1;
+  const estimatedItemSize = 500;
+
+  // keep track of size
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width } = useSize(containerRef);
+
+  // keep track of scroll
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>("forward");
-  const [scrollOffset, setScrollOffset] = useState<number>(0);
-  const prevWidthRef = useRef<number>(width);
-  const outerRef = useRef<HTMLDivElement>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const setIsScrollingDebounced = useDebounce(setIsScrolling);
 
-  function onScrollVertical(event: React.SyntheticEvent<HTMLDivElement>) {
-    const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
-    if (scrollOffset === scrollTop) {
-      return;
-    }
-
-    const nextScrollOffset = Math.max(0, Math.min(scrollTop, scrollHeight - clientHeight));
-
-    setIsScrolling(true);
-    setScrollDirection(scrollOffset < nextScrollOffset ? "forward" : "backward");
-    setScrollOffset(nextScrollOffset);
-
-    setIsScrollingDebounced(false);
-  }
-
-  function scrollTo(newScrollOffset: number) {
-    newScrollOffset = Math.max(0, newScrollOffset);
-    if (newScrollOffset !== scrollOffset && outerRef.current != null) {
-      outerRef.current.scrollTop = newScrollOffset;
-    }
-  }
-
+  // Effect to keep track of scroll position as window scrolls
   useEffect(() => {
-    if (Math.abs(masonryScrollOffset - scrollOffset) > 5) {
-      scrollTo(masonryScrollOffset);
+    function onScroll() {
+      const { scrollY } = window;
+      const { offsetTop = 0 } = containerRef.current ?? {};
+      const newScrollOffset = Math.max(0, scrollY - offsetTop);
+      const newScrolDirection = scrollOffset < newScrollOffset ? "forward" : "backward";
+
+      setScrollDirection(newScrolDirection);
+      setScrollOffset(newScrollOffset);
+      setIsScrolling(true);
+
+      setIsScrollingDebounced(false);
     }
-  }, [masonryScrollOffset]);
 
-  // Effect to handle restoring scroll from cache
-  useEffect(() => {
-    if (outerRef.current != null && initialScrollOffset !== undefined) {
-      outerRef.current.scrollTop = initialScrollOffset;
-      setScrollOffset(initialScrollOffset);
-    }
-  }, [initialScrollOffset]);
+    // use window scroll!
+    window.addEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  });
 
-  // Effect to invoke on scroll callback
-  useEffect(() => {
-    if (typeof onScroll === "function") {
-      onScroll({ scrollDirection, scrollOffset });
-    }
-  }, [onScroll, scrollDirection, scrollOffset]);
+  // calculate columns
+  const columns = useMemo(() => {
+    const initial: Column[] = [...Array(columnCount).keys()].map((id) => ({
+      id,
+      height: 0,
+      items: [],
+      isMin: false,
+    }));
 
-  // Effect to adjust things when width changes
-  useLayoutEffect(() => {
-    if (width !== prevWidthRef.current) {
-      // maintain scroll ratio
-      if (outerRef.current) {
-        const scrollRatio = outerRef.current.scrollTop / outerRef.current.scrollHeight;
-        const heightRatio = outerRef.current.scrollHeight / prevWidthRef.current;
-        outerRef.current.scrollTop = scrollRatio * heightRatio * width;
-        setScrollOffset(scrollRatio * heightRatio * width);
-      }
+    const columns = items.reduce((acc, cur) => {
+      // balance column heights
+      let min = Math.min(...acc.map((col) => col.height));
+      let minCol = acc.find((col) => col.height === min) ?? acc[0];
+      minCol.items.push(cur);
+      minCol.height += cur.height;
 
-      prevWidthRef.current = width;
-    }
-  }, [width, height]);
+      return acc;
+    }, initial);
 
-  const scrollBarWidth = 17;
+    const minHeight = Math.min(...columns.map((c) => c.height));
+    const minCol = columns.findIndex((c) => c.height === minHeight);
+    columns[minCol].isMin = true;
+
+    return columns;
+  }, [items]);
+
   return (
     <div
-      onScroll={onScrollVertical}
-      ref={outerRef}
+      ref={containerRef}
       style={{
-        height: height,
-        width: width,
-        overflow: "auto",
-        transform: "translate3d(0,0,0)", // Enable GPU acceleration
+        height: "100%",
         display: "flex",
-        flexDirection: "column",
+        paddingLeft: gutter / 2,
+        paddingRight: gutter / 2,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          paddingLeft: gutter / 2,
-        }}
-      >
-        {columns.map((column, columnIndex) => (
-          <VirtualizedMasonryColumn
-            key={column.id}
-            itemSize={itemSize}
-            itemData={itemData}
-            width={(width - scrollBarWidth - gutter) / columns.length}
-            height={height}
-            gutter={gutter}
-            overscanCount={overscanCount}
-            estimatedItemSize={estimatedItemSize}
-            onItemsRendered={onItemsRendered}
-            isScrolling={isScrolling}
-            scrollDirection={scrollDirection}
-            scrollOffset={scrollOffset}
-            columnIndex={columnIndex}
-          >
-            {children}
-          </VirtualizedMasonryColumn>
-        ))}
-      </div>
-
-      <Box sx={{ mb: 4 }}>{end && <TheEnd />}</Box>
+      {columns.map((column) => (
+        <VirtualizedMasonryColumn
+          key={column.id}
+          width={width / columnCount}
+          id={column.id}
+          items={column.items}
+          gutter={gutter}
+          scrollDirection={scrollDirection}
+          scrollOffset={scrollOffset}
+          isScrolling={isScrolling}
+          overscanCount={overscanCount}
+          estimatedItemSize={estimatedItemSize}
+          scrollToItem={scrollToItem}
+          loadMore={column.isMin ? loadMore : undefined}
+        >
+          {children}
+        </VirtualizedMasonryColumn>
+      ))}
     </div>
   );
 }
 
-VirtualizedMasonry.defaultProps = {
-  gutter: 8,
-};
-
-export default VirtualizedMasonry;
+export default memo(
+  VirtualizedMasonry,
+  (prev, next) =>
+    prev.items === next.items && prev.loadMore === next.loadMore && prev.scrollToItem === next.scrollToItem
+);

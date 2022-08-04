@@ -4,6 +4,7 @@ declare global {
   interface Window {
     // see preload.js and ipc.js for definitions
     electronAPI: {
+      setTitle: (title?: string) => void;
       chooseFolder: () => Promise<string>;
       oauth: (uri: string) => Promise<string>;
       minimize: () => void;

@@ -9,9 +9,10 @@ interface SectionProps {
   sectionId: string;
   startIndex: number;
   stopIndex: number;
+  onItemClicked?: () => void;
 }
 
-const Section: React.FC<SectionProps> = ({ sectionId, startIndex, stopIndex }) => {
+const Section: React.FC<SectionProps> = ({ sectionId, startIndex, stopIndex, onItemClicked }) => {
   const tagSections = useContext(TagsContext);
   const section = tagSections[sectionId];
   const sectionCount = section.items.length;
@@ -41,7 +42,7 @@ const Section: React.FC<SectionProps> = ({ sectionId, startIndex, stopIndex }) =
           {section.loading && <LinearProgress />}
         </ListSubheader>
         {section.items.slice(startIndex, stopIndex).map((item, index) => (
-          <SectionItem key={item.id} sectionId={sectionId} index={index + startIndex} />
+          <SectionItem key={item.id} sectionId={sectionId} index={index + startIndex} onClick={onItemClicked} />
         ))}
       </ul>
     </li>

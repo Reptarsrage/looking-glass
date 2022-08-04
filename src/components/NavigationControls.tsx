@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useNavigationType, useLocation, Link } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -8,12 +8,12 @@ import Box from "@mui/material/Box";
 import Fab from "@mui/material/Fab";
 import Fade from "@mui/material/Fade";
 
-import { useModalStore } from "../store/modal";
+import { FullscreenContext } from "../store/fullscreen";
 
 const NavigationControls: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const modalIsOpen = useModalStore((state) => state.modalIsOpen);
+  const { fullscreen } = useContext(FullscreenContext);
   const navigationType = useNavigationType();
   const [stack, setStack] = useState<string[]>([]);
   const [stackPointer, setStackPointer] = useState(0);
@@ -63,7 +63,7 @@ const NavigationControls: React.FC = () => {
   const hasForward = stackPointer < stack.length - 1;
 
   return (
-    <Fade in={!modalIsOpen}>
+    <Fade in={!fullscreen}>
       <Box component="span" sx={{ mx: 1, whiteSpace: "no-wrap" }}>
         <Fab component={Link} size="small" to="/settings" sx={{ mr: 1, WebkitAppRegion: "no-drag" }}>
           <MoreVertIcon />

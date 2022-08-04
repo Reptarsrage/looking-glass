@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams, Navigate, useSearchParams } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
@@ -10,27 +10,34 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useModulesStore } from "../store/module";
-import { useAuthStore } from "../store/auth";
+import { ModuleContext } from "../store/module";
+import { AuthContext } from "../store/auth";
 import * as lookingGlassService from "../services/lookingGlassService";
 
 const OAuthPage: React.FC = () => {
   const moduleId = useParams().moduleId!;
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const isAuthed = useAuthStore((state) => moduleId in state.authByModule);
-  const module = useModulesStore(useCallback((state) => state.modules.find((m) => m.id === moduleId)!, [moduleId]));
+  const authContext = useContext(AuthContext);
+  const moduleContext = useContext(ModuleContext);
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
+
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const isAuthed = moduleId in authContext.auth;
   const returnUrl = searchParams.get("returnUrl")!;
+
+  // effect to set window title
+  useEffect(() => {
+    window.electronAPI.setTitle(module?.name);
+  }, []);
 
   function handleClose() {
     navigate(-1);
   }
 
   async function handleSubmit() {
-    if (!module.oAuthUrl) {
+    if (!module?.oAuthUrl) {
       return;
     }
 
@@ -38,8 +45,8 @@ const OAuthPage: React.FC = () => {
 
     try {
       const code = await window.electronAPI.oauth(module.oAuthUrl);
-      const response = await lookingGlassService.authorize(moduleId, code);
-      setAuth(moduleId, response);
+      const value = await lookingGlassService.authorize(moduleId, code);
+      authContext.setAuth({ moduleId, value });
     } catch (error: unknown) {
       setError(error as Error);
     } finally {
@@ -63,7 +70,7 @@ const OAuthPage: React.FC = () => {
         </Avatar>
 
         <Typography component="h1" variant="h5" sx={{ mt: 3 }}>
-          Authorize using {module.name} OAuth
+          Authorize using {module?.name} OAuth
         </Typography>
 
         {error && (

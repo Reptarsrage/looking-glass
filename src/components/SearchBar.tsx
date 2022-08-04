@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { useLocation } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { styled, alpha } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 
-import { useModalStore } from "../store/modal";
+import { FullscreenContext } from "../store/fullscreen";
 import useAppSearchParams from "../hooks/useAppSearchParams";
 import useDebounce from "../hooks/useDebounce";
 
@@ -52,9 +53,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const SearchBar: React.FC = () => {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useAppSearchParams();
-  const modalIsOpen = useModalStore((state) => state.modalIsOpen);
+  const { fullscreen } = useContext(FullscreenContext);
   const [query, setQuery] = useState(searchParams.query);
+  const isShown = /^\/(search|gallery)/.test(location.pathname);
 
   // Keep state in parity with search params
   useEffect(() => {
@@ -77,7 +80,7 @@ const SearchBar: React.FC = () => {
   };
 
   return (
-    <Fade in={!modalIsOpen}>
+    <Fade in={!fullscreen && isShown}>
       <Search>
         <SearchIconWrapper>
           <SearchIcon />

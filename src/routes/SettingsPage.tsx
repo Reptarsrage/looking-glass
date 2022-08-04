@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
@@ -14,28 +15,28 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { PreferredTheme, useSettingsStore } from "../store/settings";
+import { PreferredTheme, SettingsContext } from "../store/settings";
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const videoAutoPlay = useSettingsStore((state) => state.videoAutoPlay);
-  const videoLowDataMode = useSettingsStore((state) => state.videoLowDataMode);
-  const pictureLowDataMode = useSettingsStore((state) => state.pictureLowDataMode);
-  const masonryColumnCount = useSettingsStore((state) => state.masonryColumnCount);
-  const preferredTheme = useSettingsStore((state) => state.preferredTheme);
-  const update = useSettingsStore((state) => state.update);
+  const settings = useContext(SettingsContext);
+
+  const { videoAutoPlay, videoLowDataMode, pictureLowDataMode, masonryColumnCount, preferredTheme } = settings.settings;
 
   const onChecked = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    update({ [event.currentTarget.name]: checked });
+    settings.setSettings({
+      ...settings.settings,
+      [event.currentTarget.name]: checked,
+    });
   };
 
   const onChange = (name: string) => (event: Event, value: number | number[]) => {
-    update({ [name]: value });
+    settings.setSettings({ ...settings.settings, [name]: value });
   };
 
   const onThemeChange = (event: SelectChangeEvent<PreferredTheme>) => {
     if (typeof event.target.value !== "string") {
-      update({ preferredTheme: event.target.value });
+      settings.setSettings({ ...settings.settings, preferredTheme: event.target.value });
     }
   };
 
@@ -46,7 +47,7 @@ const SettingsPage: React.FC = () => {
   return (
     <Container component="main" maxWidth="xs" sx={{ pt: 4 }}>
       <Zoom in unmountOnExit>
-        <Fab color="default" onClick={onClick} sx={{ position: "absolute", top: "72px", right: "8px" }}>
+        <Fab color="default" onClick={onClick} sx={{ position: "absolute", right: "8px" }}>
           <CloseIcon />
         </Fab>
       </Zoom>

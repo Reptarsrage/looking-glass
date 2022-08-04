@@ -23,6 +23,9 @@ export interface NavigationOptions {
 
 export type SetAppSearchParamsFn = (params: SetAppSearchParams, navigateOptions?: NavigationOptions) => void;
 
+/**
+ * gets and sets app-specific query parameters
+ */
 const useAppSearchParams = (): [AppSearchParams, SetAppSearchParamsFn] => {
   const [searchParams, setSearchParams] = useSearchParams();
 

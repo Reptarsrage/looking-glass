@@ -1,25 +1,34 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { useAuthStore } from "../store/auth";
+import { AuthContext } from "../store/auth";
 import * as lookingGlassService from "../services/lookingGlassService";
+import { ModuleContext } from "../store/module";
 
 const ImplicitAuthPage: React.FC = () => {
   const moduleId = useParams().moduleId!;
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const isAuthed = useAuthStore((state) => moduleId in state.authByModule);
+  const authContext = useContext(AuthContext);
+  const moduleContext = useContext(ModuleContext);
+  const isAuthed = moduleId in authContext.auth;
   const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
+
   const returnUrl = searchParams.get("returnUrl")!;
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+
+  // effect to set window title
+  useEffect(() => {
+    window.electronAPI.setTitle(module?.name);
+  }, []);
 
   useEffect(() => {
     async function login() {
       try {
-        const response = await lookingGlassService.login(moduleId);
-        setAuth(moduleId, response);
+        const value = await lookingGlassService.login(moduleId);
+        authContext.setAuth({ moduleId, value });
         navigate(returnUrl, { replace: true });
       } catch (error: unknown) {
         setError(error as Error);

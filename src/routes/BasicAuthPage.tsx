@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Visibility from "@mui/icons-material/Visibility";
@@ -18,30 +18,37 @@ import Box from "@mui/material/Box";
 import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useModulesStore } from "../store/module";
-import { useAuthStore } from "../store/auth";
+import { ModuleContext } from "../store/module";
+import { AuthContext } from "../store/auth";
 import * as lookingGlassService from "../services/lookingGlassService";
 
 const BasicAuthPage: React.FC = () => {
   const navigate = useNavigate();
   const moduleId = useParams().moduleId!;
   const [searchParams] = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl")!;
-  const isAuthed = useAuthStore((state) => moduleId in state.authByModule);
-  const module = useModulesStore(useCallback((state) => state.modules.find((m) => m.id === moduleId)!, [moduleId]));
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const moduleContext = useContext(ModuleContext);
+  const authContext = useContext(AuthContext);
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const returnUrl = searchParams.get("returnUrl")!;
+  const isAuthed = moduleId in authContext.auth;
+
+  // effect to set window title
+  useEffect(() => {
+    window.electronAPI.setTitle(module?.name);
+  }, []);
+
   async function login() {
     setFetching(true);
 
     try {
-      const response = await lookingGlassService.login(moduleId, username, password);
-      setAuth(moduleId, response);
+      const value = await lookingGlassService.login(moduleId, username, password);
+      authContext.setAuth({ moduleId, value });
     } catch (error: unknown) {
       setError(error as Error);
     } finally {
@@ -86,7 +93,7 @@ const BasicAuthPage: React.FC = () => {
         </Avatar>
 
         <Typography component="h1" variant="h5" sx={{ mt: 3 }}>
-          Sign in to {module.name}
+          Sign in to {module?.name}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit}>

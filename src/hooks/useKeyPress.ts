@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 
+/**
+ * runs given callback when the give key is pressed
+ */
 const useKeyPress = (targetKey: string, callback: () => void) => {
   const handler = (event: KeyboardEvent) => {
     if (event.key === targetKey && callback) {
