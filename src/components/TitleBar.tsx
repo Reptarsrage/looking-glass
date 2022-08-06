@@ -6,11 +6,8 @@ import NavigationControls from "./NavigationControls";
 import SearchBar from "./SearchBar";
 
 const TitleBarContainer = styled("header")(({ theme }) => ({
-  display: "block",
   position: "sticky",
   top: 0,
-  height: "64px",
-  width: "100%",
   background: theme.palette.grey[900],
   color: theme.palette.getContrastText(theme.palette.grey[900]),
   boxShadow: (theme.shadows as any)[3],
@@ -18,8 +15,7 @@ const TitleBarContainer = styled("header")(({ theme }) => ({
 }));
 
 const DragRegion = styled("div")(({ theme }) => ({
-  width: "100%",
-  height: "100%",
+  height: "64px",
   WebkitAppRegion: "drag",
   display: "flex",
   alignItems: "center",

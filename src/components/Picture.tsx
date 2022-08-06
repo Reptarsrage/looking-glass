@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { memo, forwardRef } from "react";
 import styled from "@mui/system/styled";
 
 const Img = styled("img")({
@@ -14,36 +14,16 @@ interface Source {
   height: number;
 }
 
-interface PictureProps extends React.HTMLAttributes<HTMLPictureElement> {
+interface PictureProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   source: Source;
-  alt: string;
-  width: number;
-  height: number;
 }
 
-const Picture: React.FC<PictureProps> = ({ source, alt, width, height, ...passThroughProps }) => {
-  const imageRef = useRef<HTMLImageElement>(null);
-
-  // Unload image so chrome stops loading it when it does off page
-  useEffect(() => {
-    const imageElement = imageRef.current;
-
-    if (imageElement != null) {
-      if (!imageElement.hasAttribute("src")) {
-        imageElement.setAttribute("src", source.url);
-      }
-
-      return () => {
-        imageElement.removeAttribute("src");
-      };
-    }
-  }, []);
-
+const Picture = forwardRef<HTMLImageElement, PictureProps>(({ source, ...passThroughProps }, imageRef) => {
   if (!source) {
     return null;
   }
 
-  return <Img {...passThroughProps} ref={imageRef} src={source.url} alt={alt} width={width} height={height} />;
-};
+  return <Img {...passThroughProps} ref={imageRef} src={source.url} />;
+});
 
-export default Picture;
+export default memo(Picture, (prev, next) => prev.source === next.source);

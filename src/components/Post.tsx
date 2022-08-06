@@ -7,9 +7,10 @@ import type { Post } from "../store/gallery";
 
 interface PostProps {
   post: Post;
+  interactable?: boolean;
 }
 
-const PostElt: React.FC<PostProps> = ({ post }) => {
+const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
   const { isVideo, urls, poster, width, height, name } = post;
   const sortedUrls = useMemo(() => [...urls].sort((a, b) => a.width - b.width), [urls]);
   const [curIndex] = useState(sortedUrls.length - 1);
@@ -17,12 +18,25 @@ const PostElt: React.FC<PostProps> = ({ post }) => {
   return (
     <Paper elevation={4} sx={{ borderRadius: 2, height: "100%", overflow: "hidden" }}>
       {isVideo ? (
-        <Video controls loop poster={poster} width={width} height={height} source={sortedUrls[curIndex]} />
+        <Video
+          loop
+          controls={interactable}
+          muted={!interactable}
+          autoPlay
+          poster={poster}
+          width={width}
+          height={height}
+          source={sortedUrls[curIndex]}
+        />
       ) : (
-        <Picture source={sortedUrls[curIndex]} alt={name} width={width} height={height} />
+        <Picture loading="lazy" source={sortedUrls[curIndex]} alt={name} width={width} height={height} />
       )}
     </Paper>
   );
 };
 
-export default memo(PostElt, (prev, next) => prev.post.id === next.post.id);
+PostElt.defaultProps = {
+  interactable: false,
+};
+
+export default memo(PostElt, (prev, next) => prev.post.id === next.post.id && prev.interactable === next.interactable);

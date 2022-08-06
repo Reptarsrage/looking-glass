@@ -24,7 +24,7 @@ import * as lookingGlassService from "../services/lookingGlassService";
 
 const BasicAuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const moduleId = useParams().moduleId!;
+  const { moduleId = "" } = useParams();
   const [searchParams] = useSearchParams();
   const moduleContext = useContext(ModuleContext);
   const authContext = useContext(AuthContext);

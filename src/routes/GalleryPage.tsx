@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -17,28 +17,22 @@ const GalleryPage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const fullscreenContext = useContext(FullscreenContext);
 
-  // effect to hide/show full screen elements like nav buttons and search
-  useEffect(() => {
-    fullscreenContext.setFullscreen(drawerOpen);
-  }, [drawerOpen]);
+  function onOpen() {
+    setDrawerOpen(true);
+    fullscreenContext.setFullscreen(true);
+  }
 
-  function onItemClicked() {
+  function onClose() {
     setDrawerOpen(false);
+    fullscreenContext.setFullscreen(false);
   }
 
   return (
     <ModalProvider>
       <Modal />
 
-      <MuiDrawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        ModalProps={{
-          keepMounted: true,
-        }}
-      >
-        <SectionedTagsList overscanCount={3} onItemClicked={onItemClicked} />
+      <MuiDrawer anchor="right" open={drawerOpen} onClose={onClose}>
+        <SectionedTagsList overscanCount={3} onItemClicked={onClose} />
       </MuiDrawer>
 
       <Box sx={{ display: "flex", p: 0.5 }}>
@@ -47,7 +41,7 @@ const GalleryPage: React.FC = () => {
         <Stack direction="row" spacing={2} sx={{ marginLeft: "auto" }}>
           <SortBy />
 
-          <Button onClick={() => setDrawerOpen(true)} startIcon={<TuneIcon />}>
+          <Button onClick={onOpen} startIcon={<TuneIcon />}>
             Filter By
           </Button>
         </Stack>

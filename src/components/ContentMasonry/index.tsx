@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
 import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { Gallery, GalleryContext, Post } from "../../store/gallery";
@@ -38,8 +37,7 @@ function flattenPages(data: InfiniteData<Gallery> | undefined): Post[] {
 
 const ContentMasonry: React.FC = () => {
   // Use the location to determine what to render
-  const { moduleId = "" } = useParams();
-  const [{ query, sort, filters, galleryId }] = useAppSearchParams();
+  const [{ query, sort, filters, galleryId, moduleId }] = useAppSearchParams();
   const authContext = useContext(AuthContext);
   const galleryContext = useContext(GalleryContext);
   const moduleContext = useContext(ModuleContext);
@@ -77,6 +75,7 @@ const ContentMasonry: React.FC = () => {
     fetchGallery,
     {
       onSuccess: (data) => {
+        console.log("HYDRATE!");
         const flattened = flattenPages(data);
         galleryContext.setPosts(flattened);
         tagContext.addTags({ moduleId, value: flattened.map((post) => post.filters).flat() });

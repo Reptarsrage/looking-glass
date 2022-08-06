@@ -5,6 +5,7 @@ interface State {
   modalIsExited: boolean;
   modalItem: string | null;
   modalBoundingRect: DOMRect | null;
+  modalCloseCallback: (() => void) | null;
 }
 
 interface OpenModalAction {
@@ -24,6 +25,7 @@ interface SetModalItemAction {
 
 interface CloseModalAction {
   type: "CLOSE_MODAL";
+  payload?: () => void;
 }
 
 interface ExitModalAction {
@@ -42,6 +44,7 @@ const initialState: State = {
   modalIsExited: true,
   modalItem: null,
   modalBoundingRect: null,
+  modalCloseCallback: null,
 };
 
 function reducer(state: State = initialState, action: Action) {
@@ -69,6 +72,7 @@ function reducer(state: State = initialState, action: Action) {
     }
     case "CLOSE_MODAL": {
       draft.modalIsOpen = false;
+      draft.modalCloseCallback = action.payload ?? null;
       break;
     }
     case "EXIT_MODAL": {

@@ -36,11 +36,11 @@ function VirtualizedMasonry({ children, items, loadMore, scrollToItem }: Virtual
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const setIsScrollingDebounced = useDebounce(setIsScrolling);
 
-  // Effect to keep track of scroll position as window scrolls
+  // Effect to keep track of scroll position as document body scrolls
   useEffect(() => {
     function onScroll() {
-      const { scrollY } = window;
-      const { offsetTop = 0 } = containerRef.current ?? {};
+      const scrollY = document.body.scrollTop;
+      const offsetTop = containerRef.current?.offsetTop ?? 0;
       const newScrollOffset = Math.max(0, scrollY - offsetTop);
       const newScrolDirection = scrollOffset < newScrollOffset ? "forward" : "backward";
 
@@ -51,10 +51,10 @@ function VirtualizedMasonry({ children, items, loadMore, scrollToItem }: Virtual
       setIsScrollingDebounced(false);
     }
 
-    // use window scroll!
-    window.addEventListener("scroll", onScroll);
+    // use document body scroll!
+    document.body.addEventListener("scroll", onScroll);
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      document.body.removeEventListener("scroll", onScroll);
     };
   });
 

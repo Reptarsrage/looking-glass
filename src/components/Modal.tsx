@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useContext } from "react";
+import React, { useEffect, useMemo, useState, useContext, forwardRef } from "react";
 import MuiModal from "@mui/material/Modal";
 import Backdrop from "@mui/material/Backdrop";
 import styled from "@mui/system/styled";
@@ -12,6 +12,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Link from "@mui/material/Link";
 import MuiDrawer from "@mui/material/Drawer";
+import Box from "@mui/material/Box";
 
 import Slideshow from "./Slideshow";
 import ZoomFromTo from "./ZoomFromTo";
@@ -80,32 +81,157 @@ function clampImageDimensions(width: number, height: number, maxHeight: number, 
   return { width: clampWidth, height: clampHeight };
 }
 
+interface CustomRootProps {
+  onModalClose: () => void;
+  entering: boolean;
+  children?: React.ReactNode;
+}
+
+const CustomRoot = forwardRef<HTMLDivElement, CustomRootProps>(
+  ({ onModalClose, entering, children, ...passThroughProps }, ref) => {
+    const theme = useTheme();
+    const [searchParams, setSearchParams] = useAppSearchParams();
+
+    const galleryContext = useContext(GalleryContext);
+    const modalContext = useContext(ModalContext);
+    const fullscreenContext = useContext(FullscreenContext);
+    const open = modalContext.state.modalIsOpen;
+    const postId = modalContext.state.modalItem;
+    const closeModal = (payload: () => void) => modalContext.dispatch({ type: "CLOSE_MODAL", payload });
+    const post = galleryContext.posts.find((post) => post.id === postId);
+
+    const [showCaption, setShowCaption] = useState(true);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    // effect to hide/show full screen elements like nav buttons and search
+    useEffect(() => {
+      fullscreenContext.setFullscreen(drawerOpen || open);
+    }, [drawerOpen, open]);
+
+    function onCaptionToggled() {
+      setShowCaption((s) => !s);
+    }
+
+    function onItemClicked() {
+      setDrawerOpen(false);
+    }
+
+    function onAuthorClicked() {
+      if (post?.author && searchParams.filters.indexOf(post.author.id) < 0) {
+        searchParams.filters.push(post.author.id);
+      }
+
+      closeModal(() => setSearchParams(searchParams));
+    }
+
+    function onSourceClicked() {
+      if (post?.source && searchParams.filters.indexOf(post.source.id) < 0) {
+        searchParams.filters.push(post.source.id);
+      }
+
+      closeModal(() => setSearchParams(searchParams));
+    }
+
+    function onMenuClicked() {
+      setDrawerOpen(true);
+    }
+
+    const subCaptions = [
+      post?.author && (
+        <span key="author">
+          by{" "}
+          <Link role="button" sx={{ cursor: "pointer" }} onClick={onAuthorClicked}>
+            {post.author.name}
+          </Link>
+        </span>
+      ),
+      post?.source && (
+        <span key="source">
+          to{" "}
+          <Link role="button" sx={{ cursor: "pointer" }} onClick={onSourceClicked}>
+            {post.source.name}
+          </Link>
+        </span>
+      ),
+      post?.date && <span key="date">on {new Date(post.date).toLocaleString()}</span>,
+    ]
+      .filter(Boolean)
+      .reduce((prev, curr) => [...prev, " ", curr], [] as React.ReactNode[]);
+
+    return (
+      <Box ref={ref} {...passThroughProps}>
+        {/* Toggle Caption Button */}
+        <Zoom in={open} unmountOnExit>
+          <ToggleCaptionButton
+            onClick={onCaptionToggled}
+            sx={{ opacity: showCaption ? undefined : "0.5" }}
+            data-testid="showCaption"
+          >
+            {showCaption ? <VisibilityIcon /> : <VisibilityOffIcon />}
+          </ToggleCaptionButton>
+        </Zoom>
+
+        {/* Caption */}
+        {showCaption && post && (
+          <Fade in={open} unmountOnExit>
+            <Caption>
+              <Typography variant="h4" sx={{ minHeight: "1em" }}>
+                {post.name || "UNTITLED"}
+              </Typography>
+              <Typography sx={{ color: "palette.grey[400]" }} variant="subtitle1">
+                {subCaptions}
+              </Typography>
+              {post.description && (
+                <Typography sx={{ color: "palette.grey[400]" }} variant="subtitle1">
+                  {post.description}
+                </Typography>
+              )}
+            </Caption>
+          </Fade>
+        )}
+
+        {/* Close Button */}
+        <Zoom in={open} unmountOnExit>
+          <CloseButton color="default" onClick={onModalClose}>
+            <CloseIcon />
+          </CloseButton>
+        </Zoom>
+
+        {/* Menu Button */}
+        <Zoom in={open && !entering} unmountOnExit>
+          <MenuButton color="default" onClick={onMenuClicked}>
+            <MenuIcon />
+          </MenuButton>
+        </Zoom>
+
+        {/* Drawer */}
+        <MuiDrawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+          <PostTagsList overscanCount={3} postTags={post?.filters ?? []} onItemClicked={onItemClicked} />
+        </MuiDrawer>
+
+        {children}
+      </Box>
+    );
+  }
+);
+
 const Modal: React.FC = () => {
   const theme = useTheme();
-  const [searchParams, setSearchParams] = useAppSearchParams();
 
   const galleryContext = useContext(GalleryContext);
   const modalContext = useContext(ModalContext);
-  const fullscreenContext = useContext(FullscreenContext);
   const open = modalContext.state.modalIsOpen;
   const boundingRect = modalContext.state.modalBoundingRect;
   const postId = modalContext.state.modalItem;
+  const modalCloseCallback = modalContext.state.modalCloseCallback;
   const closeModal = () => modalContext.dispatch({ type: "CLOSE_MODAL" });
   const exitModal = () => modalContext.dispatch({ type: "EXIT_MODAL" });
   const post = galleryContext.posts.find((post) => post.id === postId);
 
   const [entered, setEntered] = useState(false);
   const [entering, setEntering] = useState(false);
-  const [exiting, setExiting] = useState(false);
-  const [showCaption, setShowCaption] = useState(true);
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useKeyPress("Escape", onModalClose);
-
-  // effect to hide/show full screen elements like nav buttons and search
-  useEffect(() => {
-    fullscreenContext.setFullscreen(drawerOpen || open);
-  }, [drawerOpen, open]);
 
   function onModalEntering() {
     setEntering(true);
@@ -121,45 +247,14 @@ const Modal: React.FC = () => {
   }
 
   function onModalExiting() {
-    setExiting(true);
     setEntered(false);
   }
 
   function onModalExited() {
     exitModal();
-    setExiting(false);
-  }
-
-  function onCaptionToggled() {
-    setShowCaption((s) => !s);
-  }
-
-  function onItemClicked() {
-    setDrawerOpen(false);
-  }
-
-  function onAuthorClicked() {
-    if (post?.author && searchParams.filters.indexOf(post.author.id) < 0) {
-      searchParams.filters.push(post.author.id);
+    if (modalCloseCallback !== null) {
+      modalCloseCallback();
     }
-
-    closeModal();
-    exitModal();
-    setSearchParams(searchParams);
-  }
-
-  function onSourceClicked() {
-    if (post?.source && searchParams.filters.indexOf(post.source.id) < 0) {
-      searchParams.filters.push(post.source.id);
-    }
-
-    closeModal();
-    exitModal();
-    setSearchParams(searchParams);
-  }
-
-  function onMenuClicked() {
-    setDrawerOpen(true);
   }
 
   const [from, to] = useMemo(() => {
@@ -193,95 +288,29 @@ const Modal: React.FC = () => {
     return [from, to];
   }, [open, boundingRect]);
 
-  const subCaptions = [
-    post?.author && (
-      <span key="author">
-        by{" "}
-        <Link role="button" sx={{ cursor: "pointer" }} onClick={onAuthorClicked}>
-          {post.author.name}
-        </Link>
-      </span>
-    ),
-    post?.source && (
-      <span key="source">
-        to{" "}
-        <Link role="button" sx={{ cursor: "pointer" }} onClick={onSourceClicked}>
-          {post.source.name}
-        </Link>
-      </span>
-    ),
-    post?.date && <span key="date">on {new Date(post.date).toLocaleString()}</span>,
-  ]
-    .filter(Boolean)
-    .reduce((prev, curr) => [...prev, " ", curr], [] as React.ReactNode[]);
-
-  console.log("MODLA", { postId, post, open, boundingRect });
-  if (!post) {
-    return null;
-  }
-
   return (
     <>
-      {/* Toggle Caption Button */}
-      <Zoom in={open} unmountOnExit>
-        <ToggleCaptionButton onClick={onCaptionToggled} sx={{ opacity: showCaption ? undefined : "0.5" }}>
-          {showCaption ? <VisibilityIcon /> : <VisibilityOffIcon />}
-        </ToggleCaptionButton>
-      </Zoom>
-
-      {/* Caption */}
-      {showCaption && post && (
-        <Fade in={open} unmountOnExit>
-          <Caption>
-            <Typography variant="h4" sx={{ minHeight: "1em" }}>
-              {post.name || "UNTITLED"}
-            </Typography>
-            <Typography sx={{ color: "palette.grey[400]" }} variant="subtitle1">
-              {subCaptions}
-            </Typography>
-            {post.description && (
-              <Typography sx={{ color: "palette.grey[400]" }} variant="subtitle1">
-                {post.description}
-              </Typography>
-            )}
-          </Caption>
-        </Fade>
-      )}
-
-      {/* Close Button */}
-      <Zoom in={open} unmountOnExit>
-        <CloseButton color="default" onClick={onModalClose}>
-          <CloseIcon />
-        </CloseButton>
-      </Zoom>
-
-      {/* Menu Button */}
-      <Zoom in={open && !entering} unmountOnExit>
-        <MenuButton color="default" onClick={onMenuClicked}>
-          <MenuIcon />
-        </MenuButton>
-      </Zoom>
-
-      {/* Drawer */}
-      <MuiDrawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <PostTagsList overscanCount={3} postTags={post.filters} onItemClicked={onItemClicked} />
-      </MuiDrawer>
-
       {/* Modal Content */}
       <MuiModal
         open={open}
         onClose={onModalClose}
         disableRestoreFocus
-        BackdropComponent={Backdrop}
+        components={{
+          Backdrop,
+          Root: CustomRoot,
+        }}
+        componentsProps={{
+          backdrop: { style: { backgroundColor: theme.palette.background.paper } },
+          root: { entering, onModalClose } as any,
+        }}
         sx={{ top: TitleBarHeight }}
-        BackdropProps={{ style: { backgroundColor: theme.palette.background.paper } }}
       >
         <ZoomFromTo
           in={open}
           to={open ? to : from}
           from={from}
           tabIndex={-1}
-          position={!entered ? "fixed" : "unset"}
+          position={!entered ? "fixed" : undefined}
           onExited={onModalExited}
           onEnter={onModalEntering}
           onEntered={onModalEntered}

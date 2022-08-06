@@ -1,5 +1,4 @@
 import { memo, useContext } from "react";
-import { useParams } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 
@@ -18,17 +17,14 @@ interface SectionItemProps {
 const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index, onClick }) => {
   const [searchParams, setSearchParams] = useAppSearchParams();
   const modalContext = useContext(ModalContext);
-  const fullscreenContext = useContext(FullscreenContext);
   const moduleContext = useContext(ModuleContext);
   const tagSections = useContext(TagsContext);
-  const moduleId = useParams().moduleId!;
 
-  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const module = moduleContext.modules.find((m) => m.id === searchParams.moduleId);
   const supportsGalleryFilters = module?.supportsGalleryFilters ?? false;
   const section = tagSections[sectionId];
   const item = section.items[index];
-  const closeModal = () => modalContext.dispatch({ type: "CLOSE_MODAL" });
-  const exitModal = () => modalContext.dispatch({ type: "EXIT_MODAL" });
+  const closeModal = (payload: () => void) => modalContext.dispatch({ type: "CLOSE_MODAL", payload });
 
   const handleClick = () => {
     if (searchParams.filters.indexOf(item.id) >= 0) {
@@ -44,15 +40,11 @@ const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index, onClick }) 
       filters = [item.id];
     }
 
-    closeModal();
-    exitModal();
-    fullscreenContext.setFullscreen(false);
-
     if (onClick) {
       onClick();
     }
 
-    setSearchParams({ ...searchParams, galleryId, query, filters });
+    closeModal(() => setSearchParams({ ...searchParams, galleryId, query, filters }));
   };
 
   const itemHeight = 48;

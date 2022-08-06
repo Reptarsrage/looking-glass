@@ -1,5 +1,5 @@
-import { lazy, useMemo, Suspense, useContext } from "react";
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { useMemo, Suspense, useContext } from "react";
+import { HashRouter } from "react-router-dom";
 import Box from "@mui/material/Box";
 import createTheme, { ThemeOptions } from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -11,21 +11,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ErrorBoundary from "./components/ErrorBoundary";
 import TitleBar from "./components/TitleBar";
 import AnErrorOccurred from "./components/Status/AnErrorOccurred";
-import NotFound from "./components/Status/NotFound";
+import Router from "./Router";
 import { AuthProvider } from "./store/auth";
 import { PreferredTheme, SettingsContext } from "./store/settings";
 import { ModuleProvider } from "./store/module";
-import { TagProvider } from "./store/tag";
 import { FullscreenProvider } from "./store/fullscreen";
+import { TagProvider } from "./store/tag";
 import { GalleryProvider } from "./store/gallery";
-
-// Dynamic routes
-const HomePage = lazy(() => import("./routes/HomePage"));
-const GalleryPage = lazy(() => import("./routes/GalleryPage"));
-const OAuthPage = lazy(() => import("./routes/OAuthPage"));
-const BasicAuthPage = lazy(() => import("./routes/BasicAuthPage"));
-const ImplicitAuthPage = lazy(() => import("./routes/ImplicitAuthPage"));
-const SettingsPage = lazy(() => import("./routes/SettingsPage"));
 
 // https://material-ui.com/customization/palette/
 const darkTheme: ThemeOptions = {
@@ -78,7 +70,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
       refetchOnReconnect: false,
     },
   },
@@ -106,7 +97,7 @@ const App: React.FC = () => {
           <HashRouter>
             <TitleBar />
 
-            <Box sx={{ flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <Box sx={{ flex: "1", display: "flex", flexDirection: "column" }}>
               <ErrorBoundary fallback={<AnErrorOccurred />}>
                 <Suspense
                   fallback={
@@ -117,19 +108,7 @@ const App: React.FC = () => {
                 >
                   <ModuleProvider>
                     <AuthProvider>
-                      <GalleryProvider>
-                        <TagProvider>
-                          <Routes>
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/settings" element={<SettingsPage />} />
-                            <Route path="/gallery/:moduleId" element={<GalleryPage />} />
-                            <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
-                            <Route path="/oauth/:moduleId" element={<OAuthPage />} />
-                            <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
-                            <Route path="*" element={<NotFound />} />
-                          </Routes>
-                        </TagProvider>
-                      </GalleryProvider>
+                      <Router />
                     </AuthProvider>
                   </ModuleProvider>
                 </Suspense>

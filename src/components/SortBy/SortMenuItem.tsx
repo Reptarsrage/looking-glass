@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { useParams } from "react-router-dom";
 import Popover from "@mui/material/Popover";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -20,9 +19,8 @@ interface SortMenuItemProps {
 const SortMenuItem: React.FC<SortMenuItemProps> = ({ id, onClick }) => {
   const [searchParams, setSearchParams] = useAppSearchParams();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const moduleId = useParams().moduleId!;
   const moduleContext = useContext(ModuleContext);
-  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const module = moduleContext.modules.find((m) => m.id === searchParams.moduleId);
   const sortValue = module?.sort.find((sort) => sort.id === id);
   const nestedValues = module?.sort.filter((sort) => sort.parentId === id) ?? [];
 

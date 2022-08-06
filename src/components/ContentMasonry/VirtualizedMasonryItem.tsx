@@ -1,6 +1,8 @@
-import { useEffect, memo, useContext, useRef } from "react";
+import { useState, useEffect, memo, useContext, useRef } from "react";
 import FolderIcon from "@mui/icons-material/Folder";
 import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Popper from "@mui/material/Popper";
 
 import { MasonryItemProps } from "./VirtualizedMasonryColumn";
 import { ModalContext } from "../../store/modal";
@@ -14,6 +16,7 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
   const modalContext = useContext(ModalContext);
   const fullscreenContext = useContext(FullscreenContext);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { isGallery } = item;
   const isModalItem = modalContext.state.modalItem === item.id;
   const isHidden = isModalItem && !modalContext.state.modalIsExited;
@@ -48,16 +51,37 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
     }
   }
 
-  return (
-    <div ref={containerRef} style={{ ...style, visibility: isHidden ? "hidden" : undefined }} onClick={onClick}>
-      {isGallery && (
-        <Avatar sx={{ bgcolor: "rgba(0,0,0,0.3)", position: "absolute", top: 8, right: 8 }}>
-          <FolderIcon />
-        </Avatar>
-      )}
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-      <PostElt post={item} />
-    </div>
+  const handleMouseLeave = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        style={{ ...style, visibility: isHidden ? "hidden" : undefined }}
+        onClick={onClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        aria-describedby={item.id}
+      >
+        {isGallery && (
+          <Avatar sx={{ bgcolor: "rgba(0,0,0,0.3)", position: "absolute", top: 8, right: 8 }}>
+            <FolderIcon />
+          </Avatar>
+        )}
+
+        <PostElt post={item} />
+      </div>
+
+      <Popper id={item.id} open={anchorEl !== null} anchorEl={anchorEl} placement="top">
+        <Box sx={{ p: 1, bgcolor: "background.paper" }}>{item.name}</Box>
+      </Popper>
+    </>
   );
 };
 

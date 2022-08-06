@@ -40,7 +40,7 @@ interface TagListCommonProps {
 }
 
 const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
-  const moduleId = useParams().moduleId!;
+  const { moduleId = "" } = useParams();
   const moduleContext = useContext(ModuleContext);
   const authContext = useContext(AuthContext);
   const modalContext = useContext(ModalContext);
@@ -110,7 +110,7 @@ const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
 };
 
 const useSectionTags = (filter: string) => {
-  const moduleId = useParams().moduleId!;
+  const { moduleId = "" } = useParams();
   const authContext = useContext(AuthContext);
   const moduleContext = useContext(ModuleContext);
   const tagContext = useContext(TagContext);

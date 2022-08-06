@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
@@ -15,9 +14,8 @@ interface NestedSortMenuItemProps {
 
 const NestedSortMenuItem: React.FC<NestedSortMenuItemProps> = ({ id, onClick }) => {
   const [searchParams, setSearchParams] = useAppSearchParams();
-  const moduleId = useParams().moduleId!;
   const moduleContext = useContext(ModuleContext);
-  const module = moduleContext.modules.find((m) => m.id === moduleId);
+  const module = moduleContext.modules.find((m) => m.id === searchParams.moduleId);
   const sortValue = module?.sort.find((sort) => sort.id === id);
   const isSelected = searchParams.sort === sortValue?.id;
 

@@ -1,11 +1,13 @@
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useContext, useMemo } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import { RouteContext } from "../store/route";
 
 export interface AppSearchParams {
   filters: string[];
   query: string;
   sort: string;
   galleryId: string;
+  moduleId: string;
   toString: () => string;
 }
 
@@ -28,6 +30,10 @@ export type SetAppSearchParamsFn = (params: SetAppSearchParams, navigateOptions?
  */
 const useAppSearchParams = (): [AppSearchParams, SetAppSearchParamsFn] => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const params = useParams();
+
+  const routeContext = useContext(RouteContext);
+  const contextSearchParams = new URLSearchParams(routeContext.search);
 
   return useMemo(() => {
     const setAppSearchParams: SetAppSearchParamsFn = (params, navigateOptions) => {
@@ -54,11 +60,12 @@ const useAppSearchParams = (): [AppSearchParams, SetAppSearchParamsFn] => {
     };
 
     const appSearchParams: AppSearchParams = {
-      filters: searchParams.getAll("filters"),
-      query: searchParams.get("query") ?? "",
-      sort: searchParams.get("sort") ?? "",
-      galleryId: searchParams.get("galleryId") ?? "",
-      toString: () => searchParams.toString(),
+      filters: contextSearchParams.getAll("filters"),
+      query: contextSearchParams.get("query") ?? "",
+      sort: contextSearchParams.get("sort") ?? "",
+      galleryId: contextSearchParams.get("galleryId") ?? "",
+      moduleId: params.moduleId || "UNKNOWN_MODULE", // should always be set
+      toString: () => contextSearchParams.toString(),
     };
 
     return [appSearchParams, setAppSearchParams];

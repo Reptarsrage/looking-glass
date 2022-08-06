@@ -8,7 +8,7 @@ import * as lookingGlassService from "../services/lookingGlassService";
 import { ModuleContext } from "../store/module";
 
 const ImplicitAuthPage: React.FC = () => {
-  const moduleId = useParams().moduleId!;
+  const { moduleId = "" } = useParams();
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const moduleContext = useContext(ModuleContext);

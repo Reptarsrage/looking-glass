@@ -15,7 +15,7 @@ import { AuthContext } from "../store/auth";
 import * as lookingGlassService from "../services/lookingGlassService";
 
 const OAuthPage: React.FC = () => {
-  const moduleId = useParams().moduleId!;
+  const { moduleId = "" } = useParams();
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const moduleContext = useContext(ModuleContext);

@@ -8,9 +8,13 @@ import { TagContext } from "../store/tag";
 
 const Tag: React.FC<{ id: string; onDelete: () => void }> = ({ id, onDelete }) => {
   const tagContext = useContext(TagContext);
-  const moduleId = useParams().moduleId!;
-  const tag = tagContext.tags[moduleId].find((tag) => tag.id === id);
+  const { moduleId = "" } = useParams();
 
+  if (!(moduleId in tagContext.tags)) {
+    return null;
+  }
+
+  const tag = tagContext.tags[moduleId].find((tag) => tag.id === id);
   return <Chip label={tag?.name} onDelete={onDelete} sx={{ mr: 1 }} />;
 };
 

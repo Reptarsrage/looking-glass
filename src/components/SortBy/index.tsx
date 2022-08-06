@@ -9,7 +9,7 @@ import SortMenuItem from "./SortMenuItem";
 import { ModuleContext } from "../../store/module";
 
 const SortBy: React.FC = () => {
-  const moduleId = useParams().moduleId!;
+  const { moduleId = "" } = useParams();
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const moduleContext = useContext(ModuleContext);
   const module = moduleContext.modules.find((m) => m.id === moduleId);

@@ -154,9 +154,9 @@ function VirtualizedMasonryColumn({
     const itemTop = offsetTop + top;
     const itemBottom = itemTop + itemHeight;
     const destination = Math.max(0, offsetTop + top - window.innerHeight / 2);
-    if (itemBottom < window.scrollY || itemTop > window.scrollY + window.innerHeight) {
+    if (itemBottom < document.body.offsetTop || itemTop > document.body.offsetTop + window.innerHeight) {
       // item is completely off screen, scroll to it
-      window.scrollTo(0, destination);
+      document.body.scrollTo(0, destination);
     }
   }, [scrollToItem]);
 

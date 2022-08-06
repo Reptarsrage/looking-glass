@@ -1,25 +1,39 @@
 html,
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
-}
-
-body {
-  height: 100%;
+  overflow-x: hidden;
 }
 
 #root {
-  height: 100%;
   display: flex;
   flex-direction: column;
   padding: 0;
   margin: 0;
   position: relative;
+  min-height: 100%;
 }
 
 /* Disables annoying outlining of containers on focus */
 *:focus {
   outline: none;
+}
+
+.Router {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.Route {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 /* Fix drawer overlap with title bar */

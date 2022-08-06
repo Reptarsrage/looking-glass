@@ -222,7 +222,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
             key={i}
           >
             <PinchZoomPan width={post_width} height={post_height}>
-              <Post post={post} />
+              <Post post={post} interactable={!isZooming && pos === 0} />
             </PinchZoomPan>
           </Animated>
         );

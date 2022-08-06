@@ -1,29 +1,33 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
-import Zoom from "@mui/material/Zoom";
 
 import { Module, ModuleAuthType } from "../store/module";
+import { AuthContext } from "../store/auth";
 
 interface ModuleListItemProps {
   module: Module;
 }
 
 const ModuleListItem: React.FC<ModuleListItemProps> = ({ module }) => {
-  // Add default query params
+  const authContext = useContext(AuthContext);
   const defaultSort = module.sort.find((s) => s.isDefault);
+  const isAuthed = module.id in authContext.auth;
 
   // Determine url
   let url = `/gallery/${module.id}?sort=${defaultSort?.id}`;
-  const params = new URLSearchParams([["returnUrl", url]]);
-  if (module.authType === ModuleAuthType.OAuth) {
-    url = `/oauth/${module.id}?${params.toString()}`;
-  } else if (module.authType === ModuleAuthType.Implicit) {
-    url = `/implicit-auth/${module.id}?${params.toString()}`;
-  } else if (module.authType === ModuleAuthType.Basic) {
-    url = `/basic-auth/${module.id}?${params.toString()}`;
+  if (!isAuthed) {
+    const params = new URLSearchParams([["returnUrl", url]]);
+    if (module.authType === ModuleAuthType.OAuth) {
+      url = `/oauth/${module.id}?${params.toString()}`;
+    } else if (module.authType === ModuleAuthType.Implicit) {
+      url = `/implicit-auth/${module.id}?${params.toString()}`;
+    } else if (module.authType === ModuleAuthType.Basic) {
+      url = `/basic-auth/${module.id}?${params.toString()}`;
+    }
   }
 
   return (
