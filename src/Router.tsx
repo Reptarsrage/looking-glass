@@ -6,8 +6,6 @@ import NotFound from "./components/Status/NotFound";
 import useNavigationStack from "./hooks/useNavigationStack";
 import Loading from "./components/Status/Loading";
 import { RouteContext } from "./store/route";
-import { TagProvider } from "./store/tag";
-import { GalleryProvider } from "./store/gallery";
 
 // Dynamic routes
 const HomePage = lazy(() => import("./routes/HomePage"));
@@ -47,19 +45,15 @@ const Router: React.FC = () => {
         >
           <Suspense fallback={<Loading />}>
             <RouteContext.Provider value={location}>
-              <GalleryProvider>
-                <TagProvider>
-                  <Routes location={location}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    <Route path="/gallery/:moduleId" element={<GalleryPage />} />
-                    <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
-                    <Route path="/oauth/:moduleId" element={<OAuthPage />} />
-                    <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </TagProvider>
-              </GalleryProvider>
+              <Routes location={location}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/gallery/:moduleId" element={<GalleryPage />} />
+                <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
+                <Route path="/oauth/:moduleId" element={<OAuthPage />} />
+                <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </RouteContext.Provider>
           </Suspense>
         </animated.div>

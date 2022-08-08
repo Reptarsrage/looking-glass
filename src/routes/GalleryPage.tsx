@@ -5,6 +5,8 @@ import TuneIcon from "@mui/icons-material/Tune";
 import Stack from "@mui/material/Stack";
 import MuiDrawer from "@mui/material/Drawer";
 
+import { TagProvider } from "../store/tag";
+import { GalleryProvider } from "../store/gallery";
 import { ModalProvider } from "../store/modal";
 import { FullscreenContext } from "../store/fullscreen";
 import ContentMasonry from "../components/ContentMasonry";
@@ -28,29 +30,33 @@ const GalleryPage: React.FC = () => {
   }
 
   return (
-    <ModalProvider>
-      <Modal />
+    <GalleryProvider>
+      <TagProvider>
+        <ModalProvider>
+          <Modal />
 
-      <MuiDrawer anchor="right" open={drawerOpen} onClose={onClose}>
-        <SectionedTagsList overscanCount={3} onItemClicked={onClose} />
-      </MuiDrawer>
+          <MuiDrawer anchor="right" open={drawerOpen} onClose={onClose}>
+            <SectionedTagsList overscanCount={3} onItemClicked={onClose} />
+          </MuiDrawer>
 
-      <Box sx={{ display: "flex", p: 0.5 }}>
-        <CurrentlySelectedTags />
+          <Box sx={{ display: "flex", p: 0.5 }}>
+            <CurrentlySelectedTags />
 
-        <Stack direction="row" spacing={2} sx={{ marginLeft: "auto" }}>
-          <SortBy />
+            <Stack direction="row" spacing={2} sx={{ marginLeft: "auto" }}>
+              <SortBy />
 
-          <Button onClick={onOpen} startIcon={<TuneIcon />}>
-            Filter By
-          </Button>
-        </Stack>
-      </Box>
+              <Button onClick={onOpen} startIcon={<TuneIcon />}>
+                Filter By
+              </Button>
+            </Stack>
+          </Box>
 
-      <Box flex="1" overflow="hidden" display="flex" flexDirection="column">
-        <ContentMasonry />
-      </Box>
-    </ModalProvider>
+          <Box flex="1" overflow="hidden" display="flex" flexDirection="column">
+            <ContentMasonry />
+          </Box>
+        </ModalProvider>
+      </TagProvider>{" "}
+    </GalleryProvider>
   );
 };
 
