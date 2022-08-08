@@ -15,7 +15,6 @@ interface VirtualizedMasonryProps<TItemData> {
 interface Column {
   id: number;
   height: number;
-  isMin: boolean;
   items: Post[];
 }
 
@@ -64,22 +63,13 @@ function VirtualizedMasonry({ children, items, loadMore, scrollToItem }: Virtual
       id,
       height: 0,
       items: [],
-      isMin: false,
     }));
 
-    const columns = items.reduce((acc, cur) => {
-      // balance column heights
-      let min = Math.min(...acc.map((col) => col.height));
-      let minCol = acc.find((col) => col.height === min) ?? acc[0];
-      minCol.items.push(cur);
-      minCol.height += cur.height;
-
+    const columns = items.reduce((acc, cur, index) => {
+      acc[index % columnCount].items.push(cur);
+      acc[index % columnCount].height += cur.height;
       return acc;
     }, initial);
-
-    const minHeight = Math.min(...columns.map((c) => c.height));
-    const minCol = columns.findIndex((c) => c.height === minHeight);
-    columns[minCol].isMin = true;
 
     return columns;
   }, [items]);
@@ -107,7 +97,7 @@ function VirtualizedMasonry({ children, items, loadMore, scrollToItem }: Virtual
           overscanCount={overscanCount}
           estimatedItemSize={estimatedItemSize}
           scrollToItem={scrollToItem}
-          loadMore={column.isMin ? loadMore : undefined}
+          loadMore={loadMore}
         >
           {children}
         </VirtualizedMasonryColumn>

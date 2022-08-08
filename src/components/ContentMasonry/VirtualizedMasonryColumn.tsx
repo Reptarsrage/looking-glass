@@ -148,14 +148,13 @@ function VirtualizedMasonryColumn({
     }
 
     const itemStyle = getItemStyle(idx);
-    const offsetTop = containerRef.current?.offsetTop ?? 0;
-    const top = (itemStyle as any)?.top ?? 0;
     const itemHeight = (itemStyle as any)?.height ?? 0;
-    const itemTop = offsetTop + top;
+    const itemTop = (itemStyle as any)?.top ?? 0;
     const itemBottom = itemTop + itemHeight;
-    const destination = Math.max(0, offsetTop + top - window.innerHeight / 2);
-    if (itemBottom < document.body.offsetTop || itemTop > document.body.offsetTop + window.innerHeight) {
-      // item is completely off screen, scroll to it
+    const screenTop = document.body.scrollTop;
+    const screenBottom = screenTop + window.innerHeight;
+    const destination = Math.max(0, screenTop + (window.innerHeight - itemHeight) / 2);
+    if (!(itemBottom < screenBottom && itemBottom > screenTop) && !(itemTop < screenBottom && itemTop > screenTop)) {
       document.body.scrollTo(0, destination);
     }
   }, [scrollToItem]);
@@ -195,7 +194,15 @@ function VirtualizedMasonryColumn({
       }}
     >
       {itemsToRender}
-      <div ref={loadMoreRef} style={{ position: "absolute", top: estimatedTotalSize, height: 1 }}></div>
+      <div
+        ref={loadMoreRef}
+        style={{
+          position: "absolute",
+          top: Math.max(0, estimatedTotalSize - 5),
+          width: "100%",
+          height: 5,
+        }}
+      ></div>
     </div>
   );
 }

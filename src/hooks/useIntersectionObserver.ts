@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
 interface IntersectionObserverArgs {
-  enabled?: boolean;
-  onIntersect?: () => void;
-  root?: React.RefObject<HTMLElement>;
   target: React.RefObject<HTMLElement>;
+  onIntersect?: () => void;
+  enabled?: boolean;
+  root?: HTMLElement;
   rootMargin?: string;
   threshold?: number;
 }
@@ -13,39 +13,33 @@ interface IntersectionObserverArgs {
  * uses an IntersectionObserver to run the callback if a given DOM element appears on screen
  */
 export default function useIntersectionObserver({
-  enabled = true,
-  onIntersect,
-  root,
-  rootMargin = "0px",
   target,
-  threshold = 0.1,
+  onIntersect,
+  enabled = true,
+  root = window.document.body,
+  rootMargin = "0px",
+  threshold = 0.05,
 }: IntersectionObserverArgs) {
   useEffect(() => {
-    // if not enabled, or we are incapable or observing the target element, then short circuit
-    if (!enabled || onIntersect === undefined || target?.current === null) {
-      return;
+    function onIntersectCallback(entries: IntersectionObserverEntry[]) {
+      const [entry] = entries;
+      if (entry.isIntersecting && onIntersect) {
+        onIntersect();
+      }
     }
 
-    // configure intersection observer
-    const observer = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            onIntersect();
-          }
-        }),
-      {
-        root: root?.current,
+    if (enabled && target?.current) {
+      const observed = target.current;
+      const observer = new IntersectionObserver(onIntersectCallback, {
+        root,
         rootMargin,
         threshold,
-      }
-    );
+      });
 
-    // observe
-    const elt = target.current;
-    observer.observe(elt);
-    return () => {
-      observer.unobserve(elt);
-    };
-  }, [target.current, enabled]);
+      observer.observe(observed);
+      return () => {
+        observer.unobserve(observed);
+      };
+    }
+  }, [enabled, onIntersect, root, rootMargin, target, threshold]);
 }
