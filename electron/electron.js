@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen } = require("electron");
+const { app, BrowserWindow } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
 const os = require("os");
@@ -29,12 +29,9 @@ const createWindow = async (port) => {
   }
 
   // create the browser window.
-  const { bounds } = screen.getPrimaryDisplay();
   mainWindow = new BrowserWindow({
     show: false,
     title: app.name,
-    width: bounds.width,
-    height: bounds.height,
     titleBarStyle: "hidden",
     icon: path.resolve(__dirname, "..", "assets", "icon.png"),
     frame: false,
@@ -73,6 +70,7 @@ const createWindow = async (port) => {
   // wait until window is presentable to show
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
+    mainWindow.maximize();
 
     // open Dev Tools
     if (isDev) {
