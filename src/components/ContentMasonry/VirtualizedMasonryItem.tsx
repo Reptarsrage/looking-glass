@@ -17,18 +17,19 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
   const fullscreenContext = useContext(FullscreenContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { isGallery } = item;
-  const isModalItem = modalContext.state.modalItem === item.id;
+  const { isGallery, id, name } = item;
+  const isModalItem = modalContext.state.modalItem === id;
   const isHidden = isModalItem && !modalContext.state.modalIsExited;
   const isShown = isModalItem && modalContext.state.modalIsOpen;
+  const hasName = name.length > 0;
 
   // effect to update modal item bounds
   useEffect(() => {
     if (isShown && containerRef.current && !isScrolling) {
       const boundingRect = containerRef.current.getBoundingClientRect();
-      setModalItemBounds(boundingRect, item.id);
+      setModalItemBounds(boundingRect, id);
     }
-  }, [item.id, isShown, isScrolling]);
+  }, [id, isShown, isScrolling]);
 
   function setModalItemBounds(boundingRect: DOMRect, postId: string) {
     modalContext.dispatch({ type: "SET_MODAL_BOUNDS", payload: { boundingRect, postId } });
@@ -41,13 +42,13 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
 
   function onClick() {
     if (isGallery) {
-      setSearchParams({ ...searchParams, galleryId: item.id });
+      setSearchParams({ ...searchParams, galleryId: id });
       return;
     }
 
     if (containerRef.current) {
       const boundingRect = containerRef.current.getBoundingClientRect();
-      openModal(boundingRect, item.id);
+      openModal(boundingRect, id);
     }
   }
 
@@ -65,9 +66,9 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
         ref={containerRef}
         style={{ ...style, visibility: isHidden ? "hidden" : undefined }}
         onClick={onClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        aria-describedby={item.id}
+        onMouseEnter={hasName ? handleMouseEnter : undefined}
+        onMouseLeave={hasName ? handleMouseLeave : undefined}
+        aria-describedby={id}
       >
         {isGallery && (
           <Avatar sx={{ bgcolor: "rgba(0,0,0,0.3)", position: "absolute", top: 8, right: 8 }}>
@@ -78,9 +79,11 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
         <PostElt post={item} />
       </div>
 
-      <Popper id={item.id} open={anchorEl !== null} anchorEl={anchorEl} placement="top">
-        <Box sx={{ p: 1, bgcolor: "background.paper" }}>{item.name}</Box>
-      </Popper>
+      {hasName && (
+        <Popper id={id} open={anchorEl !== null} anchorEl={anchorEl} placement="top">
+          <Box sx={{ p: 1, bgcolor: "background.paper" }}>{name}</Box>
+        </Popper>
+      )}
     </>
   );
 };
