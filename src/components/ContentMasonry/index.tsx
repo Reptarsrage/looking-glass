@@ -75,7 +75,6 @@ const ContentMasonry: React.FC = () => {
     fetchGallery,
     {
       onSuccess: (data) => {
-        console.log("HYDRATE!");
         const flattened = flattenPages(data);
         galleryContext.setPosts(flattened);
         tagContext.addTags({ moduleId, value: flattened.map((post) => post.filters).flat() });
@@ -133,8 +132,8 @@ const ContentMasonry: React.FC = () => {
         </VirtualizedMasonry>
       )}
 
-      {/* Load more indicator (and trigger) */}
-      {hasNextPage && <Loading />}
+      {/* Loading indicator */}
+      {isLoading || (hasNextPage && <Loading />)}
 
       {/* End indicator */}
       {!hasNextPage && !isLoading && <TheEnd />}
