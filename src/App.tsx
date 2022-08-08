@@ -16,8 +16,7 @@ import { AuthProvider } from "./store/auth";
 import { PreferredTheme, SettingsContext } from "./store/settings";
 import { ModuleProvider } from "./store/module";
 import { FullscreenProvider } from "./store/fullscreen";
-import { TagProvider } from "./store/tag";
-import { GalleryProvider } from "./store/gallery";
+import { VolumeProvider } from "./store/volume";
 
 // https://material-ui.com/customization/palette/
 const darkTheme: ThemeOptions = {
@@ -93,28 +92,30 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={appliedTheme}>
         <FullscreenProvider>
-          <CssBaseline />
-          <HashRouter>
-            <TitleBar />
+          <VolumeProvider>
+            <CssBaseline />
+            <HashRouter>
+              <TitleBar />
 
-            <Box sx={{ flex: "1", display: "flex", flexDirection: "column" }}>
-              <ErrorBoundary fallback={<AnErrorOccurred />}>
-                <Suspense
-                  fallback={
-                    <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
-                      <CircularProgress size="6rem" />
-                    </Box>
-                  }
-                >
-                  <ModuleProvider>
-                    <AuthProvider>
-                      <Router />
-                    </AuthProvider>
-                  </ModuleProvider>
-                </Suspense>
-              </ErrorBoundary>
-            </Box>
-          </HashRouter>
+              <Box sx={{ flex: "1", display: "flex", flexDirection: "column" }}>
+                <ErrorBoundary fallback={<AnErrorOccurred />}>
+                  <Suspense
+                    fallback={
+                      <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
+                        <CircularProgress size="6rem" />
+                      </Box>
+                    }
+                  >
+                    <ModuleProvider>
+                      <AuthProvider>
+                        <Router />
+                      </AuthProvider>
+                    </ModuleProvider>
+                  </Suspense>
+                </ErrorBoundary>
+              </Box>
+            </HashRouter>
+          </VolumeProvider>
         </FullscreenProvider>
       </ThemeProvider>
     </QueryClientProvider>
