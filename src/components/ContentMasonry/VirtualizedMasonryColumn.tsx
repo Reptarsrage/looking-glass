@@ -45,6 +45,7 @@ export interface VirtualizedMasonryColumnProps<TItemData> {
   estimatedItemSize: number;
   gutter: number;
   loadMore?: () => void;
+  scrollTo: (y: number) => void;
   scrollToItem: string | null;
 }
 
@@ -66,6 +67,7 @@ function VirtualizedMasonryColumn({
   estimatedItemSize,
   gutter,
   loadMore,
+  scrollTo,
   scrollToItem,
 }: VirtualizedMasonryColumnProps<Post>) {
   const columnIndex = id;
@@ -149,11 +151,11 @@ function VirtualizedMasonryColumn({
     const itemHeight = (itemStyle as any)?.height ?? 0;
     const itemTop = (itemStyle as any)?.top ?? 0;
     const itemBottom = itemTop + itemHeight;
-    const screenTop = document.body.scrollTop;
+    const screenTop = scrollOffset;
     const screenBottom = screenTop + window.innerHeight;
     const destination = Math.max(0, screenTop + (window.innerHeight - itemHeight) / 2);
     if (!(itemBottom < screenBottom && itemBottom > screenTop) && !(itemTop < screenBottom && itemTop > screenTop)) {
-      document.body.scrollTo(0, destination);
+      scrollTo(destination);
     }
   }, [scrollToItem]);
 

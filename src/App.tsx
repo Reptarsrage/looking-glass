@@ -97,7 +97,7 @@ const App: React.FC = () => {
             <HashRouter>
               <TitleBar />
 
-              <Box sx={{ flex: "1", display: "flex", flexDirection: "column" }}>
+              <Box sx={{ flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 <ErrorBoundary fallback={<AnErrorOccurred />}>
                   <Suspense
                     fallback={

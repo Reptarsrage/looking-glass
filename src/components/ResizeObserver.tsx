@@ -9,7 +9,7 @@ export interface WithResizeProps {
   children: (size: Size) => React.ReactNode;
 }
 
-export const useResize = () => {
+export const useResize = (element = document.body) => {
   const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
 
   const handleResize: ResizeObserverCallback = (event) => {
@@ -20,10 +20,10 @@ export const useResize = () => {
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(document.body);
+    resizeObserver.observe(element);
 
     return () => {
-      resizeObserver.unobserve(document.body);
+      resizeObserver.unobserve(element);
     };
   }, []);
 

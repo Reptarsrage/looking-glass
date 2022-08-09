@@ -55,7 +55,7 @@ const GalleryPage: React.FC = () => {
             <ContentMasonry />
           </Box>
         </ModalProvider>
-      </TagProvider>{" "}
+      </TagProvider>
     </GalleryProvider>
   );
 };

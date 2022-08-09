@@ -125,21 +125,23 @@ const ContentMasonry: React.FC = () => {
     <div
       style={{
         display: "flex",
+        flex: "1",
         flexDirection: "column",
         justifyContent: "center",
+        overflow: "hidden",
       }}
     >
       {isSuccess && (
-        <VirtualizedMasonry items={items} loadMore={loadMore} scrollToItem={scrollToItem}>
+        <VirtualizedMasonry
+          items={items}
+          loadMore={loadMore}
+          scrollToItem={scrollToItem}
+          isLoading={isLoading || !!hasNextPage}
+          isEnd={!hasNextPage && !isLoading}
+        >
           {MasonryItem}
         </VirtualizedMasonry>
       )}
-
-      {/* Loading indicator */}
-      {isLoading || (hasNextPage && <Loading />)}
-
-      {/* End indicator */}
-      {!hasNextPage && !isLoading && <TheEnd />}
     </div>
   );
 };
