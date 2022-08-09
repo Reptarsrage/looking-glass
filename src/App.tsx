@@ -93,7 +93,7 @@ const App: React.FC = () => {
       <ThemeProvider theme={appliedTheme}>
         <FullscreenProvider>
           <VolumeProvider>
-            <CssBaseline />
+            <CssBaseline enableColorScheme />
             <HashRouter>
               <TitleBar />
 
