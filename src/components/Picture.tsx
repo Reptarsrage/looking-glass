@@ -1,4 +1,4 @@
-import { memo, forwardRef } from "react";
+import { forwardRef } from "react";
 import styled from "@mui/system/styled";
 
 const Img = styled("img")({
@@ -26,4 +26,4 @@ const Picture = forwardRef<HTMLImageElement, PictureProps>(({ source, ...passThr
   return <Img {...passThroughProps} ref={imageRef} src={source.url} />;
 });
 
-export default memo(Picture, (prev, next) => prev.source === next.source);
+export default Picture;

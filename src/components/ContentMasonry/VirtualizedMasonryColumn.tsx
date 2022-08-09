@@ -100,8 +100,8 @@ function VirtualizedMasonryColumn({
 
     const startIndex = getStartIndexForOffset(itemSize, itemCount, scrollOffset, instanceProps);
     const stopIndex = getStopIndexForStartIndex(itemSize, height, itemCount, startIndex, scrollOffset, instanceProps);
-    const overscanBackward = scrollDirection === "backward" ? Math.max(1, overscanCount) : 1;
-    const overscanForward = scrollDirection === "forward" ? Math.max(1, overscanCount) : 1;
+    const overscanBackward = !isScrolling && scrollDirection === "backward" ? Math.max(1, overscanCount) : 1;
+    const overscanForward = !isScrolling && scrollDirection === "forward" ? Math.max(1, overscanCount) : 1;
     return [
       Math.max(0, startIndex - overscanBackward),
       Math.max(0, Math.min(itemCount - 1, stopIndex + overscanForward)),

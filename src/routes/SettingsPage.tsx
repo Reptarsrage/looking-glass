@@ -19,7 +19,7 @@ import { PreferredTheme, SettingsContext } from "../store/settings";
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const settings = useContext(SettingsContext);
+  const settingsContext = useContext(SettingsContext);
   const [version, setVersion] = useState("");
   const [os, setOs] = useState("");
 
@@ -35,22 +35,23 @@ const SettingsPage: React.FC = () => {
     getVersion();
   });
 
-  const { videoAutoPlay, videoLowDataMode, pictureLowDataMode, masonryColumnCount, preferredTheme } = settings.settings;
+  const { videoAutoPlay, videoLowDataMode, pictureLowDataMode, masonryColumnCount, preferredTheme } =
+    settingsContext.settings;
 
   const onChecked = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    settings.setSettings({
-      ...settings.settings,
+    settingsContext.setSettings({
+      ...settingsContext.settings,
       [event.currentTarget.name]: checked,
     });
   };
 
   const onChange = (name: string) => (event: Event, value: number | number[]) => {
-    settings.setSettings({ ...settings.settings, [name]: value });
+    settingsContext.setSettings({ ...settingsContext.settings, [name]: value });
   };
 
   const onThemeChange = (event: SelectChangeEvent<PreferredTheme>) => {
     if (typeof event.target.value !== "string") {
-      settings.setSettings({ ...settings.settings, preferredTheme: event.target.value });
+      settingsContext.setSettings({ ...settingsContext.settings, preferredTheme: event.target.value });
     }
   };
 

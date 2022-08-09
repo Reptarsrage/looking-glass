@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, memo, useLayoutEffect } from "react";
+import { useEffect, useRef, useState, useMemo, memo, useLayoutEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 
 import VirtualizedMasonryColumn, { MasonryItemProps, ScrollDirection } from "./VirtualizedMasonryColumn";
@@ -7,6 +7,7 @@ import type { Post } from "../../store/gallery";
 import useDebounce from "../../hooks/useDebounce";
 import Loading from "../Status/Loading";
 import TheEnd from "../Status/TheEnd";
+import { SettingsContext } from "../../store/settings";
 
 interface VirtualizedMasonryProps<TItemData> {
   children: React.FunctionComponent<MasonryItemProps<TItemData>>;
@@ -31,10 +32,12 @@ function VirtualizedMasonry({
   isLoading,
   isEnd,
 }: VirtualizedMasonryProps<Post>) {
+  const { settings } = useContext(SettingsContext);
+  const columnCount = settings.masonryColumnCount;
+
   // constants
-  const columnCount = 3;
   const gutter = 6;
-  const overscanCount = 1;
+  const overscanCount = 2;
   const estimatedItemSize = 500;
 
   // keep track of size

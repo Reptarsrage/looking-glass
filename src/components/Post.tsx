@@ -1,9 +1,10 @@
-import { useMemo, useState, memo } from "react";
+import { useMemo, useState, memo, useContext } from "react";
 import Paper from "@mui/material/Paper";
 
 import Video from "./Video";
 import Picture from "./Picture";
 import type { Post } from "../store/gallery";
+import { SettingsContext } from "../store/settings";
 
 interface PostProps {
   post: Post;
@@ -11,6 +12,8 @@ interface PostProps {
 }
 
 const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
+  const { settings } = useContext(SettingsContext);
+
   const { isVideo, urls, poster, width, height, name } = post;
   const sortedUrls = useMemo(() => [...urls].sort((a, b) => a.width - b.width), [urls]);
   const [curIndex] = useState(Math.max(0, sortedUrls.length - 2)); // TODO: choose best based on size
@@ -23,7 +26,7 @@ const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
           loop
           controls={interactable}
           muted={!interactable}
-          autoPlay
+          autoPlay={settings.videoAutoPlay}
           poster={poster}
           width={width}
           height={height}

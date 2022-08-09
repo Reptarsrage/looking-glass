@@ -1,4 +1,4 @@
-import React, { memo, forwardRef, useContext, useEffect, useRef } from "react";
+import React, { forwardRef, useContext, useEffect, useRef } from "react";
 import styled from "@mui/system/styled";
 import { VolumeContext } from "../store/volume";
 
@@ -58,4 +58,4 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(({ source, ...passThrough
   );
 });
 
-export default memo(Video, (prev, next) => prev.source === next.source);
+export default Video;

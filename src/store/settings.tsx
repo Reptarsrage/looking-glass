@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export enum PreferredTheme {
   Default,
@@ -41,5 +41,10 @@ export const SettingsContext = createContext<Context>({ settings: defaultState, 
 
 export const SettingsProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<Settings>(getInitialState());
+
+  useEffect(() => {
+    localStorage.setItem(LocalKey, JSON.stringify(settings));
+  }, [settings]);
+
   return <SettingsContext.Provider value={{ settings, setSettings }}>{children}</SettingsContext.Provider>;
 };
