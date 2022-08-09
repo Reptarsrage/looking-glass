@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { nanoid } from "nanoid";
 
 export interface PostUrl {
   width: number;
@@ -38,6 +39,7 @@ export interface Post {
   author?: PostAuthor;
   date?: string;
   source?: PostSource;
+  isPlaceholder?: boolean;
 }
 
 export interface Gallery {
@@ -45,6 +47,38 @@ export interface Gallery {
   hasNext: boolean;
   offset: number;
   after?: string;
+  isPlaceholder?: boolean;
+}
+
+function generatePlaceholderItem(): Post {
+  function roundNearest100(num: number): number {
+    return Math.round(num / 100) * 100;
+  }
+
+  function randomIntFromInterval(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  return {
+    id: nanoid(),
+    name: "",
+    width: roundNearest100(randomIntFromInterval(1000, 2000)),
+    height: roundNearest100(randomIntFromInterval(1000, 2000)),
+    isVideo: false,
+    isGallery: false,
+    urls: [],
+    filters: [],
+    isPlaceholder: true,
+  };
+}
+
+export function generatePlaceholder(): Gallery {
+  return {
+    items: [...Array(10)].map(generatePlaceholderItem),
+    hasNext: false,
+    offset: 0,
+    isPlaceholder: true,
+  };
 }
 
 interface Context {

@@ -3,6 +3,8 @@ import FolderIcon from "@mui/icons-material/Folder";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Popper from "@mui/material/Popper";
+import Skeleton from "@mui/material/Skeleton";
+import Paper from "@mui/material/Paper";
 
 import { MasonryItemProps } from "./VirtualizedMasonryColumn";
 import { ModalContext } from "../../store/modal";
@@ -17,7 +19,7 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
   const fullscreenContext = useContext(FullscreenContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { isGallery, id, name } = item;
+  const { isGallery, id, name, isPlaceholder, width, height } = item;
   const isModalItem = modalContext.state.modalItem === id;
   const isHidden = isModalItem && !modalContext.state.modalIsExited;
   const isShown = isModalItem && modalContext.state.modalIsOpen;
@@ -30,6 +32,14 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
       setModalItemBounds(boundingRect, id);
     }
   }, [id, isShown, isScrolling]);
+
+  if (isPlaceholder) {
+    return (
+      <Paper style={style} elevation={4} sx={{ borderRadius: 2, height: "100%", overflow: "hidden" }}>
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+      </Paper>
+    );
+  }
 
   function setModalItemBounds(boundingRect: DOMRect, postId: string) {
     modalContext.dispatch({ type: "SET_MODAL_BOUNDS", payload: { boundingRect, postId } });
@@ -93,6 +103,7 @@ export default memo(
   (prev, next) =>
     prev.isScrolling === next.isScrolling &&
     prev.item.id === next.item.id &&
+    prev.item.isPlaceholder === next.item.isPlaceholder &&
     prev.style.top === next.style.top &&
     prev.style.left === next.style.left &&
     prev.style.right === next.style.right &&

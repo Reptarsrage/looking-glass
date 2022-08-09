@@ -13,7 +13,8 @@ interface PostProps {
 const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
   const { isVideo, urls, poster, width, height, name } = post;
   const sortedUrls = useMemo(() => [...urls].sort((a, b) => a.width - b.width), [urls]);
-  const [curIndex] = useState(sortedUrls.length - 1);
+  const [curIndex] = useState(Math.max(0, sortedUrls.length - 2)); // TODO: choose best based on size
+  const source = sortedUrls[curIndex];
 
   return (
     <Paper elevation={4} sx={{ borderRadius: 2, height: "100%", overflow: "hidden" }}>
@@ -26,7 +27,7 @@ const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
           poster={poster}
           width={width}
           height={height}
-          source={sortedUrls[curIndex]}
+          source={source}
         />
       ) : (
         <Picture loading="lazy" source={sortedUrls[curIndex]} alt={name} width={width} height={height} />

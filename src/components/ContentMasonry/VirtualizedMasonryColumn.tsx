@@ -127,14 +127,12 @@ function VirtualizedMasonryColumn({
 
   // effect to clear cache
   useEffect(() => {
-    if (width !== instanceProps.width || columnIndex !== instanceProps.column || gutter !== instanceProps.gutter) {
-      instanceProps.gutter = gutter;
-      instanceProps.column = columnIndex;
-      instanceProps.width = width;
-      instanceProps.lastMeasuredIndex = -1;
-      getItemStyleCache(-1);
-    }
-  }, [width, gutter, columnIndex]);
+    instanceProps.gutter = gutter;
+    instanceProps.column = columnIndex;
+    instanceProps.width = width;
+    instanceProps.lastMeasuredIndex = -1;
+    getItemStyleCache(-1);
+  }, [width, gutter, columnIndex, items]);
 
   // effect to scroll to item
   useEffect(() => {

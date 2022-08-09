@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 
-import { Gallery, GalleryContext, Post } from "../../store/gallery";
+import { Gallery, GalleryContext, Post, generatePlaceholder } from "../../store/gallery";
 import { AuthContext, login } from "../../store/auth";
 import useAppSearchParams, { AppSearchParams } from "../../hooks/useAppSearchParams";
 import * as lookingGlassService from "../../services/lookingGlassService";
@@ -43,7 +43,6 @@ const ContentMasonry: React.FC = () => {
   const moduleContext = useContext(ModuleContext);
   const modalContext = useContext(ModalContext);
   const tagContext = useContext(TagContext);
-
   const [scrollToItem, setScrollToItem] = useState<string | null>(null);
 
   // Async data fetcher used by react query
@@ -74,6 +73,10 @@ const ContentMasonry: React.FC = () => {
     ["gallery", { moduleId, galleryId, query, sort, filters }],
     fetchGallery,
     {
+      placeholderData: () => ({
+        pageParams: [undefined],
+        pages: [...Array(2)].map(generatePlaceholder),
+      }),
       onSuccess: (data) => {
         const flattened = flattenPages(data);
         galleryContext.setPosts(flattened);

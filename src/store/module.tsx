@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { nanoid } from "nanoid";
 
 export enum ModuleAuthType {
   None = "",
@@ -37,6 +38,7 @@ export interface Module {
   supportsAuthorFilter: boolean;
   supportsSourceFilter: boolean;
   supportsGalleryFilters: boolean;
+  isPlaceholder?: boolean;
 }
 
 export const FILE_SYSTEM_MODULE_ID = "local";
@@ -111,6 +113,23 @@ export const fileSystemModule: Module = {
     },
   ],
 };
+
+export function generatePlaceholder(): Module {
+  return {
+    id: nanoid(),
+    name: "",
+    description: "",
+    authType: ModuleAuthType.None,
+    icon: "",
+    filters: [],
+    sort: [],
+    supportsItemFilters: false,
+    supportsAuthorFilter: false,
+    supportsSourceFilter: false,
+    supportsGalleryFilters: false,
+    isPlaceholder: true,
+  };
+}
 
 interface Context {
   readonly modules: Module[];
