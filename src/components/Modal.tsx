@@ -59,6 +59,7 @@ const Caption = styled("div")(({ theme }) => ({
   zIndex: (theme.zIndex as any).modal + 1,
   padding: theme.spacing(1),
   paddingLeft: 72 + Gutter, // tight of ToggleCaptionButton
+  paddingRight: 72 + Gutter, // tight of ToggleCaptionButton
 }));
 
 /**
