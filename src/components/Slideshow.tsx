@@ -27,7 +27,7 @@ const Animated = styled(animated.div)({
   position: "absolute",
   top: 0,
   left: 0,
-  overflow: "hidden",
+  overflow: "visible",
 });
 
 const PrevButton = styled(Fab)(({ theme }) => ({
