@@ -32,8 +32,8 @@ const useAppSearchParams = (): [AppSearchParams, SetAppSearchParamsFn] => {
   const [searchParams, setSearchParams] = useSearchParams();
   const params = useParams();
 
-  const routeContext = useContext(RouteContext);
-  const contextSearchParams = new URLSearchParams(routeContext.search);
+  const location = useContext(RouteContext);
+  const contextSearchParams = new URLSearchParams(location.search);
 
   return useMemo(() => {
     const setAppSearchParams: SetAppSearchParamsFn = (params, navigateOptions) => {
@@ -69,7 +69,7 @@ const useAppSearchParams = (): [AppSearchParams, SetAppSearchParamsFn] => {
     };
 
     return [appSearchParams, setAppSearchParams];
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, location]);
 };
 
 export default useAppSearchParams;

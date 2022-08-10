@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface IntersectionObserverArgs {
   target: React.RefObject<HTMLElement>;
@@ -16,16 +16,20 @@ export default function useIntersectionObserver({
   target,
   onIntersect,
   enabled = true,
-  root = window.document.body,
+  root = undefined,
   rootMargin = "0px",
   threshold = 0.05,
 }: IntersectionObserverArgs) {
+  const [intersecting, setIntersecting] = useState(false);
+
   useEffect(() => {
     function onIntersectCallback(entries: IntersectionObserverEntry[]) {
       const [entry] = entries;
       if (entry.isIntersecting && onIntersect) {
         onIntersect();
       }
+
+      setIntersecting(entry.isIntersecting);
     }
 
     if (enabled && target?.current) {
@@ -42,4 +46,6 @@ export default function useIntersectionObserver({
       };
     }
   }, [enabled, onIntersect, root, rootMargin, target, threshold]);
+
+  return intersecting;
 }

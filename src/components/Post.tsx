@@ -13,7 +13,6 @@ interface PostProps {
 
 const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
   const { settings } = useContext(SettingsContext);
-
   const { isVideo, urls, poster, width, height, name } = post;
   const sortedUrls = useMemo(() => [...urls].sort((a, b) => a.width - b.width), [urls]);
   const [curIndex] = useState(Math.max(0, sortedUrls.length - 2)); // TODO: choose best based on size
