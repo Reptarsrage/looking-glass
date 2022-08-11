@@ -17,11 +17,18 @@ const NavigationControls: React.FC = () => {
   const { fullscreen } = useContext(FullscreenContext);
   const { hasBack, hasForward } = useNavigationStack();
   const isHome = location.pathname === "/";
+  const isSettings = location.pathname === "/settings";
 
   return (
     <Fade in={!fullscreen}>
       <Box component="span" sx={{ mx: 1, whiteSpace: "no-wrap" }}>
-        <Fab component={Link} size="small" to="/settings" sx={{ mr: 1, WebkitAppRegion: "no-drag" }}>
+        <Fab
+          component={Link}
+          size="small"
+          to="/settings"
+          sx={{ mr: 1, WebkitAppRegion: "no-drag" }}
+          disabled={isSettings}
+        >
           <MoreVertIcon />
         </Fab>
 
