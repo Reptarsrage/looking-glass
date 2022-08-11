@@ -18,59 +18,59 @@ interface VideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
   source: Source;
 }
 
-const Video = forwardRef<HTMLVideoElement, VideoProps>(({ source, autoPlay, ...passThroughProps }, ref) => {
-  const volumeContext = useContext(VolumeContext);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const isIntersecting = useIntersectionObserver({
-    target: videoRef,
-    threshold: 0.33,
-  });
+const Video = forwardRef<HTMLVideoElement, VideoProps>(
+  ({ source, autoPlay, muted, controls, ...passThroughProps }, ref) => {
+    const volumeContext = useContext(VolumeContext);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const isIntersecting = useIntersectionObserver({
+      target: videoRef,
+      threshold: 0.33,
+    });
 
-  // effect to sync volume levels across videos
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.volume = volumeContext.volume;
+    // effect to sync volume levels across videos
+    useEffect(() => {
+      if (videoRef.current) {
+        videoRef.current.volume = volumeContext.volume;
+      }
+    }, [volumeContext.volume]);
+
+    // effect to play/pause as element leaves/enters screen
+    useEffect(() => {
+      if (autoPlay && isIntersecting) {
+        videoRef.current?.play();
+      } else {
+        videoRef.current?.pause();
+      }
+    }, [isIntersecting]);
+
+    function onVolumeChange(event: React.ChangeEvent<HTMLVideoElement>) {
+      if (passThroughProps.onVolumeChange) {
+        passThroughProps.onVolumeChange(event);
+      }
+
+      if (controls && !muted) {
+        volumeContext.setVolume(event.currentTarget.volume);
+      }
     }
-  }, [volumeContext.volume]);
 
-  // effect to play/pause as element leaves/enters screen
-  useEffect(() => {
-    if (autoPlay && isIntersecting) {
-      videoRef.current?.play();
-    } else {
-      videoRef.current?.pause();
-    }
-  }, [isIntersecting]);
-
-  if (!source) {
-    return null;
+    return (
+      <VideoElt
+        {...passThroughProps}
+        ref={(node) => {
+          videoRef.current = node;
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref) {
+            ref.current = node;
+          }
+        }}
+        src={source.url}
+        controls={controls}
+        muted={muted}
+        onVolumeChange={onVolumeChange}
+      />
+    );
   }
-
-  function onVolumeChange(event: React.ChangeEvent<HTMLVideoElement>) {
-    if (passThroughProps.onVolumeChange) {
-      passThroughProps.onVolumeChange(event);
-    }
-
-    if (event.currentTarget.controls && !event.currentTarget.muted) {
-      volumeContext.setVolume(event.currentTarget.volume);
-    }
-  }
-
-  return (
-    <VideoElt
-      {...passThroughProps}
-      ref={(node) => {
-        videoRef.current = node;
-        if (typeof ref === "function") {
-          ref(node);
-        } else if (ref) {
-          ref.current = node;
-        }
-      }}
-      src={source.url}
-      onVolumeChange={onVolumeChange}
-    />
-  );
-});
+);
 
 export default Video;
