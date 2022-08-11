@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
 
 import type { PostTags } from "./gallery";
 
@@ -17,6 +17,16 @@ interface Context {
   addTags: React.Dispatch<Action>;
 }
 
+const SessionKey = "Tags";
+function getInitialState(): State {
+  const stored = sessionStorage.getItem(SessionKey);
+  if (stored) {
+    return JSON.parse(stored) ?? {};
+  }
+
+  return {};
+}
+
 const reducer = (state: State, action: Action) => ({
   ...state,
   [action.moduleId]: [...(action.moduleId in state ? state[action.moduleId] : []), ...action.value].filter(
@@ -30,6 +40,11 @@ export const TagContext = createContext<Context>({
 });
 
 export const TagProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const [tags, addTags] = useReducer(reducer, {});
+  const [tags, addTags] = useReducer(reducer, getInitialState());
+
+  useEffect(() => {
+    sessionStorage.setItem(SessionKey, JSON.stringify(tags));
+  }, [tags]);
+
   return <TagContext.Provider value={{ tags, addTags }}>{children}</TagContext.Provider>;
 };
