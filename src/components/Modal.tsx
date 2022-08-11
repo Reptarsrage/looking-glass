@@ -277,13 +277,15 @@ const Modal: React.FC = () => {
       left: boundingRect?.left ?? 0,
       width: boundingRect?.width ?? 0,
       height: boundingRect?.height ?? 0,
+      overflow: "visible",
     };
 
     const to: React.CSSProperties = {
-      top: (totalHeight - post_height) / 2 + TitleBarHeight + Gutter,
+      top: (totalHeight - post_height) / 2 + TitleBarHeight + 2 * Gutter,
       left: (totalWidth - post_width) / 2 + Gutter,
       width: post_width,
       height: post_height,
+      overflow: "visible",
     };
 
     return [from, to];
@@ -301,7 +303,7 @@ const Modal: React.FC = () => {
           Root: CustomRoot,
         }}
         componentsProps={{
-          backdrop: { style: { backgroundColor: theme.palette.background.paper } },
+          backdrop: { style: { backgroundColor: theme.palette.background.paper, zIndex: 1 } },
           root: { entering, onModalClose } as any,
         }}
         sx={{ top: TitleBarHeight }}
