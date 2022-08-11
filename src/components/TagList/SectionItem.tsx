@@ -6,7 +6,6 @@ import { TagsContext } from "./context";
 import useAppSearchParams from "../../hooks/useAppSearchParams";
 import { ModalContext } from "../../store/modal";
 import { ModuleContext } from "../../store/module";
-import { FullscreenContext } from "../../store/fullscreen";
 
 interface SectionItemProps {
   sectionId: string;
@@ -25,6 +24,7 @@ const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index, onClick }) 
   const section = tagSections[sectionId];
   const item = section.items[index];
   const closeModal = (payload: () => void) => modalContext.dispatch({ type: "CLOSE_MODAL", payload });
+  const { modalIsOpen } = modalContext.state;
 
   const handleClick = () => {
     if (searchParams.filters.indexOf(item.id) >= 0) {
@@ -44,7 +44,11 @@ const SectionItem: React.FC<SectionItemProps> = ({ sectionId, index, onClick }) 
       onClick();
     }
 
-    closeModal(() => setSearchParams({ ...searchParams, galleryId, query, filters }));
+    if (modalIsOpen) {
+      closeModal(() => setSearchParams({ ...searchParams, galleryId, query, filters }));
+    } else {
+      setSearchParams({ ...searchParams, galleryId, query, filters });
+    }
   };
 
   const itemHeight = 48;
