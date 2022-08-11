@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
 import List from "@mui/material/List";
@@ -7,9 +6,10 @@ import SortIcon from "@mui/icons-material/Sort";
 
 import SortMenuItem from "./SortMenuItem";
 import { ModuleContext } from "../../store/module";
+import useAppSearchParams from "../../hooks/useAppSearchParams";
 
 const SortBy: React.FC = () => {
-  const { moduleId = "" } = useParams();
+  const [{ moduleId }] = useAppSearchParams();
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const moduleContext = useContext(ModuleContext);
   const module = moduleContext.modules.find((m) => m.id === moduleId);

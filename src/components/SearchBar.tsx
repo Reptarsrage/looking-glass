@@ -1,13 +1,11 @@
 import { useState, useEffect, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { styled, alpha } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 
 import { FullscreenContext } from "../store/fullscreen";
-import useAppSearchParams from "../hooks/useAppSearchParams";
-import useDebounce from "../hooks/useDebounce";
 
 const Search = styled("div")(({ theme }) => ({
   WebkitAppRegion: "no-drag",
@@ -54,28 +52,26 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const SearchBar: React.FC = () => {
   const location = useLocation();
-  const [searchParams, setSearchParams] = useAppSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { fullscreen } = useContext(FullscreenContext);
-  const [query, setQuery] = useState(searchParams.query);
+  const [query, setQuery] = useState(searchParams.get("query") ?? "");
   const isShown = /^\/(search|gallery)/.test(location.pathname);
 
   // Keep state in parity with search params
   useEffect(() => {
-    setQuery(searchParams.query);
+    setQuery(searchParams.get("query") ?? "");
   }, [searchParams]);
 
-  const setSearchParamsDebounced = useDebounce(setSearchParams, 300);
-
   const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
-    const query = event.currentTarget.value;
-    setQuery(query);
-    setSearchParamsDebounced({ ...searchParams, query });
+    setQuery(event.currentTarget.value);
   };
 
   const handleKeyUp: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
     if (event.key === "Escape") {
       setQuery("");
-      setSearchParamsDebounced({ ...searchParams, query: "" });
+    } else if (event.key === "Enter") {
+      searchParams.set("query", query);
+      setSearchParams(searchParams);
     }
   };
 

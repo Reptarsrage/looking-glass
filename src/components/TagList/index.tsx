@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { useQuery, useQueries } from "@tanstack/react-query";
@@ -40,7 +39,7 @@ interface TagListCommonProps {
 }
 
 const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
-  const { moduleId = "" } = useParams();
+  const [{ moduleId }] = useAppSearchParams();
   const moduleContext = useContext(ModuleContext);
   const authContext = useContext(AuthContext);
   const modalContext = useContext(ModalContext);
@@ -110,7 +109,7 @@ const usePostTags = (postTags: Tag[] | undefined, filter: string) => {
 };
 
 const useSectionTags = (filter: string) => {
-  const { moduleId = "" } = useParams();
+  const [{ moduleId }] = useAppSearchParams();
   const authContext = useContext(AuthContext);
   const moduleContext = useContext(ModuleContext);
   const tagContext = useContext(TagContext);
