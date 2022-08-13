@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { useNavigate, useParams, Navigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
@@ -32,6 +32,13 @@ const OAuthPage: React.FC = () => {
     window.electronAPI.setTitle(module?.name);
   }, []);
 
+  // effect to redirect on auth
+  useEffect(() => {
+    if (isAuthed) {
+      navigate(returnUrl, { replace: true });
+    }
+  }, [isAuthed]);
+
   function handleClose() {
     navigate(-1);
   }
@@ -52,10 +59,6 @@ const OAuthPage: React.FC = () => {
     } finally {
       setFetching(false);
     }
-  }
-
-  if (isAuthed) {
-    return <Navigate to={returnUrl} replace={true} />;
   }
 
   return (

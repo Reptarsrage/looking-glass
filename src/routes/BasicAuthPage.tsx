@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -43,6 +43,13 @@ const BasicAuthPage: React.FC = () => {
     window.electronAPI.setTitle(module?.name);
   }, []);
 
+  // effect to redirect on auth
+  useEffect(() => {
+    if (isAuthed) {
+      navigate(returnUrl, { replace: true });
+    }
+  }, [isAuthed]);
+
   async function login() {
     setFetching(true);
 
@@ -75,10 +82,6 @@ const BasicAuthPage: React.FC = () => {
 
   function handleClose() {
     navigate(-1);
-  }
-
-  if (isAuthed) {
-    return <Navigate to={returnUrl} replace={true} />;
   }
 
   return (

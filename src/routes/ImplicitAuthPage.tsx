@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -12,10 +12,10 @@ const ImplicitAuthPage: React.FC = () => {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const moduleContext = useContext(ModuleContext);
-  const isAuthed = moduleId in authContext.auth;
   const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
 
+  const isAuthed = moduleId in authContext.auth;
   const returnUrl = searchParams.get("returnUrl")!;
   const module = moduleContext.modules.find((m) => m.id === moduleId);
 
@@ -23,6 +23,13 @@ const ImplicitAuthPage: React.FC = () => {
   useEffect(() => {
     window.electronAPI.setTitle(module?.name);
   }, []);
+
+  // effect to redirect on auth
+  useEffect(() => {
+    if (isAuthed) {
+      navigate(returnUrl, { replace: true });
+    }
+  }, [isAuthed]);
 
   useEffect(() => {
     async function login() {
@@ -39,10 +46,6 @@ const ImplicitAuthPage: React.FC = () => {
       login();
     }
   }, [isAuthed, moduleId]);
-
-  if (isAuthed) {
-    return <Navigate to={returnUrl} replace={true} />;
-  }
 
   if (error) {
     return <span>An error ocurred while logging in...</span>;
