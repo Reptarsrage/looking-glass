@@ -36,13 +36,17 @@ async function handleOauth(event, uri) {
       modal: true,
       show: false,
       autoHideMenuBar: true,
-      nodeIntegration: false,
-      contextIsolation: true,
-      enableRemoteModule: false,
     });
 
-    const handleRedirect = (uri) => {
-      const url = new URL(uri);
+    function handleDidNavigate(event, newUrl, status) {
+      // TODO: Temporary fix for reddit OAuth flow 302 redirect loop
+      if (status === 302) {
+        authWindow.webContents.reload();
+      }
+    }
+
+    function handleWillNavigate(event, newUrl) {
+      const url = new URL(newUrl);
       const searchParams = new URLSearchParams(url.search);
       const state = searchParams.get("state");
       const code = searchParams.get("code");
@@ -56,17 +60,17 @@ async function handleOauth(event, uri) {
         authWindow.removeAllListeners("closed");
         setImmediate(() => authWindow.close());
         resolve(code);
-      } else {
-        log.info(">>>", uri);
       }
-    };
+    }
 
     authWindow.on("closed", () => reject(new Error("Auth window was closed by user")));
-    authWindow.webContents.on("will-redirect", (event, newUrl) => handleRedirect(newUrl));
-    authWindow.webContents.on("will-navigate", (event, newUrl) => handleRedirect(newUrl));
+    authWindow.webContents.on("will-navigate", handleWillNavigate);
+    authWindow.webContents.on("will-redirect", handleWillNavigate);
+    authWindow.webContents.on("did-navigate", handleDidNavigate);
 
     authWindow.loadURL(uri);
     authWindow.show();
+    authWindow.webContents.openDevTools();
   });
 }
 
