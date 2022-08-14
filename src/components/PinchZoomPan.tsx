@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { animated, useSpring, config } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import styled from "@mui/system/styled";
@@ -13,9 +13,10 @@ interface PinchZoomPanProps {
   width: number;
   children: React.ReactNode;
   height: number;
+  reset: boolean;
 }
 
-const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children }) => {
+const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, reset }) => {
   const targetRef = useRef<HTMLDivElement>(null);
   const boundsRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -26,6 +27,12 @@ const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children }) 
     y: 0,
     scale: 1,
   }));
+
+  useEffect(() => {
+    if (reset) {
+      api.start({ scale: 1, x: 0, y: 0, config: config.default });
+    }
+  }, [reset]);
 
   useGesture(
     {
