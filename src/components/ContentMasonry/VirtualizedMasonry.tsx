@@ -37,7 +37,7 @@ function VirtualizedMasonry({
 
   // constants
   const gutter = 6;
-  const overscanCount = 2;
+  const overscanCount = 1;
   const estimatedItemSize = 500;
 
   // keep track of size

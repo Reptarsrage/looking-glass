@@ -100,8 +100,8 @@ function VirtualizedMasonryColumn({
 
     const startIndex = getStartIndexForOffset(itemSize, itemCount, scrollOffset, instanceProps);
     const stopIndex = getStopIndexForStartIndex(itemSize, height, itemCount, startIndex, scrollOffset, instanceProps);
-    const overscanBackward = !isScrolling && scrollDirection === "backward" ? Math.max(1, overscanCount) : 1;
-    const overscanForward = !isScrolling && scrollDirection === "forward" ? Math.max(1, overscanCount) : 1;
+    const overscanBackward = !isScrolling && scrollDirection === "backward" ? Math.max(1, overscanCount) : 0;
+    const overscanForward = !isScrolling && scrollDirection === "forward" ? Math.max(1, overscanCount) : 0;
     return [
       Math.max(0, startIndex - overscanBackward),
       Math.max(0, Math.min(itemCount - 1, stopIndex + overscanForward)),
@@ -129,6 +129,7 @@ function VirtualizedMasonryColumn({
 
   // effect to clear cache
   useEffect(() => {
+    // TODO: can i only run this when items is replaced (not added to?)
     instanceProps.gutter = gutter;
     instanceProps.column = columnIndex;
     instanceProps.width = width;
