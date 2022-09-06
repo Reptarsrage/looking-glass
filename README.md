@@ -80,7 +80,7 @@ yarn package
 - [ ] prev/next button hiding + search hiding
 - [x] clear stuff when navigating
 - [ ] hide sort/filter buttons when necessary
-- [ ] Use skeletons instead of spinner
+- [x] Use skeletons instead of spinner
 - [ ] add snackbar (toasts) for End of scroll + Errors + Download
 - [x] video volume sync
 - [x] update all zustand syntax
@@ -91,4 +91,9 @@ yarn package
 - [x] Avoid fetching more when navigating back
 - [x] Fix modal title on light theme
 - [ ] TESTS
-- [ ] Masonry title popovers
+- [x] Masonry title popovers
+- [ ] settings page should have a different transition
+- [ ] destination scroll isnt quite right (always is on bottom?)
+- [x] routes from auth always break
+- [ ] set slide show direction, and scroll to top/bottom based on direction (to avoid less scrolls)
+- [ ] zoomed images dont slideshow well
