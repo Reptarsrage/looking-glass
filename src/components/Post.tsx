@@ -18,9 +18,11 @@ function findIndex(sortedUrls: PostUrl[], width: number, lowDataMode: boolean): 
     return sortedUrls[sortedUrls.length - 1];
   }
 
-  let index = sortedUrls.findIndex((url) => url.width >= width);
+  let index = sortedUrls.findIndex((url) => url.width > width);
   if (index < 0) {
     index = sortedUrls.length - 1;
+  } else if (index > 0) {
+    index -= 1;
   }
 
   return sortedUrls[index];
