@@ -1,24 +1,18 @@
-import { useState, forwardRef, HTMLProps } from "react";
+import { useState, forwardRef, HTMLProps, useEffect } from "react";
 import { useSpring, animated } from "@react-spring/web";
-import { TrainRounded } from "@mui/icons-material";
 
 interface ZoomFromToProps extends Omit<HTMLProps<HTMLDivElement>, "ref" | "children" | "style"> {
   children?: React.ReactElement;
   in: boolean;
   from: React.CSSProperties;
   to: React.CSSProperties;
-  position?: "fixed" | "unset";
   onEnter?: () => void;
   onEntered?: () => void;
   onExit?: () => void;
   onExited?: () => void;
 }
 
-const defaultStyles = {
-  top: 30,
-  left: 0,
-  width: "100%",
-  height: "100%",
+const defaultStyles: React.CSSProperties = {
   position: "fixed",
   zIndex: 1,
   overflow: "hidden",
@@ -26,7 +20,7 @@ const defaultStyles = {
 
 const ZoomFromTo = forwardRef<HTMLDivElement, ZoomFromToProps>(function ZoomFromTo(props, ref) {
   const [settled, setSettled] = useState(true);
-  const { in: open, children, onEnter, onEntered, onExit, onExited, from, to, position, ...passThroughProps } = props;
+  const { in: open, children, onEnter, onEntered, onExit, onExited, from, to, ...passThroughProps } = props;
   const styles = useSpring({
     from,
     to,
@@ -56,14 +50,10 @@ const ZoomFromTo = forwardRef<HTMLDivElement, ZoomFromToProps>(function ZoomFrom
   });
 
   return (
-    <animated.div ref={ref} style={{ ...defaultStyles, ...(settled ? {} : styles) }} {...passThroughProps}>
+    <animated.div ref={ref} style={{ ...defaultStyles, ...styles }} {...passThroughProps}>
       {children}
     </animated.div>
   );
 });
-
-ZoomFromTo.defaultProps = {
-  position: "fixed",
-};
 
 export default ZoomFromTo;

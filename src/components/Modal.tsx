@@ -259,7 +259,7 @@ const Modal: React.FC = () => {
   }
 
   const [from, to] = useMemo(() => {
-    if (!post) {
+    if (!post || !boundingRect) {
       return [{}, {}];
     }
 
@@ -273,11 +273,10 @@ const Modal: React.FC = () => {
     );
 
     const from: React.CSSProperties = {
-      top: boundingRect?.top ?? 0,
-      left: boundingRect?.left ?? 0,
-      width: boundingRect?.width ?? 0,
-      height: boundingRect?.height ?? 0,
-      overflow: "visible",
+      top: boundingRect.top,
+      left: boundingRect.left,
+      width: boundingRect.width,
+      height: boundingRect.height,
     };
 
     const to: React.CSSProperties = {
@@ -285,10 +284,9 @@ const Modal: React.FC = () => {
       left: (totalWidth - post_width) / 2 + Gutter,
       width: post_width,
       height: post_height,
-      overflow: "visible",
     };
 
-    return [from, to];
+    return open ? [from, to] : [to, from];
   }, [open, boundingRect]);
 
   return (
@@ -310,10 +308,9 @@ const Modal: React.FC = () => {
       >
         <ZoomFromTo
           in={open}
-          to={open ? to : from}
+          to={to}
           from={from}
           tabIndex={-1}
-          position={!entered ? "fixed" : undefined}
           onExited={onModalExited}
           onEnter={onModalEntering}
           onEntered={onModalEntered}
