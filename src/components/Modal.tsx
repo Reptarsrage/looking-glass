@@ -277,6 +277,7 @@ const Modal: React.FC = () => {
       left: boundingRect.left,
       width: boundingRect.width,
       height: boundingRect.height,
+      overflow: "hidden",
     };
 
     const to: React.CSSProperties = {
@@ -284,6 +285,7 @@ const Modal: React.FC = () => {
       left: (totalWidth - post_width) / 2 + Gutter,
       width: post_width,
       height: post_height,
+      overflow: "visible",
     };
 
     return open ? [from, to] : [to, from];
