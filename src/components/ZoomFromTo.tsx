@@ -19,15 +19,12 @@ const defaultStyles: React.CSSProperties = {
 };
 
 const ZoomFromTo = forwardRef<HTMLDivElement, ZoomFromToProps>(function ZoomFromTo(props, ref) {
-  const [settled, setSettled] = useState(true);
   const { in: open, children, onEnter, onEntered, onExit, onExited, from, to, ...passThroughProps } = props;
   const styles = useSpring({
     from,
     to,
     config: { mass: 1, tension: 210, friction: 22 },
     onStart: () => {
-      setSettled(false);
-
       if (open && onEnter) {
         onEnter();
       }
@@ -37,8 +34,6 @@ const ZoomFromTo = forwardRef<HTMLDivElement, ZoomFromToProps>(function ZoomFrom
       }
     },
     onRest: () => {
-      setSettled(true);
-
       if (!open && onExited) {
         onExited();
       }
@@ -50,7 +45,14 @@ const ZoomFromTo = forwardRef<HTMLDivElement, ZoomFromToProps>(function ZoomFrom
   });
 
   return (
-    <animated.div ref={ref} style={{ ...defaultStyles, ...styles }} {...passThroughProps}>
+    <animated.div
+      ref={ref}
+      style={{
+        ...defaultStyles,
+        ...styles,
+      }}
+      {...passThroughProps}
+    >
       {children}
     </animated.div>
   );

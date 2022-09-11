@@ -218,7 +218,12 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
           <Animated
             tabIndex={pos === 0 ? -1 : undefined}
             {...(pos === 0 && !isZooming ? bind(isZooming, open) : {})}
-            style={style}
+            style={{
+              overflow: "hidden",
+              position: modalIsTransitioning ? "absolute" : "fixed",
+              top: modalIsTransitioning ? 0 : 30,
+              ...style,
+            }}
             key={i}
           >
             <PinchZoomPan width={post_width} height={post_height} reset={pos !== 0}>
