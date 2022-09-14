@@ -179,15 +179,19 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
     return <Post post={posts[shownIndex]} />;
   }
 
+  const idx = posts.findIndex((i) => i.id === postId);
+  const hasNext = idx < posts.length - 1;
+  const hasPrev = idx > 0;
+
   return (
     <>
-      <Zoom in={open} unmountOnExit>
+      <Zoom in={open && hasPrev} unmountOnExit>
         <PrevButton color="default" onClick={goPrevModalItem}>
           <ChevronLeftIcon />
         </PrevButton>
       </Zoom>
 
-      <Zoom in={open} unmountOnExit>
+      <Zoom in={open && hasNext} unmountOnExit>
         <NextButton color="default" onClick={goNextModalItem}>
           <ChevronRightIcon />
         </NextButton>
