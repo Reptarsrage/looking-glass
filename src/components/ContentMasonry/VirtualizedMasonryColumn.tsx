@@ -153,8 +153,8 @@ function VirtualizedMasonryColumn({
     const itemTop = (itemStyle as any)?.top ?? 0;
     const itemBottom = itemTop + itemHeight;
     const screenTop = scrollOffset;
-    const screenBottom = screenTop + window.innerHeight;
-    const destination = Math.max(0, screenTop + (window.innerHeight - itemHeight) / 2);
+    const screenBottom = screenTop + window.innerHeight - 110; // masonry is about 110px from top of screen
+    const destination = Math.max(0, itemTop - (window.innerHeight - itemHeight) / 2);
     if (!(itemBottom < screenBottom && itemBottom > screenTop) && !(itemTop < screenBottom && itemTop > screenTop)) {
       scrollTo(destination);
     }
