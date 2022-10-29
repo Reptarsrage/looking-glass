@@ -35,7 +35,12 @@ const GalleryPage: React.FC = () => {
         <ModalProvider>
           <Modal />
 
-          <MuiDrawer anchor="right" open={drawerOpen} onClose={onClose}>
+          <MuiDrawer
+            anchor="right"
+            open={drawerOpen}
+            onClose={onClose}
+            PaperProps={{ sx: { height: "calc(100% - 30px)" } }}
+          >
             <SectionedTagsList overscanCount={3} onItemClicked={onClose} />
           </MuiDrawer>
 

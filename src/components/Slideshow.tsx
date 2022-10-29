@@ -159,7 +159,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
 
     setIsDragging(active);
 
-    if (open && active && Math.abs(xDelta) > width / 2) {
+    if (open && active && Math.abs(xDelta) > width / 3) {
       if (xDir > 0) {
         goPrevModalItem();
       } else {

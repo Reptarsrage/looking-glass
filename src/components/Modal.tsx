@@ -23,6 +23,7 @@ import useTheme from "@mui/material/styles/useTheme";
 import useAppSearchParams from "../hooks/useAppSearchParams";
 import { PostTagsList } from "./TagList";
 import useKeyPress from "../hooks/useKeyPress";
+import { ModuleContext } from "../store/module";
 
 const TitleBarHeight = 30;
 const Gutter = 16;
@@ -90,15 +91,16 @@ interface CustomRootProps {
 
 const CustomRoot = forwardRef<HTMLDivElement, CustomRootProps>(
   ({ onModalClose, entering, children, ...passThroughProps }, ref) => {
-    const theme = useTheme();
     const [searchParams, setSearchParams] = useAppSearchParams();
 
     const galleryContext = useContext(GalleryContext);
+    const moduleContext = useContext(ModuleContext);
     const modalContext = useContext(ModalContext);
     const fullscreenContext = useContext(FullscreenContext);
     const open = modalContext.state.modalIsOpen;
     const postId = modalContext.state.modalItem;
     const closeModal = (payload: () => void) => modalContext.dispatch({ type: "CLOSE_MODAL", payload });
+    const module = moduleContext.modules.find((m) => m.id === searchParams.moduleId);
     const post = galleryContext.posts.find((post) => post.id === postId);
 
     const [showCaption, setShowCaption] = useState(true);
@@ -119,7 +121,13 @@ const CustomRoot = forwardRef<HTMLDivElement, CustomRootProps>(
 
     function onAuthorClicked() {
       if (post?.author && searchParams.filters.indexOf(post.author.id) < 0) {
-        searchParams.filters.push(post.author.id);
+        const section = module?.filters.find((f) => f.id === post?.author?.filterSectionId);
+        const { supportsMultiple = false, supportsSearch = false } = section ?? {};
+        const supportsGalleryFilters = module?.supportsGalleryFilters ?? false;
+
+        searchParams.galleryId = supportsGalleryFilters ? searchParams.galleryId : "";
+        searchParams.query = supportsSearch ? searchParams.query : "";
+        searchParams.filters = [...(supportsMultiple ? searchParams.filters : []), post.author.id];
       }
 
       closeModal(() => setSearchParams(searchParams));
@@ -127,7 +135,13 @@ const CustomRoot = forwardRef<HTMLDivElement, CustomRootProps>(
 
     function onSourceClicked() {
       if (post?.source && searchParams.filters.indexOf(post.source.id) < 0) {
-        searchParams.filters.push(post.source.id);
+        const section = module?.filters.find((f) => f.id === post.source?.filterSectionId);
+        const { supportsMultiple = false, supportsSearch = false } = section ?? {};
+        const supportsGalleryFilters = module?.supportsGalleryFilters ?? false;
+
+        searchParams.galleryId = supportsGalleryFilters ? searchParams.galleryId : "";
+        searchParams.query = supportsSearch ? searchParams.query : "";
+        searchParams.filters = [...(supportsMultiple ? searchParams.filters : []), post.source.id];
       }
 
       closeModal(() => setSearchParams(searchParams));
@@ -206,7 +220,12 @@ const CustomRoot = forwardRef<HTMLDivElement, CustomRootProps>(
         </Zoom>
 
         {/* Drawer */}
-        <MuiDrawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+        <MuiDrawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          PaperProps={{ sx: { height: "calc(100% - 30px)" } }}
+        >
           <PostTagsList overscanCount={3} postTags={post?.filters ?? []} onItemClicked={onItemClicked} />
         </MuiDrawer>
 
@@ -255,6 +274,7 @@ const Modal: React.FC = () => {
     exitModal();
     if (modalCloseCallback !== null) {
       modalCloseCallback();
+      console.log("**");
     }
   }
 

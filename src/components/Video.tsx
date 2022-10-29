@@ -53,6 +53,10 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(
       }
     }
 
+    if (!source) {
+      return null;
+    }
+
     return (
       <VideoElt
         {...passThroughProps}

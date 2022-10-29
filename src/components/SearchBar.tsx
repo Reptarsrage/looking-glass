@@ -70,6 +70,10 @@ const SearchBar: React.FC = () => {
     if (event.key === "Escape") {
       setQuery("");
     } else if (event.key === "Enter") {
+      // TODO: Figure out how to fetch the TagContext here and do smarter filtering
+      searchParams.delete("galleryId");
+      searchParams.delete("filters");
+      searchParams.delete("sort");
       searchParams.set("query", query);
       setSearchParams(searchParams);
     }

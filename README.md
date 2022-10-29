@@ -97,3 +97,4 @@ yarn package
 - [x] routes from auth always break
 - [ ] set slide show direction, and scroll to top/bottom based on direction (to avoid less scrolls)
 - [ ] zoomed images dont slideshow well
+- [ ] first mdal after route change is blank

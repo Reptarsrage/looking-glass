@@ -56,6 +56,7 @@ const useAppSearchParams = (): [AppSearchParams, SetAppSearchParamsFn] => {
         }
       }
 
+      console.log(`>>> ${JSON.stringify(urlParams)}`);
       setSearchParams(urlParams, navigateOptions);
     };
 

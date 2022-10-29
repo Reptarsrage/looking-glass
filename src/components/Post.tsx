@@ -9,7 +9,7 @@ import useSize from "../hooks/useSize";
 import { useEffect } from "react";
 
 interface PostProps {
-  post: Post;
+  post?: Post;
   interactable?: boolean;
 }
 
@@ -32,7 +32,7 @@ const PostElt: React.FC<PostProps> = ({ post, interactable }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { settings } = useContext(SettingsContext);
   const { width: containerWidth } = useSize(containerRef);
-  const { isVideo, urls, poster, width, height, name } = post;
+  const { isVideo = false, urls = [], poster = undefined, width = 0, height = 0, name = "" } = post || {};
   const sortedUrls = useMemo(() => [...urls].sort((a, b) => a.width - b.width), [urls]);
   const [oldSource, setOldSource] = useState<PostUrl | null>(null);
   const lowDataMode = isVideo ? settings.videoLowDataMode : settings.pictureLowDataMode;
@@ -82,4 +82,4 @@ PostElt.defaultProps = {
   interactable: false,
 };
 
-export default memo(PostElt, (prev, next) => prev.post.id === next.post.id && prev.interactable === next.interactable);
+export default PostElt;

@@ -109,6 +109,7 @@ function VirtualizedMasonry({
       ref={containerRef}
       style={{
         display: "flex",
+        flex: "1",
         flexDirection: "column",
         paddingLeft: gutter / 2,
         paddingRight: gutter / 2,
