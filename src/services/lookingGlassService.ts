@@ -7,7 +7,7 @@ const baseURL = "http://localhost:3001";
 
 export function needsRefresh(expires?: string | Date, refreshToken?: string): boolean {
   // check if module supports refreshing
-  if (!refreshToken || !expires) {
+  if (!expires) {
     return false;
   }
 
