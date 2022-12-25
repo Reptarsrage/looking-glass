@@ -19,11 +19,12 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
   const fullscreenContext = useContext(FullscreenContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { isGallery, id, name, isPlaceholder, width, height } = item;
+  const { isGallery, id, name, isPlaceholder, source } = item;
   const isModalItem = modalContext.state.modalItem === id;
   const isHidden = isModalItem && !modalContext.state.modalIsExited;
   const isShown = isModalItem && modalContext.state.modalIsOpen;
   const hasName = name.length > 0;
+  const sourceName = source?.name && `[${source?.name}] `;
 
   // effect to update modal item bounds
   useEffect(() => {
@@ -91,7 +92,9 @@ const VirtualizedMasonryItem: React.FC<MasonryItemProps<Post>> = ({ item, style,
 
       {hasName && (
         <Popper id={id} open={anchorEl !== null} anchorEl={anchorEl} placement="top">
-          <Box sx={{ p: 1, bgcolor: "background.paper" }}>{name}</Box>
+          <Box sx={{ p: 1, bgcolor: "background.paper" }}>
+            {sourceName} {name}
+          </Box>
         </Popper>
       )}
     </>

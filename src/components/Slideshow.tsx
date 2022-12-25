@@ -107,7 +107,7 @@ const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
     const pos = getPos(i, shownIndex, originalIndex);
     return {
       x: pos * width + (open && active ? xDelta : 0),
-      scale: open && active ? 1 - Math.abs(xDelta) / width / 2 : 1,
+      scale: open && active ? 1 - Math.abs(xDelta) / width / 2 : open ? 1 : 0.8,
     };
   }
 

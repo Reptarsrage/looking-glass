@@ -1,32 +1,16 @@
-import { useState, useEffect } from "react";
+import { useLayoutEffect, useState } from "react";
+import useResizeObserver from "@react-hook/resize-observer";
 
-/**
- * uses a ResizeObserver to keep track of size changes in the given DOM element
- */
-export default function useSize(elementRef: React.RefObject<HTMLElement>) {
-  const [size, setSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
+function useSize(target: React.RefObject<HTMLElement> | null): DOMRect | undefined {
+  const [size, setSize] = useState<DOMRect>();
 
-  useEffect(() => {
-    function handleResize(entries: ResizeObserverEntry[]) {
-      setSize({
-        width: entries[0].contentRect.width,
-        height: entries[0].contentRect.height,
-      });
-    }
+  useLayoutEffect(() => {
+    setSize(target?.current?.getBoundingClientRect());
+  }, [target]);
 
-    const cur = elementRef.current;
-    if (cur !== null) {
-      const observer = new ResizeObserver(handleResize);
-      observer.observe(cur);
-
-      return () => {
-        observer.unobserve(cur);
-      };
-    }
-  }, [elementRef]);
-
+  // Where the magic happens
+  useResizeObserver(target, (entry) => setSize(entry.contentRect));
   return size;
 }
+
+export default useSize;

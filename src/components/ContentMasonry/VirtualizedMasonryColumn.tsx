@@ -13,6 +13,12 @@ import {
 import type { Post } from "../../store/gallery";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 
+export interface RequiredItemData {
+  id: string;
+  height: number;
+  width: number;
+}
+
 export interface MasonryItemProps<TItemData> {
   style: Record<string, any>;
   isScrolling: boolean;
@@ -55,7 +61,7 @@ function clampImageDimensions(width: number, height: number, maxWidth: number) {
   return { width: clampWidth, height: clampHeight };
 }
 
-function VirtualizedMasonryColumn({
+function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
   children,
   id,
   items,
@@ -69,13 +75,12 @@ function VirtualizedMasonryColumn({
   loadMore,
   scrollTo,
   scrollToItem,
-}: VirtualizedMasonryColumnProps<Post>) {
+}: VirtualizedMasonryColumnProps<TItemData>) {
   const columnIndex = id;
   const height = window.innerHeight;
   const itemCount = items.length;
-  function itemSize(colIdx: number, idx: number) {
+  function itemSize(idx: number) {
     const { height } = clampImageDimensions(items[idx].width, items[idx].height, width);
-
     return height;
   }
 

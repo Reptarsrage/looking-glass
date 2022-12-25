@@ -9,8 +9,6 @@ import * as fileSystemService from "../../services/fileSystemService";
 import { FILE_SYSTEM_MODULE_ID, ModuleContext } from "../../store/module";
 import VirtualizedMasonry from "./VirtualizedMasonry";
 import MasonryItem from "./VirtualizedMasonryItem";
-import TheEnd from "../Status/TheEnd";
-import Loading from "../Status/Loading";
 import { ModalContext } from "../../store/modal";
 import { TagContext } from "../../store/tag";
 
@@ -35,7 +33,11 @@ function flattenPages(data: InfiniteData<Gallery> | undefined): Post[] {
   );
 }
 
-const ContentMasonry: React.FC = () => {
+interface ContentMasonryProps {
+  isTransitioning: boolean;
+}
+
+const ContentMasonry: React.FC<ContentMasonryProps> = ({ isTransitioning }) => {
   // Use the location to determine what to render
   const [{ query, sort, filters, galleryId, moduleId }] = useAppSearchParams();
   const authContext = useContext(AuthContext);
@@ -137,6 +139,7 @@ const ContentMasonry: React.FC = () => {
           loadMore={loadMore}
           scrollToItem={scrollToItem}
           isLoading={isLoading || !!hasNextPage}
+          isTranitioning={isTransitioning}
           isEnd={!hasNextPage && !isLoading}
         >
           {MasonryItem}

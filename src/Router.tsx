@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useSpringRef, animated, config, useTransition } from "@react-spring/web";
 
@@ -35,20 +35,23 @@ const Router: React.FC = () => {
 
   return (
     <div className="Router">
-      {transitions(({ x, position }, location) => (
+      {transitions(({ x, position }, item) => (
         <animated.div
           className="Route"
           style={{
             position: position as any,
-            transform: x.to((y) => `translate3d(${direction * y}vw,0,0)`),
+            transform: x.to((y) => `scale(${1.0 - Math.abs(y) * 0.0025}) translate3d(${direction * y}vw,0,0)`),
           }}
         >
           <Suspense fallback={<Loading />}>
-            <RouteContext.Provider value={location}>
-              <Routes location={location}>
+            <RouteContext.Provider value={item}>
+              <Routes location={item}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/gallery/:moduleId" element={<GalleryPage />} />
+                <Route
+                  path="/gallery/:moduleId"
+                  element={<GalleryPage isTransitioning={item.key !== location.key} />}
+                />
                 <Route path="/basic-auth/:moduleId" element={<BasicAuthPage />} />
                 <Route path="/oauth/:moduleId" element={<OAuthPage />} />
                 <Route path="/implicit-auth/:moduleId" element={<ImplicitAuthPage />} />

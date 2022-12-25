@@ -15,7 +15,11 @@ import { SectionedTagsList } from "../components/TagList";
 import Modal from "../components/Modal";
 import SortBy from "../components/SortBy";
 
-const GalleryPage: React.FC = () => {
+interface GalleryPageProps {
+  isTransitioning: boolean;
+}
+
+const GalleryPage: React.FC<GalleryPageProps> = ({ isTransitioning }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const fullscreenContext = useContext(FullscreenContext);
 
@@ -57,7 +61,7 @@ const GalleryPage: React.FC = () => {
           </Box>
 
           <Box flex="1" overflow="hidden" display="flex" flexDirection="column">
-            <ContentMasonry />
+            <ContentMasonry isTransitioning={isTransitioning} />
           </Box>
         </ModalProvider>
       </TagProvider>

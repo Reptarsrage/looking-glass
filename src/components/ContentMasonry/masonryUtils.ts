@@ -1,4 +1,4 @@
-export type MasonryItemSizeFunc = (columnIndex: number, rowIndex: number) => number;
+export type MasonryItemSizeFunc = (rowIndex: number) => number;
 
 export interface MasonryInstanceProps {
   itemMetadataMap: Record<number, MasonryItemMetadata>;
@@ -112,7 +112,7 @@ const getItemMetadata = (
     }
 
     for (let i = lastMeasuredIndex + 1; i <= index; i++) {
-      let size = itemSize(column, i);
+      let size = itemSize(i);
       itemMetadataMap[i] = {
         offset,
         size,
