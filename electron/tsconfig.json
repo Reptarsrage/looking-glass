@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["dom", "es2017"],
+    "module": "commonjs",
+    "target": "esnext",
+    "outDir": "../dist_main",
+    "rootDir": "./"
+  },
+  "include": ["./", "../window.d.ts"]
+}

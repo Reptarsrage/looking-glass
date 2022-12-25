@@ -1,16 +1,16 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import invariant from 'tiny-invariant';
 
-import App from "./App";
-import "./main.css";
-import { SettingsProvider } from "./store/settings";
+import './index.css';
+import App from './App';
 
-const container = document.getElementById("root");
-const root = createRoot(container!);
+const rootElement = document.getElementById('root');
+invariant(rootElement, '"root" not found');
+
+const root = ReactDOM.createRoot(rootElement);
 root.render(
-  <React.StrictMode>
-    <SettingsProvider>
-      <App />
-    </SettingsProvider>
-  </React.StrictMode>
-);
+  // <React.StrictMode>
+  <App />
+  // </React.StrictMode>
+); // NOTE: Strict mode messes with react-spring onRest/onStart callbacks

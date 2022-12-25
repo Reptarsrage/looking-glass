@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
-          cache: "npm"
+          node-version: '16'
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Run Tests
@@ -35,8 +35,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
-          cache: "npm"
+          node-version: '16'
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
       # https://github.com/samuelmeuli/action-electron-builder

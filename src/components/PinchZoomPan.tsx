@@ -1,13 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { animated, useSpring, config } from "@react-spring/web";
-import { useGesture } from "@use-gesture/react";
-import styled from "@mui/system/styled";
-
-const Animated = styled(animated.div)({
-  touchAction: "none",
-  WebkitAppRegion: "no-drag",
-  transformOrigin: "0 0",
-});
+import { animated, config, useSpring } from '@react-spring/web';
+import { useGesture } from '@use-gesture/react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface PinchZoomPanProps {
   width: number;
@@ -16,7 +9,7 @@ interface PinchZoomPanProps {
   reset: boolean;
 }
 
-const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, reset }) => {
+function PinchZoomPan({ width, height, children, reset }: PinchZoomPanProps) {
   const targetRef = useRef<HTMLDivElement>(null);
   const boundsRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -36,11 +29,11 @@ const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, re
 
   useGesture(
     {
-      onDrag: ({ event, down, first, movement: [mx, my], memo }) => {
+      onDrag: ({ event, active, first, movement: [mx, my], memo }) => {
         event.preventDefault();
         event.stopPropagation();
 
-        setIsDragging(down);
+        setIsDragging(active);
 
         if (first) {
           // record startiy
@@ -59,7 +52,7 @@ const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, re
         y = Math.min(height * limit, Math.max(y + my, -h * limit));
 
         // update
-        api.start({ x, y, config: config.default });
+        api.start({ x, y, config: config.default, immediate: (name) => active && (name === 'x' || name === 'y') });
         return memo;
       },
       onWheel: ({ first, active, event, delta: [, dy], memo }) => {
@@ -89,10 +82,10 @@ const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, re
         const minScale = 1;
         const maxScale = 10;
         const scalestep = 1.2;
-        scale *= Math.pow(scalestep, dy / -100); // new scale
+        scale *= scalestep ** (dy / -100); // new scale
         scale = Math.min(maxScale, Math.max(scale, minScale));
 
-        let conf: any = config.stiff;
+        let conf = config.stiff as Record<string, number>;
         if (scale <= minScale) {
           x = 0;
           y = 0;
@@ -135,17 +128,18 @@ const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, re
   );
 
   // choose cursor
-  let cursor = undefined;
+  let cursor;
   if (isDragging) {
-    cursor = "grabbing";
+    cursor = 'grabbing';
   } else if (isZoomed) {
-    cursor = "grab";
+    cursor = 'grab';
   }
 
   return (
-    <div ref={boundsRef} style={{ position: "relative", width, height }}>
-      <Animated
+    <div ref={boundsRef} className="relative top-0 left-0" style={{ width, height }}>
+      <animated.div
         ref={targetRef}
+        className="touch-none origin-top-left shadow-lg rounded-lg overflow-hidden"
         style={{
           ...style,
           width,
@@ -154,9 +148,9 @@ const PinchZoomPan: React.FC<PinchZoomPanProps> = ({ width, height, children, re
         }}
       >
         {children}
-      </Animated>
+      </animated.div>
     </div>
   );
-};
+}
 
 export default PinchZoomPan;

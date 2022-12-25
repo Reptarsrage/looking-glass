@@ -1,64 +1,35 @@
-import { useCallback, useRef, useState, useContext } from "react";
-import styled from "@mui/system/styled";
-import { useDrag } from "@use-gesture/react";
-import { animated, useSprings } from "@react-spring/web";
-import Fab from "@mui/material/Fab";
-import Zoom from "@mui/material/Zoom";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { animated, useSprings } from '@react-spring/web';
+import { useDrag } from '@use-gesture/react';
+import React, { useCallback, useRef } from 'react';
+import invariant from 'tiny-invariant';
 
-import { ModalContext } from "../store/modal";
-import { GalleryContext } from "../store/gallery";
-import useKeyPress from "../hooks/useKeyPress";
-import { useResize } from "./ResizeObserver";
-import PinchZoomPan from "./PinchZoomPan";
-import Post from "./Post";
+import { ReactComponent as ChevronIcon } from '../assets/chevron.svg';
+import useKeyPress from '../hooks/useKeyPress';
+import useSize from '../hooks/useSize';
+import usePostStore from '../store/posts';
 
-const TitleBarHeight = 30;
+import Fab from './Fab';
+import LoadingIndicator from './LoadingIndicator';
+import { InnerItem as MasonryItem } from './MasonryItem';
+import PinchZoomPan from './PinchZoomPan';
+
+// Constants
+const AppBarHeight = 28;
 const Gutter = 16;
+const ItemsToRender = 5;
 
-const Animated = styled(animated.div)({
-  touchAction: "none",
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  position: "absolute",
-  top: 0,
-  left: 0,
-  overflow: "visible",
-});
-
-const PrevButton = styled(Fab)(({ theme }) => ({
-  top: "calc(50% + 30px)",
-  left: "0.5rem",
-  position: "fixed",
-  transform: "translate(0, -50%)",
-  zIndex: (theme.zIndex as any).modal + 1,
-}));
-
-const NextButton = styled(Fab)(({ theme }) => ({
-  top: "calc(50% + 30px)",
-  right: "0.5rem",
-  position: "fixed",
-  transform: "translate(0, -50%)",
-  zIndex: (theme.zIndex as any).modal + 1,
-}));
-
+/**
+ * Clamp a value between a min and max
+ */
 function clamp(num: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, num));
 }
 
 /**
  * Resizes image dimensions to fit container, preserving aspect ratio
- * @param {*} width
- * @param {*} height
- * @param {*} maxHeight
- * @param {*} maxWidth
  */
 function clampImageDimensions(width: number, height: number, maxHeight: number, maxWidth: number) {
-  let clampTo = Math.min(maxHeight, maxWidth);
+  const clampTo = Math.min(maxHeight, maxWidth);
   let clampWidth = Math.min(width, clampTo);
   let clampHeight = Math.min(height, clampTo);
 
@@ -70,12 +41,14 @@ function clampImageDimensions(width: number, height: number, maxHeight: number, 
   return { width: clampWidth, height: clampHeight };
 }
 
-const itemsToRender = 5;
-function getPos(i: number, shownIndex: number, originalIndex: number) {
+/**
+ * Determines the position of the image in the carousel
+ */
+function getPositionInCarousel(i: number, shownIndex: number, originalIndex: number) {
   const current =
     shownIndex >= originalIndex
-      ? (shownIndex - originalIndex) % itemsToRender // 0, 1, 2, 3, 4, 0, ...
-      : (((shownIndex - originalIndex) % itemsToRender) + itemsToRender) % itemsToRender; // 0, 4, 3, 2, 1, 0, ...
+      ? (shownIndex - originalIndex) % ItemsToRender // 0, 1, 2, 3, 4, 0, ...
+      : (((shownIndex - originalIndex) % ItemsToRender) + ItemsToRender) % ItemsToRender; // 0, 4, 3, 2, 1, 0, ...
 
   if (i === current) return 0;
   if (i === current - 1 || i === current + 4) return -1;
@@ -85,159 +58,170 @@ function getPos(i: number, shownIndex: number, originalIndex: number) {
 }
 
 interface SlideshowProps {
-  modalIsTransitioning: boolean;
+  currentItem: string;
+  setCurrentModalItem: (index: string) => void;
+  loadMore: () => void;
+  isLoading: boolean;
+  hasNextPage: boolean | undefined;
 }
 
-const Slideshow: React.FC<SlideshowProps> = ({ modalIsTransitioning }) => {
-  const [width, height] = useResize();
-  const [isDragging, setIsDragging] = useState(false);
-  const [isZooming, setIsZooming] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, isLoading }: SlideshowProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const size = useSize(containerRef) ?? { width: window.innerWidth, height: window.innerHeight };
 
-  const galleryContext = useContext(GalleryContext);
-  const modalContext = useContext(ModalContext);
-  const posts = galleryContext.posts;
-  const open = modalContext.state.modalIsOpen;
-  const setCurrentModalItem = (item: string | null) =>
-    modalContext.dispatch({ type: "SET_MODAL_ITEM", payload: { item } });
-  const postId = modalContext.state.modalItem;
-  const shownIndex = modalContext.state.modalItem ? posts.findIndex((i) => i.id === modalContext.state.modalItem) : 0;
+  const postIds = usePostStore((store) => store.postIds);
+  const postsById = usePostStore((store) => store.postsById);
+  const currentItemIndex = postIds.indexOf(currentItem);
+  const originalItemIndex = useRef(currentItemIndex).current;
 
-  function update(i: number, active: boolean = false, xDelta: number = 0) {
-    const pos = getPos(i, shownIndex, originalIndex);
+  /**
+   * Update spring values for carousel item
+   */
+  const update = (indexOfItem: number, active = false, xDelta = 0) => {
+    const pos = getPositionInCarousel(indexOfItem, currentItemIndex, originalItemIndex);
+
+    const scaleFactor = 4;
+    let x = pos * size.width;
+    let scale = 1;
+
+    if (active) {
+      x += xDelta;
+      scale = 1.025 - Math.abs(xDelta) / size.width / scaleFactor;
+    } else if (pos !== 0) {
+      scale = 1.025 - size.width / size.width / scaleFactor;
+    }
+
     return {
-      x: pos * width + (open && active ? xDelta : 0),
-      scale: open && active ? 1 - Math.abs(xDelta) / width / 2 : open ? 1 : 0.8,
+      x,
+      scale,
     };
-  }
+  };
 
-  function handleRest(index: number) {
-    const pos = getPos(index, shownIndex, originalIndex);
-    if (pos === 0) {
-      setIsTransitioning(false);
-    }
-  }
-
-  function handleStart(index: number) {
-    const pos = getPos(index, shownIndex, originalIndex);
-    if (pos === 0) {
-      setIsTransitioning(true);
-    }
-  }
-
-  const originalIndex = useRef(shownIndex).current;
-  const [springs, api] = useSprings(
-    itemsToRender,
-    (i) => ({
-      ...update(i, false, 0),
-      onRest: () => handleRest(i),
-      onStart: () => handleStart(i),
-    }),
-    [shownIndex, width]
-  );
-
+  /**
+   * Transitions to next item in carousel
+   */
   const goPrevModalItem = useCallback(() => {
-    if (postId) {
-      let idx = posts.findIndex((i) => i.id === postId);
-      idx = clamp(idx - 1, 0, posts.length - 1);
-      setCurrentModalItem(posts[idx].id);
+    const newIdx = clamp(currentItemIndex - 1, 0, postIds.length - 1);
+    const newPostId = postIds[newIdx];
+    if (newPostId) {
+      setCurrentModalItem(newPostId);
     }
-  }, [posts, postId, setCurrentModalItem]);
+  }, [setCurrentModalItem, postIds, currentItemIndex]);
 
+  /**
+   * Transitions to previous item in carousel
+   */
   const goNextModalItem = useCallback(() => {
-    if (postId) {
-      let idx = posts.findIndex((i) => i.id === postId);
-      idx = clamp(idx + 1, 0, posts.length - 1);
-      setCurrentModalItem(posts[idx].id);
-    }
-  }, [posts, postId, setCurrentModalItem]);
-
-  const bind = useDrag(({ active, movement: [xDelta], direction: [xDir], cancel, args: [isZooming, open] }) => {
-    if (!open || isZooming) {
-      cancel();
+    const newIdx = clamp(currentItemIndex + 1, 0, postIds.length - 1);
+    if (newIdx >= postIds.length - 1 && !isLoading && hasNextPage) {
+      loadMore();
     }
 
-    setIsDragging(active);
+    const newPostId = postIds[newIdx];
+    if (newPostId) {
+      setCurrentModalItem(newPostId);
+    }
+  }, [setCurrentModalItem, postIds, currentItemIndex, isLoading, hasNextPage, loadMore]);
 
-    if (open && active && Math.abs(xDelta) > width / 3) {
-      if (xDir > 0) {
-        goPrevModalItem();
-      } else {
-        goNextModalItem();
+  // Spring to animate carousel items
+  const [springs, api] = useSprings(ItemsToRender, (i) => ({ ...update(i, false, 0) }), [currentItemIndex]);
+
+  // Gesture to drag carousel items
+  const bind = useDrag(
+    ({ active, movement: [xDelta], direction: [xDir], velocity: [xVelocity], cancel, args: [zoomedIn] }) => {
+      if (zoomedIn) {
+        cancel();
       }
 
-      cancel();
+      if (active && (Math.abs(xDelta) > size.width * 0.45 || xVelocity > 6)) {
+        if (xDir > 0) {
+          goPrevModalItem();
+        } else {
+          goNextModalItem();
+        }
+
+        cancel();
+      }
+
+      api.start((i) => update(i, active, xDelta));
     }
+  );
 
-    api.start((i) => update(i, active, xDelta));
-  });
+  // Hooks for global key presses
+  useKeyPress('ArrowLeft', goPrevModalItem);
+  useKeyPress('ArrowRight', goNextModalItem);
 
-  useKeyPress("ArrowLeft", goPrevModalItem);
-  useKeyPress("ArrowRight", goNextModalItem);
-
-  if (modalIsTransitioning) {
-    return <Post post={posts[shownIndex]} />;
-  }
-
-  const idx = posts.findIndex((i) => i.id === postId);
-  const hasNext = idx < posts.length - 1;
-  const hasPrev = idx > 0;
+  const hasNext = currentItemIndex < postIds.length - 1;
+  const hasPrev = currentItemIndex > 0;
 
   return (
-    <>
-      <Zoom in={open && hasPrev} unmountOnExit>
-        <PrevButton color="default" onClick={goPrevModalItem}>
-          <ChevronLeftIcon />
-        </PrevButton>
-      </Zoom>
+    <div ref={containerRef} className="w-full h-full">
+      {hasPrev && (
+        <Fab
+          onClick={goPrevModalItem}
+          disabled={!hasPrev}
+          className="absolute left-4 top-2/4 -translate-y-1/2 z-20 w-20 h-20 pr-3"
+        >
+          <ChevronIcon className="rotate-180 w-12 h-12" />
+        </Fab>
+      )}
 
-      <Zoom in={open && hasNext} unmountOnExit>
-        <NextButton color="default" onClick={goNextModalItem}>
-          <ChevronRightIcon />
-        </NextButton>
-      </Zoom>
+      {!hasNext && isLoading && (
+        <div className="absolute right-4 top-2/4 -translate-y-1/2 z-20">
+          <LoadingIndicator size={72} />
+        </div>
+      )}
+
+      {hasNext && (
+        <Fab
+          onClick={goNextModalItem}
+          disabled={!hasNext}
+          className="absolute right-4 top-2/4 -translate-y-1/2 z-20 w-20 h-20 pl-3"
+        >
+          <ChevronIcon className="w-12 h-12" />
+        </Fab>
+      )}
 
       {springs.map((style, i) => {
-        const pos = getPos(i, shownIndex, originalIndex);
+        const pos = getPositionInCarousel(i, currentItemIndex, originalItemIndex);
         if (Math.abs(pos) === 2) {
           return null;
         }
 
-        const idx = shownIndex + pos;
-        if (idx < 0 || idx >= posts.length) {
+        const idx = currentItemIndex + pos;
+        if (idx < 0 || idx >= postIds.length) {
           return null;
         }
 
-        const post = posts[idx];
-        const totalHeight = window.innerHeight - TitleBarHeight - 2 * Gutter;
-        const totalWidth = window.innerWidth - 2 * Gutter;
-        const { width: post_width, height: post_height } = clampImageDimensions(
-          post.width,
-          post.height,
-          totalWidth,
-          totalHeight
-        );
+        const id = i;
+        const postId = postIds[idx];
+        invariant(postId, 'Post should exist in store');
+
+        const post = postsById[postId];
+        invariant(post, 'Post should exist in store');
+
+        const totalHeight = size.height - AppBarHeight - 2 * Gutter;
+        const totalWidth = size.width - 2 * Gutter;
+        const { width, height } = clampImageDimensions(post.width, post.height, totalWidth, totalHeight);
+        const left = (totalWidth - width) / 2 + Gutter;
+        const top = (totalHeight - height) / 2 + Gutter;
 
         return (
-          <Animated
+          <animated.div
             tabIndex={pos === 0 ? -1 : undefined}
-            {...(pos === 0 && !isZooming ? bind(isZooming, open) : {})}
-            style={{
-              overflow: "hidden",
-              position: modalIsTransitioning ? "absolute" : "fixed",
-              top: modalIsTransitioning ? 0 : 30,
-              ...style,
-            }}
-            key={i}
+            {...(pos === 0 ? bind() : {})}
+            className="z-10 touch-none flex justify-center items-center absolute"
+            key={id}
+            style={{ ...style, width, height, top, left }}
           >
-            <PinchZoomPan width={post_width} height={post_height} reset={pos !== 0}>
-              <Post post={post} interactable={!isZooming && pos === 0} />
+            <PinchZoomPan width={width} height={height} reset={pos !== 0}>
+              <MasonryItem post={post} imageLoading="eager" lowRes={false} controls />
             </PinchZoomPan>
-          </Animated>
+          </animated.div>
         );
       })}
-    </>
+    </div>
   );
-};
+}
 
 export default Slideshow;

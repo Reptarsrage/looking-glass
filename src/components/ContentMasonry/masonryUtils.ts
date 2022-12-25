@@ -1,4 +1,4 @@
-export type MasonryItemSizeFunc = (rowIndex: number) => number;
+export type MasonryItemSizeFunc = (index: number) => number;
 
 export interface MasonryInstanceProps {
   itemMetadataMap: Record<number, MasonryItemMetadata>;
@@ -12,6 +12,120 @@ export interface MasonryInstanceProps {
 export type MasonryItemMetadata = {
   offset: number;
   size: number;
+};
+
+const getItemMetadata = (
+  itemSize: MasonryItemSizeFunc,
+  index: number,
+  instanceProps: MasonryInstanceProps
+): MasonryItemMetadata => {
+  const { itemMetadataMap, lastMeasuredIndex, gutter } = instanceProps;
+
+  if (index > lastMeasuredIndex) {
+    let offset = gutter;
+    if (lastMeasuredIndex >= 0) {
+      const itemMetadata = itemMetadataMap[lastMeasuredIndex]!;
+      offset = itemMetadata.offset + itemMetadata.size + gutter;
+    }
+
+    for (let i = lastMeasuredIndex + 1; i <= index; i += 1) {
+      const size = itemSize(i);
+      itemMetadataMap[i] = {
+        offset,
+        size,
+      };
+
+      offset += size + gutter;
+    }
+
+    instanceProps.lastMeasuredIndex = index;
+  }
+
+  return itemMetadataMap[index]!;
+};
+
+const findNearestItemBinarySearch = (
+  itemSize: MasonryItemSizeFunc,
+  instanceProps: MasonryInstanceProps,
+  high: number,
+  low: number,
+  offset: number
+): number => {
+  while (low <= high) {
+    const middle = low + Math.floor((high - low) / 2);
+    const currentOffset = getItemMetadata(itemSize, middle, instanceProps).offset;
+
+    if (currentOffset === offset) {
+      return middle;
+    }
+    if (currentOffset < offset) {
+      low = middle + 1;
+    } else if (currentOffset > offset) {
+      high = middle - 1;
+    }
+  }
+
+  if (low > 0) {
+    return low - 1;
+  }
+  return 0;
+};
+
+const findNearestItemExponentialSearch = (
+  itemSize: MasonryItemSizeFunc,
+  itemCount: number,
+  instanceProps: MasonryInstanceProps,
+  index: number,
+  offset: number
+): number => {
+  let interval = 1;
+  while (index < itemCount && getItemMetadata(itemSize, index, instanceProps).offset < offset) {
+    index += interval;
+    interval *= 2;
+  }
+
+  return findNearestItemBinarySearch(
+    itemSize,
+    instanceProps,
+    Math.min(index, itemCount - 1),
+    Math.floor(index / 2),
+    offset
+  );
+};
+
+const findNearestItem = (
+  itemSize: MasonryItemSizeFunc,
+  itemCount: number,
+  offset: number,
+  instanceProps: MasonryInstanceProps
+) => {
+  const { itemMetadataMap, lastMeasuredIndex } = instanceProps;
+  const lastMeasuredItemOffset = lastMeasuredIndex > 0 ? itemMetadataMap[lastMeasuredIndex]!.offset : 0;
+
+  if (lastMeasuredItemOffset >= offset) {
+    return findNearestItemBinarySearch(itemSize, instanceProps, lastMeasuredIndex, 0, offset);
+  }
+
+  return findNearestItemExponentialSearch(itemSize, itemCount, instanceProps, Math.max(0, lastMeasuredIndex), offset);
+};
+
+export const getEstimatedTotalSize = (itemCount: number, instanceProps: MasonryInstanceProps) => {
+  let { itemMetadataMap, estimatedItemSize, lastMeasuredIndex } = instanceProps;
+  let totalSizeOfMeasuredItems = instanceProps.gutter;
+
+  if (lastMeasuredIndex >= itemCount) {
+    lastMeasuredIndex = itemCount - 1;
+  }
+
+  if (lastMeasuredIndex >= 0) {
+    const itemMetadata = itemMetadataMap[lastMeasuredIndex]!;
+    totalSizeOfMeasuredItems = itemMetadata.offset + itemMetadata.size;
+  }
+
+  const numUnmeasuredItems = itemCount - lastMeasuredIndex - 1;
+  const totalSizeOfUnmeasuredItems = numUnmeasuredItems * (estimatedItemSize + instanceProps.gutter);
+
+  return totalSizeOfMeasuredItems + totalSizeOfUnmeasuredItems + instanceProps.gutter;
 };
 
 export function getOffsetForIndexAndAlignment(
@@ -42,30 +156,11 @@ export function getOffsetForIndexAndAlignment(
   return Math.round(minOffset + (maxOffset - minOffset) / 2);
 }
 
-export const getEstimatedTotalSize = (itemCount: number, instanceProps: MasonryInstanceProps) => {
-  let { itemMetadataMap, estimatedItemSize, lastMeasuredIndex } = instanceProps;
-  let totalSizeOfMeasuredItems = instanceProps.gutter;
-
-  if (lastMeasuredIndex >= itemCount) {
-    lastMeasuredIndex = itemCount - 1;
-  }
-
-  if (lastMeasuredIndex >= 0) {
-    const itemMetadata = itemMetadataMap[lastMeasuredIndex];
-    totalSizeOfMeasuredItems = itemMetadata.offset + itemMetadata.size;
-  }
-
-  const numUnmeasuredItems = itemCount - lastMeasuredIndex - 1;
-  const totalSizeOfUnmeasuredItems = numUnmeasuredItems * (estimatedItemSize + instanceProps.gutter);
-
-  return totalSizeOfMeasuredItems + totalSizeOfUnmeasuredItems + instanceProps.gutter;
-};
-
 export const getItemOffset = (itemSize: MasonryItemSizeFunc, index: number, instanceProps: MasonryInstanceProps) =>
   getItemMetadata(itemSize, index, instanceProps).offset;
 
 export const getItemSize = (index: number, instanceProps: MasonryInstanceProps) =>
-  instanceProps.itemMetadataMap[index].size;
+  instanceProps.itemMetadataMap[index]!.size;
 
 export const getStartIndexForOffset = (
   itemSize: MasonryItemSizeFunc,
@@ -90,104 +185,9 @@ export const getStopIndexForStartIndex = (
   let stopIndex = startIndex;
 
   while (stopIndex < itemCount - 1 && offset < maxOffset) {
-    stopIndex++;
+    stopIndex += 1;
     offset += getItemMetadata(itemSize, stopIndex, instanceProps).size + gutter;
   }
 
   return stopIndex;
-};
-
-const getItemMetadata = (
-  itemSize: MasonryItemSizeFunc,
-  index: number,
-  instanceProps: MasonryInstanceProps
-): MasonryItemMetadata => {
-  const { itemMetadataMap, lastMeasuredIndex, gutter, column } = instanceProps;
-
-  if (index > lastMeasuredIndex) {
-    let offset = gutter;
-    if (lastMeasuredIndex >= 0) {
-      const itemMetadata = itemMetadataMap[lastMeasuredIndex];
-      offset = itemMetadata.offset + itemMetadata.size + gutter;
-    }
-
-    for (let i = lastMeasuredIndex + 1; i <= index; i++) {
-      let size = itemSize(i);
-      itemMetadataMap[i] = {
-        offset,
-        size,
-      };
-
-      offset += size + gutter;
-    }
-
-    instanceProps.lastMeasuredIndex = index;
-  }
-
-  return itemMetadataMap[index];
-};
-
-const findNearestItem = (
-  itemSize: MasonryItemSizeFunc,
-  itemCount: number,
-  offset: number,
-  instanceProps: MasonryInstanceProps
-) => {
-  const { itemMetadataMap, lastMeasuredIndex } = instanceProps;
-  const lastMeasuredItemOffset = lastMeasuredIndex > 0 ? itemMetadataMap[lastMeasuredIndex].offset : 0;
-
-  if (lastMeasuredItemOffset >= offset) {
-    return findNearestItemBinarySearch(itemSize, instanceProps, lastMeasuredIndex, 0, offset);
-  }
-
-  return findNearestItemExponentialSearch(itemSize, itemCount, instanceProps, Math.max(0, lastMeasuredIndex), offset);
-};
-
-const findNearestItemBinarySearch = (
-  itemSize: MasonryItemSizeFunc,
-  instanceProps: MasonryInstanceProps,
-  high: number,
-  low: number,
-  offset: number
-): number => {
-  while (low <= high) {
-    const middle = low + Math.floor((high - low) / 2);
-    const currentOffset = getItemMetadata(itemSize, middle, instanceProps).offset;
-
-    if (currentOffset === offset) {
-      return middle;
-    } else if (currentOffset < offset) {
-      low = middle + 1;
-    } else if (currentOffset > offset) {
-      high = middle - 1;
-    }
-  }
-
-  if (low > 0) {
-    return low - 1;
-  } else {
-    return 0;
-  }
-};
-
-const findNearestItemExponentialSearch = (
-  itemSize: MasonryItemSizeFunc,
-  itemCount: number,
-  instanceProps: MasonryInstanceProps,
-  index: number,
-  offset: number
-): number => {
-  let interval = 1;
-  while (index < itemCount && getItemMetadata(itemSize, index, instanceProps).offset < offset) {
-    index += interval;
-    interval *= 2;
-  }
-
-  return findNearestItemBinarySearch(
-    itemSize,
-    instanceProps,
-    Math.min(index, itemCount - 1),
-    Math.floor(index / 2),
-    offset
-  );
 };

@@ -1,348 +1,259 @@
-import React, { useEffect, useMemo, useState, useContext, forwardRef } from "react";
-import MuiModal from "@mui/material/Modal";
-import Backdrop from "@mui/material/Backdrop";
-import styled from "@mui/system/styled";
-import Zoom from "@mui/material/Zoom";
-import Fade from "@mui/material/Fade";
-import CloseIcon from "@mui/icons-material/Close";
-import MenuIcon from "@mui/icons-material/Menu";
-import Typography from "@mui/material/Typography";
-import Fab from "@mui/material/Fab";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import Link from "@mui/material/Link";
-import MuiDrawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
+import { animated, config, useChain, useSpring, useSpringRef } from '@react-spring/web';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
-import Slideshow from "./Slideshow";
-import ZoomFromTo from "./ZoomFromTo";
-import { ModalContext } from "../store/modal";
-import { GalleryContext } from "../store/gallery";
-import { FullscreenContext } from "../store/fullscreen";
-import useTheme from "@mui/material/styles/useTheme";
-import useAppSearchParams from "../hooks/useAppSearchParams";
-import { PostTagsList } from "./TagList";
-import useKeyPress from "../hooks/useKeyPress";
-import { ModuleContext } from "../store/module";
+import useAddFilter from '../hooks/useAddFilter';
+import useKeyPress from '../hooks/useKeyPress';
+import useModule from '../hooks/useModule';
+import useModalStore from '../store/modal';
+import usePostStore from '../store/posts';
+import type { Post } from '../types';
 
-const TitleBarHeight = 30;
+import Button from './Button';
+import FiltersMenu from './FiltersMenu';
+import { InnerItem as MasonryItem } from './MasonryItem';
+import Slideshow from './SlideShow';
+
+// Constants
+const AppBarHeight = 28;
 const Gutter = 16;
 
-const CloseButton = styled(Fab)(({ theme }) => ({
-  top: Gutter + TitleBarHeight,
-  right: Gutter,
-  position: "fixed",
-  zIndex: (theme.zIndex as any).modal + 1,
-}));
+interface ModalProps {
+  loadMore: () => void;
+  isLoading: boolean;
+  hasNextPage: boolean | undefined;
+}
 
-const MenuButton = styled(Fab)(({ theme }) => ({
-  top: 100 + Gutter, // below CloseButton
-  right: Gutter,
-  position: "fixed",
-  zIndex: (theme.zIndex as any).modal + 1,
-}));
+interface InnerModalProps extends ModalProps {
+  close: () => void;
+}
 
-const ToggleCaptionButton = styled(Fab)(({ theme }) => ({
-  top: Gutter + TitleBarHeight,
-  left: Gutter,
-  position: "fixed",
-  zIndex: (theme.zIndex as any).modal + 2,
-}));
+function calculateItemStartPosition(bounds: DOMRect | null) {
+  if (!bounds) {
+    return {};
+  }
 
-const Caption = styled("div")(({ theme }) => ({
-  WebkitAppRegion: "no-drag",
-  position: "fixed",
-  top: TitleBarHeight,
-  left: 0,
-  right: 0,
-  background: `linear-gradient(${theme.palette.background.default}, transparent)`,
-  color: theme.palette.text.primary,
-  zIndex: (theme.zIndex as any).modal + 1,
-  padding: theme.spacing(1),
-  paddingLeft: 72 + Gutter, // tight of ToggleCaptionButton
-  paddingRight: 72 + Gutter, // tight of ToggleCaptionButton
-}));
+  return { x: bounds.x, y: bounds.y - AppBarHeight, width: bounds.width, height: bounds.height };
+}
 
-/**
- * Resizes image dimensions to fit container, preserving aspect ratio
- * @param {*} width
- * @param {*} height
- * @param {*} maxHeight
- * @param {*} maxWidth
- */
-function clampImageDimensions(width: number, height: number, maxHeight: number, maxWidth: number) {
-  let clampTo = Math.min(maxHeight, maxWidth);
-  let clampWidth = Math.min(width, clampTo);
-  let clampHeight = Math.min(height, clampTo);
+function calculateItemEndPosition(bounds: DOMRect | null, post: Post | null) {
+  if (!bounds || !post) {
+    return {};
+  }
 
-  if (width > height) {
-    clampHeight = (height / width) * clampWidth;
+  const availableWidth = window.innerWidth - 2 * Gutter;
+  const availableHeight = window.innerHeight - 2 * Gutter - AppBarHeight;
+
+  const clampTo = Math.min(availableHeight, availableWidth);
+  let clampWidth = Math.min(post.width, clampTo);
+  let clampHeight = Math.min(post.height, clampTo);
+
+  if (post.width > post.height) {
+    clampHeight = (post.height / post.width) * clampWidth;
   } else {
-    clampWidth = (width / height) * clampHeight;
+    clampWidth = (post.width / post.height) * clampHeight;
   }
-  return { width: clampWidth, height: clampHeight };
+
+  const width = clampWidth;
+  const height = clampHeight;
+  const x = (availableWidth - width) / 2 + Gutter;
+  const y = (availableHeight - height) / 2 + Gutter;
+
+  return { width, height, x, y };
 }
 
-interface CustomRootProps {
-  onModalClose: () => void;
-  entering: boolean;
-  children?: React.ReactNode;
-}
+function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps) {
+  const open = useModalStore((state) => state.open);
+  const item = useModalStore((state) => state.item);
+  const bounds = useModalStore((state) => state.bounds);
+  const toggleModal = useModalStore((state) => state.toggleModal);
+  const updateItem = useModalStore((state) => state.updateItem);
+  const onOpen = useModalStore((state) => state.onOpen);
+  const onClose = useModalStore((state) => state.onClose);
+  const toggleInfo = useModalStore((state) => state.toggleInfo);
+  const showInfo = useModalStore((state) => state.showInfo);
 
-const CustomRoot = forwardRef<HTMLDivElement, CustomRootProps>(
-  ({ onModalClose, entering, children, ...passThroughProps }, ref) => {
-    const [searchParams, setSearchParams] = useAppSearchParams();
+  const { supportsAuthorFilter, supportsSourceFilter } = useModule();
 
-    const galleryContext = useContext(GalleryContext);
-    const moduleContext = useContext(ModuleContext);
-    const modalContext = useContext(ModalContext);
-    const fullscreenContext = useContext(FullscreenContext);
-    const open = modalContext.state.modalIsOpen;
-    const postId = modalContext.state.modalItem;
-    const closeModal = (payload: () => void) => modalContext.dispatch({ type: "CLOSE_MODAL", payload });
-    const module = moduleContext.modules.find((m) => m.id === searchParams.moduleId);
-    const post = galleryContext.posts.find((post) => post.id === postId);
+  const post = usePostStore((store) => (typeof item === 'string' ? store.postsById[item] : null));
+  const [isTransitioning, setIsTransitioning] = useState(true);
 
-    const [showCaption, setShowCaption] = useState(true);
-    const [drawerOpen, setDrawerOpen] = useState(false);
+  const addFilter = useAddFilter();
 
-    // effect to hide/show full screen elements like nav buttons and search
-    useEffect(() => {
-      fullscreenContext.setFullscreen(drawerOpen || open);
-    }, [drawerOpen, open]);
+  function closeModal() {
+    toggleModal(false);
+  }
 
-    function onCaptionToggled() {
-      setShowCaption((s) => !s);
-    }
+  const backdropApi = useSpringRef();
+  const backdropStyles = useSpring({
+    ref: backdropApi,
+    config: { ...config.gentle, clamp: true },
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    reverse: !open,
+  });
 
-    function onItemClicked() {
-      setDrawerOpen(false);
-    }
+  const itemApi = useSpringRef();
+  const itemStyles = useSpring({
+    ref: itemApi,
+    config: { ...config.default, clamp: true },
+    from: calculateItemStartPosition(bounds),
+    onStart: () => {
+      setIsTransitioning(true);
+    },
+    onRest: () => {
+      setIsTransitioning(false);
 
-    function onAuthorClicked() {
-      if (post?.author && searchParams.filters.indexOf(post.author.id) < 0) {
-        const section = module?.filters.find((f) => f.id === post?.author?.filterSectionId);
-        const { supportsMultiple = false, supportsSearch = false } = section ?? {};
-        const supportsGalleryFilters = module?.supportsGalleryFilters ?? false;
-
-        searchParams.galleryId = supportsGalleryFilters ? searchParams.galleryId : "";
-        searchParams.query = supportsSearch ? searchParams.query : "";
-        searchParams.filters = [...(supportsMultiple ? searchParams.filters : []), post.author.id];
+      if (!open) {
+        close();
+        if (onClose) {
+          onClose();
+        }
+      } else {
+        if (onOpen) {
+          onOpen();
+        }
       }
+    },
+  });
 
-      closeModal(() => setSearchParams(searchParams));
+  useChain([itemApi, backdropApi], [0, 0]);
+
+  useKeyPress('Escape', closeModal);
+
+  useEffect(() => {
+    if (open && post) {
+      itemApi.start(calculateItemEndPosition(bounds, post));
+    } else if (!open) {
+      itemApi.start(calculateItemStartPosition(bounds));
     }
+  }, [open]);
 
-    function onSourceClicked() {
-      if (post?.source && searchParams.filters.indexOf(post.source.id) < 0) {
-        const section = module?.filters.find((f) => f.id === post.source?.filterSectionId);
-        const { supportsMultiple = false, supportsSearch = false } = section ?? {};
-        const supportsGalleryFilters = module?.supportsGalleryFilters ?? false;
-
-        searchParams.galleryId = supportsGalleryFilters ? searchParams.galleryId : "";
-        searchParams.query = supportsSearch ? searchParams.query : "";
-        searchParams.filters = [...(supportsMultiple ? searchParams.filters : []), post.source.id];
-      }
-
-      closeModal(() => setSearchParams(searchParams));
+  // effect to set window title
+  useEffect(() => {
+    if (post) {
+      window.electronAPI.setTitle(post.name);
     }
+  }, [post]);
 
-    function onMenuClicked() {
-      setDrawerOpen(true);
-    }
-
-    const subCaptions = [
-      post?.author && (
-        <span key="author">
-          by{" "}
-          <Link role="button" sx={{ cursor: "pointer" }} onClick={onAuthorClicked}>
-            {post.author.name}
-          </Link>
-        </span>
-      ),
-      post?.source && (
-        <span key="source">
-          to{" "}
-          <Link role="button" sx={{ cursor: "pointer" }} onClick={onSourceClicked}>
-            {post.source.name}
-          </Link>
-        </span>
-      ),
-      post?.date && <span key="date">on {new Date(post.date).toLocaleString()}</span>,
-    ]
-      .filter(Boolean)
-      .reduce((prev, curr) => [...prev, " ", curr], [] as React.ReactNode[]);
-
-    return (
-      <Box ref={ref} {...passThroughProps}>
-        {/* Toggle Caption Button */}
-        <Zoom in={open} unmountOnExit>
-          <ToggleCaptionButton
-            onClick={onCaptionToggled}
-            sx={{ opacity: showCaption ? undefined : "0.5" }}
-            data-testid="showCaption"
-          >
-            {showCaption ? <VisibilityIcon /> : <VisibilityOffIcon />}
-          </ToggleCaptionButton>
-        </Zoom>
-
-        {/* Caption */}
-        {showCaption && post && (
-          <Fade in={open} unmountOnExit>
-            <Caption>
-              <Typography variant="h4" sx={{ minHeight: "1em" }}>
-                {post.name || "UNTITLED"}
-              </Typography>
-              <Typography sx={{ color: "palette.grey[400]" }} variant="subtitle1">
-                {subCaptions}
-              </Typography>
-              {post.description && (
-                <Typography sx={{ color: "palette.grey[400]" }} variant="subtitle1">
-                  {post.description}
-                </Typography>
-              )}
-            </Caption>
-          </Fade>
-        )}
-
-        {/* Close Button */}
-        <Zoom in={open} unmountOnExit>
-          <CloseButton color="default" onClick={onModalClose}>
-            <CloseIcon />
-          </CloseButton>
-        </Zoom>
-
-        {/* Menu Button */}
-        <Zoom in={open && !entering} unmountOnExit>
-          <MenuButton color="default" onClick={onMenuClicked}>
-            <MenuIcon />
-          </MenuButton>
-        </Zoom>
-
-        {/* Drawer */}
-        <MuiDrawer
-          anchor="right"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          PaperProps={{ sx: { height: "calc(100% - 30px)" } }}
-        >
-          <PostTagsList overscanCount={3} postTags={post?.filters ?? []} onItemClicked={onItemClicked} />
-        </MuiDrawer>
-
-        {children}
-      </Box>
-    );
-  }
-);
-
-const Modal: React.FC = () => {
-  const theme = useTheme();
-
-  const galleryContext = useContext(GalleryContext);
-  const modalContext = useContext(ModalContext);
-  const open = modalContext.state.modalIsOpen;
-  const boundingRect = modalContext.state.modalBoundingRect;
-  const postId = modalContext.state.modalItem;
-  const modalCloseCallback = modalContext.state.modalCloseCallback;
-  const closeModal = () => modalContext.dispatch({ type: "CLOSE_MODAL" });
-  const exitModal = () => modalContext.dispatch({ type: "EXIT_MODAL" });
-  const post = galleryContext.posts.find((post) => post.id === postId);
-
-  const [entered, setEntered] = useState(false);
-  const [entering, setEntering] = useState(false);
-
-  useKeyPress("Escape", onModalClose);
-
-  function onModalEntering() {
-    setEntering(true);
-  }
-
-  function onModalEntered() {
-    setEntering(false);
-    setEntered(true);
-  }
-
-  function onModalClose() {
-    closeModal();
-  }
-
-  function onModalExiting() {
-    setEntered(false);
-  }
-
-  function onModalExited() {
-    exitModal();
-    if (modalCloseCallback !== null) {
-      modalCloseCallback();
-      console.log("**");
+  function onAuthorClicked() {
+    if (post && post.author) {
+      const filterToAdd = post.author;
+      toggleModal(false, undefined, undefined, () => {
+        addFilter(filterToAdd);
+      });
     }
   }
 
-  const [from, to] = useMemo(() => {
-    if (!post || !boundingRect) {
-      return [{}, {}];
+  function onSourceClicked() {
+    if (post && post.source) {
+      const filterToAdd = post.source;
+      toggleModal(false, undefined, undefined, () => {
+        addFilter(filterToAdd);
+      });
     }
+  }
 
-    const totalHeight = window.innerHeight - TitleBarHeight - 2 * Gutter;
-    const totalWidth = window.innerWidth - 2 * Gutter;
-    const { width: post_width, height: post_height } = clampImageDimensions(
-      post.width,
-      post.height,
-      totalWidth,
-      totalHeight
-    );
+  if (!post) {
+    return null;
+  }
 
-    const from: React.CSSProperties = {
-      top: boundingRect.top,
-      left: boundingRect.left,
-      width: boundingRect.width,
-      height: boundingRect.height,
-      overflow: "hidden",
-    };
-
-    const to: React.CSSProperties = {
-      top: (totalHeight - post_height) / 2 + TitleBarHeight + 2 * Gutter,
-      left: (totalWidth - post_width) / 2 + Gutter,
-      width: post_width,
-      height: post_height,
-      overflow: "visible",
-    };
-
-    return open ? [from, to] : [to, from];
-  }, [open, boundingRect]);
-
+  // TODO: Transition modal button in and out
+  // TODO: something weird happens when navigating that prevents modal from opening sometimes
   return (
-    <>
-      {/* Modal Content */}
-      <MuiModal
-        open={open}
-        onClose={onModalClose}
-        disableRestoreFocus
-        components={{
-          Backdrop,
-          Root: CustomRoot,
-        }}
-        componentsProps={{
-          backdrop: { style: { backgroundColor: theme.palette.background.paper, zIndex: 1 } },
-          root: { entering, onModalClose } as any,
-        }}
-        sx={{ top: TitleBarHeight }}
-      >
-        <ZoomFromTo
-          in={open}
-          to={to}
-          from={from}
-          tabIndex={-1}
-          onExited={onModalExited}
-          onEnter={onModalEntering}
-          onEntered={onModalEntered}
-          onExit={onModalExiting}
+    <div className="fixed top-0 left-0 w-full h-full overflow-hidden" style={{ top: AppBarHeight }}>
+      <animated.div style={backdropStyles} className="absolute right-0 top-1 z-30 flex gap-2 p-2 items-center">
+        <Button onClick={toggleInfo}>Toggle Info</Button>
+        <FiltersMenu />
+      </animated.div>
+
+      {showInfo && (
+        <animated.div
+          style={backdropStyles}
+          className="absolute left-0 top-0 right-0 z-20 text-white bg-gradient-to-b from-black p-4"
         >
-          <Slideshow modalIsTransitioning={!entered} />
-        </ZoomFromTo>
-      </MuiModal>
-    </>
+          <div className="text-xl">
+            <h1>{post.name || 'UNTITLED'}</h1>
+          </div>
+
+          <div className="mt-2">
+            {post.author && (
+              <span className="mr-1">
+                by{' '}
+                <button
+                  className="cursor-pointer hover:underline"
+                  onClick={onAuthorClicked}
+                  disabled={!supportsAuthorFilter}
+                >
+                  {post.author.name}
+                </button>
+              </span>
+            )}
+
+            {post.source && (
+              <span className="mr-1">
+                to{' '}
+                <button
+                  onClick={onSourceClicked}
+                  className="cursor-pointer hover:underline"
+                  disabled={!supportsSourceFilter}
+                >
+                  {post.source.name}
+                </button>
+              </span>
+            )}
+
+            {post.date && <span>on {new Date(post.date).toLocaleString()}</span>}
+          </div>
+          <div className="mt-2">
+            <p>{post.description}</p>
+          </div>
+        </animated.div>
+      )}
+
+      <animated.div
+        style={backdropStyles}
+        className="absolute top-0 left-0 w-full h-full bg-gray-900 z-10"
+        onClick={closeModal}
+      />
+
+      {isTransitioning ? (
+        <animated.div style={itemStyles} className="fixed z-20 touch-none shadow-lg rounded-lg overflow-hidden">
+          <MasonryItem post={post} imageLoading="eager" />
+        </animated.div>
+      ) : (
+        <Slideshow
+          currentItem={post.id}
+          setCurrentModalItem={updateItem}
+          loadMore={loadMore}
+          isLoading={isLoading}
+          hasNextPage={hasNextPage}
+        />
+      )}
+    </div>
   );
-};
+}
+
+function Modal({ loadMore, isLoading, hasNextPage }: ModalProps) {
+  const open = useModalStore((state) => state.open);
+  const clearItem = useModalStore((state) => state.clearItem);
+  const [shown, setShown] = useState(open);
+
+  const close = useCallback(() => {
+    setShown(false);
+    clearItem();
+  }, [clearItem, setShown]);
+
+  useLayoutEffect(() => {
+    if (open) {
+      setShown(true);
+    }
+  }, [open]);
+
+  if (!shown) {
+    return null;
+  }
+
+  return <InnerModal close={close} loadMore={loadMore} isLoading={isLoading} hasNextPage={hasNextPage} />;
+}
 
 export default Modal;

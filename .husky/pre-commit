@@ -1,4 +1,7 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-./node_modules/.bin/nano-staged
+# tem workaround for: https://github.com/okonet/lint-staged/issues/1145#issuecomment-1143616749
+exec >/dev/tty 2>&1
+
+yarn lint-staged

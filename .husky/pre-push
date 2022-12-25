@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo '👀 Searching for mistakes...'
+
+# Check Prettier standards
+echo '👀 Checking formatting...'
+yarn format --check ||
+(
+    echo '❌ Prettier Check Failed. Run "yarn format --write", commit changes and try again.';
+    false;
+)
+
+# Check ESLint Standards
+echo '👀 Checking linting...'
+yarn lint ||
+(
+    echo '❌ ESLibnt Check Failed. Run "yarn lint --fix", commit changes and try again.';
+    false;
+)
+
+# Check tsconfig standards
+echo '👀 Checking types...'
+yarn type-check ||
+(
+    echo '❌ Type checks Failed. Make the required changes listed above, commit changes and try again.'
+    false;
+)
+
+# Check tests
+# TODO: Add tests
+# echo '👀 Checking tests...'
+# yarn test ||
+# (
+#     echo '❌ Tests failed. Review the failing tests above. '
+#     false;
+# )
+
+# Check build
+echo '👀 Checking build...'
+yarn build ||
+(
+    echo '❌ Build failed: Review the errors above.'
+    false;
+)
+
+# If everything passes... Now we can push
+echo '✅ You win this time...'

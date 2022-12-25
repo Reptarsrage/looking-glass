@@ -1,5 +1,7 @@
-import { createElement, useEffect, useRef } from "react";
-import memoizeOne from "memoize-one";
+import useIntersectionObserver from '@react-hook/intersection-observer';
+import memoizeOne from 'memoize-one';
+import React, { createElement, memo, useEffect, useRef } from 'react';
+import invariant from 'tiny-invariant';
 
 import {
   getEstimatedTotalSize,
@@ -9,9 +11,7 @@ import {
   getStopIndexForStartIndex,
   MasonryInstanceProps,
   MasonryItemSizeFunc,
-} from "./masonryUtils";
-import type { Post } from "../../store/gallery";
-import useIntersectionObserver from "../../hooks/useIntersectionObserver";
+} from './masonryUtils';
 
 export interface RequiredItemData {
   id: string;
@@ -19,8 +19,8 @@ export interface RequiredItemData {
   width: number;
 }
 
-export interface MasonryItemProps<TItemData> {
-  style: Record<string, any>;
+export interface MasonryItemProps<TItemData extends RequiredItemData> {
+  style: React.CSSProperties;
   isScrolling: boolean;
   item: TItemData;
 }
@@ -33,13 +33,13 @@ export interface MasonryOnItemsRenderedParams {
   visibleStopIndex: number;
 }
 
-export type ScrollDirection = "forward" | "backward";
+export type ScrollDirection = 'forward' | 'backward';
 export interface MasonryOnScrollParams {
   scrollDirection: ScrollDirection;
   scrollOffset: number;
 }
 
-export interface VirtualizedMasonryColumnProps<TItemData> {
+export interface VirtualizedMasonryColumnProps<TItemData extends RequiredItemData> {
   children: React.FunctionComponent<MasonryItemProps<TItemData>>;
   id: number;
   items: TItemData[];
@@ -56,8 +56,8 @@ export interface VirtualizedMasonryColumnProps<TItemData> {
 }
 
 function clampImageDimensions(width: number, height: number, maxWidth: number) {
-  let clampWidth = maxWidth;
-  let clampHeight = (height / width) * clampWidth;
+  const clampWidth = maxWidth;
+  const clampHeight = (height / width) * clampWidth;
   return { width: clampWidth, height: clampHeight };
 }
 
@@ -80,8 +80,11 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
   const height = window.innerHeight;
   const itemCount = items.length;
   function itemSize(idx: number) {
-    const { height } = clampImageDimensions(items[idx].width, items[idx].height, width);
-    return height;
+    const item = items[idx];
+    invariant(item, 'Item not found in items array');
+
+    const dims = clampImageDimensions(item.width, item.height, width);
+    return dims.height;
   }
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -95,7 +98,8 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
   }).current;
 
   const getItemStyleCache = useRef(
-    memoizeOne((itemSize: number | MasonryItemSizeFunc) => ({} as Record<number, React.CSSProperties>))
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+    memoizeOne((_: number | MasonryItemSizeFunc) => ({} as Record<number, React.CSSProperties>))
   ).current;
 
   const getRangeToRender = (): [number, number, number, number] => {
@@ -105,8 +109,8 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
 
     const startIndex = getStartIndexForOffset(itemSize, itemCount, scrollOffset, instanceProps);
     const stopIndex = getStopIndexForStartIndex(itemSize, height, itemCount, startIndex, scrollOffset, instanceProps);
-    const overscanBackward = !isScrolling && scrollDirection === "backward" ? Math.max(1, overscanCount) : 0;
-    const overscanForward = !isScrolling && scrollDirection === "forward" ? Math.max(1, overscanCount) : 0;
+    const overscanBackward = !isScrolling && scrollDirection === 'backward' ? Math.max(1, overscanCount) : 0;
+    const overscanForward = !isScrolling && scrollDirection === 'forward' ? Math.max(1, overscanCount) : 0;
     return [
       Math.max(0, startIndex - overscanBackward),
       Math.max(0, Math.min(itemCount - 1, stopIndex + overscanForward)),
@@ -115,32 +119,32 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     ];
   };
 
-  const getItemStyle = (index: number): Object => {
+  const getItemStyle = (index: number): React.CSSProperties => {
     const itemStyleCache = getItemStyleCache(itemSize);
-    if (!itemStyleCache.hasOwnProperty(index)) {
+    if (!Object.prototype.hasOwnProperty.call(itemStyleCache, index)) {
       const offset = getItemOffset(itemSize, index, instanceProps);
       const size = getItemSize(index, instanceProps);
       itemStyleCache[index] = {
-        position: "absolute",
+        position: 'absolute',
         left: gutter / 2,
         right: gutter / 2,
         top: offset,
         height: size,
+        width: width - gutter,
       };
     }
 
-    return itemStyleCache[index];
+    return itemStyleCache[index] ?? {};
   };
 
   // effect to clear cache
   useEffect(() => {
-    // TODO: can i only run this when items is replaced (not added to?)
     instanceProps.gutter = gutter;
     instanceProps.column = columnIndex;
     instanceProps.width = width;
     instanceProps.lastMeasuredIndex = -1;
     getItemStyleCache(-1);
-  }, [width, gutter, columnIndex, items]);
+  }, [width, gutter, columnIndex]);
 
   // effect to scroll to item
   useEffect(() => {
@@ -154,8 +158,8 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     }
 
     const itemStyle = getItemStyle(idx);
-    const itemHeight = (itemStyle as any)?.height ?? 0;
-    const itemTop = (itemStyle as any)?.top ?? 0;
+    const itemHeight = (itemStyle.height as number) ?? 0;
+    const itemTop = (itemStyle.top as number) ?? 0;
     const itemBottom = itemTop + itemHeight;
     const screenTop = scrollOffset;
     const screenBottom = screenTop + window.innerHeight - 110; // masonry is about 110px from top of screen
@@ -166,23 +170,30 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
   }, [scrollToItem]);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  useIntersectionObserver({
-    target: loadMoreRef,
-    onIntersect: loadMore,
-  });
+  const previouslyIntersectingRef = useRef(true);
+  const { isIntersecting } = useIntersectionObserver(loadMoreRef.current); // NOTE: Does this cause a re-render? (yes, but only during first placeholder render)
+  useEffect(() => {
+    if (isIntersecting && !previouslyIntersectingRef.current && loadMore) {
+      loadMore();
+    }
+
+    previouslyIntersectingRef.current = isIntersecting;
+  }, [isIntersecting, loadMore]);
 
   const estimatedTotalSize = getEstimatedTotalSize(itemCount, instanceProps);
   const [startIndex, stopIndex] = getRangeToRender();
 
   const itemsToRender = [];
   if (itemCount > 0) {
-    for (let index = startIndex; index <= stopIndex; index++) {
+    for (let index = startIndex; index <= stopIndex; index += 1) {
+      const item = items[index];
+      invariant(item, 'Item not found in items array');
       itemsToRender.push(
         createElement(children, {
-          key: items[index].id,
+          key: item.id,
           style: getItemStyle(index),
           isScrolling,
-          item: items[index],
+          item,
         })
       );
     }
@@ -191,26 +202,40 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
   return (
     <div
       ref={containerRef}
+      className="flex flex-col relative"
       style={{
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
         width,
         height: estimatedTotalSize,
+        WebkitOverflowScrolling: 'touch',
+        willChange: 'transform',
+        WebkitTransform: 'translate3d(0,0,0)', // Enable GPU acceleration
       }}
     >
       {itemsToRender}
       <div
         ref={loadMoreRef}
+        className="absolute"
         style={{
-          position: "absolute",
           top: Math.max(0, estimatedTotalSize - 5),
-          width: "100%",
+          width: '100%',
           height: 5,
         }}
-      ></div>
+      />
     </div>
   );
 }
 
-export default VirtualizedMasonryColumn;
+export default memo(
+  VirtualizedMasonryColumn,
+  (prev, next) =>
+    prev.id === next.id &&
+    prev.items === next.items &&
+    prev.width === next.width &&
+    prev.scrollOffset === next.scrollOffset &&
+    prev.scrollDirection === next.scrollDirection &&
+    prev.isScrolling === next.isScrolling &&
+    prev.overscanCount === next.overscanCount &&
+    prev.estimatedItemSize === next.estimatedItemSize &&
+    prev.gutter === next.gutter &&
+    prev.scrollToItem === next.scrollToItem
+);

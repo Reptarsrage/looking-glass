@@ -98,3 +98,14 @@ yarn package
 - [ ] set slide show direction, and scroll to top/bottom based on direction (to avoid less scrolls)
 - [ ] zoomed images dont slideshow well
 - [ ] first mdal after route change is blank
+
+Links:
+
+- [tailwind css](https://tailwindcss.com/docs)
+- [react router](https://reactrouter.com/en/main)
+- [react query](https://react-query-v3.tanstack.com/overview)
+- [react-spring](https://react-spring.dev/)
+- [@use-gesture](https://use-gesture.netlify.app/docs/gestures/)
+- [bootstrap svg icons](https://icons.getbootstrap.com/)
+- [undraw svg art](https://undraw.co/illustrations)
+- [tailwind elements](https://tailwind-elements.com/docs/standard/components/buttons/)

@@ -1,69 +1,18 @@
-import { useMemo, Suspense, useContext } from "react";
-import { HashRouter } from "react-router-dom";
-import Box from "@mui/material/Box";
-import createTheme, { ThemeOptions } from "@mui/material/styles/createTheme";
-import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import CssBaseline from "@mui/material/CssBaseline";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import CircularProgress from "@mui/material/CircularProgress";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { animated, config, useSpringRef, useTransition } from '@react-spring/web';
+import React, { useEffect, useRef } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { HashRouter, Route, Routes, useLocation, useParams } from 'react-router-dom';
 
-import ErrorBoundary from "./components/ErrorBoundary";
-import TitleBar from "./components/TitleBar";
-import AnErrorOccurred from "./components/Status/AnErrorOccurred";
-import Router from "./Router";
-import { AuthProvider } from "./store/auth";
-import { PreferredTheme, SettingsContext } from "./store/settings";
-import { ModuleProvider } from "./store/module";
-import { FullscreenProvider } from "./store/fullscreen";
-import { VolumeProvider } from "./store/volume";
-
-// https://material-ui.com/customization/palette/
-const darkTheme: ThemeOptions = {
-  palette: {
-    mode: "dark",
-    primary: {
-      light: "#a6d4fa",
-      main: "#90caf9",
-      dark: "#648dae",
-    },
-    secondary: {
-      light: "#f6a5c0",
-      main: "#f48fb1",
-      dark: "#aa647b",
-    },
-    grey: {
-      900: "#191919",
-    },
-  },
-  zIndex: {
-    drawer: 1300,
-    modal: 1200,
-  },
-};
-
-const lightTheme: ThemeOptions = {
-  palette: {
-    mode: "light",
-    primary: {
-      light: "#4791db",
-      main: "#1976d2",
-      dark: "#115293",
-    },
-    secondary: {
-      light: "#e33371",
-      main: "#dc004e",
-      dark: "#9a0036",
-    },
-    grey: {
-      900: "#EBEBEB",
-    },
-  },
-  zIndex: {
-    drawer: 1300,
-    modal: 1200,
-  },
-};
+import AppBar from './AppBar';
+import CurrentFilters from './components/CurrentFilters';
+import FiltersMenu from './components/FiltersMenu';
+import NavButtons from './components/NavButtons';
+import Search from './components/Search';
+import SortMenu from './components/SortMenu';
+import useNavStack from './hooks/useNavStack';
+import useSize from './hooks/useSize';
+import Authenticated from './pages/Authenticated';
+import Modules from './pages/Modules';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,56 +20,108 @@ const queryClient = new QueryClient({
       cacheTime: Infinity,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchOnMount: false,
+      refetchIntervalInBackground: false,
+      retry(failureCount) {
+        return failureCount < 3;
+      },
     },
   },
 });
 
-const App: React.FC = () => {
-  const settingsContext = useContext(SettingsContext);
-  const { preferredTheme } = settingsContext.settings;
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const appliedTheme = useMemo(
-    () =>
-      createTheme(
-        preferredTheme === PreferredTheme.Dark || (preferredTheme === PreferredTheme.Default && prefersDarkMode)
-          ? darkTheme
-          : lightTheme
-      ),
-    [prefersDarkMode, preferredTheme]
-  );
+function AnimatedRouter() {
+  // Keep track of navigation
+  const location = useLocation();
+  const { direction } = useNavStack();
+
+  // Spring
+  const transRef = useSpringRef();
+  const transitions = useTransition(location, {
+    ref: transRef,
+    keys: null,
+    from: { x: 100 },
+    enter: { x: 0 },
+    leave: { x: -100 },
+    expires: 60000,
+    config: { ...config.stiff, clamp: true },
+  });
+
+  // keep track of size using a container that wont be affected by transitions
+  const containerRef = useRef<HTMLDivElement>(null);
+  const size = useSize(containerRef);
+
+  useEffect(() => {
+    transRef.start();
+  }, [transRef, location]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={appliedTheme}>
-        <FullscreenProvider>
-          <VolumeProvider>
-            <CssBaseline enableColorScheme />
-            <HashRouter>
-              <TitleBar />
-
-              <Box sx={{ flex: "1", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                <ErrorBoundary fallback={<AnErrorOccurred />}>
-                  <Suspense
-                    fallback={
-                      <Box sx={{ paddingTop: "25%", textAlign: "center" }}>
-                        <CircularProgress size="6rem" />
-                      </Box>
-                    }
-                  >
-                    <ModuleProvider>
-                      <AuthProvider>
-                        <Router />
-                      </AuthProvider>
-                    </ModuleProvider>
-                  </Suspense>
-                </ErrorBoundary>
-              </Box>
-            </HashRouter>
-          </VolumeProvider>
-        </FullscreenProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <div ref={containerRef} className="flex flex-col flex-1 relative overflow-hidden">
+      {transitions(({ x }, item) => (
+        <animated.div
+          style={{ transform: x.to((y) => `scale(${1.0 - Math.abs(y) * 0.001}) translate3d(${direction * y}vw,0,0)`) }}
+          className="flex flex-col absolute top-0 left-0 w-full h-full"
+        >
+          <Routes location={item}>
+            <Route path="/" element={<Modules />} />
+            <Route
+              path="/module/:moduleId"
+              element={<Authenticated size={size} isTransitioning={item.key !== location.key} locationKey={item.key} />}
+            />
+          </Routes>
+        </animated.div>
+      ))}
+    </div>
   );
-};
+}
+
+function AppWithRouting() {
+  const params = useParams();
+  console.log(params);
+
+  return (
+    <div className="flex flex-col h-screen">
+      <header className="flex-none">
+        <AppBar />
+      </header>
+
+      <main className="flex-auto flex flex-col">
+        <div className="flex items-center gap-2 p-2">
+          <NavButtons />
+
+          <Routes>
+            <Route
+              path="/module/:moduleId"
+              element={
+                <>
+                  <Search />
+                  <CurrentFilters />
+
+                  <span className="ml-auto" />
+
+                  <SortMenu />
+                  <FiltersMenu />
+                </>
+              }
+            />
+            <Route path="*" element={<React.Fragment />} />
+          </Routes>
+        </div>
+
+        <AnimatedRouter />
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <HashRouter>
+      <QueryClientProvider client={queryClient}>
+        <AppWithRouting />
+      </QueryClientProvider>
+    </HashRouter>
+  );
+}
 
 export default App;
