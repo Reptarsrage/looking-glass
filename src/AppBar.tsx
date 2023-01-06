@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
+import { ReactComponent as CloseIcon } from './assets/close.svg';
 import Icon from './assets/favicon.png';
+import { ReactComponent as MaximizeIcon } from './assets/maximize.svg';
+import { ReactComponent as MinimizeIcon } from './assets/minimize.svg';
+import { ReactComponent as RestoreIcon } from './assets/restore.svg';
 import useAppParams from './hooks/useAppParams';
 import useModuleStore from './store/modules';
 
@@ -53,11 +57,11 @@ function AppBar() {
   };
 
   const maximize = () => {
-    window.electronAPI.maximize();
-  };
-
-  const unmaximize = () => {
-    window.electronAPI.unmaximize();
+    if (maximized) {
+      window.electronAPI.unmaximize();
+    } else {
+      window.electronAPI.maximize();
+    }
   };
 
   const close = () => {
@@ -65,30 +69,35 @@ function AppBar() {
   };
 
   return (
-    <div className="py-0.5 flex justify-between draggable z-50">
+    <div className="flex justify-between draggable z-50">
       <div className="inline-flex items-center px-2">
         <img className="inline-block" src={icon} alt="favicon" width={18} height={18} />
         <span className="text-xs ml-2">{title}</span>
       </div>
-      <div className="inline-flex -mt-1">
-        <button tabIndex={-1} onClick={minimize} className="undraggable md:px-4 lg:px-3 pt-1 hover:bg-gray-300">
-          &#8211;
+
+      <div className="undraggable grid grid-cols-3 h-8 w-36">
+        <button
+          tabIndex={-1}
+          onClick={minimize}
+          className="text-gray-900 flex justify-center items-center hover:bg-gray-200 active:bg-gray-100"
+        >
+          <MinimizeIcon />
         </button>
 
-        {!maximized && (
-          <button tabIndex={-1} onClick={maximize} className="undraggable px-6 lg:px-5 pt-1 hover:bg-gray-300">
-            {'⃞'}
-          </button>
-        )}
+        <button
+          tabIndex={-1}
+          onClick={maximize}
+          className="text-gray-900 flex justify-center items-center hover:bg-gray-200 active:bg-gray-100"
+        >
+          {maximized ? <RestoreIcon /> : <MaximizeIcon />}
+        </button>
 
-        {maximized && (
-          <button tabIndex={-1} onClick={unmaximize} className="undraggable px-6 lg:px-5 pt-1 hover:bg-gray-300">
-            {'\u2752'}
-          </button>
-        )}
-
-        <button tabIndex={-1} onClick={close} className="undraggable px-4 pt-1 hover:bg-red-500 hover:text-white">
-          &#10005;
+        <button
+          tabIndex={-1}
+          onClick={close}
+          className="hover:bg-red-500 hover:text-white active:bg-red-800 active:text-white flex justify-center items-center"
+        >
+          <CloseIcon />
         </button>
       </div>
     </div>
