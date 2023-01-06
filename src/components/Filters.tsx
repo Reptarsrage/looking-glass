@@ -9,6 +9,7 @@ import useModule from '../hooks/useModule';
 import { generatePlaceholderFilter } from '../placeholderData';
 import useAuthStore from '../store/authentication';
 import useDrawerStore from '../store/drawer';
+import { fileSystemModuleId } from '../store/modules';
 import usePostStore from '../store/posts';
 import type { Filter } from '../types';
 import { nonNullable } from '../utils';
@@ -63,7 +64,7 @@ function Filters() {
 
   // If showing gallery, show only filters for that gallery
   const [{ galleryId }] = useAppParams();
-  const isGallery = !!galleryId;
+  const isGallery = !!galleryId && moduleId !== fileSystemModuleId;
 
   // User text to search filters
   const [search, setSearch] = useState('');

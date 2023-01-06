@@ -1,5 +1,6 @@
 import { animated, config, useChain, useSpring, useSpringRef } from '@react-spring/web';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import useAddFilter from '../hooks/useAddFilter';
 import useKeyPress from '../hooks/useKeyPress';
@@ -79,6 +80,8 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
 
   const addFilter = useAddFilter();
 
+  const navigate = useNavigate();
+
   function closeModal() {
     toggleModal(false);
   }
@@ -153,6 +156,15 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
     }
   }
 
+  function goToGallery() {
+    if (post && post.id) {
+      const p = post;
+      toggleModal(false, undefined, undefined, () => {
+        navigate(`/module/${module.id}?galleryId=${p.id}`, { state: { gallery: p } });
+      });
+    }
+  }
+
   if (!post) {
     return null;
   }
@@ -162,6 +174,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
   return (
     <div className="fixed top-0 left-0 w-full h-full overflow-hidden" style={{ top: AppBarHeight }}>
       <animated.div style={backdropStyles} className="absolute right-0 top-1 z-30 flex gap-2 p-2 items-center">
+        {post.isGallery && <Button onClick={goToGallery}>View Gallery</Button>}
         <Button onClick={toggleInfo}>Toggle Info</Button>
         <FiltersMenu />
       </animated.div>

@@ -1,5 +1,6 @@
-import fs from 'fs';
-import http from 'http';
+import { constants, createReadStream, existsSync } from 'node:fs';
+import { access, stat } from 'node:fs/promises';
+import http from 'node:http';
 
 import mime from 'mime-types';
 
@@ -14,6 +15,12 @@ type Response = http.ServerResponse<http.IncomingMessage> & {
 };
 
 type Request = http.IncomingMessage & { url: URL };
+
+async function hasAccess(file: string) {
+  return access(file, constants.R_OK)
+    .then(() => true)
+    .catch(() => false);
+}
 
 async function getGallery(logger: Logger, service: FileSystemService, req: Request, res: Response) {
   try {
@@ -78,31 +85,43 @@ async function getFilters(logger: Logger, service: FileSystemService, req: Reque
   }
 }
 
-function getFile(logger: Logger, req: Request, res: Response) {
+async function getFile(logger: Logger, req: Request, res: Response) {
   const defaultChunkSize = 65536; // lower works better here
   const filePath = req.url.searchParams.get('uri');
 
   try {
     // check path and uri (filepath)
-    if (!filePath || !fs.existsSync(filePath)) {
+    if (!filePath) {
+      res.writeHead(400);
+      res.end();
+      return;
+    }
+
+    if (!existsSync(filePath)) {
       res.writeHead(404);
       res.end();
       return;
     }
 
+    if (!(await hasAccess(filePath))) {
+      res.writeHead(403);
+      res.end();
+      return;
+    }
+
     // check file
-    const stat = fs.statSync(filePath);
-    const fileSize = stat.size;
-    const { range } = req.headers;
+    const stats = await stat(filePath);
+    const fileSize = stats.size;
     const contentType = mime.lookup(filePath) || '';
 
     // stream file back to client
-    if (range) {
+    if (req.headers?.['range']) {
+      const range = req.headers['range'];
       const parts = range.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0]!, 10);
+      const start = parseInt(parts?.[0] ?? '0', 10);
       const end = parts[1] ? parseInt(parts[1], 10) : Math.min(fileSize - 1, start + defaultChunkSize);
       const chunksize = end - start + 1;
-      const file = fs.createReadStream(filePath, { start, end });
+      const file = await createReadStream(filePath, { start, end });
       const head: http.OutgoingHttpHeaders = {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
@@ -119,7 +138,7 @@ function getFile(logger: Logger, req: Request, res: Response) {
       };
       res.setHeader('cache-control', 'public, max-age=604800');
       res.writeHead(200, head);
-      fs.createReadStream(filePath).pipe(res);
+      await createReadStream(filePath).pipe(res);
     }
   } catch (err) {
     logger.error(err);
@@ -137,7 +156,8 @@ const createServer = async (): Promise<WebServer> => {
   const port = await getPort();
   const service = new FileSystemService(port);
 
-  const server = http.createServer((req, res) => {
+  const server = http.createServer();
+  server.on('request', async (req, res) => {
     try {
       Log.info(`${req.method} ${req.url}`);
 
@@ -162,13 +182,13 @@ const createServer = async (): Promise<WebServer> => {
       switch (url.pathname) {
         case '/image':
         case '/video':
-          getFile(logger, request, res);
+          await getFile(logger, request, res);
           return;
         case '/gallery':
-          getGallery(logger, service, request, res);
+          await getGallery(logger, service, request, res);
           return;
         case '/filters':
-          getFilters(logger, service, request, res);
+          await getFilters(logger, service, request, res);
           return;
         default: {
           // not found

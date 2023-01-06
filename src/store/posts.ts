@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 
 import type { Post } from '../types';
 
@@ -25,7 +25,7 @@ const usePostStore = create<PostState>()(
     })),
     {
       name: 'posts',
-      getStorage: () => sessionStorage,
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );

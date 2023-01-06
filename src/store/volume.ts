@@ -18,7 +18,6 @@ const useVolumeStore = create<State>()(
     })),
     {
       name: 'volume',
-      getStorage: () => sessionStorage, // Do we want this to persist between sessions?
     }
   )
 );
