@@ -5,6 +5,7 @@ declare global {
     // see preload.js and ipc.js for definitions
     electronAPI: {
       setTitle: (title?: string) => void;
+      setIcon: (icon?: string) => void;
       chooseFolder: () => Promise<string>;
       oauth: (uri: string) => Promise<string>;
       minimize: () => void;

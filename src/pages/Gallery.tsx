@@ -67,6 +67,7 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
   const module = useModule();
   const moduleId = module.id;
   const moduleName = module.name;
+  const moduleIcon = module.icon;
 
   const modalIsOpen = useModalStore((state) => state.open);
 
@@ -115,8 +116,9 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
 
   // effect to update window title
   useEffect(() => {
-    window.electronAPI.setTitle(location.state?.gallery?.title ?? moduleName);
-  }, [location, modalIsOpen, moduleName]);
+    window.electronAPI.setIcon(moduleIcon);
+    window.electronAPI.setTitle(location.state?.gallery?.name ?? moduleName);
+  }, [modalIsOpen]);
 
   // TODO: Add error
   // TODO: Add no results

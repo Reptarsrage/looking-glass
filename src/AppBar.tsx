@@ -5,17 +5,14 @@ import Icon from './assets/favicon.png';
 import { ReactComponent as MaximizeIcon } from './assets/maximize.svg';
 import { ReactComponent as MinimizeIcon } from './assets/minimize.svg';
 import { ReactComponent as RestoreIcon } from './assets/restore.svg';
-import useAppParams from './hooks/useAppParams';
-import useModuleStore from './store/modules';
+
+const defaultIcon = Icon;
+const defaultTitle = 'The Looking Glass';
 
 function AppBar() {
   const [maximized, setMaximized] = useState(false);
-  const [title, setTitle] = useState('The Looking Glass');
-
-  const [appParams] = useAppParams();
-  const { moduleId } = appParams;
-  const module = useModuleStore((state) => (moduleId ? state.modulesById[moduleId] : undefined));
-  const icon = module?.icon ?? Icon;
+  const [title, setTitle] = useState(defaultTitle);
+  const [icon, setIcon] = useState(defaultIcon);
 
   // set initial value
   useEffect(() => {
@@ -41,14 +38,20 @@ function AppBar() {
   // subscribe to title
   // TODO: THis doesn't work
   useEffect(() => {
-    const handleSetTitle = async () => {
-      setTitle(await window.electronAPI.getTitle());
+    const handleSetTitle = async (_event?: Event, value?: string) => {
+      setTitle(value ?? defaultTitle);
+    };
+
+    const handleSetIcon = async (_event?: Event, value?: string) => {
+      setIcon(value ?? defaultIcon);
     };
 
     window.electronAPI.on('title', handleSetTitle);
+    window.electronAPI.on('icon', handleSetIcon);
 
     return () => {
       window.electronAPI.off('title', handleSetTitle);
+      window.electronAPI.off('icon', handleSetIcon);
     };
   }, []);
 

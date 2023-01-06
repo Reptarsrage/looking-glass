@@ -13,7 +13,11 @@ function handleGetOs() {
 
 function handleSetTitle(event: IpcMainInvokeEvent, title?: string) {
   BrowserWindow.fromWebContents(event.sender)?.setTitle(title ?? 'The Looking Glass');
-  BrowserWindow.fromWebContents(event.sender)?.webContents.send('title', title ?? 'The Looking Glass');
+  BrowserWindow.fromWebContents(event.sender)?.webContents.send('title', title);
+}
+
+function handleSetIcon(event: IpcMainInvokeEvent, icon?: string) {
+  BrowserWindow.fromWebContents(event.sender)?.webContents.send('icon', icon);
 }
 
 async function handleChooseFolder(): Promise<string | undefined> {
@@ -99,6 +103,7 @@ function handleGetTitle(event: IpcMainInvokeEvent): string {
 }
 
 export const SET_TITLE = 'SET_TITLE';
+export const SET_ICON = 'SET_ICON';
 export const GET_TITLE = 'GET_TITLE';
 export const CHOOSE_FOLDER = 'CHOOSE_FOLDER';
 export const OAUTH = 'OAUTH';
@@ -114,6 +119,7 @@ export function init(app: App) {
   // listen for events from the renderer
   // needs to match exactly the strings configured in preload.js
   ipcMain.handle(SET_TITLE, handleSetTitle);
+  ipcMain.handle(SET_ICON, handleSetIcon);
   ipcMain.handle(CHOOSE_FOLDER, handleChooseFolder);
   ipcMain.handle(OAUTH, handleOauth);
   ipcMain.handle(MINIMIZE, handleMinimize);

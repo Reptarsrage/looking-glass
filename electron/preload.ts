@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const SET_TITLE = 'SET_TITLE';
+const SET_ICON = 'SET_ICON';
 const GET_TITLE = 'GET_TITLE';
 const CHOOSE_FOLDER = 'CHOOSE_FOLDER';
 const OAUTH = 'OAUTH';
@@ -14,6 +15,7 @@ const GET_OS = 'GET_OS';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   setTitle: (title?: string) => ipcRenderer.invoke(SET_TITLE, title),
+  setIcon: (icon?: string) => ipcRenderer.invoke(SET_ICON, icon),
   chooseFolder: () => ipcRenderer.invoke(CHOOSE_FOLDER),
   oauth: (uri: string) => ipcRenderer.invoke(OAUTH, uri),
   minimize: () => ipcRenderer.invoke(MINIMIZE),

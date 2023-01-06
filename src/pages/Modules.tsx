@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -19,6 +19,12 @@ function Modules() {
       setModules(modules);
     },
   });
+
+  // effect to update window title
+  useEffect(() => {
+    window.electronAPI.setIcon();
+    window.electronAPI.setTitle();
+  }, []);
 
   async function handleLocalClick() {
     try {
