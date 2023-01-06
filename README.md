@@ -109,3 +109,4 @@ Links:
 - [bootstrap svg icons](https://icons.getbootstrap.com/)
 - [undraw svg art](https://undraw.co/illustrations)
 - [tailwind elements](https://tailwind-elements.com/docs/standard/components/buttons/)
+- [hero icons](https://heroicons.com/)
