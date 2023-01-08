@@ -49,9 +49,13 @@ const checkAvailablePort = (options: ListenOptions): Promise<number> =>
     server.on('error', reject);
 
     server.listen(options, () => {
-      const { port } = server.address() as net.AddressInfo;
+      const info = server.address();
       server.close(() => {
-        resolve(port);
+        if (info && typeof info !== 'string' && has('port', info) && typeof info.port === 'number') {
+          resolve(info.port);
+        } else {
+          reject(new Error('Port is not a number'));
+        }
       });
     });
   });

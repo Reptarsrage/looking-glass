@@ -14,7 +14,6 @@ import type { Filter, Post } from '../types';
 import { nonNullable } from '../utils';
 
 import FilterList from './FilterList';
-import type { FilterProps } from './FilterList/Filter';
 import Input from './Input';
 
 /**
@@ -96,13 +95,13 @@ function Filters({ posts }: FiltersProps) {
         const filterType = filterTypes[index];
         invariant(filterType, 'Filter type not found');
 
-        let items = (filterQuery.data ?? []).map((filter) => ({ filter } as FilterProps));
+        let items = (filterQuery.data ?? []).map((filter) => ({ filter }));
 
         if (isGallery) {
           items = posts
             .flatMap((post) => post.filters.filter((filter) => filter.filterSectionId === filterType.id))
             .filter((x, i, a) => a.findIndex((y) => y.id === x.id) === i)
-            .map((filter) => ({ filter } as FilterProps));
+            .map((filter) => ({ filter }));
         }
 
         if (search) {

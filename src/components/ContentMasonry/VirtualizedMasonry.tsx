@@ -149,6 +149,7 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
                 loadMore={loadMore}
                 scrollTo={(y: number) => containerRef.current?.scrollTo(0, y)}
               >
+                {/* TODO: fix this type cast */}
                 {children as React.FunctionComponent<MasonryItemProps<RequiredItemData>>}
               </VirtualizedMasonryColumn>
             ))}

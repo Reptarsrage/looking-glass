@@ -26,7 +26,7 @@ export async function fetchModules(): Promise<Module[]> {
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  return (await response.json()) as Module[];
+  return await response.json();
 }
 
 /**
@@ -67,7 +67,7 @@ export async function fetchGallery(
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  return (await response.json()) as Gallery;
+  return await response.json();
 }
 
 /**
@@ -90,7 +90,7 @@ export async function fetchFilters(moduleId: string, filterSectionId: string, ac
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  return (await response.json()) as Filter[];
+  return await response.json();
 }
 
 /**
@@ -113,7 +113,7 @@ export async function fetchItemFilters(moduleId: string, itemId: string, accessT
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  return (await response.json()) as Filter[];
+  return await response.json();
 }
 
 /**
@@ -132,7 +132,7 @@ export async function refreshAuth(moduleId: string, refreshToken: string): Promi
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  const authResponse = (await response.json()) as Auth;
+  const authResponse: Auth = await response.json();
   authResponse.expires = new Date(new Date().getTime() + authResponse.expiresIn * 1000);
   return authResponse;
 }
@@ -155,7 +155,7 @@ export async function login(moduleId: string, username?: string, password?: stri
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  const authResponse = (await response.json()) as Auth;
+  const authResponse: Auth = await response.json();
   authResponse.expires = new Date(new Date().getTime() + authResponse.expiresIn * 1000);
   return authResponse;
 }
@@ -175,7 +175,7 @@ export async function authorize(moduleId: string, code: string): Promise<Auth> {
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  const authResponse = (await response.json()) as Auth;
+  const authResponse: Auth = await response.json();
   authResponse.expires = new Date(new Date().getTime() + authResponse.expiresIn * 1000);
   return authResponse;
 }

@@ -12,7 +12,6 @@ import type { Filter, Post } from '../types';
 import { nonNullable } from '../utils';
 
 import FilterList from './FilterList';
-import type { FilterProps } from './FilterList/Filter';
 import Input from './Input';
 
 /**
@@ -97,7 +96,7 @@ function Filters({ posts }: FiltersProps) {
           .concat(modalItem?.filters ?? [])
           .filter((filter) => filter.filterSectionId === filterType.id)
           .filter((x, i, a) => a.findIndex((y) => y.id === x.id) === i) // Remove duplicates
-          .map((filter) => ({ filter } as FilterProps));
+          .map((filter) => ({ filter }));
 
         if (search) {
           items = items.filter(

@@ -15,20 +15,18 @@ type Response = http.ServerResponse<http.IncomingMessage> & {
   req: http.IncomingMessage;
 };
 
-type Request = http.IncomingMessage & { url: URL };
-
 async function hasAccess(file: string) {
   return access(file, constants.R_OK)
     .then(() => true)
     .catch(() => false);
 }
 
-async function getGallery(logger: Logger, service: FileSystemService, req: Request, res: Response) {
+async function getGallery(logger: Logger, service: FileSystemService, url: URL, res: Response) {
   try {
-    const galleryId = req.url.searchParams.get('galleryId') ?? '';
-    const offset = parseInt(req.url.searchParams.get('offset') ?? '0', 10);
-    const sort = req.url.searchParams.get('sort') ?? 'none';
-    const filters = req.url.searchParams.getAll('filters') ?? [];
+    const galleryId = url.searchParams.get('galleryId') ?? '';
+    const offset = parseInt(url.searchParams.get('offset') ?? '0', 10);
+    const sort = url.searchParams.get('sort') ?? 'none';
+    const filters = url.searchParams.getAll('filters') ?? [];
     const body = await service.fetchItems(galleryId, offset, sort, filters);
     res.setHeader('cache-control', 'public, max-age=604800');
     res.writeHead(200);
@@ -56,9 +54,9 @@ async function getGallery(logger: Logger, service: FileSystemService, req: Reque
   }
 }
 
-async function getFilters(logger: Logger, service: FileSystemService, req: Request, res: Response) {
+async function getFilters(logger: Logger, service: FileSystemService, url: URL, res: Response) {
   try {
-    const filterSectionId = req.url.searchParams.get('filter') ?? '';
+    const filterSectionId = url.searchParams.get('filter') ?? '';
     const body = await service.fetchFilters(filterSectionId);
     res.setHeader('cache-control', 'public, max-age=604800');
     res.writeHead(200);
@@ -86,9 +84,9 @@ async function getFilters(logger: Logger, service: FileSystemService, req: Reque
   }
 }
 
-async function getFile(logger: Logger, req: Request, res: Response) {
+async function getFile(logger: Logger, url: URL, req: http.IncomingMessage, res: Response) {
   const defaultChunkSize = 65536; // lower works better here
-  const filePath = req.url.searchParams.get('uri');
+  const filePath = url.searchParams.get('uri');
 
   try {
     // check path and uri (filepath)
@@ -170,7 +168,6 @@ const createServer = async (): Promise<WebServer> => {
 
       // parse URL
       const url = new URL(req.url ?? '', 'http://localhost');
-      const request = { ...req, url } as Request;
 
       if (req.method !== 'GET') {
         // method not allowed
@@ -184,13 +181,13 @@ const createServer = async (): Promise<WebServer> => {
       switch (url.pathname) {
         case '/image':
         case '/video':
-          await getFile(logger, request, res);
+          await getFile(logger, url, req, res);
           return;
         case '/gallery':
-          await getGallery(logger, service, request, res);
+          await getGallery(logger, service, url, res);
           return;
         case '/filters':
-          await getFilters(logger, service, request, res);
+          await getFilters(logger, service, url, res);
           return;
         default: {
           // not found

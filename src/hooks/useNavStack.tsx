@@ -13,7 +13,9 @@ function saveNavigation(navStack: NavStack) {
 function loadNavigation(): NavStack | null {
   const saved = sessionStorage.getItem('navStack');
 
-  if (saved) return JSON.parse(saved) as NavStack;
+  if (saved) {
+    return JSON.parse(saved);
+  }
 
   return null;
 }

@@ -158,8 +158,12 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     }
 
     const itemStyle = getItemStyle(idx);
-    const itemHeight = (itemStyle.height as number) ?? 0;
-    const itemTop = (itemStyle.top as number) ?? 0;
+    const itemHeight = itemStyle.height ?? 0;
+    const itemTop = itemStyle.top ?? 0;
+
+    invariant(typeof itemTop === 'number', 'itemTop must be a number');
+    invariant(typeof itemHeight === 'number', 'itemTop must be a number');
+
     const itemBottom = itemTop + itemHeight;
     const screenTop = scrollOffset;
     const screenBottom = screenTop + window.innerHeight - 110; // masonry is about 110px from top of screen

@@ -9,6 +9,7 @@ import 'react-popper-tooltip/dist/styles.css';
 import useModule from '../hooks/useModule';
 import useModalStore from '../store/modal';
 import type { Post } from '../types';
+import { assignRefs } from '../utils';
 
 import type { MasonryItemProps as VirtualMasonryItemProps } from './ContentMasonry/VirtualizedMasonryColumn';
 import Image from './Image';
@@ -113,10 +114,7 @@ function MasonryItem({ item, style, isScrolling, imageLoading, lowRes }: Masonry
     <>
       <animated.div
         {...bind()}
-        ref={(ref) => {
-          (containerRef.current as HTMLDivElement | null) = ref;
-          setTriggerRef(ref);
-        }}
+        ref={assignRefs(containerRef, setTriggerRef)}
         style={{ ...style, ...syles }}
         className={clsx(
           item.isGallery && 'cursor-pointer',

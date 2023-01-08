@@ -88,7 +88,7 @@ function PinchZoomPan({ width, height, children, reset }: PinchZoomPanProps) {
         scale *= scalestep ** (dy / -100); // new scale
         scale = Math.min(maxScale, Math.max(scale, minScale));
 
-        let conf = config.stiff as Record<string, number>;
+        let conf: Record<string, number> = config.stiff;
         if (scale <= minScale) {
           x = 0;
           y = 0;
