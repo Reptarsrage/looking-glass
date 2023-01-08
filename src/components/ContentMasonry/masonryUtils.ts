@@ -1,3 +1,5 @@
+import invariant from 'tiny-invariant';
+
 export type MasonryItemSizeFunc = (index: number) => number;
 
 export interface MasonryInstanceProps {
@@ -24,7 +26,8 @@ const getItemMetadata = (
   if (index > lastMeasuredIndex) {
     let offset = gutter;
     if (lastMeasuredIndex >= 0) {
-      const itemMetadata = itemMetadataMap[lastMeasuredIndex]!;
+      const itemMetadata = itemMetadataMap[lastMeasuredIndex];
+      invariant(itemMetadata, 'Item metadata should not be null');
       offset = itemMetadata.offset + itemMetadata.size + gutter;
     }
 
@@ -41,7 +44,9 @@ const getItemMetadata = (
     instanceProps.lastMeasuredIndex = index;
   }
 
-  return itemMetadataMap[index]!;
+  const meta = itemMetadataMap[index];
+  invariant(meta, 'Item metadata should not be null');
+  return meta;
 };
 
 const findNearestItemBinarySearch = (
@@ -100,7 +105,8 @@ const findNearestItem = (
   instanceProps: MasonryInstanceProps
 ) => {
   const { itemMetadataMap, lastMeasuredIndex } = instanceProps;
-  const lastMeasuredItemOffset = lastMeasuredIndex > 0 ? itemMetadataMap[lastMeasuredIndex]!.offset : 0;
+  const meta = itemMetadataMap[lastMeasuredIndex];
+  const lastMeasuredItemOffset = meta && lastMeasuredIndex > 0 ? meta.offset : 0;
 
   if (lastMeasuredItemOffset >= offset) {
     return findNearestItemBinarySearch(itemSize, instanceProps, lastMeasuredIndex, 0, offset);
@@ -118,7 +124,8 @@ export const getEstimatedTotalSize = (itemCount: number, instanceProps: MasonryI
   }
 
   if (lastMeasuredIndex >= 0) {
-    const itemMetadata = itemMetadataMap[lastMeasuredIndex]!;
+    const itemMetadata = itemMetadataMap[lastMeasuredIndex];
+    invariant(itemMetadata, 'Item metadata should not be null');
     totalSizeOfMeasuredItems = itemMetadata.offset + itemMetadata.size;
   }
 
@@ -159,8 +166,11 @@ export function getOffsetForIndexAndAlignment(
 export const getItemOffset = (itemSize: MasonryItemSizeFunc, index: number, instanceProps: MasonryInstanceProps) =>
   getItemMetadata(itemSize, index, instanceProps).offset;
 
-export const getItemSize = (index: number, instanceProps: MasonryInstanceProps) =>
-  instanceProps.itemMetadataMap[index]!.size;
+export const getItemSize = (index: number, instanceProps: MasonryInstanceProps) => {
+  const itemMetadata = instanceProps.itemMetadataMap[index];
+  invariant(itemMetadata, 'Item metadata should not be null');
+  return itemMetadata.size;
+};
 
 export const getStartIndexForOffset = (
   itemSize: MasonryItemSizeFunc,

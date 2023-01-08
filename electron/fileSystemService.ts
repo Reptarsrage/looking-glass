@@ -1,6 +1,7 @@
 import { basename, extname } from 'path';
 
 import { lookup } from 'mime-types';
+import invariant from 'tiny-invariant';
 
 import Crawler from './directoryCrawler';
 import logger from './logger';
@@ -26,7 +27,7 @@ class FileSystemService {
 
   cacheContains = (key: string) => key in this.cacheLookup;
 
-  getCache = (key: string) => this.cacheLookup[key]!;
+  getCache = (key: string) => this.cacheLookup[key];
 
   addCache = (key: string, value: Crawler) => {
     this.cacheLookup[key] = value;
@@ -45,6 +46,8 @@ class FileSystemService {
       }
 
       const crawler = this.getCache(cacheKey);
+      invariant(crawler, 'Crawler should exist in cache');
+
       const pageNumber = Math.max(offset, 0);
       const page = await crawler.getPage(pageNumber, sort, filters);
       return {

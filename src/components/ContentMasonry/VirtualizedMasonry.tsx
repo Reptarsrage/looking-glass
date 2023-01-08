@@ -1,5 +1,6 @@
 import { useDebounceCallback } from '@react-hook/debounce';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import invariant from 'tiny-invariant';
 
 import VirtualizedMasonryColumn from './VirtualizedMasonryColumn';
 import type { MasonryItemProps, RequiredItemData, ScrollDirection } from './VirtualizedMasonryColumn';
@@ -41,7 +42,9 @@ function saveScroll(locationKey: string, scroll: number, height: number) {
 
 function loadScroll(locationKey: string): SavedScroll {
   if (window.scrollStorage && locationKey in window.scrollStorage) {
-    return window.scrollStorage[locationKey]!;
+    const cached = window.scrollStorage[locationKey];
+    invariant(cached, 'Scroll storage should be defined');
+    return cached;
   }
 
   return { scroll: 0, height: 0 };
@@ -77,7 +80,9 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
 
   // Restore scroll based on location
   useLayoutEffect(() => {
-    containerRef.current!.scrollTop = loaded.scroll;
+    if (containerRef.current) {
+      containerRef.current.scrollTop = loaded.scroll;
+    }
   }, [loaded]);
 
   function onScroll() {
@@ -108,7 +113,9 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
     }));
 
     return items.reduce((acc, cur, index) => {
-      acc[index % columnCount]!.items.push(cur);
+      const column = acc[index % columnCount];
+      invariant(column, 'Column should be defined');
+      column.items.push(cur);
       return acc;
     }, initial);
   }, [items]);
@@ -149,8 +156,10 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
         ) : (
           <div style={{ minHeight: loaded.height }} />
         )}
-        {isLoading && LoadingIndicator}
-        {isEnd && EndIndicator}
+        <div className="flex justify-center items-center mt-8 mb-16">
+          {isLoading && LoadingIndicator}
+          {isEnd && EndIndicator}
+        </div>
       </div>
     </div>
   );

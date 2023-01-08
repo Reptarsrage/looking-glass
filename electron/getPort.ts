@@ -1,5 +1,11 @@
-import net from 'node:net';
+import net, { ListenOptions } from 'node:net';
 import os from 'node:os';
+
+import { has } from './utils';
+
+function hasErrorCode(codes: string[], error: unknown) {
+  return error && has('code', error) && typeof error.code === 'string' && codes.includes(error.code);
+}
 
 class Locked extends Error {
   constructor(port: number) {
@@ -18,7 +24,7 @@ const lockedPorts = {
 const releaseOldLockedPortsIntervalMs = 1000 * 15;
 
 // Lazily create interval on first use
-let interval: any;
+let interval: ReturnType<typeof setInterval> | undefined;
 
 const getLocalHosts = () => {
   const interfaces = os.networkInterfaces();
@@ -36,7 +42,7 @@ const getLocalHosts = () => {
   return results;
 };
 
-const checkAvailablePort = (options: any) =>
+const checkAvailablePort = (options: ListenOptions): Promise<number> =>
   new Promise((resolve, reject) => {
     const server = net.createServer();
     server.unref();
@@ -50,7 +56,10 @@ const checkAvailablePort = (options: any) =>
     });
   });
 
-const getAvailablePort = async (options: any, hosts: any) => {
+const getAvailablePort = async (
+  options: ListenOptions,
+  hosts: Set<string | undefined>
+): Promise<number | undefined> => {
   if (options.host || options.port === 0) {
     return checkAvailablePort(options);
   }
@@ -58,8 +67,8 @@ const getAvailablePort = async (options: any, hosts: any) => {
   for (const host of hosts) {
     try {
       await checkAvailablePort({ port: options.port, host }); // eslint-disable-line no-await-in-loop
-    } catch (error) {
-      if (!['EADDRNOTAVAIL', 'EINVAL'].includes((error as any)?.code)) {
+    } catch (error: unknown) {
+      if (!hasErrorCode(['EADDRNOTAVAIL', 'EINVAL'], error)) {
         throw error;
       }
     }
@@ -68,7 +77,7 @@ const getAvailablePort = async (options: any, hosts: any) => {
   return options.port;
 };
 
-function* portCheckSequence(ports: any) {
+function* portCheckSequence(ports: number[] | undefined) {
   if (ports) {
     yield* ports;
   }
@@ -76,7 +85,12 @@ function* portCheckSequence(ports: any) {
   yield 0; // Fall back to 0 if anything else failed
 }
 
-async function getPorts(options?: any) {
+type GetPortsOptions = {
+  port?: number | number[];
+  exclude?: number[];
+};
+
+async function getPorts(options?: GetPortsOptions): Promise<number | undefined> {
   let ports;
   let exclude = new Set();
 
@@ -141,7 +155,7 @@ async function getPorts(options?: any) {
 
       return availablePort;
     } catch (error) {
-      if (!['EADDRINUSE', 'EACCES'].includes((error as any)?.code) && !(error instanceof Locked)) {
+      if (!hasErrorCode(['EADDRINUSE', 'EACCES'], error) && !(error instanceof Locked)) {
         throw error;
       }
     }

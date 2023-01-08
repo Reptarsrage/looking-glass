@@ -10,8 +10,7 @@ import { generatePlaceholderFilter } from '../placeholderData';
 import useAuthStore from '../store/authentication';
 import useDrawerStore from '../store/drawer';
 import { fileSystemModuleId } from '../store/modules';
-import usePostStore from '../store/posts';
-import type { Filter } from '../types';
+import type { Filter, Post } from '../types';
 import { nonNullable } from '../utils';
 
 import FilterList from './FilterList';
@@ -52,15 +51,17 @@ function incrementWithRollover(value: number | null, max: number) {
   return value + 1;
 }
 
-function Filters() {
+interface FiltersProps {
+  posts: Post[];
+}
+
+function Filters({ posts }: FiltersProps) {
   // Modules
   const { filters: filterTypes, id: moduleId } = useModule();
 
   const refreshAuth = useAuthStore((state) => state.refresh);
 
   const drawerOpen = useDrawerStore((state) => state.open);
-
-  const posts = usePostStore((state) => state.postIds.map((id) => state.postsById[id]).filter(nonNullable));
 
   // If showing gallery, show only filters for that gallery
   const [{ galleryId }] = useAppParams();

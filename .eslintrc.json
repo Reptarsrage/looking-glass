@@ -8,6 +8,9 @@
     "ecmaVersion": 13, // es2022
     "sourceType": "module"
   },
+  "globals": {
+    "react": true
+  },
   "env": {
     "browser": true,
     "es2022": true
@@ -28,11 +31,21 @@
     "import/order": ["error", { "newlines-between": "always", "alphabetize": { "order": "asc" } }],
     "sort-imports": ["error", { "ignoreDeclarationSort": true, "ignoreCase": true }],
     "jsx-a11y/media-has-caption": "off",
-    "prefer-const": ["error", { "destructuring": "all" }]
+    "prefer-const": ["error", { "destructuring": "all" }],
+    "no-undef": "error",
+    "@typescript-eslint/no-non-null-assertion": "error"
   },
   "settings": {
     "react": {
       "version": "detect"
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["electron/**/*", "vite.config.ts"],
+      "env": {
+        "node": true
+      }
+    }
+  ]
 }

@@ -36,20 +36,38 @@ const useModalStore = create<State>()(
     },
 
     toggleModal: (value, domRect = null, postId = null, callback = null) => {
-      if (value && !get().open) {
+      if (value) {
         document.body.classList.add('overflow-hidden');
+        let calledOnce = false;
         set(() => ({
-          open: true,
+          open: value,
           item: postId,
           bounds: domRect,
-          onOpen: callback,
+          onOpen: () => {
+            if (!calledOnce) {
+              calledOnce = true;
+              set({ onOpen: null });
+              if (callback) {
+                callback();
+              }
+            }
+          },
           onClose: null,
         }));
-      } else if (!value && get().open) {
+      } else {
+        let calledOnce = false;
         document.body.classList.remove('overflow-hidden');
         set(() => ({
-          open: false,
-          onClose: callback,
+          open: value,
+          onClose: () => {
+            if (!calledOnce) {
+              calledOnce = true;
+              set({ onClose: null });
+              if (callback) {
+                callback();
+              }
+            }
+          },
           onOpen: null,
         }));
       }

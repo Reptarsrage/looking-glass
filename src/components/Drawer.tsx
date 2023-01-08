@@ -5,6 +5,7 @@ import React, { useCallback, useLayoutEffect, useState } from 'react';
 import useKeyPress from '../hooks/useKeyPress';
 import useDrawerStore from '../store/drawer';
 import useModalStore from '../store/modal';
+import { Post } from '../types';
 
 import Filters from './Filters';
 import FiltersForItem from './FiltersForItem';
@@ -15,11 +16,12 @@ const AppBarHeight = 28;
 interface InnerDrawerProps {
   open: boolean;
   shown: boolean;
+  posts: Post[];
   onClosed: () => void;
   closeDrawer: () => void;
 }
 
-function InnerDrawer({ onClosed, closeDrawer, open, shown }: InnerDrawerProps) {
+function InnerDrawer({ onClosed, closeDrawer, open, shown, posts }: InnerDrawerProps) {
   const modalIsOpen = useModalStore((state) => state.open);
 
   const backdropStyles = useTransition(open, {
@@ -69,7 +71,7 @@ function InnerDrawer({ onClosed, closeDrawer, open, shown }: InnerDrawerProps) {
               style={styles}
               className="absolute z-20 shadow gb-white top-0 right-0 bottom-0 bg-white flex flex-col"
             >
-              {modalIsOpen ? <FiltersForItem /> : <Filters />}
+              {modalIsOpen ? <FiltersForItem posts={posts} /> : <Filters posts={posts} />}
             </animated.div>
           )
       )}
@@ -77,7 +79,11 @@ function InnerDrawer({ onClosed, closeDrawer, open, shown }: InnerDrawerProps) {
   );
 }
 
-function Drawer() {
+interface DrawerProps {
+  posts: Post[];
+}
+
+function Drawer({ posts }: DrawerProps) {
   const toggleDrawer = useDrawerStore((state) => state.toggleDrawer);
   const open = useDrawerStore((state) => state.open);
   const callback = useDrawerStore((state) => state.callback);
@@ -100,7 +106,7 @@ function Drawer() {
     }
   }, [open]);
 
-  return <InnerDrawer open={open} shown={shown} closeDrawer={closeDrawer} onClosed={onClosed} />;
+  return <InnerDrawer posts={posts} open={open} shown={shown} closeDrawer={closeDrawer} onClosed={onClosed} />;
 }
 
 export default Drawer;

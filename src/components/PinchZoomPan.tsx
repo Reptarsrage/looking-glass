@@ -1,6 +1,7 @@
 import { animated, config, useSpring } from '@react-spring/web';
 import { useGesture } from '@use-gesture/react';
 import React, { useEffect, useRef, useState } from 'react';
+import invariant from 'tiny-invariant';
 
 interface PinchZoomPanProps {
   width: number;
@@ -67,7 +68,9 @@ function PinchZoomPan({ width, height, children, reset }: PinchZoomPanProps) {
           const h = height * scale;
 
           // measure things
-          const boundsRect = boundsRef.current!.getBoundingClientRect();
+          const current = boundsRef.current;
+          invariant(current, 'boundsRef.current is null');
+          const boundsRect = current.getBoundingClientRect();
           const bx = boundsRect.x; // bounds x relative to page
           const by = boundsRect.y; // bounds y relative to page
 

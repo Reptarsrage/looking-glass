@@ -49,14 +49,14 @@ function Modules() {
   // TODO: Add no results
 
   return (
-    <ul>
+    <ul className="overflow-auto">
       {data.map((module) => (
         <li key={module.id} className="border-b-2">
           <Link
             to={`/module/${module.id}`}
             className="flex p-2 gap-2 items-center cursor-pointer transition duration-150 hover:bg-slate-50 active:bg-slate-200"
           >
-            <div className="rounded-full h-9 w-9 bg-slate-600 overflow-hidden flex">
+            <div className="rounded-full h-12 w-12 bg-slate-600 overflow-hidden flex shadow-md border">
               <img src={module.icon} alt={module.id} />
             </div>
 
@@ -72,7 +72,7 @@ function Modules() {
           onClick={handleLocalClick}
           className="flex p-2 w-full gap-2 items-center cursor-pointer transition duration-150 hover:bg-slate-50 active:bg-slate-200"
         >
-          <div className="rounded-full h-9 w-9 bg-slate-600 overflow-hidden flex text-white p-1">
+          <div className="rounded-full h-12 w-12 bg-blue-500 overflow-hidden flex text-white p-2 shadow-md border">
             <FolderIcon />
           </div>
 

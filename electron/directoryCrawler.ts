@@ -7,8 +7,10 @@ import { promisify } from 'node:util';
 import PromisePool from '@mixmaxhq/promise-pool';
 import imageSizeOfSync from 'image-size';
 import mimeTypes from 'mime-types';
+import invariant from 'tiny-invariant';
 
 import logger from './logger';
+import { nonNullable } from './utils';
 
 // get dimensions of an image file
 const imageSizeOf = promisify(imageSizeOfSync);
@@ -56,9 +58,12 @@ function videoSizeOf(fPath: string): Promise<Size> {
           return;
         }
 
+        invariant(width[1], 'width is not a number');
+        invariant(height[1], 'height is not a number');
+
         resolve({
-          width: parseInt(width[1]!, 10),
-          height: parseInt(height[1]!, 10),
+          width: parseInt(width[1], 10),
+          height: parseInt(height[1], 10),
         });
       }
     )
@@ -236,7 +241,11 @@ class Crawler {
     return pagePromise;
   };
 
-  resolve = () => this.resolved.slice(this.start, this.end).map((file) => this.resolvedLookup[file]!);
+  resolve = () =>
+    this.resolved
+      .slice(this.start, this.end)
+      .map((file) => this.resolvedLookup[file])
+      .filter(nonNullable);
 
   markComplete = (item?: Item) => {
     if (!item) {

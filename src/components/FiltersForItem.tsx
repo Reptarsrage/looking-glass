@@ -8,8 +8,7 @@ import { generatePlaceholderFilter } from '../placeholderData';
 import useAuthStore from '../store/authentication';
 import useDrawerStore from '../store/drawer';
 import useModalStore from '../store/modal';
-import usePostStore from '../store/posts';
-import type { Filter } from '../types';
+import type { Filter, Post } from '../types';
 import { nonNullable } from '../utils';
 
 import FilterList from './FilterList';
@@ -50,13 +49,17 @@ function incrementWithRollover(value: number | null, max: number) {
   return value + 1;
 }
 
-function Filters() {
+interface FiltersProps {
+  posts: Post[];
+}
+
+function Filters({ posts }: FiltersProps) {
   // Modules
-  const { supportsItemFilters, filters: filterTypes } = useModule();
+  const { supportsItemFilters, filters: filterTypes, id: moduleId } = useModule();
 
   const modalItemId = useModalStore((state) => state.item);
 
-  const modalItem = usePostStore((state) => (modalItemId ? state.postsById[modalItemId] : undefined));
+  const modalItem = posts.find((post) => post.id === modalItemId);
 
   const refreshAuth = useAuthStore((state) => state.refresh);
 
@@ -71,8 +74,8 @@ function Filters() {
   // React query function
   async function filtersQuery(itemId: string | null) {
     if (itemId && supportsItemFilters) {
-      const accessToken = await refreshAuth(module.id); // TODO: on error here, redirect to login page
-      return await fetchItemFilters(module.id, itemId, accessToken);
+      const accessToken = await refreshAuth(moduleId); // TODO: on error here, redirect to login page
+      return await fetchItemFilters(moduleId, itemId, accessToken);
     }
 
     return [];

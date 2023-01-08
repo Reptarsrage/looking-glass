@@ -39,11 +39,7 @@ function ContentMasonry({
         size={size}
         isLoading={isLoading}
         isEnd={!hasNextPage}
-        LoadingIndicator={
-          <div className="flex flex-1 flex-col items-center justify-center p-4">
-            <LoadingIndicator />
-          </div>
-        }
+        LoadingIndicator={<LoadingIndicator size={80} />}
         EndIndicator={<EndIndicator />}
       >
         {MasonryItem}

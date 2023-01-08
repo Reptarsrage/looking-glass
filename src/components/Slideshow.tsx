@@ -6,7 +6,7 @@ import invariant from 'tiny-invariant';
 import { ReactComponent as ChevronIcon } from '../assets/chevron.svg';
 import useKeyPress from '../hooks/useKeyPress';
 import useSize from '../hooks/useSize';
-import usePostStore from '../store/posts';
+import { Post } from '../types';
 
 import Fab from './Fab';
 import LoadingIndicator from './LoadingIndicator';
@@ -63,15 +63,14 @@ interface SlideshowProps {
   loadMore: () => void;
   isLoading: boolean;
   hasNextPage: boolean | undefined;
+  posts: Post[];
 }
 
-function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, isLoading }: SlideshowProps) {
+function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, isLoading, posts }: SlideshowProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const size = useSize(containerRef) ?? { width: window.innerWidth, height: window.innerHeight };
 
-  const postIds = usePostStore((store) => store.postIds);
-  const postsById = usePostStore((store) => store.postsById);
-  const currentItemIndex = postIds.indexOf(currentItem);
+  const currentItemIndex = posts.findIndex((post) => post.id === currentItem);
   const originalItemIndex = useRef(currentItemIndex).current;
 
   /**
@@ -101,27 +100,27 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
    * Transitions to next item in carousel
    */
   const goPrevModalItem = useCallback(() => {
-    const newIdx = clamp(currentItemIndex - 1, 0, postIds.length - 1);
-    const newPostId = postIds[newIdx];
+    const newIdx = clamp(currentItemIndex - 1, 0, posts.length - 1);
+    const newPostId = posts?.[newIdx]?.id;
     if (newPostId) {
       setCurrentModalItem(newPostId);
     }
-  }, [setCurrentModalItem, postIds, currentItemIndex]);
+  }, [setCurrentModalItem, posts, currentItemIndex]);
 
   /**
    * Transitions to previous item in carousel
    */
   const goNextModalItem = useCallback(() => {
-    const newIdx = clamp(currentItemIndex + 1, 0, postIds.length - 1);
-    if (newIdx >= postIds.length - 1 && !isLoading && hasNextPage) {
+    const newIdx = clamp(currentItemIndex + 1, 0, posts.length - 1);
+    if (newIdx >= posts.length - 1 && !isLoading && hasNextPage) {
       loadMore();
     }
 
-    const newPostId = postIds[newIdx];
+    const newPostId = posts?.[newIdx]?.id;
     if (newPostId) {
       setCurrentModalItem(newPostId);
     }
-  }, [setCurrentModalItem, postIds, currentItemIndex, isLoading, hasNextPage, loadMore]);
+  }, [setCurrentModalItem, posts, currentItemIndex, isLoading, hasNextPage, loadMore]);
 
   // Spring to animate carousel items
   const [springs, api] = useSprings(ItemsToRender, (i) => ({ ...update(i, false, 0) }), [currentItemIndex]);
@@ -151,7 +150,7 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
   useKeyPress('ArrowLeft', goPrevModalItem);
   useKeyPress('ArrowRight', goNextModalItem);
 
-  const hasNext = currentItemIndex < postIds.length - 1;
+  const hasNext = currentItemIndex < posts.length - 1;
   const hasPrev = currentItemIndex > 0;
 
   return (
@@ -189,15 +188,12 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
         }
 
         const idx = currentItemIndex + pos;
-        if (idx < 0 || idx >= postIds.length) {
+        if (idx < 0 || idx >= posts.length) {
           return null;
         }
 
         const id = i;
-        const postId = postIds[idx];
-        invariant(postId, 'Post should exist in store');
-
-        const post = postsById[postId];
+        const post = posts?.[idx];
         invariant(post, 'Post should exist in store');
 
         const totalHeight = size.height - AppBarHeight - 2 * Gutter;

@@ -12,7 +12,19 @@ const useDrawerStore = create<State>()(
     open: false,
     callback: undefined,
     toggleDrawer: (open, callback) => {
-      set(() => ({ open, callback }));
+      let calledOnce = false;
+      set(() => ({
+        open,
+        callback: () => {
+          if (!calledOnce) {
+            calledOnce = true;
+            set({ callback: undefined });
+            if (callback) {
+              callback();
+            }
+          }
+        },
+      }));
     },
   }))
 );

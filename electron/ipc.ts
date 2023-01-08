@@ -2,6 +2,7 @@ import os from 'node:os';
 
 import { BrowserWindow, dialog, ipcMain } from 'electron';
 import type { App, Event, IpcMainInvokeEvent } from 'electron';
+import invariant from 'tiny-invariant';
 
 function handleGetVersion(app: App) {
   return app.getVersion();
@@ -30,13 +31,15 @@ async function handleChooseFolder(): Promise<string | undefined> {
 }
 
 async function handleOauth(event: IpcMainInvokeEvent, uri: string) {
-  const win = BrowserWindow.fromWebContents(event.sender) ?? undefined;
+  const win = BrowserWindow.fromWebContents(event.sender);
+  invariant(win, 'Could not find window for oauth');
+
   return new Promise((resolve, reject) => {
     const url = new URL(uri);
     const searchParams = new URLSearchParams(url.search);
     const expectedState = searchParams.get('state');
     const authWindow = new BrowserWindow({
-      parent: win!,
+      parent: win,
       modal: true,
       show: false,
       autoHideMenuBar: true,

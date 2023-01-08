@@ -3,6 +3,7 @@ import { access, stat } from 'node:fs/promises';
 import http from 'node:http';
 
 import mime from 'mime-types';
+import invariant from 'tiny-invariant';
 
 import FileSystemService from './fileSystemService';
 import getPort from './getPort';
@@ -154,6 +155,7 @@ export interface WebServer {
 
 const createServer = async (): Promise<WebServer> => {
   const port = await getPort();
+  invariant(port, 'No port found');
   const service = new FileSystemService(port);
 
   const server = http.createServer();

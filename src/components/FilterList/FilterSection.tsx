@@ -1,5 +1,6 @@
 import memoizeOne from 'memoize-one';
 import React, { createElement, useMemo, useRef } from 'react';
+import invariant from 'tiny-invariant';
 
 import Filter, { FilterProps } from './Filter';
 
@@ -81,7 +82,9 @@ function FilterSection({
       };
     }
 
-    return itemStyleCache[itemIndex]!;
+    const cached = itemStyleCache[itemIndex];
+    invariant(cached, 'Cached item style should exist');
+    return cached;
   };
 
   // Create items to render

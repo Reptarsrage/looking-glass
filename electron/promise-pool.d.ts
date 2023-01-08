@@ -6,7 +6,7 @@ declare module '@mixmaxhq/promise-pool' {
   class PromisePool {
     constructor(config?: PromisePoolOptions);
 
-    start<A extends any[]>(fn: (...args: A) => Promise<void>, ...args: A): Promise<void>;
+    start<A extends []>(fn: (...args: A) => Promise<void>, ...args: A): Promise<void>;
 
     flush(): Promise<Error[]>;
   }

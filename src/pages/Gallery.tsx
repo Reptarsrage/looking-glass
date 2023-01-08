@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useInfiniteQuery } from 'react-query';
 import type { InfiniteData } from 'react-query';
 import { useLocation } from 'react-router-dom';
+import invariant from 'tiny-invariant';
 
 import { fetchGallery } from '../api';
 import ContentMasonry from '../components/ContentMasonry';
@@ -13,7 +14,6 @@ import useModule from '../hooks/useModule';
 import { generatePlaceholderGallery } from '../placeholderData';
 import useAuthStore from '../store/authentication';
 import useModalStore from '../store/modal';
-import usePostStore from '../store/posts';
 import type { Gallery, Post } from '../types';
 
 type QueryKey = {
@@ -62,12 +62,12 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
 
   const [scrollToItem, setScrollToItem] = useState<string | null>(null);
 
-  const setPosts = usePostStore((store) => store.setPosts);
-
   const module = useModule();
   const moduleId = module.id;
   const moduleName = module.name;
   const moduleIcon = module.icon;
+
+  const galleryTitle = location.state?.gallery?.name ?? moduleName;
 
   const modalIsOpen = useModalStore((state) => state.open);
 
@@ -92,7 +92,6 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
     queryForGallery,
     {
       placeholderData: placeholderDataRef.current,
-      onSuccess: (postPages) => setPosts(flattenPages(postPages)), // TODO: this can cause issues when out of date
       getNextPageParam: (lastPage) =>
         lastPage.hasNext ? { offset: lastPage.offset, after: lastPage.after } : undefined,
     }
@@ -116,12 +115,19 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
 
   // effect to update window title
   useEffect(() => {
-    window.electronAPI.setIcon(moduleIcon);
-    window.electronAPI.setTitle(location.state?.gallery?.name ?? moduleName);
-  }, [modalIsOpen]);
+    if (!isTransitioning) {
+      window.electronAPI.setIcon(moduleIcon);
+      window.electronAPI.setTitle(galleryTitle);
+    }
+  }, [galleryTitle, isTransitioning, location, locationKey, modalIsOpen, moduleIcon]);
 
   // TODO: Add error
   // TODO: Add no results
+
+  const menuRoot = document.getElementById('drawer-root');
+  const drawerRoot = document.getElementById('drawer-root');
+  invariant(menuRoot, 'menuRoot is null');
+  invariant(drawerRoot, 'drawerRoot is null');
 
   return (
     <>
@@ -130,10 +136,11 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
           loadMore={loadMore}
           isLoading={isFetchingNextPage}
           hasNextPage={hasNextPage || hasNextPage === undefined}
+          posts={items}
         />,
-        document.getElementById('modal-root')!
+        menuRoot
       )}
-      {createPortal(<Drawer />, document.getElementById('drawer-root')!)}
+      {createPortal(<Drawer posts={items} />, drawerRoot)}
 
       <ContentMasonry
         items={items}

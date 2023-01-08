@@ -1,7 +1,7 @@
 import { animated, config, useSpringRef, useTransition } from '@react-spring/web';
 import React, { useEffect, useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { HashRouter, Route, Routes, useLocation, useParams } from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import AppBar from './AppBar';
 import CurrentFilters from './components/CurrentFilters';
@@ -76,9 +76,6 @@ function AnimatedRouter() {
 }
 
 function AppWithRouting() {
-  const params = useParams();
-  console.log(params);
-
   return (
     <div className="flex flex-col h-screen">
       <header className="flex-none">

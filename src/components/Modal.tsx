@@ -6,7 +6,6 @@ import useAddFilter from '../hooks/useAddFilter';
 import useKeyPress from '../hooks/useKeyPress';
 import useModule from '../hooks/useModule';
 import useModalStore from '../store/modal';
-import usePostStore from '../store/posts';
 import type { Post } from '../types';
 
 import Button from './Button';
@@ -22,6 +21,7 @@ interface ModalProps {
   loadMore: () => void;
   isLoading: boolean;
   hasNextPage: boolean | undefined;
+  posts: Post[];
 }
 
 interface InnerModalProps extends ModalProps {
@@ -62,9 +62,9 @@ function calculateItemEndPosition(bounds: DOMRect | null, post: Post | null) {
   return { width, height, x, y };
 }
 
-function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps) {
+function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerModalProps) {
   const open = useModalStore((state) => state.open);
-  const item = useModalStore((state) => state.item);
+  const modalPostId = useModalStore((state) => state.item);
   const bounds = useModalStore((state) => state.bounds);
   const toggleModal = useModalStore((state) => state.toggleModal);
   const updateItem = useModalStore((state) => state.updateItem);
@@ -73,9 +73,9 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
   const toggleInfo = useModalStore((state) => state.toggleInfo);
   const showInfo = useModalStore((state) => state.showInfo);
 
-  const { supportsAuthorFilter, supportsSourceFilter } = useModule();
+  const { supportsAuthorFilter, supportsSourceFilter, id: moduleId } = useModule();
 
-  const post = usePostStore((store) => (typeof item === 'string' ? store.postsById[item] : null));
+  const post = posts.find((post) => post.id === modalPostId);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
   const addFilter = useAddFilter();
@@ -160,7 +160,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
     if (post && post.id) {
       const p = post;
       toggleModal(false, undefined, undefined, () => {
-        navigate(`/module/${module.id}?galleryId=${p.id}`, { state: { gallery: p } });
+        navigate(`/module/${moduleId}?galleryId=${p.id}`, { state: { gallery: p } });
       });
     }
   }
@@ -231,7 +231,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
 
       {isTransitioning ? (
         <animated.div style={itemStyles} className="fixed z-20 touch-none shadow-lg rounded-lg overflow-hidden">
-          <MasonryItem post={post} imageLoading="eager" />
+          <MasonryItem post={post} imageLoading="eager" muted />
         </animated.div>
       ) : (
         <Slideshow
@@ -240,13 +240,14 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close }: InnerModalProps
           loadMore={loadMore}
           isLoading={isLoading}
           hasNextPage={hasNextPage}
+          posts={posts}
         />
       )}
     </div>
   );
 }
 
-function Modal({ loadMore, isLoading, hasNextPage }: ModalProps) {
+function Modal({ loadMore, isLoading, hasNextPage, posts }: ModalProps) {
   const open = useModalStore((state) => state.open);
   const clearItem = useModalStore((state) => state.clearItem);
   const [shown, setShown] = useState(open);
@@ -266,7 +267,7 @@ function Modal({ loadMore, isLoading, hasNextPage }: ModalProps) {
     return null;
   }
 
-  return <InnerModal close={close} loadMore={loadMore} isLoading={isLoading} hasNextPage={hasNextPage} />;
+  return <InnerModal posts={posts} close={close} loadMore={loadMore} isLoading={isLoading} hasNextPage={hasNextPage} />;
 }
 
 export default Modal;

@@ -1,3 +1,5 @@
+import React from 'react';
+
 // filter(Boolean) typescript friendly replacement #1
 export function nonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined;
