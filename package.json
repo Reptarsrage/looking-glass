@@ -38,7 +38,7 @@
     "pack": "npm run build && electron-builder --dir",
     "prepare": "husky install",
     "release": "standard-version",
-    "start": "yarn dist && start \"./dist/win-unpacked/The Looking-Glass.exe\"",
+    "start": "yarn dist && \"./dist/win-unpacked/The Looking-Glass.exe\"",
     "type-check": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
