@@ -2,6 +2,126 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/reptarsrage/looking-glass/compare/v0.4.25...v0.6.0) (2023-01-12)
+
+### ⚠ BREAKING CHANGES
+
+- In almost every wat
+
+### Features
+
+- adding filesystem browsing ([025af71](https://github.com/reptarsrage/looking-glass/commit/025af713aac76676bd644172966dfd9fc9115973))
+- adding placeholder skeletons ([cf07fb3](https://github.com/reptarsrage/looking-glass/commit/cf07fb3f1b8d37001a3dbdca38074b6cc83d35d4))
+- adding sliding route transitions ([0e816c0](https://github.com/reptarsrage/looking-glass/commit/0e816c0813b15357ff98f7cb2ff78e659ed5983c))
+- adding version info to settings page ([1ce4ae3](https://github.com/reptarsrage/looking-glass/commit/1ce4ae3afb464a7eed1d68ea2ce18f2f3ff202b9))
+- adding volume sync ([4573212](https://github.com/reptarsrage/looking-glass/commit/457321295fc098c562c94db9c1f1b4a3c58813af))
+- enableColorScheme for css baseline ([0812b61](https://github.com/reptarsrage/looking-glass/commit/0812b61811b1938bf94ddbc779ac9c81d776a554))
+- hooking up lowDataMode settings ([3aecf15](https://github.com/reptarsrage/looking-glass/commit/3aecf15d1e037eb1c54957aee4d3f74749c0b05f))
+- improving navigation ([bfe7a0a](https://github.com/reptarsrage/looking-glass/commit/bfe7a0abef0e2ee27e13acd39931646d509502c4))
+- pauing videos on leaving screen ([22ae6de](https://github.com/reptarsrage/looking-glass/commit/22ae6de3c39d270a39cd54137dc607ad13f3326f))
+- revamping title bar windows icons ([ca8ea97](https://github.com/reptarsrage/looking-glass/commit/ca8ea9744d4215c37a7dc0d8c62e54f208033543))
+
+### Bug Fixes
+
+- **deps:** update dependency axios to ^0.25.0 ([41d4be0](https://github.com/reptarsrage/looking-glass/commit/41d4be07fb24313352c3fa5343c8a9ccffa562d7))
+- **deps:** update dependency axios to ^0.26.0 ([86f2645](https://github.com/reptarsrage/looking-glass/commit/86f264527ef0841428da7c3e25fc34eebb0ac469))
+- **deps:** update dependency axios to ^0.27.0 ([ffe12ce](https://github.com/reptarsrage/looking-glass/commit/ffe12ce127118b9bb9cec81d380db1db79373002))
+- **deps:** update dependency electron-updater to v5 ([1c44696](https://github.com/reptarsrage/looking-glass/commit/1c446966ff95eff645600e04ad2bd408d722df81))
+- **deps:** update dependency framer-motion to v6 ([05fd4cb](https://github.com/reptarsrage/looking-glass/commit/05fd4cb9e6b63277ff161135abafc97c29e14ded))
+- **deps:** update dependency get-port to v6.1.1 ([531d562](https://github.com/reptarsrage/looking-glass/commit/531d56285f28c47b985599f04710ed71b747f14d))
+- **deps:** update dependency get-port to v6.1.2 ([a67ae40](https://github.com/reptarsrage/looking-glass/commit/a67ae40d51ad2feed6a2f5246054858e2a22ae47))
+- **deps:** update dependency moment to v2.29.2 [security] ([8efa625](https://github.com/reptarsrage/looking-glass/commit/8efa6257ae9f2b828d20b4a6b059c0a6343daf27))
+- **deps:** update dependency react-redux to v8 ([94ced2e](https://github.com/reptarsrage/looking-glass/commit/94ced2e1451d74f8d9ce37012c2d97926a698462))
+- **deps:** update react monorepo to v18 ([ef744f2](https://github.com/reptarsrage/looking-glass/commit/ef744f27759670858bf40ca10196499d64046738))
+- disabling settings button when on settings page ([464fe62](https://github.com/reptarsrage/looking-glass/commit/464fe626a89bc834262866733f895bc0f6a79ba0))
+- fixing app params in nested route ([4331060](https://github.com/reptarsrage/looking-glass/commit/4331060643a8875d59e0dad4fd0b4c29869011a4))
+- fixing auth navigation ([32dd9ef](https://github.com/reptarsrage/looking-glass/commit/32dd9ef4dd79e1306720fb5f6502766804df5bfb))
+- fixing bug where modules without refreshToken would fail to login ([a9a3051](https://github.com/reptarsrage/looking-glass/commit/a9a3051daa0590c6b45c7f75962e057f16eb5ffc))
+- fixing column infinite load not triggering ([70943f8](https://github.com/reptarsrage/looking-glass/commit/70943f85e3ec9c7ab68f65b60c8d26c219c19a5f))
+- fixing drawer/modal roots ([844f882](https://github.com/reptarsrage/looking-glass/commit/844f882bc363935994e75e182b61c2bf0e445072))
+- fixing flashing image on modal open ([9ba8acc](https://github.com/reptarsrage/looking-glass/commit/9ba8acc0eb3b49be469f396237a189996f347ff7))
+- fixing issue with zoomedi amges in slideshow ([8bcb762](https://github.com/reptarsrage/looking-glass/commit/8bcb762a8fb82940fd1c73df84548d3ca5baab23))
+- fixing masonry auto scroll to item ([8e1d0a5](https://github.com/reptarsrage/looking-glass/commit/8e1d0a598386726da3272a913dd7f056f7499432))
+- fixing modal flicker ([b1f29e3](https://github.com/reptarsrage/looking-glass/commit/b1f29e3f40721e1bcf82bc2e79d2c32ec0b68bc5))
+- fixing modal header overlap ([7a0e921](https://github.com/reptarsrage/looking-glass/commit/7a0e92120f34ec6dd9060b0b7c3a1c42d1ecf168))
+- fixing reddit oauth redirect loop ([eb2a88a](https://github.com/reptarsrage/looking-glass/commit/eb2a88a91e15c19a13935d946f9977e2bdb803fc))
+- fixing regression with modal overflow ([b82d935](https://github.com/reptarsrage/looking-glass/commit/b82d9353a1a43942a4b299c0ef819a6af071b647))
+- fixing regression with overflow in modal ([c03bb29](https://github.com/reptarsrage/looking-glass/commit/c03bb2964dd9c29197c01e245faff42795e9ede0))
+- fixing scrollbar messing with titlebar and modals ([cd9b6f3](https://github.com/reptarsrage/looking-glass/commit/cd9b6f33a2b865adeb30bb2c880dcb92ca7b6895))
+- fixing slideshow image going outside of bounds when zoomed ([acab67f](https://github.com/reptarsrage/looking-glass/commit/acab67fe758324b4de5f4470cd9e55a5572b9312))
+- fixing slideshow zoom ([19d69de](https://github.com/reptarsrage/looking-glass/commit/19d69de2efb5db3e59da767be01738eedf99a8ff))
+- fixing tag click not closing drawer ([01f7a37](https://github.com/reptarsrage/looking-glass/commit/01f7a37d31a3b74ecf93e71879635c66860ef4b4))
+- fixing title and icon updates ([bcb3df5](https://github.com/reptarsrage/looking-glass/commit/bcb3df521c44a490b5eb11b74315b5243fc0459e))
+- fixing video volume and auto play ([be6bf6e](https://github.com/reptarsrage/looking-glass/commit/be6bf6e4d57ec85fc773245d29f42abb8b282aaa))
+- fixing window maximization on open ([305a6f1](https://github.com/reptarsrage/looking-glass/commit/305a6f14785b1565d7816b41896c88b84cf2b6e6))
+- gallery load indicator ([13012bf](https://github.com/reptarsrage/looking-glass/commit/13012bf961071f417c17fa6af5cd9717b798d81c))
+- hiding modal next/prev button ([a8983a8](https://github.com/reptarsrage/looking-glass/commit/a8983a86737b7a29abcd8e356f5c992ecf23551f))
+- hooking back up some settings ([568a4d7](https://github.com/reptarsrage/looking-glass/commit/568a4d72fe22691bdd1cc6114e9692e311e069e7))
+- not showing empty popovers ([1d04520](https://github.com/reptarsrage/looking-glass/commit/1d0452074d5eb3f4fb1f7fb7a42426d8e07a79d3))
+- persisting colume, tag contexts to session/local storage ([0eb9c5d](https://github.com/reptarsrage/looking-glass/commit/0eb9c5d3a89d791c6bfe33b42525a97e91be3eb1))
+
+- re-writing app to be more performant ([519a91e](https://github.com/reptarsrage/looking-glass/commit/519a91ed98a1e5351d66fda36a736e9b31ed7af3))
+
+## [0.5.0](https://github.com/reptarsrage/looking-glass/compare/v0.4.25...v0.5.0) (2023-01-12)
+
+### ⚠ BREAKING CHANGES
+
+- In almost every wat
+
+### Features
+
+- adding filesystem browsing ([025af71](https://github.com/reptarsrage/looking-glass/commit/025af713aac76676bd644172966dfd9fc9115973))
+- adding placeholder skeletons ([cf07fb3](https://github.com/reptarsrage/looking-glass/commit/cf07fb3f1b8d37001a3dbdca38074b6cc83d35d4))
+- adding sliding route transitions ([0e816c0](https://github.com/reptarsrage/looking-glass/commit/0e816c0813b15357ff98f7cb2ff78e659ed5983c))
+- adding version info to settings page ([1ce4ae3](https://github.com/reptarsrage/looking-glass/commit/1ce4ae3afb464a7eed1d68ea2ce18f2f3ff202b9))
+- adding volume sync ([4573212](https://github.com/reptarsrage/looking-glass/commit/457321295fc098c562c94db9c1f1b4a3c58813af))
+- enableColorScheme for css baseline ([0812b61](https://github.com/reptarsrage/looking-glass/commit/0812b61811b1938bf94ddbc779ac9c81d776a554))
+- hooking up lowDataMode settings ([3aecf15](https://github.com/reptarsrage/looking-glass/commit/3aecf15d1e037eb1c54957aee4d3f74749c0b05f))
+- improving navigation ([bfe7a0a](https://github.com/reptarsrage/looking-glass/commit/bfe7a0abef0e2ee27e13acd39931646d509502c4))
+- pauing videos on leaving screen ([22ae6de](https://github.com/reptarsrage/looking-glass/commit/22ae6de3c39d270a39cd54137dc607ad13f3326f))
+- revamping title bar windows icons ([ca8ea97](https://github.com/reptarsrage/looking-glass/commit/ca8ea9744d4215c37a7dc0d8c62e54f208033543))
+
+### Bug Fixes
+
+- **deps:** update dependency axios to ^0.25.0 ([41d4be0](https://github.com/reptarsrage/looking-glass/commit/41d4be07fb24313352c3fa5343c8a9ccffa562d7))
+- **deps:** update dependency axios to ^0.26.0 ([86f2645](https://github.com/reptarsrage/looking-glass/commit/86f264527ef0841428da7c3e25fc34eebb0ac469))
+- **deps:** update dependency axios to ^0.27.0 ([ffe12ce](https://github.com/reptarsrage/looking-glass/commit/ffe12ce127118b9bb9cec81d380db1db79373002))
+- **deps:** update dependency electron-updater to v5 ([1c44696](https://github.com/reptarsrage/looking-glass/commit/1c446966ff95eff645600e04ad2bd408d722df81))
+- **deps:** update dependency framer-motion to v6 ([05fd4cb](https://github.com/reptarsrage/looking-glass/commit/05fd4cb9e6b63277ff161135abafc97c29e14ded))
+- **deps:** update dependency get-port to v6.1.1 ([531d562](https://github.com/reptarsrage/looking-glass/commit/531d56285f28c47b985599f04710ed71b747f14d))
+- **deps:** update dependency get-port to v6.1.2 ([a67ae40](https://github.com/reptarsrage/looking-glass/commit/a67ae40d51ad2feed6a2f5246054858e2a22ae47))
+- **deps:** update dependency moment to v2.29.2 [security] ([8efa625](https://github.com/reptarsrage/looking-glass/commit/8efa6257ae9f2b828d20b4a6b059c0a6343daf27))
+- **deps:** update dependency react-redux to v8 ([94ced2e](https://github.com/reptarsrage/looking-glass/commit/94ced2e1451d74f8d9ce37012c2d97926a698462))
+- **deps:** update react monorepo to v18 ([ef744f2](https://github.com/reptarsrage/looking-glass/commit/ef744f27759670858bf40ca10196499d64046738))
+- disabling settings button when on settings page ([464fe62](https://github.com/reptarsrage/looking-glass/commit/464fe626a89bc834262866733f895bc0f6a79ba0))
+- fixing app params in nested route ([4331060](https://github.com/reptarsrage/looking-glass/commit/4331060643a8875d59e0dad4fd0b4c29869011a4))
+- fixing auth navigation ([32dd9ef](https://github.com/reptarsrage/looking-glass/commit/32dd9ef4dd79e1306720fb5f6502766804df5bfb))
+- fixing bug where modules without refreshToken would fail to login ([a9a3051](https://github.com/reptarsrage/looking-glass/commit/a9a3051daa0590c6b45c7f75962e057f16eb5ffc))
+- fixing column infinite load not triggering ([70943f8](https://github.com/reptarsrage/looking-glass/commit/70943f85e3ec9c7ab68f65b60c8d26c219c19a5f))
+- fixing drawer/modal roots ([844f882](https://github.com/reptarsrage/looking-glass/commit/844f882bc363935994e75e182b61c2bf0e445072))
+- fixing flashing image on modal open ([9ba8acc](https://github.com/reptarsrage/looking-glass/commit/9ba8acc0eb3b49be469f396237a189996f347ff7))
+- fixing issue with zoomedi amges in slideshow ([8bcb762](https://github.com/reptarsrage/looking-glass/commit/8bcb762a8fb82940fd1c73df84548d3ca5baab23))
+- fixing masonry auto scroll to item ([8e1d0a5](https://github.com/reptarsrage/looking-glass/commit/8e1d0a598386726da3272a913dd7f056f7499432))
+- fixing modal flicker ([b1f29e3](https://github.com/reptarsrage/looking-glass/commit/b1f29e3f40721e1bcf82bc2e79d2c32ec0b68bc5))
+- fixing modal header overlap ([7a0e921](https://github.com/reptarsrage/looking-glass/commit/7a0e92120f34ec6dd9060b0b7c3a1c42d1ecf168))
+- fixing reddit oauth redirect loop ([eb2a88a](https://github.com/reptarsrage/looking-glass/commit/eb2a88a91e15c19a13935d946f9977e2bdb803fc))
+- fixing regression with modal overflow ([b82d935](https://github.com/reptarsrage/looking-glass/commit/b82d9353a1a43942a4b299c0ef819a6af071b647))
+- fixing regression with overflow in modal ([c03bb29](https://github.com/reptarsrage/looking-glass/commit/c03bb2964dd9c29197c01e245faff42795e9ede0))
+- fixing scrollbar messing with titlebar and modals ([cd9b6f3](https://github.com/reptarsrage/looking-glass/commit/cd9b6f33a2b865adeb30bb2c880dcb92ca7b6895))
+- fixing slideshow image going outside of bounds when zoomed ([acab67f](https://github.com/reptarsrage/looking-glass/commit/acab67fe758324b4de5f4470cd9e55a5572b9312))
+- fixing slideshow zoom ([19d69de](https://github.com/reptarsrage/looking-glass/commit/19d69de2efb5db3e59da767be01738eedf99a8ff))
+- fixing tag click not closing drawer ([01f7a37](https://github.com/reptarsrage/looking-glass/commit/01f7a37d31a3b74ecf93e71879635c66860ef4b4))
+- fixing title and icon updates ([bcb3df5](https://github.com/reptarsrage/looking-glass/commit/bcb3df521c44a490b5eb11b74315b5243fc0459e))
+- fixing video volume and auto play ([be6bf6e](https://github.com/reptarsrage/looking-glass/commit/be6bf6e4d57ec85fc773245d29f42abb8b282aaa))
+- fixing window maximization on open ([305a6f1](https://github.com/reptarsrage/looking-glass/commit/305a6f14785b1565d7816b41896c88b84cf2b6e6))
+- gallery load indicator ([13012bf](https://github.com/reptarsrage/looking-glass/commit/13012bf961071f417c17fa6af5cd9717b798d81c))
+- hiding modal next/prev button ([a8983a8](https://github.com/reptarsrage/looking-glass/commit/a8983a86737b7a29abcd8e356f5c992ecf23551f))
+- hooking back up some settings ([568a4d7](https://github.com/reptarsrage/looking-glass/commit/568a4d72fe22691bdd1cc6114e9692e311e069e7))
+- not showing empty popovers ([1d04520](https://github.com/reptarsrage/looking-glass/commit/1d0452074d5eb3f4fb1f7fb7a42426d8e07a79d3))
+- persisting colume, tag contexts to session/local storage ([0eb9c5d](https://github.com/reptarsrage/looking-glass/commit/0eb9c5d3a89d791c6bfe33b42525a97e91be3eb1))
+
+- re-writing app to be more performant ([519a91e](https://github.com/reptarsrage/looking-glass/commit/519a91ed98a1e5351d66fda36a736e9b31ed7af3))
+
 ### [0.4.25](https://github.com/reptarsrage/looking-glass/compare/v0.4.23...v0.4.25) (2021-12-21)
 
 ### Features
