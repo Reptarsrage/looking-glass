@@ -124,9 +124,9 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
   // TODO: Add error
   // TODO: Add no results
 
-  const menuRoot = document.getElementById('drawer-root');
+  const modalRoot = document.getElementById('modal-root');
   const drawerRoot = document.getElementById('drawer-root');
-  invariant(menuRoot, 'menuRoot is null');
+  invariant(modalRoot, 'modalRoot is null');
   invariant(drawerRoot, 'drawerRoot is null');
 
   return (
@@ -138,7 +138,7 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
           hasNextPage={hasNextPage || hasNextPage === undefined}
           posts={items}
         />,
-        menuRoot
+        modalRoot
       )}
       {createPortal(<Drawer posts={items} />, drawerRoot)}
 
