@@ -10,7 +10,7 @@ invariant(rootElement, '"root" not found');
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-  // <React.StrictMode>
-  <App />
-  // </React.StrictMode>
-); // NOTE: Strict mode messes with react-spring onRest/onStart callbacks
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
