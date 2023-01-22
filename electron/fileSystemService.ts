@@ -60,18 +60,24 @@ class FileSystemService {
             ['uri', file],
           ]).toString()}`;
 
+          const urls = [{ url, width, height }];
+          if (!isVideo) {
+            // Add thumbnail
+            const thumbWidth = Math.round(width / 4);
+            const thumbHeight = Math.round(height / 4);
+            const thumbUrl = `http://${this.host}:${this.port}/image?${new URLSearchParams([
+              ['uri', file],
+              ['width', thumbWidth.toString()],
+            ]).toString()}`;
+            urls.push({ url: thumbUrl, width: thumbWidth, height: thumbHeight });
+          }
+
           return {
             id: path,
             name: title,
             width,
             height,
-            urls: [
-              {
-                url,
-                width,
-                height,
-              },
-            ],
+            urls,
             isVideo,
             isGallery,
             filters: [],
