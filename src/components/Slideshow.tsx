@@ -14,7 +14,6 @@ import { InnerItem as MasonryItem } from './MasonryItem';
 import PinchZoomPan from './PinchZoomPan';
 
 // Constants
-const AppBarHeight = 28;
 const Gutter = 16;
 const ItemsToRender = 5;
 
@@ -28,7 +27,7 @@ function clamp(num: number, min: number, max: number): number {
 /**
  * Resizes image dimensions to fit container, preserving aspect ratio
  */
-function clampImageDimensions(width: number, height: number, maxHeight: number, maxWidth: number) {
+function clampImageDimensions(width: number, height: number, maxWidth: number, maxHeight: number) {
   const clampTo = Math.min(maxHeight, maxWidth);
   let clampWidth = Math.min(width, clampTo);
   let clampHeight = Math.min(height, clampTo);
@@ -196,7 +195,7 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
         const post = posts?.[idx];
         invariant(post, 'Post should exist in store');
 
-        const totalHeight = size.height - AppBarHeight - 2 * Gutter;
+        const totalHeight = size.height - 2 * Gutter;
         const totalWidth = size.width - 2 * Gutter;
         const { width, height } = clampImageDimensions(post.width, post.height, totalWidth, totalHeight);
         const left = (totalWidth - width) / 2 + Gutter;

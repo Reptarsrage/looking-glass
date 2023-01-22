@@ -172,7 +172,10 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
   // TODO: Transition modal button in and out
   // TODO: something weird happens when navigating that prevents modal from opening sometimes
   return (
-    <div className="fixed top-0 left-0 w-full h-full overflow-hidden" style={{ top: AppBarHeight }}>
+    <div
+      className="fixed top-0 left-0 w-full overflow-hidden"
+      style={{ top: AppBarHeight, height: `calc(100vh - ${AppBarHeight}px)` }}
+    >
       <animated.div style={backdropStyles} className="absolute right-0 top-1 z-30 flex gap-2 p-2 items-center">
         {post.isGallery && <Button onClick={goToGallery}>View Gallery</Button>}
         <Button onClick={toggleInfo}>Toggle Info</Button>
@@ -182,7 +185,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
       {showInfo && (
         <animated.div
           style={backdropStyles}
-          className="absolute left-0 top-0 right-0 z-20 text-white bg-gradient-to-b from-black p-4"
+          className="absolute left-0 top-0 right-0 z-20 text-white bg-gradient-to-b from-slate-900 p-4"
         >
           <div className="text-xl">
             <h1>{post.name || 'UNTITLED'}</h1>
@@ -225,7 +228,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
 
       <animated.div
         style={backdropStyles}
-        className="absolute top-0 left-0 w-full h-full bg-gray-900 z-10"
+        className="absolute top-0 left-0 w-full h-full bg-slate-900 z-10"
         onClick={closeModal}
       />
 

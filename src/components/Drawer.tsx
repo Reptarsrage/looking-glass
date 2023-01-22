@@ -50,8 +50,11 @@ function InnerDrawer({ onClosed, closeDrawer, open, shown, posts }: InnerDrawerP
 
   return (
     <div
-      className={clsx(!shown && 'invisible', 'fixed top-0 left-0 w-full h-full overflow-hidden')}
-      style={{ top: AppBarHeight }}
+      className={clsx(!shown && 'invisible', 'fixed top-0 left-0 w-full overflow-hidden')}
+      style={{
+        top: AppBarHeight,
+        height: `calc(100vh - ${AppBarHeight}px)`,
+      }}
     >
       {backdropStyles(
         (styles, item) =>
