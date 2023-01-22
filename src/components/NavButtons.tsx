@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ReactComponent as ChevronIcon } from '../assets/chevron.svg';
 import { ReactComponent as HomeIcon } from '../assets/home.svg';
@@ -8,8 +8,10 @@ import useNavStack from '../hooks/useNavStack';
 import Fab from './Fab';
 
 function NavButtons() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { hasBack, hasForward } = useNavStack();
+  const isHome = location.pathname === '/';
 
   function onHome() {
     navigate('/');
@@ -25,7 +27,7 @@ function NavButtons() {
 
   return (
     <>
-      <Fab onClick={onHome} disabled={!hasBack}>
+      <Fab onClick={onHome} disabled={isHome}>
         <HomeIcon className="w-5 h-5" />
       </Fab>
 
