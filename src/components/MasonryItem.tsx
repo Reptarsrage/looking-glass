@@ -23,9 +23,11 @@ interface InnerItemProps {
   lowRes?: boolean | undefined;
   controls?: boolean | undefined;
   muted?: boolean | undefined;
+  autoPlay?: boolean | undefined;
+  preload?: string | undefined;
 }
 
-export function InnerItem({ post, imageLoading, lowRes, controls, muted }: InnerItemProps) {
+export function InnerItem({ post, imageLoading, lowRes, controls, muted, preload, autoPlay }: InnerItemProps) {
   const { isPlaceholder, isVideo, urls } = post;
   const sorted = useMemo(() => [...urls].sort((a, z) => z.width - a.width), [urls]);
   const lowSource = sorted[sorted.length - 1];
@@ -41,7 +43,7 @@ export function InnerItem({ post, imageLoading, lowRes, controls, muted }: Inner
   }
 
   if (isVideo) {
-    return <Video source={source} muted={muted} autoPlay loop controls={controls} />;
+    return <Video source={source} muted={muted} autoPlay={autoPlay} loop controls={controls} preload={preload} />;
   }
 
   return (
@@ -61,6 +63,7 @@ export function InnerItem({ post, imageLoading, lowRes, controls, muted }: Inner
 
 InnerItem.defaultProps = {
   imageLoading: 'lazy',
+  autoPlay: false,
   lowRes: true,
 };
 

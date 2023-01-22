@@ -2,6 +2,7 @@ import useIntersectionObserver from '@react-hook/intersection-observer';
 import clsx from 'clsx';
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 
+import { ReactComponent as PlayCircleIcon } from '../assets/play-circle.svg';
 import useVolumeStore from '../store/volume';
 import { assignRefs } from '../utils';
 
@@ -16,7 +17,7 @@ interface VideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
 }
 
 const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
-  { source, autoPlay, controls, muted: mutedProp, ...passThroughProps },
+  { source, autoPlay, controls, muted: mutedProp, preload, ...passThroughProps },
   ref
 ) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -25,6 +26,7 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
   const setVolume = useVolumeStore((state) => state.setVolume);
   const { isIntersecting } = useIntersectionObserver(videoRef);
 
+  const [showPlay, setShowPlay] = useState(!autoPlay);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [showProgress, setShowProgress] = useState(true);
@@ -75,10 +77,20 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
     if (controls) {
       setShowProgress(false);
     }
+
+    if (!autoPlay) {
+      setShowPlay(false);
+      videoRef.current?.play();
+    }
   }
 
   function onMouseLeave() {
     setShowProgress(true);
+
+    if (!autoPlay) {
+      setShowPlay(true);
+      videoRef.current?.pause();
+    }
   }
 
   if (!source) {
@@ -96,8 +108,19 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
         onTimeUpdate={onTimeUpdate}
         controls={controls}
         muted={mutedProp ?? muted}
+        preload={preload}
         {...passThroughProps}
       />
+
+      <div
+        className={clsx(
+          'transition-opacity duration-300 absolute z-1 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-600 bg-opacity-80 rounded-full text-white w-1/4 aspect-square flex justify-center items-center',
+          showPlay ? 'opacity-100' : 'opacity-0'
+        )}
+      >
+        <PlayCircleIcon className="ml-1" />
+      </div>
+
       {showProgress && (
         <div
           className={clsx(

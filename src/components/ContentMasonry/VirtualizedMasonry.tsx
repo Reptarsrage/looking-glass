@@ -121,7 +121,7 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
   }, [items]);
 
   return (
-    <div className="flex flex-1 flex-col relative">
+    <div className="flex flex-1 flex-col relative will-change-transform">
       <div
         ref={containerRef}
         onScroll={onScroll}

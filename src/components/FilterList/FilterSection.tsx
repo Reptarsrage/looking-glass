@@ -117,7 +117,7 @@ function FilterSection({
         {filterType.name}
       </h4>
 
-      <ul className="relative" style={{ height: ItemHeight * (itemCount - 1) }}>
+      <ul className="relative will-change-transform" style={{ height: ItemHeight * (itemCount - 1) }}>
         {itemsToRender}
       </ul>
     </li>

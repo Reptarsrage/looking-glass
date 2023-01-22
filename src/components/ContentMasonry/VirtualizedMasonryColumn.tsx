@@ -206,13 +206,10 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col relative"
+      className="flex flex-col relative will-change-transform"
       style={{
         width,
         height: estimatedTotalSize,
-        WebkitOverflowScrolling: 'touch',
-        willChange: 'transform',
-        WebkitTransform: 'translate3d(0,0,0)', // Enable GPU acceleration
       }}
     >
       {itemsToRender}
