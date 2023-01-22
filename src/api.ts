@@ -26,7 +26,10 @@ export async function fetchModules(): Promise<Module[]> {
     throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
   }
 
-  return await response.json();
+  const modules: Module[] = await response.json();
+  modules.sort((a, b) => a.name.localeCompare(b.name));
+
+  return modules;
 }
 
 /**
