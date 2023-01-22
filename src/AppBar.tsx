@@ -36,14 +36,13 @@ function AppBar() {
   }, []);
 
   // subscribe to title
-  // TODO: THis doesn't work
   useEffect(() => {
     const handleSetTitle = async (_event?: Event, value?: string) => {
-      setTitle(value ?? defaultTitle);
+      setTitle(value || defaultTitle);
     };
 
     const handleSetIcon = async (_event?: Event, value?: string) => {
-      setIcon(value ?? defaultIcon);
+      setIcon(value || defaultIcon);
     };
 
     window.electronAPI.on('title', handleSetTitle);
