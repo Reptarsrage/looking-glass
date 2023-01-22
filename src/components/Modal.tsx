@@ -11,7 +11,7 @@ import type { Post } from '../types';
 import Button from './Button';
 import FiltersMenu from './FiltersMenu';
 import { InnerItem as MasonryItem } from './MasonryItem';
-import Slideshow from './SlideShow';
+import Slideshow, { clampImageDimensions } from './SlideShow';
 
 // Constants
 const AppBarHeight = 28;
@@ -44,18 +44,8 @@ function calculateItemEndPosition(bounds: DOMRect | null, post: Post | null) {
   const availableWidth = window.innerWidth - 2 * Gutter;
   const availableHeight = window.innerHeight - 2 * Gutter - AppBarHeight;
 
-  const clampTo = Math.min(availableHeight, availableWidth);
-  let clampWidth = Math.min(post.width, clampTo);
-  let clampHeight = Math.min(post.height, clampTo);
+  const { width, height } = clampImageDimensions(post.width, post.height, availableWidth, availableHeight);
 
-  if (post.width > post.height) {
-    clampHeight = (post.height / post.width) * clampWidth;
-  } else {
-    clampWidth = (post.width / post.height) * clampHeight;
-  }
-
-  const width = clampWidth;
-  const height = clampHeight;
   const x = (availableWidth - width) / 2 + Gutter;
   const y = (availableHeight - height) / 2 + Gutter;
 
@@ -173,7 +163,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
   // TODO: something weird happens when navigating that prevents modal from opening sometimes
   return (
     <div
-      className="fixed top-0 left-0 w-full overflow-hidden"
+      className="fixed top-0 left-0 w-full overflow-hidden will-change-transform"
       style={{ top: AppBarHeight, height: `calc(100vh - ${AppBarHeight}px)` }}
     >
       <animated.div style={backdropStyles} className="absolute right-0 top-1 z-30 flex gap-2 p-2 items-center">

@@ -27,17 +27,25 @@ function clamp(num: number, min: number, max: number): number {
 /**
  * Resizes image dimensions to fit container, preserving aspect ratio
  */
-function clampImageDimensions(width: number, height: number, maxWidth: number, maxHeight: number) {
-  const clampTo = Math.min(maxHeight, maxWidth);
-  let clampWidth = Math.min(width, clampTo);
-  let clampHeight = Math.min(height, clampTo);
-
-  if (width > height) {
-    clampHeight = (height / width) * clampWidth;
-  } else {
-    clampWidth = (width / height) * clampHeight;
+export function clampImageDimensions(width: number, height: number, maxWidth: number, maxHeight: number) {
+  if (width < maxWidth && height < maxHeight) {
+    // image fits within container, no need to resize
+    return { width, height };
   }
-  return { width: clampWidth, height: clampHeight };
+
+  if (width < maxWidth) {
+    // image is too tall, resize to fit height
+    return { width: width * (maxHeight / height), height: maxHeight };
+  } else if (height < maxHeight) {
+    // image is too wide, resize to fit width
+    return { width: maxWidth, height: height * (maxWidth / width) };
+  } else if (maxWidth > maxHeight) {
+    // image is too wide and tall, resize to fit height
+    return { width: width * (maxHeight / height), height: maxHeight };
+  } else {
+    // image is too wide and tall, resize to fit width
+    return { width: maxWidth, height: height * (maxWidth / width) };
+  }
 }
 
 /**
@@ -210,7 +218,7 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
             style={{ ...style, width, height, top, left }}
           >
             <PinchZoomPan width={width} height={height} reset={pos !== 0}>
-              <MasonryItem post={post} imageLoading="eager" lowRes={false} controls />
+              <MasonryItem post={post} imageLoading="eager" lowRes={false} controls autoPlay preload="auto" />
             </PinchZoomPan>
           </animated.div>
         );
