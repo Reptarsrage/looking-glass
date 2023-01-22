@@ -6,6 +6,7 @@ import { usePopperTooltip } from 'react-popper-tooltip';
 import { useNavigate } from 'react-router-dom';
 import 'react-popper-tooltip/dist/styles.css';
 
+import { ReactComponent as ImagesIcon } from '../assets/images.svg';
 import useModule from '../hooks/useModule';
 import useModalStore from '../store/modal';
 import type { Post } from '../types';
@@ -117,12 +118,17 @@ function MasonryItem({ item, style, isScrolling, imageLoading, lowRes }: Masonry
         ref={assignRefs(containerRef, setTriggerRef)}
         style={{ ...style, ...syles }}
         className={clsx(
+          'shadow touch-none rounded overflow-hidden relative',
           item.isGallery && 'cursor-pointer',
-          'shadow touch-none rounded overflow-hidden',
           isShownInModal && 'invisible'
         )}
       >
         <InnerItem post={item} imageLoading={imageLoading} lowRes={lowRes} muted />
+        {item.isGallery && (
+          <div className="absolute top-1 right-1 bg-slate-600 bg-opacity-80 rounded-full text-white h-10 w-10 flex justify-center items-center">
+            <ImagesIcon className="w-6 h-6" />
+          </div>
+        )}
       </animated.div>
 
       {/* TODO: Decide when to show tooltips */}
