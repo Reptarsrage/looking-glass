@@ -68,36 +68,31 @@ yarn package
 - [x] Sort
 - [x] Modules
 - [x] Auth
-- [x] Themes
+- [ ] Themes
 - [x] Local file system
 - [ ] Breadcrumbs
-- [x] Column Slider + Settings
-- [x] Error Handling + Images
-- [ ] Route TRansitions?
-- [x] Fix item tags
-- [x] Fetch item tags
-- [x] Fix video sources loading errors
-- [ ] prev/next button hiding + search hiding
-- [x] clear stuff when navigating
-- [ ] hide sort/filter buttons when necessary
-- [x] Use skeletons instead of spinner
-- [ ] add snackbar (toasts) for End of scroll + Errors + Download
-- [x] video volume sync
-- [x] update all zustand syntax
-- [ ] use route for modal: https://stackblitz.com/github/remix-run/react-router/tree/main/examples/modal?file=src/App.tsx
-- [ ] Pause videos when modal opens
+- [ ] Settings Page
+- [ ] Error Handling + Images
+- [x] Route Transitions
+- [ ] Fix item tags
+- [ ] Fetch item tags
+- [ ] Handle video + image loading errors
+- [x] Prev/next button hiding + search hiding
+- [ ] Hide sort/filter buttons when necessary
+- [x] Use skeletons instead of spinner for Masonry
+- [x] Use skeletons instead of spinner for Filters
+- [ ] Use skeletons instead of spinner for Modules
+- [ ] Add snackbar (toasts) for End of scroll + Errors + Download
+- [x] Video volume sync
+- [x] Update all zustand syntax
+- [ ] Use route for modal: https://stackblitz.com/github/remix-run/react-router/tree/main/examples/modal?file=src/App.tsx
+- [x] Pause videos when modal opens
 - [ ] Start modal video at same time (maybe pause when zooming instead of showing poster?)
 - [x] End of scroll indidicator
 - [x] Avoid fetching more when navigating back
-- [x] Fix modal title on light theme
-- [ ] TESTS
 - [x] Masonry title popovers
-- [ ] settings page should have a different transition
-- [ ] destination scroll isnt quite right (always is on bottom?)
-- [x] routes from auth always break
-- [ ] set slide show direction, and scroll to top/bottom based on direction (to avoid less scrolls)
-- [ ] zoomed images dont slideshow well
-- [ ] first mdal after route change is blank
+- [ ] Unit tests
+- [ ] Integration tests
 
 Links:
 
