@@ -85,7 +85,9 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
   }
 
   function onMouseLeave() {
-    setShowProgress(true);
+    if (!videoRef.current?.paused) {
+      setShowProgress(true);
+    }
 
     if (!autoPlay) {
       setShowPlay(true);
@@ -96,6 +98,8 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
   if (!source) {
     return null;
   }
+
+  // TODO: progress bar isn't smooth
 
   return (
     <div className="relative inline-block w-full h-full" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
