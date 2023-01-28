@@ -2,6 +2,7 @@ import { animated, config, useSpring, useSpringRef, useTransition } from '@react
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ReactComponent as ChevronIcon } from '../assets/chevron.svg';
+import { ReactComponent as SortDownIcon } from '../assets/sort-down.svg';
 import useAppParams from '../hooks/useAppParams';
 import useModule from '../hooks/useModule';
 
@@ -138,7 +139,9 @@ function SortMenu() {
         onClick={toggleMenu}
         ref={buttonRef}
         disabled={(isGallery && !supportsGallerySort) || sorts.length < 2}
+        className="flex items-center"
       >
+        <SortDownIcon className="mr-2" height={18} />
         Sort by {text}
       </Button>
 

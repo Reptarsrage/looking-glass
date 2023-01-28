@@ -2,6 +2,8 @@ import { animated, config, useChain, useSpring, useSpringRef } from '@react-spri
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { ReactComponent as EyeSlashIcon } from '../assets/eye-slash.svg';
+import { ReactComponent as EyeIcon } from '../assets/eye.svg';
 import useAddFilter from '../hooks/useAddFilter';
 import useKeyPress from '../hooks/useKeyPress';
 import useModule from '../hooks/useModule';
@@ -168,7 +170,10 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
     >
       <animated.div style={backdropStyles} className="absolute right-0 top-1 z-30 flex gap-2 p-2 items-center">
         {post.isGallery && <Button onClick={goToGallery}>View Gallery</Button>}
-        <Button onClick={toggleInfo}>Toggle Info</Button>
+        <Button onClick={toggleInfo} className="flex items-center">
+          {showInfo ? <EyeIcon className="mr-2" height={18} /> : <EyeSlashIcon className="mr-2" height={18} />}
+          Toggle Info
+        </Button>
         <FiltersMenu />
       </animated.div>
 
