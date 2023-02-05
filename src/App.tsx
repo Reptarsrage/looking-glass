@@ -17,12 +17,7 @@ import Modules from './pages/Modules';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: Infinity,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-      refetchOnMount: false,
-      refetchIntervalInBackground: false,
+      staleTime: 3.6e6, // 1 hour
       retry(failureCount) {
         return failureCount < 3;
       },
