@@ -45,13 +45,6 @@ async function handleOauth(event: IpcMainInvokeEvent, uri: string) {
       autoHideMenuBar: true,
     });
 
-    function handleDidNavigate(_: Event, __: string, status: number) {
-      // TODO: Temporary fix for reddit OAuth flow 302 redirect loop
-      if (status === 302) {
-        authWindow.webContents.reload();
-      }
-    }
-
     function handleWillNavigate(navigationEvent: Event, newUrl: string) {
       const toUrl = new URL(newUrl);
       const toSearchParams = new URLSearchParams(toUrl.search);
@@ -73,7 +66,6 @@ async function handleOauth(event: IpcMainInvokeEvent, uri: string) {
     authWindow.on('closed', () => reject(new Error('Auth window was closed by user')));
     authWindow.webContents.on('will-navigate', handleWillNavigate);
     authWindow.webContents.on('will-redirect', handleWillNavigate);
-    authWindow.webContents.on('did-navigate', handleDidNavigate);
 
     authWindow.loadURL(uri);
     authWindow.show();
