@@ -1,5 +1,5 @@
 import { animated, config, useSpringRef, useTransition } from '@react-spring/web';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ import useNavStack from './hooks/useNavStack';
 import useSize from './hooks/useSize';
 import Authenticated from './pages/Authenticated';
 import Modules from './pages/Modules';
+import Settings from './pages/Settings';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,10 +26,22 @@ const queryClient = new QueryClient({
   },
 });
 
+function interpolate(y: number, direction: number, useSpecial: boolean) {
+  if (useSpecial) {
+    return `scale(${1.0 - Math.abs(y) * 0.001}) translate3d(0,0,${direction * y}vw)`;
+  }
+
+  return `scale(${1.0 - Math.abs(y) * 0.001}) translate3d(${direction * y}vw,0,0)`;
+}
+
 function AnimatedRouter() {
   // Keep track of navigation
   const location = useLocation();
   const { direction } = useNavStack();
+  const [prevLocation, setPrevLocation] = useState(location.pathname);
+
+  const wasSettings = prevLocation === '/settings';
+  const isSettings = location.pathname === '/settings';
 
   // Spring
   const transRef = useSpringRef();
@@ -47,6 +60,12 @@ function AnimatedRouter() {
   const size = useSize(containerRef);
 
   useEffect(() => {
+    return () => {
+      setPrevLocation(location.pathname);
+    };
+  }, [location]);
+
+  useEffect(() => {
     transRef.start();
   }, [transRef, location]);
 
@@ -54,11 +73,12 @@ function AnimatedRouter() {
     <div ref={containerRef} className="flex flex-col flex-1 relative overflow-hidden">
       {transitions(({ x }, item) => (
         <animated.div
-          style={{ transform: x.to((y) => `scale(${1.0 - Math.abs(y) * 0.001}) translate3d(${direction * y}vw,0,0)`) }}
+          style={{ transform: x.to((y) => interpolate(y, direction, isSettings || wasSettings)) }}
           className="flex flex-col absolute top-0 left-0 w-full h-full"
         >
           <Routes location={item}>
             <Route path="/" element={<Modules />} />
+            <Route path="/settings" element={<Settings />} />
             <Route
               path="/module/:moduleId"
               element={<Authenticated size={size} isTransitioning={item.key !== location.key} locationKey={item.key} />}

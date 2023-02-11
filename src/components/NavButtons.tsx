@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ReactComponent as ChevronIcon } from '../assets/chevron.svg';
 import { ReactComponent as HomeIcon } from '../assets/home.svg';
+import { ReactComponent as DotsIcon } from '../assets/three-dots-vertical.svg';
 import useNavStack from '../hooks/useNavStack';
 
 import Fab from './Fab';
@@ -12,9 +13,14 @@ function NavButtons() {
   const navigate = useNavigate();
   const { hasBack, hasForward } = useNavStack();
   const isHome = location.pathname === '/';
+  const isSettings = location.pathname === '/settings';
 
   function onHome() {
     navigate('/');
+  }
+
+  function onSettings() {
+    navigate('/settings');
   }
 
   function onBack() {
@@ -27,6 +33,10 @@ function NavButtons() {
 
   return (
     <>
+      <Fab onClick={onSettings} disabled={isSettings}>
+        <DotsIcon className="w-5 h-5" />
+      </Fab>
+
       <Fab onClick={onHome} disabled={isHome}>
         <HomeIcon className="w-5 h-5" />
       </Fab>

@@ -9,6 +9,7 @@ import 'react-popper-tooltip/dist/styles.css';
 import { ReactComponent as ImagesIcon } from '../assets/images.svg';
 import useModule from '../hooks/useModule';
 import useModalStore from '../store/modal';
+import useSettingsStore from '../store/settings';
 import type { Post } from '../types';
 import { assignRefs } from '../utils';
 
@@ -73,6 +74,8 @@ export interface MasonryItemProps extends VirtualMasonryItemProps<Post> {
 }
 
 function MasonryItem({ item, style, isScrolling, imageLoading, lowRes }: MasonryItemProps) {
+  const { videoAutoPlay, pictureLowDataMode } = useSettingsStore((state) => state.settings);
+
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const module = useModule();
@@ -126,7 +129,13 @@ function MasonryItem({ item, style, isScrolling, imageLoading, lowRes }: Masonry
           isShownInModal && 'invisible'
         )}
       >
-        <InnerItem post={item} imageLoading={imageLoading} lowRes={lowRes} muted />
+        <InnerItem
+          post={item}
+          imageLoading={imageLoading}
+          lowRes={pictureLowDataMode && lowRes}
+          autoPlay={videoAutoPlay}
+          muted
+        />
         {item.isGallery && (
           <div className="absolute top-1 right-1 bg-slate-600 bg-opacity-80 rounded-full text-white h-10 w-10 flex justify-center items-center">
             <ImagesIcon className="w-6 h-6" />
