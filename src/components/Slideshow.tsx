@@ -157,6 +157,8 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
   useKeyPress('ArrowLeft', goPrevModalItem);
   useKeyPress('ArrowRight', goNextModalItem);
 
+  // TODO: Hide buttons & cursor when mouse stops moving
+
   const hasNext = currentItemIndex < posts.length - 1;
   const hasPrev = currentItemIndex > 0;
 
