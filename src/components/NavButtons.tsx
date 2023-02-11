@@ -33,19 +33,19 @@ function NavButtons() {
 
   return (
     <>
-      <Fab onClick={onSettings} disabled={isSettings}>
+      <Fab onClick={onSettings} disabled={isSettings} className="w-9 h-9">
         <DotsIcon className="w-5 h-5" />
       </Fab>
 
-      <Fab onClick={onHome} disabled={isHome}>
+      <Fab onClick={onHome} disabled={isHome} className="w-9 h-9">
         <HomeIcon className="w-5 h-5" />
       </Fab>
 
-      <Fab onClick={onBack} disabled={!hasBack} className="pr-1">
+      <Fab onClick={onBack} disabled={!hasBack} className="pr-1 w-9 h-9">
         <ChevronIcon className="w-5 h-5 rotate-180" />
       </Fab>
 
-      <Fab onClick={onForward} disabled={!hasForward} className="pl-1">
+      <Fab onClick={onForward} disabled={!hasForward} className="pl-1 w-9 h-9">
         <span>
           <ChevronIcon className="w-5 h-5" />
         </span>
