@@ -1,16 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useQueries } from 'react-query';
 import invariant from 'tiny-invariant';
 
-import { fetchFilters } from '../api';
 import useAppParams from '../hooks/useAppParams';
+import useFilterQuery from '../hooks/useFilterQuery';
 import useKeyPress from '../hooks/useKeyPress';
 import useModule from '../hooks/useModule';
-import { generatePlaceholderFilter } from '../placeholderData';
-import useAuthStore from '../store/authentication';
 import useDrawerStore from '../store/drawer';
 import { fileSystemModuleId } from '../store/modules';
-import type { Filter, Post } from '../types';
+import type { Post } from '../types';
 import { nonNullable } from '../utils';
 
 import FilterList from './FilterList';
@@ -58,8 +55,6 @@ function Filters({ posts }: FiltersProps) {
   // Modules
   const { filters: filterTypes, id: moduleId } = useModule();
 
-  const refreshAuth = useAuthStore((state) => state.refresh);
-
   const drawerOpen = useDrawerStore((state) => state.open);
 
   // If showing gallery, show only filters for that gallery
@@ -69,23 +64,8 @@ function Filters({ posts }: FiltersProps) {
   // User text to search filters
   const [search, setSearch] = useState('');
 
-  // Placeholder data for a loading section
-  const placeholderDataRef = useRef<Filter[]>([...Array(10)].map(generatePlaceholderFilter));
-
-  // React query function
-  async function filtersQuery(filterSectionId: string) {
-    const accessToken = await refreshAuth(moduleId); // TODO: on error here, redirect to login page
-    return await fetchFilters(moduleId, filterSectionId, accessToken);
-  }
-
   // Fetch all sections at once
-  const filterQueries = useQueries(
-    filterTypes.map((type) => ({
-      queryKey: ['filters', type.id],
-      queryFn: () => filtersQuery(type.id),
-      placeholderData: placeholderDataRef.current,
-    }))
-  );
+  const filterQueries = useFilterQuery();
 
   // Memoize the flattening, sorting, and filtering of the data
   const { filters, itemCount } = useMemo(() => {

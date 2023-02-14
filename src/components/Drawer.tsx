@@ -38,7 +38,6 @@ function InnerDrawer({ onClosed, closeDrawer, open, shown, posts }: InnerDrawerP
     leave: { x: 400 },
     config: { mass: 1, tension: 210, friction: 22 },
     reverse: !open,
-    delay: 200,
     onRest: () => {
       if (!open) {
         onClosed();
