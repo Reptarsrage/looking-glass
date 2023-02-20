@@ -13,6 +13,7 @@ import useNavStack from './hooks/useNavStack';
 import useSize from './hooks/useSize';
 import Authenticated from './pages/Authenticated';
 import Modules from './pages/Modules';
+import NotFound from './pages/NotFound';
 import Settings from './pages/Settings';
 
 const queryClient = new QueryClient({
@@ -51,7 +52,6 @@ function AnimatedRouter() {
     from: { x: 100 },
     enter: { x: 0 },
     leave: { x: -100 },
-    expires: 60000,
     config: { ...config.stiff, clamp: true },
   });
 
@@ -83,6 +83,7 @@ function AnimatedRouter() {
               path="/module/:moduleId"
               element={<Authenticated size={size} isTransitioning={item.key !== location.key} locationKey={item.key} />}
             />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </animated.div>
       ))}

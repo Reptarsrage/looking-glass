@@ -4,9 +4,11 @@ import type { InfiniteData } from 'react-query';
 import { useLocation } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 
+import AnErrorOccurred from '../components/AnErrorOccurred';
 import ContentMasonry from '../components/ContentMasonry';
 import Drawer from '../components/Drawer';
 import Modal from '../components/Modal';
+import NoResults from '../components/NoResults';
 import useFilterQuery from '../hooks/useFilterQuery';
 import useGalleryQuery from '../hooks/useGalleryQuery';
 import useModule from '../hooks/useModule';
@@ -47,7 +49,7 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
   const modalIsOpen = useModalStore((state) => state.open);
 
   useFilterQuery(); // pre-fetch filters
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useGalleryQuery();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useGalleryQuery();
 
   const items = useMemo(() => flattenPages(data), [data]);
   const loadMore = useCallback(() => {
@@ -73,13 +75,18 @@ function GalleryElt({ size, isTransitioning, locationKey }: GalleryProps) {
     }
   }, [galleryTitle, isTransitioning, location, locationKey, modalIsOpen, moduleIcon]);
 
-  // TODO: Add error
-  // TODO: Add no results
-
   const modalRoot = document.getElementById('modal-root');
   const drawerRoot = document.getElementById('drawer-root');
   invariant(modalRoot, 'modalRoot is null');
   invariant(drawerRoot, 'drawerRoot is null');
+
+  if (isError) {
+    return <AnErrorOccurred />;
+  }
+
+  if (items.length === 0) {
+    return <NoResults />;
+  }
 
   return (
     <>

@@ -177,10 +177,11 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
         <FiltersMenu />
       </animated.div>
 
+      {/* TODO: Fix overflow with above buttons (non-jank way)  */}
       {showInfo && (
         <animated.div
           style={backdropStyles}
-          className="absolute left-0 top-0 right-0 z-20 text-white bg-gradient-to-b from-slate-900 p-4"
+          className="absolute left-0 top-0 right-0 z-20 text-white bg-gradient-to-b from-slate-900 p-4 pr-72"
         >
           <div className="text-xl">
             <h1>{post.name || 'UNTITLED'}</h1>

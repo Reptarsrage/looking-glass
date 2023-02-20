@@ -1,24 +1,55 @@
 import React, { useEffect } from 'react';
-import { useQuery } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { fetchModules } from '../api';
 import { ReactComponent as FolderIcon } from '../assets/folder.svg';
-import useModuleStore, { fileSystemModule, fileSystemModuleId } from '../store/modules';
+import NoResults from '../components/NoResults';
+import ServerDown from '../components/ServerDown';
+import useModulesQuery from '../hooks/useModulesQuery';
+import { fileSystemModule, fileSystemModuleId } from '../store/modules';
+import type { Module } from '../types';
+
+type ModuleEltProps = {
+  module: Module;
+};
+
+function ModuleElt({ module }: ModuleEltProps) {
+  if (module.isPlaceholder) {
+    return (
+      <li key={module.id} className="border-b-2">
+        <div className="flex p-2 gap-2 items-center cursor-pointer transition duration-150 hover:bg-slate-50 active:bg-slate-200 group">
+          <div className="rounded-full h-12 w-12 overflow-hidden flex shadow-md border transition-transform group-hover:scale-105 group-active:scale-95 animate-pulse bg-slate-700" />
+
+          <div className="flex flex-col flex-1 items-start">
+            <span className="text-lg font-semibold animate-pulse bg-slate-700 rounded h-5 my-1 w-32" />
+            <span className="animate-pulse bg-slate-700 rounded h-4 my-1 w-64" />
+          </div>
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li key={module.id} className="border-b-2">
+      <Link
+        to={`/module/${module.id}`}
+        className="flex p-2 gap-2 items-center cursor-pointer transition duration-150 hover:bg-slate-50 active:bg-slate-200 group"
+      >
+        <div className="rounded-full h-12 w-12 bg-slate-600 overflow-hidden flex shadow-md border transition-transform group-hover:scale-105 group-active:scale-95">
+          <img src={module.icon} alt={module.id} />
+        </div>
+
+        <div className="flex flex-col flex-1">
+          <div className="text-lg font-semibold">{module.name}</div>
+          <div>{module.description}</div>
+        </div>
+      </Link>
+    </li>
+  );
+}
 
 function Modules() {
   const navigate = useNavigate();
-  const setModules = useModuleStore((state) => state.setModules);
-
-  // Fetch all sections at once
-  // TODO: Placeholder data
-  const { data, isLoading } = useQuery({
-    queryKey: ['modules'],
-    queryFn: fetchModules,
-    onSuccess: (modules) => {
-      setModules(modules);
-    },
-  });
+  const { data, isLoading, isError } = useModulesQuery();
 
   // effect to update window title
   useEffect(() => {
@@ -41,47 +72,37 @@ function Modules() {
     }
   }
 
-  if (!data || isLoading) {
-    return <div>Loading...</div>;
+  if (isError) {
+    return <ServerDown />;
   }
 
-  // TODO: Add error
-  // TODO: Add no results
+  if (data?.length === 0) {
+    return <NoResults />;
+  }
 
   return (
     <ul className="overflow-auto">
-      {data.map((module) => (
-        <li key={module.id} className="border-b-2">
-          <Link
-            to={`/module/${module.id}`}
-            className="flex p-2 gap-2 items-center cursor-pointer transition duration-150 hover:bg-slate-50 active:bg-slate-200 group"
+      {(data || []).map((module) => (
+        <ModuleElt key={module.id} module={module} />
+      ))}
+
+      {!isLoading && (
+        <li key={fileSystemModuleId} className="border-b-2">
+          <button
+            onClick={handleLocalClick}
+            className="flex p-2 w-full gap-2 items-center cursor-pointer text-left transition duration-150 group hover:bg-slate-50 active:bg-slate-200"
           >
-            <div className="rounded-full h-12 w-12 bg-slate-600 overflow-hidden flex shadow-md border transition-transform group-hover:scale-105 group-active:scale-95">
-              <img src={module.icon} alt={module.id} />
+            <div className="rounded-full h-12 w-12 bg-blue-500 overflow-hidden flex text-white p-2 shadow-md border transition-transform group-hover:scale-105 group-active:scale-95">
+              <FolderIcon />
             </div>
 
             <div className="flex flex-col flex-1">
-              <div className="text-lg font-semibold">{module.name}</div>
-              <div>{module.description}</div>
+              <div className="text-lg font-semibold">{fileSystemModule.name}</div>
+              <div>{fileSystemModule.description}</div>
             </div>
-          </Link>
+          </button>
         </li>
-      ))}
-      <li key={fileSystemModuleId} className="border-b-2">
-        <button
-          onClick={handleLocalClick}
-          className="flex p-2 w-full gap-2 items-center cursor-pointer text-left transition duration-150 group hover:bg-slate-50 active:bg-slate-200"
-        >
-          <div className="rounded-full h-12 w-12 bg-blue-500 overflow-hidden flex text-white p-2 shadow-md border transition-transform group-hover:scale-105 group-active:scale-95">
-            <FolderIcon />
-          </div>
-
-          <div className="flex flex-col flex-1">
-            <div className="text-lg font-semibold">{fileSystemModule.name}</div>
-            <div>{fileSystemModule.description}</div>
-          </div>
-        </button>
-      </li>
+      )}
     </ul>
   );
 }

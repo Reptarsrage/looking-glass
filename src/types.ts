@@ -93,6 +93,7 @@ export type Module = {
   supportsGalleryFilters?: boolean; // TODO: Implement this in service
   supportsGallerySearch?: boolean; // TODO: Implement this in service
   supportsGallerySort?: boolean; // TODO: Implement this in service
+  isPlaceholder?: boolean;
 };
 
 export type Auth = {

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 
-import type { Filter, Gallery, Post } from './types';
+import { AuthType, Filter, Gallery, Module, Post } from './types';
 
 function generatePlaceholderPost(): Post {
   function roundNearest100(num: number): number {
@@ -35,4 +35,20 @@ export function generatePlaceholderGallery(): Gallery {
 
 export function generatePlaceholderFilter(): Filter {
   return { id: nanoid(), name: 'Loading...', isPlaceholder: true, filterSectionId: '' };
+}
+
+export function generatePlaceholderModule(): Module {
+  return {
+    id: nanoid(),
+    name: '',
+    description: '',
+    authType: AuthType.None,
+    icon: '',
+    filters: [],
+    sort: [],
+    supportsItemFilters: false,
+    supportsAuthorFilter: false,
+    supportsSourceFilter: false,
+    isPlaceholder: true,
+  };
 }
