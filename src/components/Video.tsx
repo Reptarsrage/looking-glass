@@ -1,6 +1,7 @@
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import clsx from 'clsx';
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import invariant from 'tiny-invariant';
 
 import { ReactComponent as PlayCircleIcon } from '../assets/play-circle.svg';
 import useVolumeStore from '../store/volume';
@@ -27,9 +28,16 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
   const { isIntersecting } = useIntersectionObserver(videoRef);
 
   const [showPlay, setShowPlay] = useState(!autoPlay);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
   const [showProgress, setShowProgress] = useState(true);
+
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const progressDataRef = useRef({
+    animationId: 0,
+    videoDuration: 0,
+    currentTime: 0,
+    videoStartTime: 0,
+    animationStartTime: Date.now(),
+  });
 
   // effect to sync volume levels across videos
   useEffect(() => {
@@ -40,12 +48,46 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
 
   // effect to play/pause as element leaves/enters screen
   useEffect(() => {
-    if (autoPlay && isIntersecting) {
-      videoRef.current?.play();
-    } else {
-      videoRef.current?.pause();
+    if (autoPlay && isIntersecting && videoRef.current && videoRef.current.paused) {
+      videoRef.current.play();
+    } else if (!isIntersecting && videoRef.current && !videoRef.current.paused) {
+      videoRef.current.pause();
     }
   }, [isIntersecting, autoPlay]);
+
+  useEffect(() => {
+    function updateProgressBar() {
+      invariant(progressBarRef.current);
+
+      // TODO: What happens when video fails to load?
+
+      const { animationStartTime, videoStartTime, videoDuration } = progressDataRef.current;
+      const elapsedTime = (Date.now() - animationStartTime) / 1000;
+      const currentTime = (elapsedTime + videoStartTime) % videoDuration;
+
+      progressBarRef.current.style.width = `${(currentTime / videoDuration) * 100}%`;
+      progressDataRef.current.animationId = requestAnimationFrame(updateProgressBar);
+    }
+
+    function startAnimation() {
+      invariant(videoRef.current);
+
+      progressDataRef.current.animationStartTime = Date.now();
+      progressDataRef.current.videoDuration = videoRef.current.duration;
+      progressDataRef.current.videoStartTime = videoRef.current.currentTime;
+      updateProgressBar();
+    }
+
+    function stopAnimation() {
+      cancelAnimationFrame(progressDataRef.current.animationId);
+    }
+
+    startAnimation();
+
+    return () => {
+      stopAnimation();
+    };
+  }, []);
 
   function onVolumeChange(event: React.ChangeEvent<HTMLVideoElement>) {
     if (passThroughProps.onVolumeChange) {
@@ -55,22 +97,6 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
     if (controls && !mutedProp) {
       setVolume(event.currentTarget.muted, event.currentTarget.volume);
     }
-  }
-
-  function onLoadedMetadata(event: React.SyntheticEvent<HTMLVideoElement>) {
-    if (passThroughProps.onLoadedMetadata) {
-      passThroughProps.onLoadedMetadata(event);
-    }
-
-    setDuration(event.currentTarget.duration);
-  }
-
-  function onTimeUpdate(event: React.SyntheticEvent<HTMLVideoElement>) {
-    if (passThroughProps.onTimeUpdate) {
-      passThroughProps.onTimeUpdate(event);
-    }
-
-    setCurrentTime(event.currentTarget.currentTime);
   }
 
   function onMouseEnter() {
@@ -99,8 +125,6 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
     return null;
   }
 
-  // TODO: progress bar isn't smooth
-
   return (
     <div className="relative inline-block w-full h-full" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <video
@@ -108,8 +132,6 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
         ref={assignRefs(videoRef, ref)}
         src={source.url}
         onVolumeChange={onVolumeChange}
-        onLoadedMetadata={onLoadedMetadata}
-        onTimeUpdate={onTimeUpdate}
         controls={controls}
         muted={mutedProp ?? muted}
         preload={preload}
@@ -125,15 +147,13 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
         <PlayCircleIcon className="ml-1" />
       </div>
 
-      {showProgress && (
-        <div
-          className={clsx(
-            'absolute z-10 bg-blue-200 h-1 bottom-0 left-0',
-            currentTime > 0 && 'transition-width duration-300'
-          )}
-          style={{ width: `${(currentTime / duration) * 100}%` }}
-        />
-      )}
+      <div
+        ref={progressBarRef}
+        className={clsx(
+          'absolute z-10 bg-blue-400 h-1 bottom-0 left-0 rounded-md opacity-0 transition-opacity duration-300 delay-300',
+          showProgress && 'opacity-100'
+        )}
+      />
     </div>
   );
 });

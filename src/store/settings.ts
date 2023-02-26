@@ -4,6 +4,7 @@ import { devtools, persist } from 'zustand/middleware';
 export type Settings = {
   videoAutoPlay: boolean;
   pictureLowDataMode: boolean;
+  theme: 'system' | 'light' | 'dark';
 };
 
 type State = {
@@ -15,6 +16,7 @@ const useSettingsStore = create<State>()(
   persist(
     devtools((set, get) => ({
       settings: {
+        theme: 'system',
         videoAutoPlay: false,
         pictureLowDataMode: true,
       },

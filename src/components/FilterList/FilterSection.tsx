@@ -113,7 +113,10 @@ function FilterSection({
 
   return (
     <li className="absolute w-full" style={{ top: offset * ItemHeight }}>
-      <h4 className="sticky top-0 z-10 bg-white font-semibold px-2 flex items-center" style={{ height: ItemHeight }}>
+      <h4
+        className="sticky top-0 z-10 bg-white dark:bg-slate-900 dark:text-white font-semibold px-2 flex items-center"
+        style={{ height: ItemHeight }}
+      >
         {filterType.name}
       </h4>
 

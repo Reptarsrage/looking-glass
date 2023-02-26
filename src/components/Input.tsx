@@ -14,7 +14,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Button(
     <input
       ref={ref}
       className={clsx(
-        'w-full py-2 px-4 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-slate-400 h-9',
+        'w-full py-2 px-4 border rounded-md outline-none h-9',
+        'dark:text-white bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-900',
+        'border-slate-300 dark:border-slate-500 focus:border-slate-400 dark:focus:border-slate-400',
         className
       )}
       {...passThroughProps}

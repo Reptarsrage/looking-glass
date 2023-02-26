@@ -125,7 +125,7 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
       <div
         ref={containerRef}
         onScroll={onScroll}
-        className="flex flex-col overflow-auto w-full h-full top-0 left-0 absolute"
+        className="flex flex-col overflow-auto w-full h-full top-0 left-0 absolute scrollbar:!w-1.5 scrollbar:!h-1.5 scrollbar:bg-transparent scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-300 scrollbar-track:!rounded dark:scrollbar-track:!bg-slate-500/[0.16] dark:scrollbar-thumb:!bg-slate-500/50"
         style={{
           paddingLeft: gutter / 2,
           paddingRight: gutter / 2,

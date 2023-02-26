@@ -81,7 +81,7 @@ function AppBar() {
         <button
           tabIndex={-1}
           onClick={minimize}
-          className="text-gray-900 flex justify-center items-center hover:bg-gray-200 active:bg-gray-100"
+          className="flex justify-center items-center hover:bg-gray-200 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600"
         >
           <MinimizeIcon />
         </button>
@@ -89,7 +89,7 @@ function AppBar() {
         <button
           tabIndex={-1}
           onClick={maximize}
-          className="text-gray-900 flex justify-center items-center hover:bg-gray-200 active:bg-gray-100"
+          className="flex justify-center items-center hover:bg-gray-200 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600"
         >
           {maximized ? <RestoreIcon /> : <MaximizeIcon />}
         </button>

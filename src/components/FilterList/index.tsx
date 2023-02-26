@@ -88,7 +88,11 @@ function FilterList({ filters, focusOnIndex, itemCount, onItemFocused }: FilterL
 
   return (
     <div ref={containerRef} className="flex flex-1 relative will-change-transform">
-      <div ref={scrollRef} className="top-0 left-0 w-full h-full absolute overflow-auto" onScroll={onScroll}>
+      <div
+        ref={scrollRef}
+        className="top-0 left-0 w-full h-full absolute overflow-auto scrollbar:!w-1.5 scrollbar:!h-1.5 scrollbar:bg-transparent scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-300 scrollbar-track:!rounded dark:scrollbar-track:!bg-slate-500/[0.16] dark:scrollbar-thumb:!bg-slate-500/50"
+        onScroll={onScroll}
+      >
         <ul className="relative" style={{ height: itemCount * ItemHeight }}>
           {filters.map((result, index) => (
             <FilterSection

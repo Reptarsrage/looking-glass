@@ -11,6 +11,7 @@ import Search from './components/Search';
 import SortMenu from './components/SortMenu';
 import useNavStack from './hooks/useNavStack';
 import useSize from './hooks/useSize';
+import useTheme from './hooks/useTheme';
 import Authenticated from './pages/Authenticated';
 import Modules from './pages/Modules';
 import NotFound from './pages/NotFound';
@@ -92,6 +93,8 @@ function AnimatedRouter() {
 }
 
 function AppWithRouting() {
+  useTheme();
+
   return (
     <div className="flex flex-col h-screen">
       <header className="flex-none">

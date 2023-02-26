@@ -14,10 +14,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     <button
       ref={ref}
       className={clsx(
-        'bg-slate-50 text-black px-4 border border-slate-300 rounded transition duration-150 font-semibold cursor-pointer select-none whitespace-nowrap h-9',
-        'hover:bg-slate-100 hover:shadow',
-        'active:bg-slate-200 active:shadow-none active:border-slate-400',
-        'disabled:text-gray-400 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:shadow-none disabled:border-slate-300',
+        'px-4 border rounded transition duration-150 font-semibold cursor-pointer select-none whitespace-nowrap h-9',
+        // border
+        'border-slate-300 dark:border-slate-500',
+        // background
+        'bg-slate-50 dark:bg-slate-800 text-black dark:text-slate-200',
+        // text
+        'text-slate-800 dark:text-slate-100',
+        // hover
+        'hover:bg-slate-100 hover:shadow dark:hover:bg-slate-700',
+        // active
+        'active:bg-slate-200 dark:active:bg-slate-600 active:shadow-none active:border-slate-400 dark:active:border-slate-400',
+        // disabled
+        'disabled:text-gray-400 disabled:cursor-not-allowed disabled:bg-slate-50 dark:disabled:bg-slate-900 disabled:shadow-none disabled:border-slate-300 dark:disabled:border-slate-500',
         className
       )}
       {...passThroughProps}

@@ -71,7 +71,7 @@ function InnerDrawer({ onClosed, closeDrawer, open, shown, posts }: InnerDrawerP
           item && (
             <animated.div
               style={styles}
-              className="absolute z-20 shadow gb-white top-0 right-0 bottom-0 bg-white flex flex-col"
+              className="absolute z-20 shadow gb-white top-0 right-0 bottom-0 antialiased text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 flex flex-col"
             >
               {modalIsOpen ? <FiltersForItem posts={posts} /> : <Filters posts={posts} />}
             </animated.div>

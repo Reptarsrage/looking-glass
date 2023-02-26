@@ -58,8 +58,8 @@ function FilterElt({ filter, isFocused, onFocus, style }: FilterProps) {
         tabIndex={0}
         onFocus={onFocus}
         className={clsx(
-          'text-black focus:bg-slate-200 w-full text-start px-2 outline-none',
-          !filter.isPlaceholder && ' hover:bg-slate-100'
+          'focus:bg-slate-200 dark:focus:bg-slate-700 w-full text-start px-2 outline-none',
+          !filter.isPlaceholder && ' hover:bg-slate-100 dark:hover:bg-slate-600'
         )}
       >
         {filter.isPlaceholder ? (

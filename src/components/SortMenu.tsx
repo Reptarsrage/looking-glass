@@ -39,7 +39,7 @@ function DropdownItem({ to, hasLink, children, leftIcon, rightIcon, onNavigate, 
   return (
     <button
       onClick={onClick}
-      className="flex items-center justify-start whitespace-nowrap py-2 px-4 text-black hover:bg-slate-100"
+      className="flex items-center justify-start whitespace-nowrap py-2 px-4 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
     >
       {leftIcon && (
         <span className="mr-4 inline-flex" style={{ height: 24, width: 24 }}>
@@ -147,7 +147,7 @@ function SortMenu() {
 
       {open && (
         <animated.div
-          className="absolute shadow bg-white z-10 rounded flex overflow-hidden"
+          className="absolute shadow bg-white dark:bg-slate-900 z-10 rounded flex overflow-hidden"
           style={{ width: 200, height, top: 40, right: 0 }}
           ref={dropdownRef}
         >
