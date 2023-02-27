@@ -22,6 +22,7 @@
       "node"
     ] /* Specify type package names to be included without being referenced in a source file. */,
     "resolveJsonModule": true /* Enable importing .json files. */,
+    "skipLibCheck": true /* Skip type checking of declaration files. */,
 
     /* Emit */
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,

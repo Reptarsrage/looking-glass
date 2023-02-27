@@ -34,6 +34,7 @@
     "dev:electron": "npm run build:electron && electron .",
     "dist": "npm run build && electron-builder",
     "format": "prettier .",
+    "format-check": "prettier --check .",
     "lint": "eslint . --ext ts,tsx --cache",
     "pack": "npm run build && electron-builder --dir",
     "prepare": "husky install",

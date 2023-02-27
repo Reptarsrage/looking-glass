@@ -5,7 +5,7 @@ echo '👀 Searching for mistakes...'
 
 # Check Prettier standards
 echo '👀 Checking formatting...'
-npm run format --check ||
+npm run format-check ||
 (
     echo '❌ Prettier Check Failed. Run "npm run format --write", commit changes and try again.';
     false;
