@@ -5,13 +5,13 @@ import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { useNavigate } from 'react-router-dom';
 import 'react-popper-tooltip/dist/styles.css';
+import { useForkRef } from 'rooks';
 
 import { ReactComponent as ImagesIcon } from '../assets/images.svg';
 import useModule from '../hooks/useModule';
 import useModalStore from '../store/modal';
 import useSettingsStore from '../store/settings';
 import type { Post } from '../types';
-import { assignRefs } from '../utils';
 
 import type { MasonryItemProps as VirtualMasonryItemProps } from './ContentMasonry/VirtualizedMasonryColumn';
 import Image from './Image';
@@ -117,11 +117,13 @@ function MasonryItem({ item, style, isScrolling, imageLoading, lowRes }: Masonry
 
   const { getArrowProps, getTooltipProps, setTooltipRef, setTriggerRef, visible } = usePopperTooltip();
 
+  const forkedRef = useForkRef(containerRef, setTriggerRef);
+
   return (
     <>
       <animated.div
         {...bind()}
-        ref={assignRefs(containerRef, setTriggerRef)}
+        ref={forkedRef}
         style={{ ...style, ...syles }}
         className={clsx(
           'shadow touch-none rounded overflow-hidden relative',

@@ -1,11 +1,11 @@
 import { animated, useSprings } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import { useWindowSize } from 'rooks';
 import invariant from 'tiny-invariant';
 
 import { ReactComponent as ChevronIcon } from '../assets/chevron.svg';
 import useKeyPress from '../hooks/useKeyPress';
-import useSize from '../hooks/useSize';
 import { Post } from '../types';
 
 import Fab from './Fab';
@@ -14,6 +14,7 @@ import { InnerItem as MasonryItem } from './MasonryItem';
 import PinchZoomPan from './PinchZoomPan';
 
 // Constants
+const AppBarHeight = 28;
 const Gutter = 16;
 const ItemsToRender = 5;
 
@@ -33,18 +34,24 @@ export function clampImageDimensions(width: number, height: number, maxWidth: nu
     return { width, height };
   }
 
+  // one dimension is too big
   if (width < maxWidth) {
     // image is too tall, resize to fit height
     return { width: width * (maxHeight / height), height: maxHeight };
   } else if (height < maxHeight) {
     // image is too wide, resize to fit width
     return { width: maxWidth, height: height * (maxWidth / width) };
-  } else if (maxWidth > maxHeight) {
-    // image is too wide and tall, resize to fit height
-    return { width: width * (maxHeight / height), height: maxHeight };
-  } else {
+  }
+
+  // both dimensions are too big
+  const resizedWithByHeight = width * (maxHeight / height);
+  const resizedHeightByWidth = height * (maxWidth / width);
+  if (resizedWithByHeight > maxWidth) {
     // image is too wide and tall, resize to fit width
-    return { width: maxWidth, height: height * (maxWidth / width) };
+    return { width: maxWidth, height: resizedHeightByWidth };
+  } else {
+    // image is too wide and tall, resize to fit height
+    return { width: resizedWithByHeight, height: maxHeight };
   }
 }
 
@@ -74,9 +81,7 @@ interface SlideshowProps {
 }
 
 function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, isLoading, posts }: SlideshowProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const size = useSize(containerRef) ?? { width: window.innerWidth, height: window.innerHeight };
-
+  const { innerWidth, innerHeight } = useWindowSize();
   const currentItemIndex = posts.findIndex((post) => post.id === currentItem);
   const originalItemIndex = useRef(currentItemIndex).current;
 
@@ -84,17 +89,21 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
    * Update spring values for carousel item
    */
   const update = (indexOfItem: number, active = false, xDelta = 0) => {
+    if (!innerWidth) {
+      return { scale: 1, x: 0 };
+    }
+
     const pos = getPositionInCarousel(indexOfItem, currentItemIndex, originalItemIndex);
 
     const scaleFactor = 4;
-    let x = pos * size.width;
+    let x = pos * innerWidth;
     let scale = 1;
 
     if (active) {
       x += xDelta;
-      scale = 1.025 - Math.abs(xDelta) / size.width / scaleFactor;
+      scale = 1.025 - Math.abs(xDelta) / innerWidth / scaleFactor;
     } else if (pos !== 0) {
-      scale = 1.025 - size.width / size.width / scaleFactor;
+      scale = 1.025 - innerWidth / innerWidth / scaleFactor;
     }
 
     return {
@@ -135,11 +144,15 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
   // Gesture to drag carousel items
   const bind = useDrag(
     ({ active, movement: [xDelta], direction: [xDir], velocity: [xVelocity], cancel, args: [zoomedIn] }) => {
+      if (!innerWidth) {
+        return;
+      }
+
       if (zoomedIn) {
         cancel();
       }
 
-      if (active && (Math.abs(xDelta) > size.width * 0.45 || xVelocity > 6)) {
+      if (active && (Math.abs(xDelta) > innerWidth * 0.45 || xVelocity > 6)) {
         if (xDir > 0) {
           goPrevModalItem();
         } else {
@@ -162,8 +175,16 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
   const hasNext = currentItemIndex < posts.length - 1;
   const hasPrev = currentItemIndex > 0;
 
+  if (!innerHeight || !innerWidth) {
+    return null;
+  }
+
+  if (!innerWidth || !innerHeight) {
+    return null;
+  }
+
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div className="w-full h-full">
       {hasPrev && (
         <Fab
           onClick={goPrevModalItem}
@@ -205,8 +226,8 @@ function Slideshow({ currentItem, setCurrentModalItem, loadMore, hasNextPage, is
         const post = posts?.[idx];
         invariant(post, 'Post should exist in store');
 
-        const totalHeight = size.height - 2 * Gutter;
-        const totalWidth = size.width - 2 * Gutter;
+        const totalHeight = innerHeight - 2 * Gutter - AppBarHeight;
+        const totalWidth = innerWidth - 2 * Gutter;
         const { width, height } = clampImageDimensions(post.width, post.height, totalWidth, totalHeight);
         const left = (totalWidth - width) / 2 + Gutter;
         const top = (totalHeight - height) / 2 + Gutter;

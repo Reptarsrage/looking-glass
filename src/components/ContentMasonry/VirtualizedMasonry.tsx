@@ -1,5 +1,5 @@
-import { useDebounceCallback } from '@react-hook/debounce';
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useDebounce } from 'rooks';
 import invariant from 'tiny-invariant';
 
 import VirtualizedMasonryColumn from './VirtualizedMasonryColumn';
@@ -76,7 +76,7 @@ function VirtualizedMasonry<TItemData extends RequiredItemData>({
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>('forward');
   const [scrollOffset, setScrollOffset] = useState(loaded.scroll);
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
-  const setIsScrollingDebounced = useDebounceCallback(setIsScrolling, 100, false);
+  const setIsScrollingDebounced = useDebounce(setIsScrolling, 100, false);
 
   // Restore scroll based on location
   useLayoutEffect(() => {

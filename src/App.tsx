@@ -2,6 +2,7 @@ import { animated, config, useSpringRef, useTransition } from '@react-spring/web
 import React, { useEffect, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { useResizeObserverRef } from 'rooks';
 
 import AppBar from './AppBar';
 import CurrentFilters from './components/CurrentFilters';
@@ -10,7 +11,6 @@ import NavButtons from './components/NavButtons';
 import Search from './components/Search';
 import SortMenu from './components/SortMenu';
 import useNavStack from './hooks/useNavStack';
-import useSize from './hooks/useSize';
 import useTheme from './hooks/useTheme';
 import Authenticated from './pages/Authenticated';
 import Modules from './pages/Modules';
@@ -57,8 +57,13 @@ function AnimatedRouter() {
   });
 
   // keep track of size using a container that wont be affected by transitions
-  const containerRef = useRef<HTMLDivElement>(null);
-  const size = useSize(containerRef);
+  const [size, setSize] = useState<DOMRect | undefined>(undefined);
+  const [containerRef] = useResizeObserverRef((entries) => {
+    const rect = entries[0]?.contentRect;
+    if (!size || (rect && (rect.width !== size.width || rect.height !== size.height))) {
+      setSize(rect);
+    }
+  });
 
   useEffect(() => {
     return () => {

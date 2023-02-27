@@ -1,6 +1,6 @@
-import useIntersectionObserver from '@react-hook/intersection-observer';
 import memoizeOne from 'memoize-one';
-import React, { createElement, memo, useEffect, useRef } from 'react';
+import React, { createElement, memo, useEffect, useRef, useState } from 'react';
+import { useIntersectionObserverRef } from 'rooks';
 import invariant from 'tiny-invariant';
 
 import {
@@ -144,7 +144,7 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     instanceProps.width = width;
     instanceProps.lastMeasuredIndex = -1;
     getItemStyleCache(-1);
-  }, [width, gutter, columnIndex]);
+  }, [width, gutter, columnIndex, items]);
 
   // effect to scroll to item
   useEffect(() => {
@@ -173,9 +173,15 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     }
   }, [scrollToItem]);
 
-  const loadMoreRef = useRef<HTMLDivElement>(null);
   const previouslyIntersectingRef = useRef(true);
-  const { isIntersecting } = useIntersectionObserver(loadMoreRef.current); // NOTE: Does this cause a re-render? (yes, but only during first placeholder render)
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [loadMoreRef] = useIntersectionObserverRef((entries) => {
+    const entry = entries[0];
+    if (entry && entry.isIntersecting !== isIntersecting) {
+      setIsIntersecting(entry.isIntersecting);
+    }
+  });
+
   useEffect(() => {
     if (isIntersecting && !previouslyIntersectingRef.current && loadMore) {
       loadMore();

@@ -1,6 +1,7 @@
 import { animated, config, useChain, useSpring, useSpringRef } from '@react-spring/web';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWindowSize } from 'rooks';
 
 import { ReactComponent as EyeSlashIcon } from '../assets/eye-slash.svg';
 import { ReactComponent as EyeIcon } from '../assets/eye.svg';
@@ -38,18 +39,25 @@ function calculateItemStartPosition(bounds: DOMRect | null) {
   return { x: bounds.x, y: bounds.y - AppBarHeight, width: bounds.width, height: bounds.height };
 }
 
-function calculateItemEndPosition(bounds: DOMRect | null, post: Post | null) {
-  if (!bounds || !post) {
+function calculateItemEndPosition(
+  innerWidth: number | null,
+  innerHeight: number | null,
+  bounds: DOMRect | null,
+  post: Post | null
+) {
+  if (!bounds || !post || !innerWidth || !innerHeight) {
     return {};
   }
 
-  const availableWidth = window.innerWidth - 2 * Gutter;
-  const availableHeight = window.innerHeight - 2 * Gutter - AppBarHeight;
+  const availableWidth = innerWidth - 2 * Gutter;
+  const availableHeight = innerHeight - 2 * Gutter - AppBarHeight;
 
   const { width, height } = clampImageDimensions(post.width, post.height, availableWidth, availableHeight);
 
   const x = (availableWidth - width) / 2 + Gutter;
   const y = (availableHeight - height) / 2 + Gutter;
+
+  console.info('calculateItemEndPosition', { width, height, x, y });
 
   return { width, height, x, y };
 }
@@ -66,6 +74,8 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
   const showInfo = useModalStore((state) => state.showInfo);
 
   const { supportsAuthorFilter, supportsSourceFilter, id: moduleId } = useModule();
+
+  const { innerWidth, innerHeight } = useWindowSize();
 
   const post = posts.find((post) => post.id === modalPostId);
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -117,7 +127,7 @@ function InnerModal({ loadMore, hasNextPage, isLoading, close, posts }: InnerMod
 
   useEffect(() => {
     if (open && post) {
-      itemApi.start(calculateItemEndPosition(bounds, post));
+      itemApi.start(calculateItemEndPosition(innerWidth, innerHeight, bounds, post));
     } else if (!open) {
       itemApi.start(calculateItemStartPosition(bounds));
     }

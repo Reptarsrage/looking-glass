@@ -1,11 +1,10 @@
-import useIntersectionObserver from '@react-hook/intersection-observer';
 import clsx from 'clsx';
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import { useForkRef, useIntersectionObserverRef } from 'rooks';
 import invariant from 'tiny-invariant';
 
 import { ReactComponent as PlayCircleIcon } from '../assets/play-circle.svg';
 import useVolumeStore from '../store/volume';
-import { assignRefs } from '../utils';
 
 interface Source {
   url: string;
@@ -21,11 +20,20 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
   { source, autoPlay, controls, muted: mutedProp, preload, ...passThroughProps },
   ref
 ) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const volume = useVolumeStore((state) => state.volume);
   const muted = useVolumeStore((state) => state.muted);
   const setVolume = useVolumeStore((state) => state.setVolume);
-  const { isIntersecting } = useIntersectionObserver(videoRef);
+
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [containerRef] = useIntersectionObserverRef((entries) => {
+    const entry = entries[0];
+    if (entry && entry.isIntersecting !== isIntersecting) {
+      setIsIntersecting(entry.isIntersecting);
+    }
+  });
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const forkedRef = useForkRef(videoRef, ref);
 
   const [showPlay, setShowPlay] = useState(!autoPlay);
   const [showProgress, setShowProgress] = useState(true);
@@ -126,10 +134,15 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(function Video(
   }
 
   return (
-    <div className="relative inline-block w-full h-full" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div
+      ref={containerRef}
+      className="relative inline-block w-full h-full"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <video
         className="w-auto max-w-none h-full bg-slate-700 drag-none"
-        ref={assignRefs(videoRef, ref)}
+        ref={forkedRef}
         src={source.url}
         onVolumeChange={onVolumeChange}
         controls={controls}

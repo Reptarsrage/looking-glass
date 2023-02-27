@@ -1,7 +1,5 @@
-import { useDebounceCallback } from '@react-hook/debounce';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-
-import useSize from '../../hooks/useSize';
+import { useDebounce, useResizeObserverRef } from 'rooks';
 
 import FilterSection, { FilterSectionProps } from './FilterSection';
 
@@ -12,6 +10,7 @@ export interface FilterListProps {
   onItemFocused: (index: number) => void;
 }
 
+export type Size = { width: number; height: number };
 export type ScrollDirection = 'forward' | 'backward';
 
 const ItemHeight = 32;
@@ -22,7 +21,7 @@ const Overscan = 2;
  */
 const getRangeToRender = (
   scrollOffset: number,
-  size: DOMRect | undefined,
+  size: Size,
   itemCount: number,
   scrollDirection: ScrollDirection,
   isScrolling: boolean
@@ -43,13 +42,19 @@ const getRangeToRender = (
 
 function FilterList({ filters, focusOnIndex, itemCount, onItemFocused }: FilterListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const size = useSize(containerRef);
+
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [containerRef] = useResizeObserverRef((entries) => {
+    const rect = entries[0]?.contentRect;
+    if (rect && (rect.width !== size.width || rect.height !== size.height)) {
+      setSize({ width: rect.width, height: rect.height });
+    }
+  });
 
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>('forward');
   const [scrollOffset, setScrollOffset] = useState(0);
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
-  const setIsScrollingDebounced = useDebounceCallback(setIsScrolling, 100, false);
+  const setIsScrollingDebounced = useDebounce(setIsScrolling, 100, false);
 
   /**
    * When scroll happens, update our virtualized position
