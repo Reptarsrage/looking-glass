@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one';
-import React, { createElement, memo, useEffect, useRef, useState } from 'react';
+import React, { createElement, memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useIntersectionObserverRef } from 'rooks';
 import invariant from 'tiny-invariant';
 
@@ -97,6 +97,7 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     gutter,
   }).current;
 
+  const [, rerender] = useState(0);
   const getItemStyleCache = useRef(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     memoizeOne((_: number | MasonryItemSizeFunc) => ({} as Record<number, React.CSSProperties>))
@@ -144,6 +145,7 @@ function VirtualizedMasonryColumn<TItemData extends RequiredItemData>({
     instanceProps.width = width;
     instanceProps.lastMeasuredIndex = -1;
     getItemStyleCache(-1);
+    rerender((i) => i + 1);
   }, [width, gutter, columnIndex, items]);
 
   // effect to scroll to item
