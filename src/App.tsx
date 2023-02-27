@@ -1,5 +1,5 @@
 import { animated, config, useSpringRef, useTransition } from '@react-spring/web';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { useResizeObserverRef } from 'rooks';

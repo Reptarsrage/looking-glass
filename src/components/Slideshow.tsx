@@ -1,6 +1,6 @@
 import { animated, useSprings } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useWindowSize } from 'rooks';
 import invariant from 'tiny-invariant';
 
