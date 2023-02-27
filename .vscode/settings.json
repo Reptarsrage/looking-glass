@@ -22,6 +22,7 @@
     "**/*.code-search": true,
     "**/dist": true,
     "**/dist_electron": true,
-    "**/yarn.lock": true
+    "**/yarn.lock": true,
+    "**/package-lock.json": true
   }
 }

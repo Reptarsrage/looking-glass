@@ -29,7 +29,7 @@
     "build:vite": "vite build",
     "build:electron": "tsc -p electron",
     "clean": "rimraf dist dist_main dist_renderer",
-    "dev": "concurrently \"yarn dev:vite\" \" yarn dev:electron\"",
+    "dev": "concurrently \"npm run dev:vite\" \" npm run dev:electron\"",
     "dev:vite": "vite",
     "dev:electron": "npm run build:electron && electron .",
     "dist": "npm run build && electron-builder",
@@ -38,7 +38,7 @@
     "pack": "npm run build && electron-builder --dir",
     "prepare": "husky install",
     "release": "standard-version",
-    "start": "yarn dist && \"./dist/win-unpacked/The Looking-Glass.exe\"",
+    "start": "npm run dist && \"./dist/win-unpacked/The Looking-Glass.exe\"",
     "type-check": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {

@@ -5,23 +5,23 @@ echo '👀 Searching for mistakes...'
 
 # Check Prettier standards
 echo '👀 Checking formatting...'
-yarn format --check ||
+npm run format --check ||
 (
-    echo '❌ Prettier Check Failed. Run "yarn format --write", commit changes and try again.';
+    echo '❌ Prettier Check Failed. Run "npm run format --write", commit changes and try again.';
     false;
 )
 
 # Check ESLint Standards
 echo '👀 Checking linting...'
-yarn lint ||
+npm run lint ||
 (
-    echo '❌ ESLibnt Check Failed. Run "yarn lint --fix", commit changes and try again.';
+    echo '❌ ESLibnt Check Failed. Run "npm run lint --fix", commit changes and try again.';
     false;
 )
 
 # Check tsconfig standards
 echo '👀 Checking types...'
-yarn type-check ||
+npm run type-check ||
 (
     echo '❌ Type checks Failed. Make the required changes listed above, commit changes and try again.'
     false;
@@ -30,7 +30,7 @@ yarn type-check ||
 # Check tests
 # TODO: Add tests
 # echo '👀 Checking tests...'
-# yarn test ||
+# npm run test ||
 # (
 #     echo '❌ Tests failed. Review the failing tests above. '
 #     false;
@@ -38,7 +38,7 @@ yarn type-check ||
 
 # Check build
 echo '👀 Checking build...'
-yarn build ||
+npm run build ||
 (
     echo '❌ Build failed: Review the errors above.'
     false;
