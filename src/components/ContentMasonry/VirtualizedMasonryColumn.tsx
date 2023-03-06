@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one';
-import React, { createElement, memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { createElement, memo, useEffect, useRef, useState } from 'react';
 import { useIntersectionObserverRef } from 'rooks';
 import invariant from 'tiny-invariant';
 
