@@ -4,6 +4,16 @@ import type { Auth, Filter, Gallery, Module } from './types';
 
 const baseURL = 'http://localhost:3001';
 
+export type ApiError = {
+  message: string;
+  code: number;
+};
+
+export function isApiError(error: unknown): error is ApiError {
+  const apiError = error as ApiError;
+  return 'code' in apiError && typeof apiError.code === 'number';
+}
+
 /**
  * Determines if an accessToken needs to be refreshed
  */
@@ -23,7 +33,8 @@ export function needsRefresh(expires?: string | Date): boolean {
 export async function fetchModules(): Promise<Module[]> {
   const response = await fetch(baseURL);
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   const modules: Module[] = await response.json();
@@ -67,7 +78,8 @@ export async function fetchGallery(
   const url = new URL(`/gallery/${moduleId}?${params.toString()}`, baseURL);
   const response = await fetch(url.toString(), { headers });
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   return await response.json();
@@ -90,7 +102,8 @@ export async function fetchFilters(moduleId: string, filterSectionId: string, ac
   const url = new URL(`/filters/${moduleId}?${params.toString()}`, baseURL);
   const response = await fetch(url.toString(), { headers });
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   return await response.json();
@@ -113,7 +126,8 @@ export async function fetchItemFilters(moduleId: string, itemId: string, accessT
   const url = new URL(`/filters/${moduleId}?${params.toString()}`, baseURL);
   const response = await fetch(url.toString(), { headers });
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   return await response.json();
@@ -132,7 +146,8 @@ export async function refreshAuth(moduleId: string, refreshToken: string): Promi
 
   const response = await fetch(url.toString(), { headers });
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   const authResponse: Auth = await response.json();
@@ -155,7 +170,8 @@ export async function login(moduleId: string, username?: string, password?: stri
   const url = new URL(`/login/${moduleId}?${params.toString()}`, baseURL);
   const response = await fetch(url.toString());
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   const authResponse: Auth = await response.json();
@@ -175,7 +191,8 @@ export async function authorize(moduleId: string, code: string): Promise<Auth> {
   const url = new URL(`/authorize/${moduleId}?${params.toString()}`, baseURL);
   const response = await fetch(url.toString());
   if (!response.ok) {
-    throw new Error(`Response failed with status ${response.status} ${response.statusText}`);
+    const error: ApiError = { message: response.statusText, code: response.status };
+    throw error;
   }
 
   const authResponse: Auth = await response.json();

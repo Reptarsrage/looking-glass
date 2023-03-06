@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery } from 'react-query';
 
-import { fetchItemFilters } from '../api';
+import useItemFilterQuery from '../hooks/useItemFilterQuery';
 import useKeyPress from '../hooks/useKeyPress';
 import useModule from '../hooks/useModule';
-import { generatePlaceholderFilter } from '../placeholderData';
-import useAuthStore from '../store/authentication';
 import useDrawerStore from '../store/drawer';
 import useModalStore from '../store/modal';
-import type { Filter, Post } from '../types';
+import type { Post } from '../types';
 import { nonNullable } from '../utils';
 
 import FilterList from './FilterList';
@@ -54,38 +51,19 @@ interface FiltersProps {
 
 function Filters({ posts }: FiltersProps) {
   // Modules
-  const { supportsItemFilters, filters: filterTypes, id: moduleId } = useModule();
+  const { filters: filterTypes } = useModule();
 
   const modalItemId = useModalStore((state) => state.item);
 
   const modalItem = posts.find((post) => post.id === modalItemId);
-
-  const refreshAuth = useAuthStore((state) => state.refresh);
 
   const drawerOpen = useDrawerStore((state) => state.open);
 
   // User text to search filters
   const [search, setSearch] = useState('');
 
-  // Placeholder data for a loading section
-  const placeholderDataRef = useRef<Filter[]>([...Array(10)].map(generatePlaceholderFilter));
-
-  // React query function
-  async function filtersQuery(itemId: string | null) {
-    if (itemId && supportsItemFilters) {
-      const accessToken = await refreshAuth(moduleId); // TODO: on error here, redirect to login page
-      return await fetchItemFilters(moduleId, itemId, accessToken);
-    }
-
-    return [];
-  }
-
   // Fetch all sections at once
-  const filterQuery = useQuery({
-    queryKey: ['filtersForItem', modalItemId],
-    queryFn: () => filtersQuery(modalItemId),
-    placeholderData: placeholderDataRef.current,
-  });
+  const filterQuery = useItemFilterQuery();
 
   // Memoize the flattening, sorting, and filtering of the data
   const { filters, itemCount } = useMemo(() => {

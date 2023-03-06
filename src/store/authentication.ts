@@ -8,6 +8,7 @@ type State = {
   authByModuleId: Record<string, Auth>;
   setAuth: (moduleId: string, auth: Auth) => void;
   refresh: (moduleId: string) => Promise<string | undefined>;
+  invalidate: (moduleId: string) => void;
 };
 
 const useAuthStore = create<State>()(
@@ -19,17 +20,28 @@ const useAuthStore = create<State>()(
         authByModuleId[moduleId] = auth;
         set({ authByModuleId });
       },
+      invalidate: (moduleId: string) => {
+        const { authByModuleId } = get();
+        delete authByModuleId[moduleId];
+        set({ authByModuleId });
+      },
       refresh: async (moduleId: string) => {
         const { authByModuleId } = get();
         const auth = authByModuleId[moduleId];
 
         if (auth && needsRefresh(auth.expires)) {
-          const newAuth = await refreshAuth(moduleId, auth.refreshToken);
-          authByModuleId[moduleId] = newAuth;
-
-          set({ authByModuleId });
-
-          return newAuth.accessToken;
+          try {
+            const newAuth = await refreshAuth(moduleId, auth.refreshToken);
+            authByModuleId[moduleId] = newAuth;
+            set({ authByModuleId });
+            return newAuth.accessToken;
+          } catch (ex) {
+            // TODO: returning undefined here causes react-query to retry a few more times
+            console.error(`Error refreshing auth token for module ${moduleId}`);
+            delete authByModuleId[moduleId];
+            set({ authByModuleId });
+            return undefined;
+          }
         }
 
         return auth?.accessToken;

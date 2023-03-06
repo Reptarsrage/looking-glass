@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
-import { fetchGallery } from '../api';
+import { fetchGallery, isApiError } from '../api';
 import { generatePlaceholderGallery } from '../placeholderData';
 import useAuthStore from '../store/authentication';
 import type { Gallery } from '../types';
@@ -27,6 +27,7 @@ type ReactQueryParams = {
 
 function useGalleryQuery() {
   const refreshAuth = useAuthStore((state) => state.refresh);
+  const invalidateAuth = useAuthStore((state) => state.invalidate);
 
   const module = useModule();
   const moduleId = module.id;
@@ -43,11 +44,24 @@ function useGalleryQuery() {
 
   // React query function
   async function queryForGallery(params: ReactQueryParams): Promise<Gallery> {
-    const { offset = 0, after = '' } = params.pageParam ?? {};
-    const { moduleId, galleryId, query, sort, filters } = params.queryKey[1] as QueryKey;
+    try {
+      const { offset = 0, after = '' } = params.pageParam ?? {};
+      const { moduleId, galleryId, query, sort, filters } = params.queryKey[1] as QueryKey;
 
-    const accessToken = await refreshAuth(moduleId); // TODO: on error here, redirect to login page
-    return await fetchGallery(moduleId, accessToken, galleryId, offset, after, query, sort, filters);
+      const accessToken = await refreshAuth(moduleId);
+      return await fetchGallery(moduleId, accessToken, galleryId, offset, after, query, sort, filters);
+    } catch (ex) {
+      if (isApiError(ex)) {
+        if (ex.code === 401) {
+          // logout
+          invalidateAuth(moduleId);
+        }
+
+        throw new Error(ex.message);
+      }
+
+      throw ex;
+    }
   }
 
   return useInfiniteQuery(['gallery', { moduleId, galleryId, query, sort, filters }], queryForGallery, {

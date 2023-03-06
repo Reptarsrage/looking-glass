@@ -57,8 +57,6 @@ function calculateItemEndPosition(
   const x = (availableWidth - width) / 2 + Gutter;
   const y = (availableHeight - height) / 2 + Gutter;
 
-  console.info('calculateItemEndPosition', { width, height, x, y });
-
   return { width, height, x, y };
 }
 
